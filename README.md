@@ -149,12 +149,10 @@ $ git clone https://github.com/hypertrack/logistics-android.git
 $ cd logistics-android
 ```
 
-- Add your publishable key in [`app/src/main/AndroidManifest.xml`](https://github.com/hypertrack/logistics-android/blob/master/app/src/main/AndroidManifest.xml) for `android:value` key
+- Add your publishable key in [`strings.xml`](https://github.com/hypertrack/logistics-android/blob/master/app/src/main/res/values/strings.xml#L6).
 
 ```xml
-<meta-data
-    android:name="com.hypertrack.sdk.PUB_KEY"
-    android:value="YOUR_PUBLISHABLE_KEY_HERE" />
+<string name="hyperTrackPublishKey">paste your publishable key here</string>
 ```
 
 ### 3. Set up Firebase
