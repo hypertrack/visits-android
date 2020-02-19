@@ -108,7 +108,7 @@ val sdk = HyperTrack.getInstance(context, context.getString(R.string.hyperTrackP
 Device name is set on SDK for [convenience](https://github.com/hypertrack/logistics-android/blob/8e1eda68a4cfd51a09f78a9297b60905bc84881e/app/src/main/java/com/hypertrack/android/utils/HyperTrackInit.kt#L21).
 
 ```kotlin
-sdk.isRunning
+sdk.setDeviceName(getDeviceName())
 ```
 ### Tracking Status
 
