@@ -42,7 +42,7 @@ const val KEY_EXTRA_DRIVER_ID = "driver_id"
 
 const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
 
-const val BASE_URL = "https://backend-hypertrack-logistics.herokuapp.com/"
+const val BASE_URL = "<YOUR_BACKEND_URL>"
 
 // Show Toast using this extension function
 fun Context.showToast(text: String) {

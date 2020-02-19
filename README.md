@@ -95,35 +95,42 @@ Whenever HyperTrack recognizes that the driver arrived at or exited the delivery
 
 The HyperTrack account used for this app needs to be set up for push notifications ([see steps here](https://github.com/hypertrack/quickstart-android#set-up-silent-push-notifications)) to start and stop tracking during the trip.
 
-### Tracking Status
-
-The SDK is used to indicate the tracking status of the device.
-
-```kotlin
-HyperTrack.isRunning
-```
-
 ### SDK Initialization
 
-The SDK is initialized during app startup.
+The SDK is initialized [during app startup](https://github.com/hypertrack/logistics-android/blob/8e1eda68a4cfd51a09f78a9297b60905bc84881e/app/src/main/java/com/hypertrack/android/utils/HyperTrackInit.kt#L17).
 
 ```kotlin
-HyperTrack.getInstance( context, context.getString(R.string.hyperTrackPublishKey))
+val sdk = HyperTrack.getInstance(context, context.getString(R.string.hyperTrackPublishKey))
+```
+
+### Device name
+
+Device name is set on SDK for [convenience](https://github.com/hypertrack/logistics-android/blob/8e1eda68a4cfd51a09f78a9297b60905bc84881e/app/src/main/java/com/hypertrack/android/utils/HyperTrackInit.kt#L21).
+
+```kotlin
+sdk.isRunning
+```
+### Tracking Status
+
+The SDK is used to indicate the [tracking status of the device](https://github.com/hypertrack/logistics-android/blob/8e1eda68a4cfd51a09f78a9297b60905bc84881e/app/src/main/java/com/hypertrack/android/ui/ListActivity.kt#L320).
+
+```kotlin
+sdk.isRunning
 ```
 
 ### Device ID
 
-Once initialized, the SDK will provide a unique `device_id`.
+Once initialized, the SDK will provide a unique [`device_id`](https://github.com/hypertrack/logistics-android/blob/8e1eda68a4cfd51a09f78a9297b60905bc84881e/app/src/main/java/com/hypertrack/android/ui/CheckInActivity.kt#L152).
 
 ```kotlin
-HyperTrackSdk.getDeviceid()
+sdk.deviceID
 ```
 
 This is used to check in with a driver profile. With updates to the driver records during check-in, driver profiles can be used on different phones.
 
 ### Trip Marker
 
-Upon delivery completion, the SDK is used to create a new trip marker.
+Upon delivery completion, the SDK is used to create a new [trip marker](https://github.com/hypertrack/logistics-android/blob/8e1eda68a4cfd51a09f78a9297b60905bc84881e/app/src/main/java/com/hypertrack/android/ui/JobDetailActivity.kt#L224).
 
 ```kotlin
 hyperTrackSdk.addTripMarker(mapOf(
@@ -149,12 +156,10 @@ $ git clone https://github.com/hypertrack/logistics-android.git
 $ cd logistics-android
 ```
 
-- Add your publishable key in [`app/src/main/AndroidManifest.xml`](https://github.com/hypertrack/logistics-android/blob/master/app/src/main/AndroidManifest.xml) for `android:value` key
+- Add your publishable key in [`strings.xml`](https://github.com/hypertrack/logistics-android/blob/master/app/src/main/res/values/strings.xml#L6).
 
 ```xml
-<meta-data
-    android:name="com.hypertrack.sdk.PUB_KEY"
-    android:value="YOUR_PUBLISHABLE_KEY_HERE" />
+<string name="hyperTrackPublishKey">paste your publishable key here</string>
 ```
 
 ### 3. Set up Firebase
