@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGrey"
+    android:clickable="true"
+    android:focusable="true"
+    android:fitsSystemWindows="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/medium"
+             android:textColor="@color/colorBlack"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorGrey"
+        android:clickable="true"
+        android:focusable="true"
+        android:fillViewport="true"
+        android:fitsSystemWindows="true"
+        android:focusableInTouchMode="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorGrey"
+            android:fillViewport="true"
+            android:fitsSystemWindows="true">
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="2dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:context=".MapsActivity" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVisitTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                  android:background="@color/colorVisitedBg"
+                android:fontFamily="@font/regular"
+                android:gravity="center"
+                android:padding="10dp"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCompleteTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                 android:background="@color/colorCompletedBg"
+                android:fontFamily="@font/regular"
+                android:gravity="center"
+                android:padding="10dp"
+                 android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvVisitTime" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCompleteTime"
+                app:srcCompat="@drawable/ic_location" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitleLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/location"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivLocation"
+                app:layout_constraintTop_toBottomOf="@id/tvCompleteTime"
+                app:layout_constraintTop_toTopOf="@id/ivLocation" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAddress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/regular"
+                 android:textColor="@color/colorBlack"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvTitleLocation"
+                app:layout_constraintTop_toBottomOf="@id/tvTitleLocation" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAddress"
+                app:srcCompat="@drawable/ic_note" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitleCustomerNote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/customer_note"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivNote"
+                app:layout_constraintTop_toBottomOf="@id/ivNote"
+                app:layout_constraintTop_toTopOf="@id/ivNote" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCustomerNote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/regular"
+                 android:textColor="@color/colorBlack"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvTitleCustomerNote"
+                app:layout_constraintTop_toBottomOf="@id/tvTitleCustomerNote" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
+                app:srcCompat="@drawable/ic_item" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitleItems"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/items"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivItems"
+                app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
+                app:layout_constraintTop_toTopOf="@id/ivItems" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvItems"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvTitleItems"
+                app:layout_constraintTop_toBottomOf="@id/ivItems"
+                tools:itemCount="2"
+                tools:listitem="@layout/inflate_scan_item" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivDeliveryNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rvItems"
+                app:srcCompat="@drawable/ic_file" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDeliveryNotes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/delivery_notes"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivDeliveryNote"
+                app:layout_constraintTop_toBottomOf="@id/rvItems"
+                app:layout_constraintTop_toTopOf="@id/ivDeliveryNote" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etDeliveryNote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/edit_bg"
+                android:gravity="top|start"
+                android:lines="5"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvDeliveryNotes"
+                app:layout_constraintTop_toBottomOf="@id/ivDeliveryNote" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDeliveryNote"
+                app:srcCompat="@drawable/ic_cam" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCameraTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/delivery_picture"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivCamera"
+                app:layout_constraintTop_toBottomOf="@id/etDeliveryNote"
+                app:layout_constraintTop_toTopOf="@id/ivCamera" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTakePicture"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/colorTakePicture"
+                android:fontFamily="@font/medium"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/take_picture"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
+                app:layout_constraintTop_toBottomOf="@id/ivCamera" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivDeliveryPic"
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/medium"
+                android:gravity="center"
+                android:scaleType="centerCrop"
+                 android:textColor="@color/colorWhite"
+                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvComplete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@color/colorBlack"
+                android:fontFamily="@font/medium"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="@string/mark_completed"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ivDeliveryPic" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@drawable/ic_close"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/ivDeliveryPic"
+                app:layout_constraintTop_toTopOf="@id/ivDeliveryPic" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvComplete" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

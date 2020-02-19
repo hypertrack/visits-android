@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">HyperTrack Logistics Sample</string>
+    <string name="select_driver_id">select driver</string>
+    <string name="check_in">Check In</string>
+
+    <string name="hyperTrackPublishKey">paste your publishable key here</string>
+
+    <string name="channel_name">Hypertrack Notifications</string>
+    <string name="channel_id">hyper_track</string>
+    <string name="channel_description">Hyper track show your Nearby,completed notification</string>
+    <string name="file_provider_authority" translatable="false">com.hypertrack.logistics.android.github.fileprovider</string>
+    <string name="replace_picture">Replace Picture</string>
+    <string name="location">Location</string>
+    <string name="customer_note">Customer Note</string>
+    <string name="items">Items</string>
+    <string name="delivery_notes">Delivery Notes</string>
+    <string name="delivery_picture">Delivery Picture</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="mark_completed">Mark Completed</string>
+
+
+</resources>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="7dp"
+    android:background="@color/colorWhite"
+ >
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivUserPic"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_avatar" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivCompass"
+        app:layout_constraintStart_toEndOf="@id/ivUserPic"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/regular"
+            android:text="Delivery Id"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/light"
+            android:text="Additional Info"
+            android:textColor="@color/colorDescription"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivLocationIcon"
+            app:layout_constraintStart_toEndOf="@id/ivUserPic"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivCameraIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_cam" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivCameraIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_file" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivCompass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivNote"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_nav" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
