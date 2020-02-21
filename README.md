@@ -175,7 +175,7 @@ Firebase is required to enabled push notifications and to enable Google Maps in 
 
 ### 4. Set up backend
 
-A backend is required to manage the drivers/deliveries and to leverage HyperTrack APIs and Webhooks. You can use the [Logistics NodeJS Sample Backend Integration](https://github.com/hypertrack/backend-nodejs-logistics) project to spin up a backend that works out of the box. Please follow the [setup steps](https://github.com/hypertrack/backend-nodejs-logistics#installation-and-setup) to spin up the backend and configure webhooks appropriately.
+A backend is required to manage the drivers/deliveries and to leverage HyperTrack APIs and Webhooks. You can use the [Logistics NodeJS Sample Backend Integration](https://github.com/hypertrack/backend-nodejs-logistics) project to spin up a backend that works out of the box. Please follow the [setup steps](https://github.com/hypertrack/backend-nodejs-logistics#1-get-your-keys) to spin up the backend and configure webhooks appropriately.
 
 With the backend up and running, you need to configure the URL endpoint using in this app to communicate with the backend. In this project, edit the [`Extensions.kt`](https://github.com/hypertrack/logistics-android-hidden/blob/master/app/src/main/java/com/hypertrack/android/Extensions.kt#L45) file:
 
