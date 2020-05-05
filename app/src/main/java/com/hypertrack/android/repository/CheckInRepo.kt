@@ -2,10 +2,7 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.response.CheckInResponse
 import com.hypertrack.android.utils.MyApplication
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -13,42 +10,40 @@ import retrofit2.Response
 class CheckInRepo(applicationContext: Application) {
 
 
-    var changePasswordResponse: MutableLiveData<CheckInResponse>? = null
+    var checkinResponse: MutableLiveData<Unit>? = null
 
     var application: MyApplication = applicationContext as MyApplication
 
     init {
 
-        changePasswordResponse = MutableLiveData()
+        checkinResponse = MutableLiveData()
 
     }
 
     // Call driver check in api with proper params
-    fun callCheckInApi(driverId: String, jsonParams: String) {
+    fun callCheckInApi(driverId: String) {
 
-        val request =
-            RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), jsonParams)
-        val changePasswordCall = application.getApiClient().makeDriverCheckIn(driverId, request)
+        val checkinCall = application.getApiClient().makeDriverCheckIn(driverId)
 
-        changePasswordCall.enqueue(object : Callback<CheckInResponse> {
+        checkinCall.enqueue(object : Callback<Unit> {
 
-            override fun onFailure(call: Call<CheckInResponse>, t: Throwable) {
+            override fun onFailure(call: Call<Unit>, t: Throwable) {
 
-                changePasswordResponse?.postValue(null)
+                checkinResponse?.postValue(null)
             }
 
             override fun onResponse(
-                call: Call<CheckInResponse>,
-                response: Response<CheckInResponse>
+                call: Call<Unit>,
+                response: Response<Unit>
             ) {
 
-                changePasswordResponse?.postValue(response.body())
+                checkinResponse?.postValue(response.body())
             }
         })
     }
 
-    fun getResponse(): MutableLiveData<CheckInResponse> {
+    fun getResponse(): MutableLiveData<Unit> {
 
-        return changePasswordResponse!!
+        return checkinResponse!!
     }
 }

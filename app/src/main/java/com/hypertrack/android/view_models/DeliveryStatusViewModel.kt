@@ -4,12 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.hypertrack.android.repository.CheckInRepo
 import com.hypertrack.android.repository.DeliveryStatusRepo
-import com.hypertrack.android.repository.SingleDriverRepo
-import com.hypertrack.android.response.CheckInResponse
 import com.hypertrack.android.response.Deliveries
-import com.hypertrack.android.response.SingleDriverResponse
 
 class DeliveryStatusViewModel(application : Application) : AndroidViewModel(application) {
 

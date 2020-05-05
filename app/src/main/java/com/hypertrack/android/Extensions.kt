@@ -42,7 +42,9 @@ const val KEY_EXTRA_DRIVER_ID = "driver_id"
 
 const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
 
-const val BASE_URL = "<YOUR_BACKEND_URL>"
+const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
+const val AUTH_URL_PATH = "authenticate"
+const val AUTH_HEADER_KEY = "Authorization"
 
 // Show Toast using this extension function
 fun Context.showToast(text: String) {

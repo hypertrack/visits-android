@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">HyperTrack Logistics Sample</string>
-    <string name="select_driver_id">select driver</string>
+    <string name="enter_driver_id">enter driver id</string>
     <string name="check_in">Check In</string>
 
     <string name="hyperTrackPublishKey">paste your publishable key here</string>

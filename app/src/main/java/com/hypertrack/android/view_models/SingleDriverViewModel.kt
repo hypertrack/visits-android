@@ -4,18 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.hypertrack.android.repository.CheckInRepo
 import com.hypertrack.android.repository.SingleDriverRepo
-import com.hypertrack.android.response.CheckInResponse
-import com.hypertrack.android.response.SingleDriverResponse
+import com.hypertrack.android.response.DriverDeliveries
 
 class SingleDriverViewModel(application : Application) : AndroidViewModel(application) {
 
     var singleDriverRepo: SingleDriverRepo? = null
 
-    var driverModel: LiveData<SingleDriverResponse>? = null
+    var driverModel: LiveData<DriverDeliveries>? = null
 
-    private var changeMediator: MediatorLiveData<SingleDriverResponse>? = null
+    private var changeMediator: MediatorLiveData<DriverDeliveries>? = null
 
     init {
 

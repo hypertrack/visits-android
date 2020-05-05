@@ -4,12 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.hypertrack.android.repository.CheckInRepo
 import com.hypertrack.android.repository.SingleDeliveryRepo
-import com.hypertrack.android.repository.SingleDriverRepo
-import com.hypertrack.android.response.CheckInResponse
 import com.hypertrack.android.response.Deliveries
-import com.hypertrack.android.response.SingleDriverResponse
+import com.hypertrack.android.response.DriverDeliveries
 
 class SingleDeliveryViewModel(application : Application) : AndroidViewModel(application) {
 
@@ -17,7 +14,7 @@ class SingleDeliveryViewModel(application : Application) : AndroidViewModel(appl
 
     var deliveryModel: LiveData<Deliveries>? = null
 
-    private var changeMediator: MediatorLiveData<SingleDriverResponse>? = null
+    private var changeMediator: MediatorLiveData<DriverDeliveries>? = null
 
     init {
 

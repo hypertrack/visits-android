@@ -5,15 +5,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hypertrack.android.repository.CheckInRepo
-import com.hypertrack.android.response.CheckInResponse
 
 class CheckInViewModel(application : Application) : AndroidViewModel(application) {
 
     var checkInRepo: CheckInRepo? = null
 
-    var changeModel: LiveData<CheckInResponse>? = null
+    var changeModel: LiveData<Unit>? = null
 
-    private var changeMediator: MediatorLiveData<CheckInResponse>? = null
+    private var changeMediator: MediatorLiveData<Unit>? = null
 
     init {
 
@@ -21,23 +20,10 @@ class CheckInViewModel(application : Application) : AndroidViewModel(application
 
         changeMediator = MediatorLiveData()
 
-        changePasswordApiResponse()
     }
 
     // call repo method for init API
-    fun callCheckInMethod(driverId : String,body: String) {
-
-        checkInRepo?.callCheckInApi(driverId,body)
-    }
-
-    // add response here for getting
-    private fun changePasswordApiResponse() {
-
-        changeModel = checkInRepo?.getResponse()
-
-        changeMediator?.addSource(changeModel!!) {
-
-            print("Check in repo")
-        }
+    fun callCheckInMethod(driverId: String) {
+        checkInRepo?.callCheckInApi(driverId)
     }
 }

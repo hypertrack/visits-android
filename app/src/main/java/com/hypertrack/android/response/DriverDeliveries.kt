@@ -1,6 +1,6 @@
 package com.hypertrack.android.response
 
-data class SingleDriverResponse(
+data class DriverDeliveries(
     val _id: String,
     val driver_id: String,
     val name: String,
