@@ -6,13 +6,10 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
@@ -23,10 +20,10 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias = keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
+            storeFile file(project.properties.logisticsKeystorePath)
+            storePassword project.properties.logisticsStorePassword
+            keyAlias project.properties.logisticsKeyAlias
+            keyPassword project.properties.logisticsKeyPassword
         }
     }
     buildTypes {
