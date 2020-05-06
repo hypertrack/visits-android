@@ -4,6 +4,7 @@ import com.hypertrack.android.repository.AccessTokenRepository
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class ApiClient(
     accessTokenRepository: AccessTokenRepository,
@@ -14,6 +15,7 @@ class ApiClient(
     val api = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(ScalarsConverterFactory.create())
         .client(
             OkHttpClient.Builder()
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
