@@ -1,10 +1,9 @@
 package com.hypertrack.android.api_interface
 
-import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.sdk.HyperTrack
-import org.junit.Assert.*
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AccessTokenTest() {

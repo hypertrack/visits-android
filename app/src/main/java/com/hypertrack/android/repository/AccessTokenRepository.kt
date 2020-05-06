@@ -9,7 +9,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
 
 class AccessTokenRepository(
     private val publishableKey : String,
@@ -53,4 +52,7 @@ class AccessTokenRepository(
     }
 }
 
-private data class AuthCallResponse(@SerializedName("access_token") val accessToken:String, @SerializedName("expires_in") val expiresIn: Int)
+private data class AuthCallResponse(
+    @SerializedName("access_token") val accessToken:String,
+    @SerializedName("expires_in") val expiresIn: Int
+)
