@@ -33,6 +33,12 @@ android {
             signingConfig = signingConfigs.release
         }
     }
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources true
+        }
+    }
 }
 
 repositories {
@@ -73,10 +79,10 @@ dependencies {
     implementation'com.hypertrack:hypertrack:4.3.1'
 
     testImplementation 'junit:junit:4.13'
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.2")
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.2.2")
 
 
 }

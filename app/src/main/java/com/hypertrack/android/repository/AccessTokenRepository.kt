@@ -2,6 +2,7 @@ package com.hypertrack.android.repository
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.AUTH_HEADER_KEY
 import okhttp3.Credentials
@@ -13,14 +14,14 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class AccessTokenRepository(
     private val authUrl: String,
     private val deviceId: String,
-    private var lastToken: String?,
     private val userName: String,
-    private val userPwd: String = ""
+    private val userPwd: String = "",
+    private var token: String? = null
 ) {
-    fun getAccessToken(): String = lastToken?:refreshToken()
+    fun getAccessToken(): String = token?:refreshToken()
 
     fun refreshToken(): String {
-        Log.v(TAG, "Refreshing token $lastToken for user $userName for deviceId $deviceId")
+        Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(authUrl)
@@ -30,22 +31,24 @@ class AccessTokenRepository(
 
         client
             .newCall(request)
-            .execute().use {
-            response ->
-            if (!response.isSuccessful) {
-                Log.w(TAG, "Failed to refresh token $response")
-                lastToken = ""
-
-            } else {
-                response.body?.let {
-                    val string = it.string()
-                    val responseObject = Gson().fromJson(string, AuthCallResponse::class.java)
-                    lastToken = responseObject.accessToken
+            .execute()
+            .use { response ->
+                token = ""
+                if (response.isSuccessful) {
+                    response.body?.let {
+                        try {
+                            val responseObject = Gson().fromJson(it.string(), AuthCallResponse::class.java)
+                            token = responseObject.accessToken
+                        } catch (ignored: JsonSyntaxException) {
+                            Log.w(TAG, "Can't deserialize auth response ${it.string()}")
+                        }
+                    }
+                } else {
+                    Log.w(TAG, "Failed to refresh token $response")
                 }
-            }
         }
-        Log.d(TAG, "Got token $lastToken" )
-        return lastToken ?: ""
+        Log.v(TAG, "Updated bearer token $token" )
+        return token ?: ""
     }
 
     companion object {

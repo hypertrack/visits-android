@@ -1,17 +1,14 @@
 package com.hypertrack.android.api
 
-import android.content.Context
-import android.util.Log
-import androidx.test.platform.app.InstrumentationRegistry
 import com.hypertrack.android.AUTH_HEADER_KEY
 import com.hypertrack.android.AUTH_URL
 import com.hypertrack.android.repository.AccessTokenRepository
-import com.hypertrack.sdk.HyperTrack
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Assert.*
+import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.net.HttpURLConnection
@@ -20,45 +17,54 @@ class AccessTokenTest {
 
     companion object {
         const val PUBLISHABLE_KEY = "uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw"
-        const val TAG = "AccessTokenTest"
+        const val DEVICE_ID = "42"
+        const val NEW_JWT_TOKEN = "new.jwt.token"
     }
 
-    private val context: Context?
-        get() = InstrumentationRegistry.getInstrumentation().targetContext
-    private lateinit var hyperTrack: HyperTrack
+    private val mockWebServer = MockWebServer()
 
     @Before
     fun setUp() {
-        hyperTrack = HyperTrack.getInstance(context, PUBLISHABLE_KEY)
-        Log.d(TAG, "HyperTrack initialized with device id ${hyperTrack.deviceID}")
+        mockWebServer.start()
     }
 
     @Test
     fun itShouldRequestNewTokenIfLastSavedIsNull() {
-        val accessTokenRepository = AccessTokenRepository(
-            AUTH_URL,
-            hyperTrack.deviceID,
-            null,
-            PUBLISHABLE_KEY
-        )
+        val accessTokenRepository =
+            AccessTokenRepository(
+                mockWebServer.authUrl(),
+                DEVICE_ID,
+                PUBLISHABLE_KEY
+            )
+        enqueueAuthResponse()
 
         val token = accessTokenRepository.getAccessToken()
-        assertTrue(token.isNotEmpty())
+        Assert.assertTrue(token.isNotEmpty())
+    }
+
+    private fun enqueueAuthResponse() {
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_OK)
+                .setBody("""{"access_token":"$NEW_JWT_TOKEN","expires_in":42}""")
+        )
     }
 
     @Test
     fun itShouldUseLastTokenIfPresent() {
 
         val oldToken = "old.JWT.token"
-        val accessTokenRepository = AccessTokenRepository(
-            AUTH_URL,
-            hyperTrack.deviceID,
-            oldToken,
-            PUBLISHABLE_KEY
-        )
+        val accessTokenRepository =
+            AccessTokenRepository(
+                mockWebServer.authUrl(),
+                DEVICE_ID,
+                PUBLISHABLE_KEY,
+                token = oldToken
+            )
+        enqueueAuthResponse()
         val token = accessTokenRepository.getAccessToken()
 
-        assertEquals(oldToken, token)
+        Assert.assertEquals(oldToken, token)
 
     }
 
@@ -66,15 +72,17 @@ class AccessTokenTest {
     fun itShouldUseRefreshLastTokenIfRequested() {
 
         val oldToken = "old.JWT.token"
-        val accessTokenRepository = AccessTokenRepository(
-            AUTH_URL,
-            hyperTrack.deviceID,
-            oldToken,
-            PUBLISHABLE_KEY
-        )
+        val accessTokenRepository =
+            AccessTokenRepository(
+                mockWebServer.authUrl(),
+                DEVICE_ID,
+                PUBLISHABLE_KEY,
+                token = oldToken
+            )
+        enqueueAuthResponse()
         val token = accessTokenRepository.refreshToken()
 
-        assertNotEquals(oldToken, token)
+        Assert.assertNotEquals(oldToken, token)
 
     }
 
@@ -86,10 +94,10 @@ class AccessTokenTest {
             .addInterceptor(
                 AccessTokenInterceptor(
                     AccessTokenRepository(
-                        AUTH_URL,
-                        hyperTrack.deviceID,
-                        lastToken,
-                        PUBLISHABLE_KEY
+                        mockWebServer.authUrl(),
+                        DEVICE_ID,
+                        PUBLISHABLE_KEY,
+                        token = lastToken
                     )
                 )
             )
@@ -105,7 +113,7 @@ class AccessTokenTest {
 
         val headers = recordedRequest.headers
         val authorizationHeader = headers[AUTH_HEADER_KEY]?:""
-        assertEquals("Bearer $lastToken" , authorizationHeader)
+        Assert.assertEquals("Bearer $lastToken", authorizationHeader)
         mockWebServer.shutdown()
 
     }
@@ -114,29 +122,46 @@ class AccessTokenTest {
     fun itShouldAddRefreshTokenIfGotHttpUnauthorizedResponseCode() {
 
         val lastToken = "last.JWT.token"
-        val accessTokenRepository = AccessTokenRepository(
-            AUTH_URL,
-            hyperTrack.deviceID,
-            lastToken,
-            PUBLISHABLE_KEY
-        )
+        val accessTokenRepository =
+            AccessTokenRepository(
+                mockWebServer.authUrl(),
+                DEVICE_ID,
+                PUBLISHABLE_KEY,
+                token = lastToken
+            )
         val client = OkHttpClient.Builder()
             .authenticator(
-                AccessTokenAuthenticator(accessTokenRepository)
+                AccessTokenAuthenticator(
+                    accessTokenRepository
+                )
             )
             .build()
         val mockWebServer = MockWebServer()
-        mockWebServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
         mockWebServer.enqueue(MockResponse())
         mockWebServer.start()
+        enqueueAuthResponse()
 
         client
             .newCall(Request.Builder().url(mockWebServer.url("/")).build())
             .execute()
 
         val token = accessTokenRepository.getAccessToken()
-        assertNotEquals(lastToken, token)
+        Assert.assertEquals(NEW_JWT_TOKEN, token)
         mockWebServer.shutdown()
 
     }
+
+    @After
+    fun tearDown() {
+        try {
+            mockWebServer.shutdown()
+        } catch (ignored: Throwable) {
+
+        }
+    }
+
+    private fun MockWebServer.authUrl() = this.url("/authenticate").toString()
 }
