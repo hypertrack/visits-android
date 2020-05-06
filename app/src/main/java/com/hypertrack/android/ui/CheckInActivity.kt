@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.hypertrack.android.*
+import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.HyperTrackInit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.MyPreferences
@@ -27,12 +28,12 @@ class CheckInActivity : AppCompatActivity() {
 
     }
 
-
     private var checkInModel: CheckInViewModel? = null
+    private var isBranchInitialized = false
 
     lateinit var selectedDriverId: String
 
-    private var myPreferences: MyPreferences? = null
+    private lateinit var myPreferences: MyPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,18 +42,30 @@ class CheckInActivity : AppCompatActivity() {
 
         myPreferences = MyPreferences(this@CheckInActivity, Gson())
 
-        if (!myPreferences?.getDriverValue()?.driver_id.isNullOrEmpty()) {
-            startActivity(Intent(this@CheckInActivity, ListActivity::class.java))
-        } else {
-            setContentView(R.layout.activity_checkin_screen)
-
-            init()
+        myPreferences.restoreRepository() ?: run {
+            // init Branch IO if no repo (pk was persisted)
+            isBranchInitialized = true
         }
+
+
+        setContentView(R.layout.activity_checkin_screen)
+        init()
     }
 
     override fun onResume() {
         super.onResume()
-        MyApplication.activity = this
+        if (isBranchInitialized) {
+        // Branch get params
+
+        }
+
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (isBranchInitialized) {
+            // Branch get params
+        }
 
     }
 
@@ -71,25 +84,6 @@ class CheckInActivity : AppCompatActivity() {
     // initialize check in view model
     private fun initCheckInViewModel() {
 
-        checkInModel = CheckInViewModel(this.application)
-
-        checkInModel?.changeModel?.observe(this, Observer {
-
-            dismissBar()
-
-//            if (it != null) {
-//
-//                myPreferences?.saveDriverDetail(Gson().toJson(it))
-//
-//                if (it._id.isNotEmpty()) {
-//                    startActivity(Intent(this, ListActivity::class.java))
-//                    btnCheckIn.isEnabled = true
-//                    finish()
-//                }
-//            } else {
-//                btnCheckIn.isEnabled = true
-//            }
-        })
 
     }
 
