@@ -10,10 +10,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.net.HttpURLConnection
 
 class AccessTokenTest {
 
@@ -85,6 +85,31 @@ class AccessTokenTest {
         val headers = recordedRequest.headers
         val authorizationHeader = headers[AUTH_HEADER_KEY]?:""
         assertEquals("Bearer $lastToken" , authorizationHeader)
+        mockWebServer.shutdown()
+
+    }
+
+    @Test
+    fun itShouldAddRefreshTokenIfGotHttpUnauthorizedResponseCode() {
+
+        val lastToken = "last.JWT.token"
+        val accessTokenRepository = AccessTokenRepository(PUBLISHABLE_KEY, hyperTrack.deviceID, lastToken)
+        val client = OkHttpClient.Builder()
+            .authenticator(
+                AccessTokenAuthenticator(accessTokenRepository)
+            )
+            .build()
+        val mockWebServer = MockWebServer()
+        mockWebServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+        mockWebServer.enqueue(MockResponse())
+        mockWebServer.start()
+
+        client
+            .newCall(Request.Builder().url(mockWebServer.url("/")).build())
+            .execute()
+
+        val token = accessTokenRepository.getAccessToken()
+        assertNotEquals(lastToken, token)
         mockWebServer.shutdown()
 
     }
