@@ -3,8 +3,14 @@ package com.hypertrack.android.api_interface
 import android.content.Context
 import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
+import com.hypertrack.android.AUTH_HEADER_KEY
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.sdk.HyperTrack
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -56,5 +62,30 @@ class AccessTokenTest {
 
     }
 
+    @Test
+    fun itShouldAddRequestTokenHeaderToRequests() {
 
+        val lastToken = "last.JWT.token"
+        val client = OkHttpClient.Builder()
+            .addInterceptor(
+                AccessTokenInterceptor(
+                    AccessTokenRepository(PUBLISHABLE_KEY, hyperTrack.deviceID, lastToken)
+                )
+            )
+            .build()
+        val mockWebServer = MockWebServer()
+        mockWebServer.enqueue(MockResponse())
+        mockWebServer.start()
+
+        client
+            .newCall(Request.Builder().url(mockWebServer.url("/")).build())
+            .execute()
+        val recordedRequest = mockWebServer.takeRequest()
+
+        val headers = recordedRequest.headers
+        val authorizationHeader = headers[AUTH_HEADER_KEY]?:""
+        assertEquals("Bearer $lastToken" , authorizationHeader)
+        mockWebServer.shutdown()
+
+    }
 }

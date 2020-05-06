@@ -65,14 +65,6 @@
             android:value="@string/google_api_key" />
 
 
-        <service
-            android:name="com.hypertrack.sdk.HyperTrackMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="@string/file_provider_authority"
