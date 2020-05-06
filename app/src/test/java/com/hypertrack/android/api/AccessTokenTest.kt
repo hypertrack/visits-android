@@ -124,11 +124,7 @@ class AccessTokenTest {
         val accessTokenRepository =
             BasicAuthAccessTokenRepository(mockWebServer.authUrl(), DEVICE_ID, PUBLISHABLE_KEY, token = lastToken)
         val client = OkHttpClient.Builder()
-            .authenticator(
-                AccessTokenAuthenticator(
-                    accessTokenRepository
-                )
-            )
+            .authenticator(AccessTokenAuthenticator(accessTokenRepository))
             .build()
         val mockWebServer = MockWebServer()
         mockWebServer.enqueue(
