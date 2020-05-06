@@ -35,7 +35,12 @@ class AccessTokenTest {
 
     @Test
     fun itShouldRequestNewTokenIfLastSavedIsNull() {
-        val accessTokenRepository = AccessTokenRepository(AUTH_URL, PUBLISHABLE_KEY, hyperTrack.deviceID, null)
+        val accessTokenRepository = AccessTokenRepository(
+            AUTH_URL,
+            hyperTrack.deviceID,
+            null,
+            PUBLISHABLE_KEY
+        )
 
         val token = accessTokenRepository.getAccessToken()
         assertTrue(token.isNotEmpty())
@@ -45,7 +50,12 @@ class AccessTokenTest {
     fun itShouldUseLastTokenIfPresent() {
 
         val oldToken = "old.JWT.token"
-        val accessTokenRepository = AccessTokenRepository(AUTH_URL, PUBLISHABLE_KEY, hyperTrack.deviceID, oldToken)
+        val accessTokenRepository = AccessTokenRepository(
+            AUTH_URL,
+            hyperTrack.deviceID,
+            oldToken,
+            PUBLISHABLE_KEY
+        )
         val token = accessTokenRepository.getAccessToken()
 
         assertEquals(oldToken, token)
@@ -56,7 +66,12 @@ class AccessTokenTest {
     fun itShouldUseRefreshLastTokenIfRequested() {
 
         val oldToken = "old.JWT.token"
-        val accessTokenRepository = AccessTokenRepository(AUTH_URL, PUBLISHABLE_KEY, hyperTrack.deviceID, oldToken)
+        val accessTokenRepository = AccessTokenRepository(
+            AUTH_URL,
+            hyperTrack.deviceID,
+            oldToken,
+            PUBLISHABLE_KEY
+        )
         val token = accessTokenRepository.refreshToken()
 
         assertNotEquals(oldToken, token)
@@ -70,7 +85,12 @@ class AccessTokenTest {
         val client = OkHttpClient.Builder()
             .addInterceptor(
                 AccessTokenInterceptor(
-                    AccessTokenRepository(AUTH_URL, PUBLISHABLE_KEY, hyperTrack.deviceID, lastToken)
+                    AccessTokenRepository(
+                        AUTH_URL,
+                        hyperTrack.deviceID,
+                        lastToken,
+                        PUBLISHABLE_KEY
+                    )
                 )
             )
             .build()
@@ -94,7 +114,12 @@ class AccessTokenTest {
     fun itShouldAddRefreshTokenIfGotHttpUnauthorizedResponseCode() {
 
         val lastToken = "last.JWT.token"
-        val accessTokenRepository = AccessTokenRepository(AUTH_URL, PUBLISHABLE_KEY, hyperTrack.deviceID, lastToken)
+        val accessTokenRepository = AccessTokenRepository(
+            AUTH_URL,
+            hyperTrack.deviceID,
+            lastToken,
+            PUBLISHABLE_KEY
+        )
         val client = OkHttpClient.Builder()
             .authenticator(
                 AccessTokenAuthenticator(accessTokenRepository)

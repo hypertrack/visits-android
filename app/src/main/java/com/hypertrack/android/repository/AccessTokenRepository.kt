@@ -12,18 +12,19 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 class AccessTokenRepository(
     private val authUrl: String,
-    private val publishableKey : String,
-    private val deviceId : String,
-    private var lastToken : String?
+    private val deviceId: String,
+    private var lastToken: String?,
+    private val userName: String,
+    private val userPwd: String = ""
 ) {
     fun getAccessToken(): String = lastToken?:refreshToken()
 
     fun refreshToken(): String {
-        Log.d(TAG, "Refreshing token $lastToken with key $publishableKey for deviceId $deviceId")
+        Log.v(TAG, "Refreshing token $lastToken for user $userName for deviceId $deviceId")
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(authUrl)
-            .header(AUTH_HEADER_KEY, Credentials.basic(publishableKey, ""))
+            .header(AUTH_HEADER_KEY, Credentials.basic(userName, userPwd))
             .post("""{"device_id": "$deviceId"}""".toRequestBody(MEDIA_TYPE_JSON))
             .build()
 
