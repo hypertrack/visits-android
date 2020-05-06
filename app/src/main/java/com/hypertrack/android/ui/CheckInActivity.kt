@@ -39,7 +39,7 @@ class CheckInActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        myPreferences = MyPreferences(this@CheckInActivity)
+        myPreferences = MyPreferences(this@CheckInActivity, Gson())
 
         if (!myPreferences?.getDriverValue()?.driver_id.isNullOrEmpty()) {
             startActivity(Intent(this@CheckInActivity, ListActivity::class.java))

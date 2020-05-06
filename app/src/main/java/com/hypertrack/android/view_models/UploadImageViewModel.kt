@@ -4,9 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.hypertrack.android.repository.CheckInRepo
 import com.hypertrack.android.repository.UpdateDeliveryRepo
-import com.hypertrack.android.response.CheckInResponse
+import com.hypertrack.android.response.DriverModel
 import com.hypertrack.android.response.Deliveries
 import okhttp3.RequestBody
 
@@ -17,7 +16,7 @@ class UploadImageViewModel(application : Application) : AndroidViewModel(applica
 
     var updateImageModel: LiveData<Deliveries>? = null
 
-    private var changeMediator: MediatorLiveData<CheckInResponse>? = null
+    private var changeMediator: MediatorLiveData<DriverModel>? = null
 
     init {
 

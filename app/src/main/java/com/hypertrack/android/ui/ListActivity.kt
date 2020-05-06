@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.hypertrack.android.*
 import com.hypertrack.android.adapters.JobListAdapters
 import com.hypertrack.android.response.Deliveries
@@ -63,7 +64,7 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
     // initialize all variable here
     private fun init() {
 
-        myPreferences = MyPreferences(this@ListActivity)
+        myPreferences = MyPreferences(this@ListActivity, Gson())
 
         val getDriver = myPreferences?.getDriverValue()
 
@@ -73,9 +74,9 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
             finish()
         }
 
-        getDriverIdFromIntent = getDriver?.driver_id!!
-
-        tvUserName.text = "Welcome, ".plus(getDriver.name)
+//        getDriverIdFromIntent = getDriver?.driver_id!!
+//
+//        tvUserName.text = "Welcome, ".plus(getDriver.name)
 
 //        if (intent != null && intent.hasExtra(KEY_EXTRA_DRIVER_ID))
 //            getDriverIdFromIntent = intent.getStringExtra(KEY_EXTRA_DRIVER_ID)!!

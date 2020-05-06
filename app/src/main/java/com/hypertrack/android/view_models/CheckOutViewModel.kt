@@ -4,9 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.hypertrack.android.repository.CheckInRepo
 import com.hypertrack.android.repository.CheckOutRepo
-import com.hypertrack.android.response.CheckInResponse
 
 class CheckOutViewModel(application : Application) : AndroidViewModel(application) {
 

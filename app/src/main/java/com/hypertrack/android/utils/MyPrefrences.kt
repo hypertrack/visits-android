@@ -3,39 +3,35 @@ package com.hypertrack.android.utils
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.hypertrack.android.response.CheckInResponse
+import com.hypertrack.android.response.DriverModel
 
 
-class MyPreferences(context: Context) {
+class MyPreferences(context: Context, private val gson: Gson) {
 
-    private var getPreferences: SharedPreferences? = null
+    private val getPreferences : SharedPreferences
+            = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
-
-    init {
-
-        getPreferences = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
-
-    }
-    /* Get String value from the Local Preferences*/
-
-    /* Get Int value from the Local Preferences*/
-
-    fun saveDriverDetail(value: String) {
-        getPreferences?.edit()?.putString("driver_detail", value)?.apply()
+    fun saveDriver(driverModel: DriverModel) {
+        val serializedModel = gson.toJson(driverModel)
+        getPreferences.edit()?.putString(DRIVER_KEY, serializedModel)?.apply()
     }
 
-    fun getDriverValue(): CheckInResponse {
-        val getDetail = getPreferences?.getString("driver_detail", "")!!
-        if(getDetail.isEmpty())
-            return CheckInResponse()
+    fun getDriverValue(): DriverModel? {
+        val driverDetails = getPreferences.getString(DRIVER_KEY, null)
+        driverDetails?.let {
+            return gson.fromJson(driverDetails,DriverModel::class.java)
+        }
+        return null
 
-        return Gson().fromJson(getDetail,CheckInResponse::class.java)
     }
 
-    // Clear ALl Preferences values
     fun clearPreferences() {
-        getPreferences?.edit()?.clear()?.apply()
+        getPreferences.edit()?.clear()?.apply()
     }
 
+    companion object {
+        const val DRIVER_KEY = "com.hypertrack.android.utils.driver"
+
+    }
 
 }

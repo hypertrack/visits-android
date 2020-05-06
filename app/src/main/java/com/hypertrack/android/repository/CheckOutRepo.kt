@@ -2,10 +2,7 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.response.CheckInResponse
 import com.hypertrack.android.utils.MyApplication
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
