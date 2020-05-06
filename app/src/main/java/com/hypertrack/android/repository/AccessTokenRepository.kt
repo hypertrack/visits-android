@@ -11,16 +11,20 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class AccessTokenRepository(
+interface AccessTokenRepository {
+    fun refreshToken(): String
+    fun getAccessToken(): String
+}
+class BasicAuthAccessTokenRepository(
     private val authUrl: String,
     private val deviceId: String,
     private val userName: String,
     private val userPwd: String = "",
     private var token: String? = null
-) {
-    fun getAccessToken(): String = token?:refreshToken()
+) : AccessTokenRepository {
+    override fun getAccessToken(): String = token?:refreshToken()
 
-    fun refreshToken(): String {
+    override fun refreshToken(): String {
         Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
         val client = OkHttpClient()
         val request = Request.Builder()

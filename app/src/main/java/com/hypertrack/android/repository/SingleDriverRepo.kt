@@ -24,23 +24,23 @@ class SingleDriverRepo(applicationContext: Application) {
     // Call driver check in api with proper params
     fun callSingleDriverApi(driverId: String  ) {
 
-        val changePasswordCall = application.getApiClient().getDeliveries(driverId)
-
-        changePasswordCall.enqueue(object : Callback<DriverDeliveries> {
-
-            override fun onFailure(call: Call<DriverDeliveries>, t: Throwable) {
-
-                driverDeliveries?.postValue(null)
-            }
-
-            override fun onResponse(
-                call: Call<DriverDeliveries>,
-                response: Response<DriverDeliveries>
-            ) {
-
-                driverDeliveries?.postValue(response.body())
-            }
-        })
+//        val changePasswordCall = application.getApiClient().getDeliveries(driverId)
+//
+//        changePasswordCall.enqueue(object : Callback<DriverDeliveries> {
+//
+//            override fun onFailure(call: Call<DriverDeliveries>, t: Throwable) {
+//
+//                driverDeliveries?.postValue(null)
+//            }
+//
+//            override fun onResponse(
+//                call: Call<DriverDeliveries>,
+//                response: Response<DriverDeliveries>
+//            ) {
+//
+//                driverDeliveries?.postValue(response.body())
+//            }
+//        })
     }
 
     fun getResponse(): MutableLiveData<DriverDeliveries> {

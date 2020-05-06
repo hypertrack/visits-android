@@ -24,23 +24,23 @@ class SingleDeliveryRepo(applicationContext: Application) {
     // Call driver check in api with proper params
     fun callSingleDeliveryApi(deliveryId: String  ) {
 
-        val changePasswordCall = application.getApiClient().getSingleDeliveryDetail(deliveryId)
-
-        changePasswordCall.enqueue(object : Callback<Deliveries> {
-
-            override fun onFailure(call: Call<Deliveries>, t: Throwable) {
-
-                singleDeliveryResponse?.postValue(null)
-            }
-
-            override fun onResponse(
-                call: Call<Deliveries>,
-                response: Response<Deliveries>
-            ) {
-
-                singleDeliveryResponse?.postValue(response.body())
-            }
-        })
+//        val changePasswordCall = application.getApiClient().getSingleDeliveryDetail(deliveryId)
+//
+//        changePasswordCall.enqueue(object : Callback<Deliveries> {
+//
+//            override fun onFailure(call: Call<Deliveries>, t: Throwable) {
+//
+//                singleDeliveryResponse?.postValue(null)
+//            }
+//
+//            override fun onResponse(
+//                call: Call<Deliveries>,
+//                response: Response<Deliveries>
+//            ) {
+//
+//                singleDeliveryResponse?.postValue(response.body())
+//            }
+//        })
     }
 
     fun getResponse(): MutableLiveData<Deliveries> {

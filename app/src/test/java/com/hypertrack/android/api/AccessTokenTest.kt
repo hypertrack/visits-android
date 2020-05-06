@@ -1,8 +1,7 @@
 package com.hypertrack.android.api
 
 import com.hypertrack.android.AUTH_HEADER_KEY
-import com.hypertrack.android.AUTH_URL
-import com.hypertrack.android.repository.AccessTokenRepository
+import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
@@ -31,7 +30,7 @@ class AccessTokenTest {
     @Test
     fun itShouldRequestNewTokenIfLastSavedIsNull() {
         val accessTokenRepository =
-            AccessTokenRepository(
+            BasicAuthAccessTokenRepository(
                 mockWebServer.authUrl(),
                 DEVICE_ID,
                 PUBLISHABLE_KEY
@@ -55,7 +54,7 @@ class AccessTokenTest {
 
         val oldToken = "old.JWT.token"
         val accessTokenRepository =
-            AccessTokenRepository(
+            BasicAuthAccessTokenRepository(
                 mockWebServer.authUrl(),
                 DEVICE_ID,
                 PUBLISHABLE_KEY,
@@ -73,7 +72,7 @@ class AccessTokenTest {
 
         val oldToken = "old.JWT.token"
         val accessTokenRepository =
-            AccessTokenRepository(
+            BasicAuthAccessTokenRepository(
                 mockWebServer.authUrl(),
                 DEVICE_ID,
                 PUBLISHABLE_KEY,
@@ -93,7 +92,7 @@ class AccessTokenTest {
         val client = OkHttpClient.Builder()
             .addInterceptor(
                 AccessTokenInterceptor(
-                    AccessTokenRepository(
+                    BasicAuthAccessTokenRepository(
                         mockWebServer.authUrl(),
                         DEVICE_ID,
                         PUBLISHABLE_KEY,
@@ -123,12 +122,7 @@ class AccessTokenTest {
 
         val lastToken = "last.JWT.token"
         val accessTokenRepository =
-            AccessTokenRepository(
-                mockWebServer.authUrl(),
-                DEVICE_ID,
-                PUBLISHABLE_KEY,
-                token = lastToken
-            )
+            BasicAuthAccessTokenRepository(mockWebServer.authUrl(), DEVICE_ID, PUBLISHABLE_KEY, token = lastToken)
         val client = OkHttpClient.Builder()
             .authenticator(
                 AccessTokenAuthenticator(
