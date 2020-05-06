@@ -4,6 +4,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.api.Geometry
+import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.response.DriverModel
 import junit.framework.Assert.*
@@ -28,6 +29,11 @@ class MyPreferencesTest {
     }
 
     @Test
+    fun itShouldReturnNullIfNoRepoSaved() {
+        assertNull(myPreferences.restoreRepository())
+    }
+
+    @Test
     fun crudDriverWithoutDeliveries() {
 
         val device_id = "device-42"
@@ -41,7 +47,6 @@ class MyPreferencesTest {
         assertTrue(restoredDriver.deliveries.isEmpty())
         myPreferences.clearPreferences()
     }
-
 
     @Test
     fun crudDriverWithDeliveries() {
@@ -62,7 +67,7 @@ class MyPreferencesTest {
         assertEquals("42-42", firstDelivery.id)
         val anotherDelivery = restoredDeliveries[1]
         assertEquals("42-43", anotherDelivery.id)
-        
+
         myPreferences.clearPreferences()
     }
 
@@ -85,5 +90,19 @@ class MyPreferencesTest {
         )
     }
 
+    @Test
+    fun crudDriverWithAccessTokenRepo() {
+
+        val token = "expired.jwt.token"
+        val repo = BasicAuthAccessTokenRepository("localhost", "42", "fake-key", "", token)
+
+        myPreferences.persistRepository(repo)
+
+        val restoredRepo = myPreferences.restoreRepository()!!
+        assertEquals(token, restoredRepo.getAccessToken())
+
+
+        myPreferences.clearPreferences()
+    }
 
 }
