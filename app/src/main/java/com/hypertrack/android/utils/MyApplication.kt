@@ -1,18 +1,11 @@
 package com.hypertrack.android.utils
 
 import android.app.Application
-import android.os.Build
-import android.os.Debug
 import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.BASE_URL
-import com.hypertrack.android.api_interface.AccessTokenInterceptor
-import com.hypertrack.android.api_interface.ApiInterface
-import com.hypertrack.android.repository.AccessTokenRepository
+import com.hypertrack.android.api.ApiInterface
 import com.hypertrack.sdk.HyperTrack
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory

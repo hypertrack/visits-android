@@ -1,4 +1,4 @@
-package com.hypertrack.android.api_interface
+package com.hypertrack.android.api
 
 import com.hypertrack.android.response.Deliveries
 import com.hypertrack.android.response.DriverDeliveries

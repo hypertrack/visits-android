@@ -1,4 +1,4 @@
-package com.hypertrack.android.api_interface
+package com.hypertrack.android.api
 
 import android.util.Log
 import com.hypertrack.android.AUTH_HEADER_KEY

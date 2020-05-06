@@ -11,6 +11,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class AccessTokenRepository(
+    private val authUrl: String,
     private val publishableKey : String,
     private val deviceId : String,
     private var lastToken : String?
@@ -21,7 +22,7 @@ class AccessTokenRepository(
         Log.d(TAG, "Refreshing token $lastToken with key $publishableKey for deviceId $deviceId")
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://live-api.htprod.hypertrack.com/authenticate")
+            .url(authUrl)
             .header(AUTH_HEADER_KEY, Credentials.basic(publishableKey, ""))
             .post("""{"device_id": "$deviceId"}""".toRequestBody(MEDIA_TYPE_JSON))
             .build()
