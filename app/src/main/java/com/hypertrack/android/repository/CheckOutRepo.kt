@@ -13,7 +13,7 @@ import retrofit2.Response
 class CheckOutRepo(applicationContext: Application) {
 
 
-    var checkOutResponse: MutableLiveData<CheckInResponse>? = null
+    var checkOutResponse: MutableLiveData<Unit>? = null
 
     var application: MyApplication = applicationContext as MyApplication
 
@@ -28,24 +28,24 @@ class CheckOutRepo(applicationContext: Application) {
 
         val changePasswordCall = application.getApiClient().makeDriverCheckOut(driverId)
 
-        changePasswordCall.enqueue(object : Callback<CheckInResponse> {
+        changePasswordCall.enqueue(object : Callback<Unit> {
 
-            override fun onFailure(call: Call<CheckInResponse>, t: Throwable) {
+            override fun onFailure(call: Call<Unit>, t: Throwable) {
 
                 checkOutResponse?.postValue(null)
             }
 
             override fun onResponse(
-                call: Call<CheckInResponse>,
-                response: Response<CheckInResponse>
+                call: Call<Unit>,
+                response: Response<Unit>
             ) {
-
-                checkOutResponse?.postValue(response.body())
+                if (response.isSuccessful)
+                    checkOutResponse?.postValue(null)
             }
         })
     }
 
-    fun getResponse(): MutableLiveData<CheckInResponse> {
+    fun getResponse(): MutableLiveData<Unit> {
 
         return checkOutResponse!!
     }

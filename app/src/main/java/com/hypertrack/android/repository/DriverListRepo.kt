@@ -27,24 +27,24 @@ class DriverListRepo(applicationContext : Application) {
 
     // Call driver check in api with proper params
     fun callDriverListApi() {
-
-        val changePasswordCall = application .getApiClient().getDriverLists()
-
-        changePasswordCall.enqueue(object : Callback<ArrayList<DriverList>> {
-
-            override fun onFailure(call: Call<ArrayList<DriverList>>, t: Throwable) {
-
-                driverListResponse?.postValue(null)
-            }
-
-            override fun onResponse(
-                call: Call<ArrayList<DriverList>>,
-                response: Response<ArrayList<DriverList>>
-            ) {
-
-                driverListResponse?.postValue(response.body())
-            }
-        })
+//
+//        val changePasswordCall = application .getApiClient().getDriverLists()
+//
+//        changePasswordCall.enqueue(object : Callback<ArrayList<DriverList>> {
+//
+//            override fun onFailure(call: Call<ArrayList<DriverList>>, t: Throwable) {
+//
+//                driverListResponse?.postValue(null)
+//            }
+//
+//            override fun onResponse(
+//                call: Call<ArrayList<DriverList>>,
+//                response: Response<ArrayList<DriverList>>
+//            ) {
+//
+//                driverListResponse?.postValue(response.body())
+//            }
+//        })
     }
 
     fun getResponse(): MutableLiveData<ArrayList<DriverList>> {

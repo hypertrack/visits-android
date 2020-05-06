@@ -31,45 +31,10 @@ class UpdateDeliveryRepo(applicationContext: Application) {
     // Call driver check in api with proper params
     fun callUpdateApi(deliveryId: String, jsonParams: String) {
 
-        val request =
-            RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), jsonParams)
-        val changePasswordCall = application.getApiClient().updateDeliveryWithDetails(deliveryId, request)
-
-        changePasswordCall.enqueue(object : Callback<Deliveries> {
-
-            override fun onFailure(call: Call<Deliveries>, t: Throwable) {
-
-                updateResponse?.postValue(null)
-            }
-
-            override fun onResponse(
-                call: Call<Deliveries>,
-                response: Response<Deliveries>) {
-
-                updateResponse?.postValue(response.body())
-            }
-        })
     }
 
     // Call driver check in api with proper params
     fun callUuploadImage(deliveryId: String, image: RequestBody) {
-
-        val changePasswordCall = application.getApiClient().updateImage(deliveryId, image)
-
-        changePasswordCall.enqueue(object : Callback<Deliveries> {
-
-            override fun onFailure(call: Call<Deliveries>, t: Throwable) {
-
-                updateImageResponse?.postValue(null)
-            }
-
-            override fun onResponse(
-                call: Call<Deliveries>,
-                response: Response<Deliveries>) {
-
-                updateImageResponse?.postValue(response.body())
-            }
-        })
     }
 
     fun getResponse(): MutableLiveData<Deliveries> {

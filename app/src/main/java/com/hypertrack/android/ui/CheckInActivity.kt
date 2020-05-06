@@ -34,8 +34,6 @@ class CheckInActivity : AppCompatActivity() {
 
     private var myPreferences: MyPreferences? = null
 
-    private lateinit var checkInJson: JSONObject
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -66,7 +64,6 @@ class CheckInActivity : AppCompatActivity() {
         initCheckInViewModel()
 
         showProgress()
-
 
     }
 

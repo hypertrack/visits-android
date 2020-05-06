@@ -12,9 +12,9 @@ class CheckOutViewModel(application : Application) : AndroidViewModel(applicatio
 
     var checkOutRepo: CheckOutRepo? = null
 
-    var changeModel: LiveData<CheckInResponse>? = null
+    var changeModel: LiveData<Unit>? = null
 
-    private var changeMediator: MediatorLiveData<CheckInResponse>? = null
+    private var changeMediator: MediatorLiveData<Unit>? = null
 
     init {
 

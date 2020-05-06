@@ -2,9 +2,8 @@ package com.hypertrack.android.repository
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.AUTH_HEADER_KEY
-import com.hypertrack.android.AUTH_URL_PATH
-import com.hypertrack.android.BASE_URL
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -23,21 +22,24 @@ class AccessTokenRepository(
         Log.d(TAG, "Refreshing token $lastToken with key $publishableKey for deviceId $deviceId")
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url(BASE_URL + AUTH_URL_PATH)
+            .url("https://live-api.htprod.hypertrack.com/authenticate")
             .header(AUTH_HEADER_KEY, Credentials.basic(publishableKey, ""))
             .post("""{"device_id": "$deviceId"}""".toRequestBody(MEDIA_TYPE_JSON))
             .build()
 
-        client.newCall(request).execute().use {
+        client
+            .newCall(request)
+            .execute().use {
             response ->
             if (!response.isSuccessful) {
-                Log.d(TAG, "Failed to refresh token ${response.message}")
+                Log.w(TAG, "Failed to refresh token $response")
                 lastToken = ""
 
             } else {
                 response.body?.let {
-                    val responseObject = Gson().fromJson(it.string(), JSONObject::class.java)
-                    lastToken = responseObject?.optString("access_token")
+                    val string = it.string()
+                    val responseObject = Gson().fromJson(string, AuthCallResponse::class.java)
+                    lastToken = responseObject.accessToken
                 }
             }
         }
@@ -50,3 +52,5 @@ class AccessTokenRepository(
         const val TAG = "AccessTokenRepo"
     }
 }
+
+private data class AuthCallResponse(@SerializedName("access_token") val accessToken:String, @SerializedName("expires_in") val expiresIn: Int)

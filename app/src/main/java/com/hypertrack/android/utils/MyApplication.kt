@@ -5,7 +5,9 @@ import android.os.Build
 import android.os.Debug
 import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.BASE_URL
+import com.hypertrack.android.api_interface.AccessTokenInterceptor
 import com.hypertrack.android.api_interface.ApiInterface
+import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.sdk.HyperTrack
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -45,18 +47,19 @@ class MyApplication : Application() {
     // create retrofit client for first time when app initialise
     private fun initRetrofitClient() {
         val okHttpClient = OkHttpClient.Builder()
-        okHttpClient.addInterceptor(object : Interceptor {
-            override fun intercept(chain: Interceptor.Chain): Response {
-
-                val request = chain.request()
-                val response = chain.proceed(request)
-                val body = response.body
-                val bodyString = body!!.string()
-                val contentType = body.contentType()
-                return response.newBuilder().body(bodyString.toResponseBody(contentType)).build()
-            }
-
-        })
+//            .addInterceptor()
+//        okHttpClient.addInterceptor(object : Interceptor {
+//            override fun intercept(chain: Interceptor.Chain): Response {
+//
+//                val request = chain.request()
+//                val response = chain.proceed(request)
+//                val body = response.body
+//                val bodyString = body!!.string()
+//                val contentType = body.contentType()
+//                return response.newBuilder().body(bodyString.toResponseBody(contentType)).build()
+//            }
+//
+//        })
 
         // connection timeouts
         okHttpClient.callTimeout(20, TimeUnit.SECONDS)
