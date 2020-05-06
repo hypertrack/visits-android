@@ -51,15 +51,6 @@
             />
 
 
-        <service
-            android:name="com.hypertrack.android.fcm.FirebaseService"
-            android:stopWithTask="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
