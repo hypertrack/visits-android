@@ -8,17 +8,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.google.gson.Gson
-import com.hypertrack.android.*
-import com.hypertrack.android.repository.AccessTokenRepository
+import com.hypertrack.android.LOCATION_REQUEST_CODE
+import com.hypertrack.android.askLocationPermission
+import com.hypertrack.android.showProgress
 import com.hypertrack.android.utils.HyperTrackInit
-import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.MyPreferences
 import com.hypertrack.android.view_models.CheckInViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_checkin_screen.*
-import org.json.JSONObject
 
 
 class CheckInActivity : AppCompatActivity() {

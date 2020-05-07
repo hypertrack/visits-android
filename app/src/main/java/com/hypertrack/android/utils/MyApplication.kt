@@ -1,10 +1,13 @@
 package com.hypertrack.android.utils
 
 import android.app.Application
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiInterface
 import com.hypertrack.sdk.HyperTrack
+import io.branch.referral.Branch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,13 +20,24 @@ class MyApplication : Application() {
     private var appServices: ApiInterface? = null
 
     companion object {
+        const val TAG = "MyApplication"
 
         // using this we can check which activity is visible or not
         // so that we can perform particular action
-    var activity: AppCompatActivity? = null
-}
+        var activity: AppCompatActivity? = null
+    }
     override fun onCreate() {
         super.onCreate()
+
+        when {
+            MyPreferences(this, Gson()).restoreRepository() == null -> {
+                Log.i(TAG, "No pk found, initializing Branch IO")
+                // First run - get the pk
+                Branch.enableLogging()
+                Branch.getAutoInstance(this)
+            }
+
+        }
 
         initRetrofitClient()
 
