@@ -14,7 +14,7 @@ import com.hypertrack.android.askLocationPermission
 import com.hypertrack.android.showProgress
 import com.hypertrack.android.utils.HyperTrackInit
 import com.hypertrack.android.utils.MyPreferences
-import com.hypertrack.android.view_models.CheckInViewModel
+import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_checkin_screen.*
 
@@ -26,7 +26,7 @@ class CheckInActivity : AppCompatActivity() {
 
     }
 
-    private var checkInModel: CheckInViewModel? = null
+    private var driverLoginModel: DriverLoginViewModel? = null
     private var isBranchInitialized = false
 
     lateinit var selectedDriverId: String
@@ -98,7 +98,7 @@ class CheckInActivity : AppCompatActivity() {
 
             btnCheckIn.isEnabled = false
             showProgress()
-            checkInModel?.callCheckInMethod(selectedDriverId)
+            driverLoginModel?.callCheckInMethod(selectedDriverId)
         }
     }
 
@@ -119,7 +119,7 @@ class CheckInActivity : AppCompatActivity() {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showProgress()
                     btnCheckIn.isEnabled = false
-                    checkInModel?.callCheckInMethod(selectedDriverId)
+                    driverLoginModel?.callCheckInMethod(selectedDriverId)
 
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

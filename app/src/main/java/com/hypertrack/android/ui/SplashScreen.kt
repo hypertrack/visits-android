@@ -6,8 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.hypertrack.android.AUTH_URL
-import com.hypertrack.android.repository.AccessTokenRepository
-import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
+import com.hypertrack.android.repository.*
 import com.hypertrack.android.utils.MyPreferences
 import com.hypertrack.sdk.HyperTrack
 import io.branch.referral.Branch
@@ -23,23 +22,23 @@ class SplashScreen : AppCompatActivity(), Branch.BranchReferralInitListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when {
-            myPreferences.restoreRepository() == null -> {
-                Log.i(TAG, "No pk found, initializing Branch IO")
+        val accountRepository = AccountRepository(myPreferences as AccountDataStorage)
+        if (accountRepository.hasNoKey) {
+                Log.i(TAG, "No pk found, wait for Branch IO session")
                 return
-            }
-            myPreferences.getDriverValue() == null -> {
-                Log.i(TAG, "No driver profile found. Navigating to checkin.")
-                startActivity(Intent(this@SplashScreen, CheckInActivity::class.java))
-
-            }
-            else -> {
-                Log.i(TAG, "Found existing driver profile")
-                startActivity(Intent(this@SplashScreen, ListActivity::class.java))
-            }
         }
-        Log.d(TAG, "Finishing current activity")
 
+        when {
+            DriverRepo(myPreferences).driver.isLoggedIn -> navigateToActivity(ListActivity::class.java)
+            else -> navigateToActivity(CheckInActivity::class.java)
+        }
+
+    }
+
+    private fun navigateToActivity(destination : Class<*>) {
+        Log.i(TAG, "Navigating to $destination")
+        startActivity(Intent(this@SplashScreen, destination))
+        Log.d(TAG, "Finishing current activity")
         finish()
     }
 
