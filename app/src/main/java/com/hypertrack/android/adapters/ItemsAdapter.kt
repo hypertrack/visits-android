@@ -18,7 +18,7 @@ class ItemsAdapter(context: Context, onclick: OnScanListItemClick) :
 
     private var layoutInflater: LayoutInflater? = null
 
-    private var itemsList: ArrayList<Items>
+    private var itemsList: List<Items>
 
     init {
 
@@ -29,7 +29,7 @@ class ItemsAdapter(context: Context, onclick: OnScanListItemClick) :
         layoutInflater = LayoutInflater.from(context)
     }
 
-    fun updateList(list: ArrayList<Items>) {
+    fun updateList(list: List<Items>) {
 
         itemsList = list
 

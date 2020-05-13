@@ -21,7 +21,7 @@ interface AccessTokenRepository {
 
 class BasicAuthAccessTokenRepository(
     private val authUrl: String,
-    private val deviceId: String,
+    val deviceId: String,
     private val userName: String,
     private val userPwd: String = "",
     private var token: String? = null

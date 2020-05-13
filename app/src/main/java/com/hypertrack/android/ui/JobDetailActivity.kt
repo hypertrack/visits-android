@@ -28,9 +28,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.*
 import com.hypertrack.android.adapters.ItemsAdapter
-import com.hypertrack.android.response.Deliveries
+import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.utils.HyperTrackInit
-import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.DeliveryStatusViewModel
 import com.hypertrack.android.view_models.SingleDeliveryViewModel
 import com.hypertrack.android.view_models.UpdateDeliveryViewModel
@@ -62,7 +61,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var getDeliveryIdFromIntent: String
 
-    private lateinit var currentDelivery: Deliveries
+    private lateinit var currentDelivery: Delivery
 
     private var photoFile: File? = null
 

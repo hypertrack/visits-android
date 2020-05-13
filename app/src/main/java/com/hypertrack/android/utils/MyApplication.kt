@@ -1,7 +1,6 @@
 package com.hypertrack.android.utils
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiInterface
 import io.branch.referral.Branch

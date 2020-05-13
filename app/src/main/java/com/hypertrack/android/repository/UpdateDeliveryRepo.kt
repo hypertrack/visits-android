@@ -2,16 +2,16 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.response.Deliveries
+import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.utils.MyApplication
 import okhttp3.RequestBody
 
 class UpdateDeliveryRepo(applicationContext: Application) {
 
 
-    var updateResponse: MutableLiveData<Deliveries>? = null
+    var updateResponse: MutableLiveData<Delivery>? = null
 
-    var updateImageResponse: MutableLiveData<Deliveries>? = null
+    var updateImageResponse: MutableLiveData<Delivery>? = null
 
     var application: MyApplication = applicationContext as MyApplication
 
@@ -32,12 +32,12 @@ class UpdateDeliveryRepo(applicationContext: Application) {
     fun callUuploadImage(deliveryId: String, image: RequestBody) {
     }
 
-    fun getResponse(): MutableLiveData<Deliveries> {
+    fun getResponse(): MutableLiveData<Delivery> {
 
         return updateResponse!!
     }
 
-    fun getImageResponse(): MutableLiveData<Deliveries> {
+    fun getImageResponse(): MutableLiveData<Delivery> {
 
         return updateImageResponse!!
     }

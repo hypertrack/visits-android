@@ -5,14 +5,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hypertrack.android.repository.SingleDeliveryRepo
-import com.hypertrack.android.response.Deliveries
+import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.response.DriverDeliveries
 
 class SingleDeliveryViewModel(application : Application) : AndroidViewModel(application) {
 
     var singleDeliveryRepo: SingleDeliveryRepo? = null
 
-    var deliveryModel: LiveData<Deliveries>? = null
+    var deliveryModel: LiveData<Delivery>? = null
 
     private var changeMediator: MediatorLiveData<DriverDeliveries>? = null
 

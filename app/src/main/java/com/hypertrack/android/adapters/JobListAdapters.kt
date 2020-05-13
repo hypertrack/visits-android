@@ -12,8 +12,8 @@ import com.hypertrack.android.TYPE_HEADER
 import com.hypertrack.android.TYPE_ITEM
 import com.hypertrack.android.convertSeverDateToTime
 import com.hypertrack.android.createAddress
-import com.hypertrack.android.response.Deliveries
-import com.hypertrack.android.response.HeaderItem
+import com.hypertrack.android.response.Delivery
+import com.hypertrack.android.ui.HeaderItem
 import com.hypertrack.logistics.android.github.R
 
 // Job adapter (Multiple type jobs Pending,Completed,Visited)
@@ -136,7 +136,7 @@ class JobListAdapters(context: Context, onclick: OnListAdapterClick) :
 //        }
         else if (holder is CompletedViewHolder) {
 
-            holder.tvTitle.text = (item as Deliveries).label
+            holder.tvTitle.text = (item as Delivery).label
             if (item.status == "completed") {
                 holder.tvDescription.text =
                     "Completed at " + convertSeverDateToTime(item.completedAt)

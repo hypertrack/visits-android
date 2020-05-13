@@ -2,16 +2,13 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.response.Deliveries
+import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.utils.MyApplication
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SingleDeliveryRepo(applicationContext: Application) {
 
 
-    var singleDeliveryResponse: MutableLiveData<Deliveries>? = null
+    var singleDeliveryResponse: MutableLiveData<Delivery>? = null
 
     var application: MyApplication = applicationContext as MyApplication
 
@@ -43,7 +40,7 @@ class SingleDeliveryRepo(applicationContext: Application) {
 //        })
     }
 
-    fun getResponse(): MutableLiveData<Deliveries> {
+    fun getResponse(): MutableLiveData<Delivery> {
 
         return singleDeliveryResponse!!
     }

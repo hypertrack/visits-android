@@ -2,16 +2,13 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.response.Deliveries
+import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.utils.MyApplication
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class DeliveryStatusRepo(applicationContext: Application) {
 
 
-    var deliveryResponse: MutableLiveData<Deliveries>? = null
+    var deliveryResponse: MutableLiveData<Delivery>? = null
 
     var application: MyApplication = applicationContext as MyApplication
 
@@ -27,7 +24,7 @@ class DeliveryStatusRepo(applicationContext: Application) {
         TODO("Denys: Not implememnted")
     }
 
-    fun getResponse(): MutableLiveData<Deliveries> {
+    fun getResponse(): MutableLiveData<Delivery> {
 
         return deliveryResponse!!
     }
