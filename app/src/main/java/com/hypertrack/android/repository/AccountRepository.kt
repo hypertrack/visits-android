@@ -1,35 +1,38 @@
 package com.hypertrack.android.repository
 
 import android.app.Application
-import com.google.gson.Gson
+import android.util.Log
 import com.google.gson.annotations.SerializedName
-import com.hypertrack.android.AUTH_URL
-import com.hypertrack.android.utils.MyPreferences
+import com.hypertrack.android.utils.getServiceLocator
 import com.hypertrack.sdk.HyperTrack
 
-class AccountRepository(private val accountData : AccountData) {
-    suspend fun onKeyReceived(key: String, application: Application) : Boolean {
-        val sdk = HyperTrack.getInstance(application.applicationContext, key)
-        val token = BasicAuthAccessTokenRepository(AUTH_URL, sdk.deviceID, key)
-            .refreshTokenAsync()
-        if (token.isNotEmpty()) {
-            // Save account data
-            MyPreferences(application.applicationContext, Gson())
-                .saveAccountData(AccountData(key, token))
-            // navigate to Login
-            return true
-        } else {
-            throw IllegalArgumentException("Publishable key provided is incorrect")
-        }
+class AccountRepository(
+    private val accountData: AccountData,
+    private val accountDataStorage: AccountDataStorage
+) {
 
+    suspend fun onKeyReceived(key: String, application: Application) : Boolean {
+
+        val sdk = HyperTrack.getInstance(application.applicationContext, key)
+        Log.d(TAG, "HyperTrack deviceId ${sdk.deviceID}")
+
+        val accessTokenRepository = application.getServiceLocator().getAccessTokenRepository(sdk.deviceID, key)
+        val token = accessTokenRepository.refreshTokenAsync()
+
+        if (token.isEmpty()) {
+            return false
+        }
+        accountDataStorage.saveAccountData(AccountData(key, token))
+        return true
     }
 
 
     val isVerifiedAccount : Boolean
       get() = accountData.lastToken != null
 
-    val hasNoKey : Boolean
-      get() = accountData.publishableKey == null
+    companion object {
+        const val TAG = "AccountRepo"
+    }
 }
 
 

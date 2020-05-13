@@ -32,7 +32,7 @@ class MyApplication : Application() {
 
         initRetrofitClient()
 
-        HyperTrack.enableDebugLogging()
+//        HyperTrack.enableDebugLogging()
     }
 
     // Get App Client reference

@@ -59,24 +59,35 @@ class SplashScreenViewModel (
             Log.d(TAG, "Got key $key")
                 try {
                     viewModelScope.launch {
-                            accountRepository.onKeyReceived(key, this@SplashScreenViewModel.getApplication())
+                        val correctKey = accountRepository.onKeyReceived(key, this@SplashScreenViewModel.getApplication())
                         Log.d(TAG, "onKeyReceived finished")
+                        if (correctKey) {
+                            Log.d(TAG, "Key validated successfully")
+                            _destination.postValue(Destination.LOGIN)
+                        } else {
+                            noPkHanlder()
+                        }
                     }
                     Log.d(TAG, "coroutine finished")
-                    _destination.postValue(Destination.LOGIN)
                     return
                 } catch (e : Throwable) {
                     Log.w(TAG, "Cannot validate the key", e)
                 }
+        } else {
+            error?.let { Log.e(TAG, "Branch IO init failed. $error") }
+            noPkHanlder()
+
         }
 
-        error?.let { Log.e(TAG, "Branch IO init failed. $error") }
+
+    }
+
+    private fun noPkHanlder() {
         Log.e(TAG, "No publishable key")
         _spinner.postValue(false)
         _noAccountFragment.postValue(true)
-
     }
-    
+
     companion object {
         const val TAG = "SplashScreenVM"
     }
