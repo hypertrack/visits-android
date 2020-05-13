@@ -1,11 +1,15 @@
 package com.hypertrack.android.repository
 
-import com.hypertrack.android.utils.MyPreferences
+import com.hypertrack.android.response.DriverModel
 
-class DriverRepo(myPreferences: MyPreferences) {
+class DriverRepo(private val driverModel: DriverModel?) {
 
-    val driver : Driver = myPreferences.getDriver()
     // TODO Denys
+    val hasDriverId: Boolean
+    get() {
+        if (driverModel == null) return false
+        return driverModel.driver_id.isNotEmpty()
+    }
 }
 data class Driver(val deviceId:String, val driverId : String) {
     val isLoggedIn: Boolean

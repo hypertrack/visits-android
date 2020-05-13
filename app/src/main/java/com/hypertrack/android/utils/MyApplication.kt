@@ -30,7 +30,7 @@ class MyApplication : Application() {
         super.onCreate()
 
         when {
-            MyPreferences(this, Gson()).restoreRepository() == null -> {
+            MyPreferences(this, Gson()).getAccountData().publishableKey == null -> {
                 Log.i(TAG, "No pk found, initializing Branch IO")
                 // First run - get the pk
                 Branch.enableLogging()

@@ -12,12 +12,12 @@ class MyPreferences(context: Context, private val gson: Gson) : AccountDataStora
     private val getPreferences : SharedPreferences
             = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
-    fun saveDriver(driverModel: DriverModel) {
+    override fun saveDriver(driverModel: DriverModel) {
         val serializedModel = gson.toJson(driverModel)
         getPreferences.edit()?.putString(DRIVER_KEY, serializedModel)?.apply()
     }
 
-    fun getDriverValue(): DriverModel? {
+    override fun getDriverValue(): DriverModel? {
         val driverDetails = getPreferences.getString(DRIVER_KEY, null)
         driverDetails?.let {
             return gson.fromJson(driverDetails,DriverModel::class.java)
