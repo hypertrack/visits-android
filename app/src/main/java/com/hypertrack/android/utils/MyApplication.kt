@@ -1,9 +1,7 @@
 package com.hypertrack.android.utils
 
 import android.app.Application
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.Gson
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiInterface
 import com.hypertrack.sdk.HyperTrack
@@ -29,15 +27,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        when {
-            MyPreferences(this, Gson()).getAccountData().publishableKey == null -> {
-                Log.i(TAG, "No pk found, initializing Branch IO")
-                // First run - get the pk
-                Branch.enableLogging()
-                Branch.getAutoInstance(this)
-            }
-
-        }
+        Branch.enableLogging()
+        Branch.getAutoInstance(this)
 
         initRetrofitClient()
 
@@ -82,4 +73,8 @@ class MyApplication : Application() {
         appServices = retrofit?.create(ApiInterface::class.java)
 
     }
+}
+
+enum class Destination {
+    SPLASH_SCREEN, LOGIN, LIST_VIEW, DETAILS_VIEW
 }

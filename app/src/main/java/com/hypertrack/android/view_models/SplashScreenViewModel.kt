@@ -6,10 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.hypertrack.android.repository.AccountRepository
-import com.hypertrack.android.repository.DriverRepo
-import com.hypertrack.android.utils.MyPreferences
+import com.hypertrack.android.utils.Destination
+import com.hypertrack.android.utils.getServiceLocator
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.coroutines.launch
@@ -19,13 +17,13 @@ class SplashScreenViewModel (
     application: Application
 ) : AndroidViewModel(application), Branch.BranchReferralInitListener  {
 
-    private val myPreferences = MyPreferences(application, Gson())
-    private val driverRepository = DriverRepo(myPreferences.getDriverValue())
-    private val accountRepository = AccountRepository(myPreferences.getAccountData())
+    private val driverRepository = application.getServiceLocator().getDriverRepo()
+    private val accountRepository = application.getServiceLocator().getAccountRepo()
 
     private val _spinner = MutableLiveData<Boolean>(true)
     private val _noAccountFragment = MutableLiveData<Boolean>(false)
-    private val _destination = MutableLiveData<Destination>(Destination.SPLASH_SCREEN)
+    private val _destination = MutableLiveData<Destination>(
+        Destination.SPLASH_SCREEN)
 
     /** Show a loading spinner if true */
     val spinner: LiveData<Boolean>
@@ -36,13 +34,23 @@ class SplashScreenViewModel (
         get() = _noAccountFragment
 
     val destination: LiveData<Destination>
-    get() = _destination
+        get() = _destination
 
-    val isDriverLoginRequired: Boolean
-        get() = driverRepository.hasDriverId
-
-    val isAccountLoggedOut : Boolean
-        get() = accountRepository.hasNoKey
+    fun login() {
+        when {
+            driverRepository.hasDriverId -> {
+                // already logged in
+                _destination.postValue(Destination.LIST_VIEW)
+            }
+            accountRepository.isVerifiedAccount -> {
+                // publishable key already verified
+                _destination.postValue(Destination.LOGIN)
+            }
+            else -> {
+                Log.d(TAG, "No publishable key found, waiting for Branch IO")
+            }
+        }
+    }
 
     override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
         Log.d(TAG, "Branch init finished with params $referringParams")
@@ -52,7 +60,9 @@ class SplashScreenViewModel (
                 try {
                     viewModelScope.launch {
                             accountRepository.onKeyReceived(key, this@SplashScreenViewModel.getApplication())
+                        Log.d(TAG, "onKeyReceived finished")
                     }
+                    Log.d(TAG, "coroutine finished")
                     _destination.postValue(Destination.LOGIN)
                     return
                 } catch (e : Throwable) {
@@ -71,7 +81,4 @@ class SplashScreenViewModel (
         const val TAG = "SplashScreenVM"
     }
 
-}
-enum class Destination {
-    SPLASH_SCREEN, LOGIN, LIST_VIEW, DETAIL_VIEW
 }
