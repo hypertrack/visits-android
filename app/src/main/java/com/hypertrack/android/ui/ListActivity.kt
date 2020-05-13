@@ -104,13 +104,13 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
 
         ivBack.setOnClickListener {
 
-            showProgress()
+            showProgressBar()
             checkOutViewModel.callCheckOutMethod(getDriverIdFromIntent)
         }
 
         ivRefresh.setOnClickListener {
 
-            showProgress()
+            showProgressBar()
 
             singleDriverViewModel.callFetchDeliveries(getDriverIdFromIntent)
         }
@@ -134,13 +134,13 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
 
         singleDriverViewModel = SingleDriverViewModel(this.application)
 
-        showProgress()
+        showProgressBar()
 
         singleDriverViewModel.callFetchDeliveries(getDriverIdFromIntent)
 
         singleDriverViewModel.driverModel?.observe(this, Observer { it ->
 
-            dismissBar()
+            dismissProgressBar()
 
             if (it != null) {
 
@@ -184,7 +184,7 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
 
             if (it != null) {
 
-                showProgress()
+                showProgressBar()
 
                 singleDriverViewModel.callFetchDeliveries(getDriverIdFromIntent)
 
@@ -200,7 +200,7 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
 
         checkOutViewModel.changeModel?.observe(this, Observer {
 
-            dismissBar()
+            dismissProgressBar()
 
             if (it != null) {
 
@@ -372,7 +372,7 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == DELIVERY_UPDATE_RESULT_CODE) {
-            showProgress()
+            showProgressBar()
             singleDriverViewModel.callFetchDeliveries(getDriverIdFromIntent)
         }
     }

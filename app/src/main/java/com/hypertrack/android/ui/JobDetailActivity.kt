@@ -186,7 +186,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     // init single driver response and observables
     private fun initObservable() {
 
-        showProgress()
+        showProgressBar()
         singleDeliveryViewModel = SingleDeliveryViewModel(this.application)
 
         singleDeliveryViewModel.callDeliveryMethod(getDeliveryIdFromIntent)
@@ -199,7 +199,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 setDataOnViews()
             } else {
-                dismissBar()
+                dismissProgressBar()
                 showToast("The delivery item may be removed or any backend error occurred")
             }
 
@@ -212,7 +212,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         deliveryStatusViewModel = DeliveryStatusViewModel(this.application)
 
         deliveryStatusViewModel.deliveryStatus?.observe(this, Observer {
-            dismissBar()
+            dismissProgressBar()
 
             if (it != null) {
 
@@ -256,7 +256,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 showToast("Delivery image Updated Successfully")
                 setDataOnViews()
             } else {
-                dismissBar()
+                dismissProgressBar()
                 showToast("Something went wrong. please try again")
             }
 
@@ -270,7 +270,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         updateDeliveryStatus = UpdateDeliveryViewModel(this.application)
 
         updateDeliveryStatus.updateModel?.observe(this, Observer {
-            dismissBar()
+            dismissProgressBar()
 
             if (it != null) {
                 //finish()
@@ -299,7 +299,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         ivClose?.setOnClickListener {
 
-            showProgress()
+            showProgressBar()
 
             val json = JSONObject()
             json.put("deliveryPicture", "")
@@ -323,7 +323,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         tvComplete?.setOnClickListener {
 
-            showProgress()
+            showProgressBar()
 
             deliveryStatusViewModel.callStatusMethod(getDeliveryIdFromIntent, "complete")
         }
@@ -442,7 +442,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         }
 
-        dismissBar()
+        dismissProgressBar()
     }
 
     // create visited date after check all conditions
@@ -517,7 +517,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 val json = JSONObject()
                 json.put("deliveryPicture", result)
-                showProgress()
+                showProgressBar()
                 uploadImageViewModel.callUpdateImage(getDeliveryIdFromIntent, request)
             }
         }

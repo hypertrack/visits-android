@@ -60,7 +60,7 @@ fun Context.showToast(text: String) {
 }
 
 // Show Progress Bar on anywhere
-fun Context.showProgress() {
+fun Context.showProgressBar() {
 
     dialog = Dialog(this)
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -72,9 +72,8 @@ fun Context.showProgress() {
 
 }
 
-
 // Dismiss Progress bar
-fun dismissBar() {
+fun dismissProgressBar() {
     if (dialog != null) {
         dialog.dismiss()
     }
