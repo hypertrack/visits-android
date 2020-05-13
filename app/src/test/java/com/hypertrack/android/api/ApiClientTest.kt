@@ -1,17 +1,30 @@
 package com.hypertrack.android.api
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import okhttp3.mockwebserver.MockWebServer
 import com.hypertrack.android.repository.AccessTokenRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.*
 import okhttp3.mockwebserver.MockResponse
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import retrofit2.Response
 
+@ExperimentalCoroutinesApi
 class ApiClientTest {
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val coroutineScope = MainCoroutineScopeRule()
 
     companion object {
         const val DEVICE_ID = "42"
@@ -95,10 +108,14 @@ class ApiClientTest {
         apiClient = ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID)
     }
     @Test
-    fun itShouldSendPostRequestToStartUrlOnCheckin() {
+    fun itShouldSendPostRequestToStartUrlOnCheckin() = coroutineScope.runBlockingTest {
 
         mockWebServer.enqueue(MockResponse())
-        apiClient.checkinCall().execute()
+        // FIXME Denys
+        // runBlockingTest in Experimental mode doesn't block for okhttp dispatchers
+        runBlocking {
+            val ignored = apiClient.checkinCall()
+        }
 
         val request = mockWebServer.takeRequest()
         val path = request.path
@@ -108,10 +125,12 @@ class ApiClientTest {
     }
 
     @Test
-    fun itShouldSendPostRequestToStopUrlOnCheckout() {
+    fun itShouldSendPostRequestToStopUrlOnCheckout() = runBlockingTest {
 
         mockWebServer.enqueue(MockResponse())
-        apiClient.checkoutCall().execute()
+        runBlocking {
+            apiClient.checkoutCall()
+        }
 
         val request = mockWebServer.takeRequest()
         val path = request.path
@@ -120,10 +139,12 @@ class ApiClientTest {
     }
 
     @Test
-    fun itShouldSendGetRequestToGetListOfGeofences() {
+    fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
 
         mockWebServer.enqueue(MockResponse().setBody(DELIVERIES))
-        val reponse : Response<List<Geofence>> = apiClient.getGeofences().execute()
+        val geofences = runBlocking {
+            apiClient.getGeofences()
+        }
 
 
         val request = mockWebServer.takeRequest()
@@ -131,7 +152,6 @@ class ApiClientTest {
         assertEquals("/client/devices/$DEVICE_ID/geofences", path)
         assertEquals("GET", request.method)
 
-        val geofences = reponse.body()?: throw IllegalStateException()
         assertEquals(4, geofences.size)
     }
 
@@ -146,4 +166,26 @@ class ApiClientTest {
 
     private fun MockWebServer.baseUrl() = this.url("/").toString()
 
+}
+
+@ExperimentalCoroutinesApi
+class MainCoroutineScopeRule(val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
+    TestWatcher(),
+    TestCoroutineScope by TestCoroutineScope(dispatcher) {
+    override fun starting(description: Description?) {
+        super.starting(description)
+        // If your codebase allows the injection of other dispatchers like
+        // Dispatchers.Default and Dispatchers.IO, consider injecting all of them here
+        // and renaming this class to `CoroutineScopeRule`
+        //
+        // All injected dispatchers in a test should point to a single instance of
+        // TestCoroutineDispatcher.
+        Dispatchers.setMain(dispatcher)
+    }
+
+    override fun finished(description: Description?) {
+        super.finished(description)
+        cleanupTestCoroutines()
+        Dispatchers.resetMain()
+    }
 }

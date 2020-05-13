@@ -29,6 +29,7 @@ class AccountRepository(
         if (token.isEmpty()) return false
 
         accountDataStorage.saveAccountData(AccountData(key, token))
+        accountDataStorage.persistRepository(accessTokenRepository)
         return true
     }
 

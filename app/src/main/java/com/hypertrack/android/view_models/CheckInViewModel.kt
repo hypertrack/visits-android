@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.getServiceLocator
+import kotlinx.coroutines.launch
 
 class CheckInViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -39,7 +41,11 @@ class CheckInViewModel(application: Application) : AndroidViewModel(application)
             getApplication<Application>().getServiceLocator()
                 .getHyperTrack().setDeviceName(driverId)
             driverRepo.driverId = driverId
-            _destination.postValue(Destination.LIST_VIEW)
+            viewModelScope.launch {
+                getApplication<Application>().getServiceLocator().getDeliveriesApiClient()
+                    .checkinCall()
+                _destination.postValue(Destination.LIST_VIEW)
+            }
             return
         }
 

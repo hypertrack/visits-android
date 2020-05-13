@@ -45,7 +45,7 @@ class MyPreferences(context: Context, private val gson: Gson) :
         getPreferences.edit()?.putString(ACCOUNT_KEY, gson.toJson(accountData))?.apply()
     }
 
-    fun restoreRepository() : BasicAuthAccessTokenRepository? {
+    override fun restoreRepository() : BasicAuthAccessTokenRepository? {
         getPreferences.getString(ACCESS_REPO_KEY, null)?.let {
             try {
                 val config = gson.fromJson(it, BasicAuthAccessTokenConfig::class.java)
@@ -57,7 +57,7 @@ class MyPreferences(context: Context, private val gson: Gson) :
         return null
     }
 
-    fun persistRepository(repo: AccessTokenRepository) {
+    override fun persistRepository(repo: AccessTokenRepository) {
         getPreferences.edit()?.putString(ACCESS_REPO_KEY, gson.toJson(repo.getConfig()))?.apply()
     }
 
@@ -94,6 +94,8 @@ interface AccountDataStorage {
     fun getDriverValue(): Driver
 
     fun saveDriver(driverModel: Driver)
+    fun persistRepository(repo: AccessTokenRepository)
+    fun restoreRepository(): BasicAuthAccessTokenRepository?
 }
 
 interface DeliveriesStorage {

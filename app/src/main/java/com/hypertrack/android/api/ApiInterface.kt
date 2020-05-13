@@ -1,7 +1,6 @@
 package com.hypertrack.android.api
 
 import com.google.gson.annotations.SerializedName
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -9,13 +8,13 @@ import retrofit2.http.Path
 interface ApiInterface {
 
     @POST("client/devices/{device_id}/start")
-    fun makeDriverCheckIn(@Path("device_id") deviceId: String) : Call<Unit>
+    suspend fun makeDriverCheckIn(@Path("device_id") deviceId: String)
 
     @POST("client/devices/{device_id}/stop")
-    fun makeDriverCheckOut(@Path("device_id")deviceId : String) : Call<Unit>
+    suspend fun makeDriverCheckOut(@Path("device_id")deviceId : String)
 
     @GET("client/devices/{device_id}/geofences")
-    fun getDeliveries(@Path("device_id")deviceId : String) : Call<List<Geofence>>
+    suspend fun getDeliveries(@Path("device_id")deviceId : String) : List<Geofence>
 
 }
 

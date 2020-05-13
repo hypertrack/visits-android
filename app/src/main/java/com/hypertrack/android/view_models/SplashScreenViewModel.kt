@@ -20,14 +20,14 @@ class SplashScreenViewModel (
     private val driverRepository = application.getServiceLocator().getDriverRepo()
     private val accountRepository = application.getServiceLocator().getAccountRepo()
 
-    private val _spinner = MutableLiveData<Boolean>(true)
+    private val _showSpinner = MutableLiveData<Boolean>(true)
     private val _noAccountFragment = MutableLiveData<Boolean>(false)
     private val _destination = MutableLiveData<Destination>(
         Destination.SPLASH_SCREEN)
 
     /** Show a loading spinner if true */
     val spinner: LiveData<Boolean>
-        get() = _spinner
+        get() = _showSpinner
 
     /** Show no-account error fragment if true */
     val noAccountFragment: LiveData<Boolean>
@@ -40,10 +40,12 @@ class SplashScreenViewModel (
         when {
             driverRepository.hasDriverId -> {
                 // already logged in
+                _showSpinner.postValue(false)
                 _destination.postValue(Destination.LIST_VIEW)
             }
             accountRepository.isVerifiedAccount -> {
                 // publishable key already verified
+                _showSpinner.postValue(false)
                 _destination.postValue(Destination.LOGIN)
             }
             else -> {
@@ -63,6 +65,8 @@ class SplashScreenViewModel (
                         Log.d(TAG, "onKeyReceived finished")
                         if (correctKey) {
                             Log.d(TAG, "Key validated successfully")
+
+                            _showSpinner.postValue(false)
                             _destination.postValue(Destination.LOGIN)
                         } else {
                             noPkHanlder()
@@ -84,7 +88,7 @@ class SplashScreenViewModel (
 
     private fun noPkHanlder() {
         Log.e(TAG, "No publishable key")
-        _spinner.postValue(false)
+        _showSpinner.postValue(false)
         _noAccountFragment.postValue(true)
     }
 

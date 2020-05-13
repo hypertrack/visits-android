@@ -2,9 +2,11 @@ package com.hypertrack.android.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import com.hypertrack.android.DELIVERY_UPDATE_RESULT_CODE
 import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.response.Delivery
@@ -22,10 +24,12 @@ class ListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_listing)
 
+        listActivityViewModel.deliveries
+            .observe(this, Observer {
+                deliveries -> Log.d(TAG, "Got deliveries $deliveries")
+            })
+
     }
-
-
-    // initialize all variable here
 
 
     // Implement click from adapter class
@@ -67,6 +71,8 @@ class ListActivity : AppCompatActivity() {
         }
 
     }
+
+    companion object {const val TAG = "ListActivity"}
 
 }
 
