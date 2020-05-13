@@ -14,14 +14,7 @@ import kotlinx.android.synthetic.main.activity_checkin_screen.*
 
 class CheckInActivity : AppCompatActivity() {
 
-    companion object {
-        const val TAG = "CheckInAct"
-
-    }
-
     private val checkInModel: CheckInViewModel by viewModels()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -50,5 +43,6 @@ class CheckInActivity : AppCompatActivity() {
             .observe(this, Observer { destination -> navigateTo(destination) })
     }
 
+    companion object { const val TAG = "CheckInAct" }
 
 }

@@ -6,7 +6,8 @@ import com.google.gson.Gson
 import com.hypertrack.android.repository.*
 
 
-class MyPreferences(context: Context, private val gson: Gson) : AccountDataStorage {
+class MyPreferences(context: Context, private val gson: Gson) :
+    AccountDataStorage {
 
     private val getPreferences : SharedPreferences
             = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
@@ -68,4 +69,15 @@ class MyPreferences(context: Context, private val gson: Gson) : AccountDataStora
 
     }
 
+}
+
+interface AccountDataStorage {
+
+    fun getAccountData() : AccountData
+
+    fun saveAccountData(accountData: AccountData) : Unit
+
+    fun getDriverValue(): Driver
+
+    fun saveDriver(driverModel: Driver)
 }

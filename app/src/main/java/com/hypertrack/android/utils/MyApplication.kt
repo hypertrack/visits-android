@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiInterface
-import com.hypertrack.sdk.HyperTrack
 import io.branch.referral.Branch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -17,13 +16,6 @@ class MyApplication : Application() {
 
     private var appServices: ApiInterface? = null
 
-    companion object {
-        const val TAG = "MyApplication"
-
-        // using this we can check which activity is visible or not
-        // so that we can perform particular action
-        var activity: AppCompatActivity? = null
-    }
     override fun onCreate() {
         super.onCreate()
 
@@ -73,6 +65,8 @@ class MyApplication : Application() {
         appServices = retrofit?.create(ApiInterface::class.java)
 
     }
+
+    companion object { const val TAG = "MyApplication" }
 }
 
 enum class Destination {

@@ -64,7 +64,5 @@ class SplashScreen : AppCompatActivity() {
         }
     }
 
-    companion object {
-        const val TAG = "SplashScreen"
-    }
+    companion object { const val TAG = "SplashScreen" }
 }

@@ -3,6 +3,7 @@ package com.hypertrack.android.repository
 import android.app.Application
 import android.util.Log
 import com.google.gson.annotations.SerializedName
+import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.getServiceLocator
 import com.hypertrack.sdk.HyperTrack
 

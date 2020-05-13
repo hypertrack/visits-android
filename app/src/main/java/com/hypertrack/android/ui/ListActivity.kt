@@ -14,7 +14,6 @@ import com.hypertrack.android.response.HeaderItem
 import com.hypertrack.android.utils.HyperTrackInit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.MyPreferences
-import com.hypertrack.android.view_models.CheckOutViewModel
 import com.hypertrack.android.view_models.DeliveryStatusViewModel
 import com.hypertrack.android.view_models.SingleDriverViewModel
 import com.hypertrack.logistics.android.github.R
@@ -40,8 +39,6 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
     private lateinit var singleDriverViewModel: SingleDriverViewModel
 
     private lateinit var deliveryStatusViewModel: DeliveryStatusViewModel
-
-    private lateinit var checkOutViewModel: CheckOutViewModel
 
     private lateinit var getDriverIdFromIntent: String
 
@@ -105,7 +102,6 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
         ivBack.setOnClickListener {
 
             showProgressBar()
-            checkOutViewModel.callCheckOutMethod(getDriverIdFromIntent)
         }
 
         ivRefresh.setOnClickListener {
@@ -196,25 +192,6 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
     // init single driver response and observables
     private fun initCheckOutObservable() {
 
-        checkOutViewModel = CheckOutViewModel(this.application)
-
-        checkOutViewModel.changeModel?.observe(this, Observer {
-
-            dismissProgressBar()
-
-            if (it != null) {
-
-                myPreferences?.clearPreferences()
-
-                val intent = Intent(this@ListActivity, CheckInActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-
-                finish()
-
-            }
-
-        })
     }
 
     // start hyper track sdk for for tracking
@@ -267,7 +244,6 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
     // Activity Lifecycle methods
     override fun onResume() {
         super.onResume()
-        MyApplication.activity = this
         if (hyperTrackSdk.isRunning) {
             //onTrackingStart()
         }
@@ -365,7 +341,6 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
-        MyApplication.activity = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

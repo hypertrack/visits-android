@@ -580,17 +580,6 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        MyApplication.activity = this
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        MyApplication.activity = null
-    }
-
     override fun onBackPressed() {
         if (isAnyThingChange)
             setResult(DELIVERY_UPDATE_RESULT_CODE)
