@@ -4,7 +4,7 @@ import android.util.Log
 
 class DriverRepo(
     private var _driver: Driver,
-    val accountDataStorage: AccountDataStorage
+    private val accountDataStorage: AccountDataStorage
 ) {
 
     var driverId: String

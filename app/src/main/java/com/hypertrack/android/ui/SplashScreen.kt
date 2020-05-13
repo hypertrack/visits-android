@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.SplashScreenViewModel
@@ -28,17 +29,15 @@ class SplashScreen : AppCompatActivity() {
         val noPkFragment: TextView = findViewById(R.id.no_pk_fragment)
         val spinner: ProgressBar = findViewById(R.id.spinner)
         splashScreenViewModel
-            .noAccountFragment.observe(this, Observer<Boolean> { value ->
-                value?.let { show ->
+            .noAccountFragment.observe(this, Observer<Boolean> { show ->
                     noPkFragment.visibility = if (show) View.VISIBLE else View.GONE
-                }
             })
         splashScreenViewModel.spinner
-            .observe(this, Observer {it?.let {
+            .observe(this, Observer {
                     show -> spinner.visibility = if (show) View.VISIBLE else View.GONE
-            }  })
+            })
         splashScreenViewModel.destination
-            .observe(this, Observer { it?.let { switchToActivity(it) } })
+            .observe(this, Observer { destination -> navigateTo(destination) })
 
         splashScreenViewModel.login()
 
@@ -66,21 +65,6 @@ class SplashScreen : AppCompatActivity() {
             Log.d(TAG, "Failed to re-init Branch IO")
             splashScreenViewModel.onInitFinished(null, BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
         }
-    }
-
-    private fun switchToActivity(destination: Destination) {
-        when (destination) {
-            Destination.LOGIN -> navigateToActivity(CheckInActivity::class.java)
-            Destination.LIST_VIEW -> navigateToActivity(ListActivity::class.java)
-            else -> Log.d(TAG, "Unexpected destination $destination")
-        }
-    }
-
-    private fun navigateToActivity(destination : Class<*>) {
-        Log.i(TAG, "Navigating to $destination")
-        startActivity(Intent(this@SplashScreen, destination))
-        Log.d(TAG, "Finishing current activity")
-        finish()
     }
 
     companion object {

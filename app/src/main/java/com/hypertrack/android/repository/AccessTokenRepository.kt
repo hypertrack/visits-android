@@ -8,8 +8,6 @@ import com.hypertrack.android.AUTH_HEADER_KEY
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.http.Body
-import retrofit2.http.POST
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine

@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.hypertrack.android.navigateTo
 import com.hypertrack.android.showProgress
 import com.hypertrack.android.utils.HyperTrackInit
 import com.hypertrack.android.view_models.CheckInViewModel
@@ -48,6 +49,9 @@ class CheckInActivity : AppCompatActivity() {
 
         checkInModel.enableCheckIn
             .observe(this, Observer { enable -> btnCheckIn.isEnabled = enable })
+
+        checkInModel.destination
+            .observe(this, Observer { destination -> navigateTo(destination) })
     }
 
 

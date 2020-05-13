@@ -2,22 +2,26 @@ package com.hypertrack.android.view_models
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
-import com.hypertrack.android.repository.CheckInRepo
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.repository.DriverRepo
-import com.hypertrack.android.repository.DriverRepository
+import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.getServiceLocator
 
 class CheckInViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val driverRepo: DriverRepo = application.getServiceLocator().getDriverRepo()
 
     private val _checkInButtonEnabled = MutableLiveData<Boolean>(false)
 
-
-    val driverRepo: DriverRepo = application.getServiceLocator().getDriverRepo()
+    private val _destination = MutableLiveData<Destination>(Destination.LOGIN)
 
     val enableCheckIn: LiveData<Boolean>
         get() = _checkInButtonEnabled
+
+    val destination : LiveData<Destination>
+        get() = _destination
 
 
     fun onTextChanged(input: CharSequence) {
@@ -35,9 +39,9 @@ class CheckInViewModel(application: Application) : AndroidViewModel(application)
             getApplication<Application>().getServiceLocator()
                 .getHyperTrack().setDeviceName(driverId)
             driverRepo.driverId = driverId
+            _destination.postValue(Destination.LIST_VIEW)
             return
         }
-        // TODO Denys: show error?
 
     }
     companion object {

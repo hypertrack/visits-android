@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,13 +13,20 @@ import android.graphics.drawable.ColorDrawable
 import android.location.Geocoder
 import android.os.Build
 import android.text.TextUtils
+import android.util.Log
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.response.Address
+import com.hypertrack.android.ui.CheckInActivity
+import com.hypertrack.android.ui.JobDetailActivity
+import com.hypertrack.android.ui.ListActivity
+import com.hypertrack.android.ui.SplashScreen
+import com.hypertrack.android.utils.Destination
 import com.hypertrack.logistics.android.github.R
 import java.io.*
 import java.text.SimpleDateFormat
@@ -240,4 +248,25 @@ fun getCurrentTime(): String {
     dateFormatter.timeZone = TimeZone.getTimeZone("UTC")
 
     return dateFormatter.format(Date())
+}
+
+fun AppCompatActivity.navigateTo(destination: Destination) {
+
+    Log.d("Ext", "Navigating to $destination")
+
+    val targetActivity = when (destination) {
+        Destination.SPLASH_SCREEN -> SplashScreen::class.java
+        Destination.LOGIN -> CheckInActivity::class.java
+        Destination.LIST_VIEW -> ListActivity::class.java
+        Destination.DETAILS_VIEW -> JobDetailActivity::class.java
+    }
+
+    if (javaClass == targetActivity) {
+        Log.d("EXT", "Destination $destination is current activity")
+        return
+    }
+
+    startActivity(Intent(this, targetActivity))
+    finish()
+
 }
