@@ -68,11 +68,11 @@ class ListActivity : AppCompatActivity(), TrackingStateObserver.OnTrackingStateC
 
         val getDriver = myPreferences?.getDriverValue()
 
-        if (getDriver?.driver_id.isNullOrEmpty()) {
-
-            println("Landed in List Activity Class")
-            finish()
-        }
+//        if (getDriver?.driver_id.isNullOrEmpty()) {
+//
+//            println("Landed in List Activity Class")
+//            finish()
+//        }
 
 //        getDriverIdFromIntent = getDriver?.driver_id!!
 //

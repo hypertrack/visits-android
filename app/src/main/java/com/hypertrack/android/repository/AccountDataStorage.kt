@@ -1,6 +1,5 @@
 package com.hypertrack.android.repository
 
-import com.hypertrack.android.response.DriverModel
 
 interface AccountDataStorage {
 
@@ -8,7 +7,7 @@ interface AccountDataStorage {
 
     fun saveAccountData(accountData: AccountData) : Unit
 
-    fun getDriverValue(): DriverModel?
+    fun getDriverValue(): Driver
 
-    fun saveDriver(driverModel: DriverModel)
+    fun saveDriver(driverModel: Driver)
 }

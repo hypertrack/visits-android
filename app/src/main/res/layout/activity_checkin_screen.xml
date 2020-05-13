@@ -60,7 +60,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etDriverId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

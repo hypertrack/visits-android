@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.response.DriverModel
 
 
 class MyPreferences(context: Context, private val gson: Gson) : AccountDataStorage {
@@ -12,17 +11,17 @@ class MyPreferences(context: Context, private val gson: Gson) : AccountDataStora
     private val getPreferences : SharedPreferences
             = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
-    override fun saveDriver(driverModel: DriverModel) {
+    override fun saveDriver(driverModel: Driver) {
         val serializedModel = gson.toJson(driverModel)
         getPreferences.edit()?.putString(DRIVER_KEY, serializedModel)?.apply()
     }
 
-    override fun getDriverValue(): DriverModel? {
+    override fun getDriverValue(): Driver {
         val driverDetails = getPreferences.getString(DRIVER_KEY, null)
         driverDetails?.let {
-            return gson.fromJson(driverDetails,DriverModel::class.java)
+            return gson.fromJson(driverDetails,Driver::class.java)
         }
-        return null
+        return Driver("")
 
     }
 
@@ -45,7 +44,8 @@ class MyPreferences(context: Context, private val gson: Gson) : AccountDataStora
     fun restoreRepository() : AccessTokenRepository? {
         getPreferences.getString(ACCESS_REPO_KEY, null)?.let {
             try {
-                return gson.fromJson(it, BasicAuthAccessTokenRepository::class.java)
+                val config = gson.fromJson(it, BasicAuthAccessTokenConfig::class.java)
+                return BasicAuthAccessTokenRepository(config)
             } catch (ignored: Throwable) {
 
             }
@@ -54,7 +54,7 @@ class MyPreferences(context: Context, private val gson: Gson) : AccountDataStora
     }
 
     fun persistRepository(repo: AccessTokenRepository) {
-        getPreferences.edit()?.putString(ACCESS_REPO_KEY, gson.toJson(repo))?.apply()
+        getPreferences.edit()?.putString(ACCESS_REPO_KEY, gson.toJson(repo.getConfig()))?.apply()
     }
 
     fun getDriver(): Driver {

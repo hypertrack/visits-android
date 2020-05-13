@@ -18,6 +18,7 @@ interface AccessTokenRepository {
     fun refreshToken(): String
     fun getAccessToken(): String
     suspend fun refreshTokenAsync() : String
+    fun  getConfig() : Any
 }
 
 class BasicAuthAccessTokenRepository(
@@ -83,6 +84,16 @@ class BasicAuthAccessTokenRepository(
         return ""
     }
 
+    override fun getConfig() : BasicAuthAccessTokenConfig {
+        return BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
+    }
+
+    constructor(
+        config: BasicAuthAccessTokenConfig
+    ) : this(
+        config.authUrl, config.deviceId, config.userName, config.userPwd, config.token
+    )
+
     companion object {
         val MEDIA_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
         const val TAG = "AccessTokenRepo"
@@ -92,4 +103,12 @@ class BasicAuthAccessTokenRepository(
 private data class AuthCallResponse(
     @SerializedName("access_token") val accessToken:String,
     @SerializedName("expires_in") val expiresIn: Int
+)
+
+data class BasicAuthAccessTokenConfig(
+    val authUrl: String,
+    val deviceId: String,
+    val userName: String,
+    val userPwd: String = "",
+    var token: String? = null
 )

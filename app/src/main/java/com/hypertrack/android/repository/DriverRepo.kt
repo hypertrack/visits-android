@@ -1,17 +1,27 @@
 package com.hypertrack.android.repository
 
-import com.hypertrack.android.response.DriverModel
+import android.util.Log
 
-class DriverRepo(private val driverModel: DriverModel?) {
+class DriverRepo(
+    private var _driver: Driver,
+    val accountDataStorage: AccountDataStorage
+) {
 
-    // TODO Denys
+    var driverId: String
+        get() = _driver.driverId
+        set(value) {
+            Log.d(TAG, "New driverId value $value")
+            _driver = Driver(value)
+            accountDataStorage.saveDriver(_driver)
+
+        }
+
     val hasDriverId: Boolean
-    get() {
-        if (driverModel == null) return false
-        return driverModel.driver_id.isNotEmpty()
+        get() = _driver.driverId.isNotEmpty()
+
+    companion object {
+        const val TAG = "DriverRepo"
     }
 }
-data class Driver(val deviceId:String, val driverId : String) {
-    val isLoggedIn: Boolean
-    get() = driverId.isNotEmpty()
-}
+
+data class Driver(val driverId : String)

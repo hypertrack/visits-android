@@ -11,6 +11,12 @@ class AccountRepository(
     private val accountDataStorage: AccountDataStorage
 ) {
 
+    val isVerifiedAccount : Boolean
+        get() = accountData.lastToken != null
+
+    val publishableKey : String
+        get() = accountData.publishableKey ?: ""
+
     suspend fun onKeyReceived(key: String, application: Application) : Boolean {
 
         val sdk = HyperTrack.getInstance(application.applicationContext, key)
@@ -19,16 +25,13 @@ class AccountRepository(
         val accessTokenRepository = application.getServiceLocator().getAccessTokenRepository(sdk.deviceID, key)
         val token = accessTokenRepository.refreshTokenAsync()
 
-        if (token.isEmpty()) {
-            return false
-        }
+        if (token.isEmpty()) return false
+
         accountDataStorage.saveAccountData(AccountData(key, token))
         return true
     }
 
 
-    val isVerifiedAccount : Boolean
-      get() = accountData.lastToken != null
 
     companion object {
         const val TAG = "AccountRepo"
