@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.view_models.Items
+import com.hypertrack.android.repository.Items
 import com.hypertrack.logistics.android.github.R
 
 // Job lists item adapters

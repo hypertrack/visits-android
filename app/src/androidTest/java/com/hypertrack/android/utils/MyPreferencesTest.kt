@@ -4,7 +4,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
-import com.hypertrack.android.view_models.Delivery
+import com.hypertrack.android.repository.Delivery
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

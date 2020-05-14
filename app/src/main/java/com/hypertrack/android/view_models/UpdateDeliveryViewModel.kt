@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.repository.Driver
 import com.hypertrack.android.repository.UpdateDeliveryRepo
 

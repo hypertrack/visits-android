@@ -28,7 +28,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.*
 import com.hypertrack.android.adapters.ItemsAdapter
-import com.hypertrack.android.view_models.Delivery
+import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.utils.HyperTrackInit
 import com.hypertrack.android.view_models.DeliveryStatusViewModel
 import com.hypertrack.android.view_models.SingleDeliveryViewModel

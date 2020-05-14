@@ -2,7 +2,6 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.view_models.Delivery
 import com.hypertrack.android.utils.MyApplication
 import okhttp3.RequestBody
 

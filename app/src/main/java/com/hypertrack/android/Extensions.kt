@@ -11,8 +11,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Geocoder
-import android.os.Build
-import android.text.TextUtils
 import android.util.Log
 import android.view.Window
 import android.widget.Toast
@@ -21,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
-import com.hypertrack.android.view_models.Address
+import com.hypertrack.android.repository.Address
 import com.hypertrack.android.ui.CheckInActivity
 import com.hypertrack.android.ui.JobDetailActivity
 import com.hypertrack.android.ui.ListActivity
@@ -33,9 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-private lateinit var dialog: Dialog
-
-const val LOCATION_REQUEST_CODE = 2
+private var dialog: Dialog? = null
 
 const val CAMERA_PERMISSION_REQUEST_CODE = 3
 
@@ -55,43 +51,20 @@ fun Context.showToast(text: String) {
 // Show Progress Bar on anywhere
 fun Context.showProgressBar() {
 
-    dialog = Dialog(this)
-    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-    dialog.setCancelable(false)
-    dialog.setContentView(R.layout.dialog_progress_bar)
-    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    val newDialog = dialog ?: Dialog(this)
 
-    dialog.show()
+    newDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+    newDialog.setCancelable(false)
+    newDialog.setContentView(R.layout.dialog_progress_bar)
+    newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    newDialog.show()
+
+    dialog = newDialog
 
 }
 
 // Dismiss Progress bar
-fun dismissProgressBar() {
-    if (dialog != null) {
-        dialog.dismiss()
-    }
-}
-
-// check location permission
-fun Activity.askLocationPermission(): Boolean {
-
-    if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PERMISSION_GRANTED
-    ) {
-
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_REQUEST_CODE
-        )
-
-        return false
-    }
-
-    return true
-}
+fun dismissProgressBar() = dialog?.dismiss()
 
 // check Camera permission
 fun Activity.askCameraPermission(): Boolean {
@@ -166,26 +139,6 @@ fun convertSeverDateToTime(rawDate: String): String {
     return output
 }
 
-fun capitalize(str: String): String? {
-    if (TextUtils.isEmpty(str)) {
-        return str
-    }
-    val arr = str.toCharArray()
-    var capitalizeNext = true
-    val phrase = StringBuilder()
-    for (c in arr) {
-        if (capitalizeNext && Character.isLetter(c)) {
-            phrase.append(Character.toUpperCase(c))
-            capitalizeNext = false
-            continue
-        } else if (Character.isWhitespace(c)) {
-            capitalizeNext = true
-        }
-        phrase.append(c)
-    }
-    return phrase.toString()
-}
-
 fun Context.getLocationFromAddress(strAddress: String): LatLng? {
 
     val coder = Geocoder(this)
@@ -208,6 +161,21 @@ fun Context.getLocationFromAddress(strAddress: String): LatLng? {
     }
 
     return p1
+}
+
+fun Context.getAddressFromCoordinates(latitude: Double, longitude: Double) : Address {
+    val coder = Geocoder(this)
+    val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
+    address?.let {
+        return Address(
+            (address.thoroughfare?:"").replace(address.subThoroughfare?:"", ""),
+            address.postalCode?:"",
+            address.locality?:"",
+            address.countryName?:""
+        )
+    }
+    return Address("Unknown location at ($latitude, $longitude)", "","", "")
+
 }
 
 // Show Error message when no driver list fetch

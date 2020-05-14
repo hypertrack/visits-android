@@ -36,7 +36,11 @@ class ServiceLocator(private val application: Application) {
     }
 
     fun getDeliveriesRepo(): DeliveriesRepository {
-        return DeliveriesRepository(getDeliveriesApiClient(), getMyPreferences(application))
+        return DeliveriesRepository(
+            application.applicationContext,
+            getDeliveriesApiClient(),
+            getMyPreferences(application)
+        )
     }
 }
 

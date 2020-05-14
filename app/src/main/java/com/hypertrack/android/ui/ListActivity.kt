@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.DELIVERY_UPDATE_RESULT_CODE
 import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.adapters.DeliveryListAdapter
-import com.hypertrack.android.view_models.Delivery
+import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.showProgressBar
 import com.hypertrack.android.view_models.ListActivityViewModel
 import com.hypertrack.logistics.android.github.R
@@ -30,7 +30,9 @@ class ListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_job_listing)
 
         viewAdapter = DeliveryListAdapter(listActivityViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
-            override fun onJobItemClick(position: Int): Unit = TODO("Not yet implemented")
+            override fun onJobItemClick(position: Int) {
+                Log.d(TAG, "Clicked delivery at position $position")
+            }
         })
 
         viewManager = LinearLayoutManager(this)

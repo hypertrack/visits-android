@@ -6,7 +6,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.view_models.Delivery
+import com.hypertrack.android.repository.Delivery
 
 
 class MyPreferences(context: Context, private val gson: Gson) :

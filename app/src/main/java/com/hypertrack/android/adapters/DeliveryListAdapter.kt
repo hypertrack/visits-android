@@ -9,9 +9,9 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.createAddress
-import com.hypertrack.android.view_models.Delivery
-import com.hypertrack.android.view_models.DeliveryListItem
-import com.hypertrack.android.view_models.HeaderDeliveryItem
+import com.hypertrack.android.repository.Delivery
+import com.hypertrack.android.repository.DeliveryListItem
+import com.hypertrack.android.repository.HeaderDeliveryItem
 import com.hypertrack.logistics.android.github.R
 
 // Job adapter (Multiple type jobs Pending,Completed,Visited)
@@ -58,6 +58,7 @@ class DeliveryListAdapter(
             is Delivery -> {
                 val deliveryView = holder as DeliveryViewHolder
                 deliveryView.tvDescription.text = createAddress(item.address)
+                deliveryView.tvTitle.text = item.delivery_id
             }
         }
 

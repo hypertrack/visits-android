@@ -1,6 +1,6 @@
 package com.hypertrack.android.response
 
-import com.hypertrack.android.view_models.Delivery
+import com.hypertrack.android.repository.Delivery
 
 data class DriverDeliveries(
     val _id: String,
