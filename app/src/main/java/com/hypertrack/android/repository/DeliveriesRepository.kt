@@ -9,6 +9,12 @@ import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.getAddressFromCoordinates
 import com.hypertrack.android.utils.DeliveriesStorage
 
+private const val COMPLETED = "Completed"
+
+private const val VISITED = "Visited"
+
+private const val PENDING = "Pending"
+
 class DeliveriesRepository(
     val context: Context,
     private val apiClient: ApiClient,
@@ -32,8 +38,7 @@ class DeliveriesRepository(
     private fun toDeliveries(geofences: List<Geofence>, currentItems: Map<String, Delivery>) : List<DeliveryListItem> {
         val deliveries = geofences.map { geofence ->
             currentItems[geofence.geofence_id]
-                ?: Delivery(
-                status = "Pending", _id = geofence.geofence_id,
+                ?: Delivery(_id = geofence.geofence_id,
                 createdAt = geofence.created_at,
                     address = context.getAddressFromCoordinates(geofence.latitude, geofence.longitude),
                 latitude = geofence.latitude, longitude = geofence.longitude
@@ -41,22 +46,18 @@ class DeliveriesRepository(
         }
         Log.d(TAG, "Updated deliveries $deliveries")
         // Add headers
-        val completed = deliveries.filter { it.completedAt.isNotEmpty() }
-        val visited = deliveries.filter { it.enteredAt.isNotEmpty() }
-        val pending = deliveries.filter { !(visited.contains(it) || completed.contains(it)) }
+        val groupped = deliveries.groupBy { it.status }
         val result = mutableListOf<DeliveryListItem>()
-        if (pending.isNotEmpty()) {
-            result.add(HeaderDeliveryItem("Pending"))
-            result.addAll(pending)
+        for (type in listOf(PENDING, VISITED, COMPLETED)) {
+            groupped[type]?.let {
+                if (it.isNotEmpty()) {
+                    result.add(HeaderDeliveryItem(type))
+                    result.addAll(it)
+                }
+            }
+
         }
-        if (visited.isNotEmpty()) {
-            result.add(HeaderDeliveryItem("Visited"))
-            result.addAll(visited)
-        }
-        if (completed.isNotEmpty()) {
-            result.add(HeaderDeliveryItem("Completed"))
-            result.addAll(completed)
-        }
+
 
         return result
     }
@@ -69,7 +70,7 @@ class DeliveriesRepository(
 
 sealed class DeliveryListItem
 data class HeaderDeliveryItem(val text : String) : DeliveryListItem()
-data class Delivery(val status : String, val _id : String,
+data class Delivery(val _id : String,
                     val delivery_id : String = "", val driver_id : String = "",
                     val label : String = "", val customerNote : String = "",
                     val createdAt : String = "", val updatedAt : String = "",
@@ -82,7 +83,16 @@ data class Delivery(val status : String, val _id : String,
                     val deliveryNote : String = "", var deliveryPicture : String = "",
                     var enteredAt :String = "",
                     val completedAt : String = "", val exitedAt : String = "",
-                    val latitude : Double? = null, val longitude: Double? = null) : DeliveryListItem()
+                    val latitude : Double? = null, val longitude: Double? = null) : DeliveryListItem() {
+    val status: String
+    get() {
+        return when {
+            completedAt.isNotEmpty() -> COMPLETED
+            enteredAt.isNotEmpty() -> VISITED
+            else -> PENDING
+        }
+    }
+}
 
 data class Items(val _id : String, val item_id :String, val item_label : String, val item_sku : String)
 data class Address (val street : String, val postalCode : String, val city : String, val country : String)

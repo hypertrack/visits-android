@@ -32,6 +32,8 @@ class ListActivity : AppCompatActivity() {
         viewAdapter = DeliveryListAdapter(listActivityViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int) {
                 Log.d(TAG, "Clicked delivery at position $position")
+                val delivery = listActivityViewModel.deliveries.value?.get(position)
+                delivery?.let { if (it is Delivery) showDeliveryDetails(it) }
             }
         })
 
