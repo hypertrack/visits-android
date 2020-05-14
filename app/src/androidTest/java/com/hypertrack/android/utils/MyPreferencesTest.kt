@@ -4,11 +4,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
-import com.hypertrack.android.response.Delivery
+import com.hypertrack.android.view_models.Delivery
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 
 class MyPreferencesTest {
@@ -68,7 +67,17 @@ class MyPreferencesTest {
 
     @Test
     fun crudDeliveries() {
-        val deliveriesExpected = listOf(Delivery("pending", "42" ), Delivery("completed", "24", completedAt = "2020-02-02T20:20:02.020Z"))
+        val deliveriesExpected = listOf(
+            Delivery(
+                "pending",
+                "42"
+            ),
+            Delivery(
+                "completed",
+                "24",
+                completedAt = "2020-02-02T20:20:02.020Z"
+            )
+        )
         myPreferences.saveDeliveries(deliveriesExpected)
         val deliveriesGot = myPreferences.restoreDeliveries()
         assertEquals(deliveriesExpected, deliveriesGot)

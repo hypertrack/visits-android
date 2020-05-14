@@ -1,6 +1,5 @@
 package com.hypertrack.android.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.DELIVERY_UPDATE_RESULT_CODE
 import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
-import com.hypertrack.android.adapters.JobListAdapters
-import com.hypertrack.android.response.Delivery
+import com.hypertrack.android.adapters.DeliveryListAdapter
+import com.hypertrack.android.view_models.Delivery
 import com.hypertrack.android.showProgressBar
 import com.hypertrack.android.view_models.ListActivityViewModel
 import com.hypertrack.logistics.android.github.R
@@ -30,7 +29,7 @@ class ListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_listing)
 
-        viewAdapter = JobListAdapters(this as Context, object: JobListAdapters.OnListAdapterClick{
+        viewAdapter = DeliveryListAdapter(listActivityViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int): Unit = TODO("Not yet implemented")
         })
 
@@ -40,6 +39,7 @@ class ListActivity : AppCompatActivity() {
         listActivityViewModel.deliveries
             .observe(this, Observer {
                 deliveries -> Log.d(TAG, "Got deliveries $deliveries")
+                viewAdapter.notifyDataSetChanged()
             })
 
         val rV = recyclerView
@@ -96,4 +96,3 @@ class ListActivity : AppCompatActivity() {
 
 }
 
-data class HeaderItem(val text : String)

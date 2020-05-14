@@ -5,32 +5,37 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geofence
-import com.hypertrack.android.response.Delivery
+import com.hypertrack.android.view_models.Address
+import com.hypertrack.android.view_models.Delivery
 import com.hypertrack.android.utils.DeliveriesStorage
+import com.hypertrack.android.view_models.DeliveryListItem
 
 class DeliveriesRepository(private val apiClient: ApiClient, private val deliveriesStorage : DeliveriesStorage) {
 
-    private val _deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(deliveriesStorage.restoreDeliveries())
+    private val _deliveryLlistItems: MutableLiveData<List<DeliveryListItem>> = MutableLiveData(deliveriesStorage.restoreDeliveries())
 
-    val deliveries: LiveData<List<Delivery>>
-        get() = _deliveries
+    val deliveryListItems: LiveData<List<DeliveryListItem>>
+        get() = _deliveryLlistItems
 
     suspend fun refreshDeliveries() {
 
         val geofences = apiClient.getGeofences()
         Log.d(TAG, "Got geofences $geofences")
-        val existingIds = deliveries.value?.map { it._id }?.toSet() ?: emptySet()
+        val existingIds = deliveryListItems.value?.filterIsInstance<Delivery>()?.map { it._id }?.toSet() ?: emptySet()
         val newDeliveries = toDeliveries(geofences.filter { !existingIds.contains(it.geofence_id) })
         deliveriesStorage.saveDeliveries(newDeliveries)
-        _deliveries.postValue(newDeliveries)
+        _deliveryLlistItems.postValue(newDeliveries)
     }
 
     private fun toDeliveries(geofences: List<Geofence>) : List<Delivery> {
-        // TODO Add address from geocoder
         return geofences.map { geofence ->
+            val address = Address(
+                "street ${geofence.geofence_id.substringBefore("-")}",
+                "HOHOHO", "Zaporozhzhye", "Ukraine"
+            )
             Delivery(
                 status = "Pending", _id = geofence.geofence_id,
-                createdAt = geofence.created_at,
+                createdAt = geofence.created_at, address = address,
                 latitude = geofence.latitude, longitude = geofence.longitude
             )
         }

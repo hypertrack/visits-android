@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hypertrack.android.repository.SingleDeliveryRepo
-import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.response.DriverDeliveries
 
 class SingleDeliveryViewModel(application : Application) : AndroidViewModel(application) {

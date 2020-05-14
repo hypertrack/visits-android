@@ -1,7 +1,6 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
-import com.hypertrack.android.getDeviceName
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 
@@ -18,7 +17,6 @@ object HyperTrackInit {
             context,
             context.getString(R.string.hyperTrackPublishKey)
         )
-            .setDeviceName(getDeviceName())
 
     }
 }

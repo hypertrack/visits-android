@@ -21,7 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
-import com.hypertrack.android.response.Address
+import com.hypertrack.android.view_models.Address
 import com.hypertrack.android.ui.CheckInActivity
 import com.hypertrack.android.ui.JobDetailActivity
 import com.hypertrack.android.ui.ListActivity
@@ -40,13 +40,6 @@ const val LOCATION_REQUEST_CODE = 2
 const val CAMERA_PERMISSION_REQUEST_CODE = 3
 
 const val DELIVERY_UPDATE_RESULT_CODE = 4
-
-const val TYPE_HEADER: Int = 0
-
-const val TYPE_ITEM: Int = 2
-
-
-const val KEY_EXTRA_DRIVER_ID = "driver_id"
 
 const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
 
@@ -173,14 +166,6 @@ fun convertSeverDateToTime(rawDate: String): String {
     return output
 }
 
-fun getDeviceName(): String? {
-    val manufacturer = Build.MANUFACTURER
-    val model = Build.MODEL
-    return if (model.startsWith(manufacturer)) {
-        capitalize(model)
-    } else capitalize(manufacturer).toString() + " " + model
-}
-
 fun capitalize(str: String): String? {
     if (TextUtils.isEmpty(str)) {
         return str
@@ -240,14 +225,6 @@ fun Context.showAlertMessage(message: String, finishActiivty: Boolean = true) {
         .show()
 }
 
-
-fun getCurrentTime(): String {
-
-    val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
-    dateFormatter.timeZone = TimeZone.getTimeZone("UTC")
-
-    return dateFormatter.format(Date())
-}
 
 fun AppCompatActivity.navigateTo(destination: Destination) {
 

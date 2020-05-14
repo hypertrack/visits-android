@@ -2,7 +2,7 @@ package com.hypertrack.android.repository
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.hypertrack.android.response.Delivery
+import com.hypertrack.android.view_models.Delivery
 import com.hypertrack.android.utils.MyApplication
 
 class SingleDeliveryRepo(applicationContext: Application) {

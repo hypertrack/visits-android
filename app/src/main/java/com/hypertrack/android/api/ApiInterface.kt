@@ -1,7 +1,6 @@
 package com.hypertrack.android.api
 
 import com.google.gson.annotations.SerializedName
-import com.hypertrack.android.getCurrentTime
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path

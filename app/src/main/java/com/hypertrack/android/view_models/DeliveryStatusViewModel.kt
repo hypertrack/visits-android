@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hypertrack.android.repository.DeliveryStatusRepo
-import com.hypertrack.android.response.Delivery
 
 class DeliveryStatusViewModel(application : Application) : AndroidViewModel(application) {
 
