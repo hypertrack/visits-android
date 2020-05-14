@@ -12,6 +12,7 @@ import com.hypertrack.android.createAddress
 import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.repository.DeliveryListItem
 import com.hypertrack.android.repository.HeaderDeliveryItem
+import com.hypertrack.android.repository.VISITED
 import com.hypertrack.logistics.android.github.R
 
 // Job adapter (Multiple type jobs Pending,Completed,Visited)
@@ -59,6 +60,10 @@ class DeliveryListAdapter(
                 val deliveryView = holder as DeliveryViewHolder
                 deliveryView.tvDescription.text = createAddress(item.address)
                 deliveryView.tvTitle.text = item.delivery_id
+                deliveryView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
+                deliveryView.ivCompass.visibility = if (item.status == VISITED) View.VISIBLE else View.INVISIBLE
+                deliveryView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.INVISIBLE
+
             }
         }
 

@@ -9,11 +9,11 @@ import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.getAddressFromCoordinates
 import com.hypertrack.android.utils.DeliveriesStorage
 
-private const val COMPLETED = "Completed"
+const val COMPLETED = "Completed"
 
-private const val VISITED = "Visited"
+const val VISITED = "Visited"
 
-private const val PENDING = "Pending"
+const val PENDING = "Pending"
 
 class DeliveriesRepository(
     val context: Context,
@@ -92,6 +92,8 @@ data class Delivery(val _id : String,
             else -> PENDING
         }
     }
+    fun hasPicture() = deliveryPicture.isNotEmpty()
+    fun hasNotes() = deliveryNote.isNotEmpty()
 }
 
 data class Items(val _id : String, val item_id :String, val item_label : String, val item_sku : String)
