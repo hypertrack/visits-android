@@ -1,6 +1,7 @@
 package com.hypertrack.android.api
 
 import com.google.gson.annotations.SerializedName
+import com.hypertrack.android.getCurrentTime
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -29,7 +30,12 @@ data class Geofence (
     @SerializedName("metadata") val metadata : Map<String, Any>,
     @SerializedName("radius") val radius : Int,
     @SerializedName("single_use") val single_use : Boolean
-)
+) {
+    val latitude: Double
+        get() = geometry.coordinates[1]
+    val longitude: Double
+        get() = geometry.coordinates[0]
+}
 
 data class Geometry (
     @SerializedName("coordinates") val coordinates : List<Double>,

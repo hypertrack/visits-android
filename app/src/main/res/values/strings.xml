@@ -18,6 +18,7 @@
     <string name="take_picture">Take Picture</string>
     <string name="mark_completed">Mark Completed</string>
     <string name="use_the_link_to_login">Please use the link to login or contact your manager</string>
+    <string name="deliveries">Deliveries</string>
 
 
 </resources>

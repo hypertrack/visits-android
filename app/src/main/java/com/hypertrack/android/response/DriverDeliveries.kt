@@ -21,7 +21,8 @@ data class Delivery(val status : String, val _id : String,
                     val createdAt : String = "", val updatedAt : String = "",
                     val items : List<Items> = emptyList(), val address : Address = Address("", "", "", ""),
                     val deliveryNote : String = "", var deliveryPicture : String = "", var enteredAt :String = "",
-                    val completedAt : String = "", val exitedAt : String = "")
+                    val completedAt : String = "", val exitedAt : String = "",
+                    val latitude : Double? = null, val longitude: Double? = null)
 // showNavigationItem =  this object only for sho navigation icon in pending category deliveries
 
 data class Items(val _id : String,val item_id :String,val item_label : String,val item_sku : String)

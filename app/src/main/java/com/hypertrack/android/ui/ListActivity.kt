@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,8 +8,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.DELIVERY_UPDATE_RESULT_CODE
 import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
+import com.hypertrack.android.adapters.JobListAdapters
 import com.hypertrack.android.response.Delivery
 import com.hypertrack.android.showProgressBar
 import com.hypertrack.android.view_models.ListActivityViewModel
@@ -19,15 +23,31 @@ import kotlinx.android.synthetic.main.activity_job_listing.*
 class ListActivity : AppCompatActivity() {
 
     private val listActivityViewModel : ListActivityViewModel by viewModels()
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_listing)
 
+        viewAdapter = JobListAdapters(this as Context, object: JobListAdapters.OnListAdapterClick{
+            override fun onJobItemClick(position: Int): Unit = TODO("Not yet implemented")
+        })
+
+        viewManager = LinearLayoutManager(this)
+
+
         listActivityViewModel.deliveries
             .observe(this, Observer {
                 deliveries -> Log.d(TAG, "Got deliveries $deliveries")
             })
+
+        val rV = recyclerView
+        rV.apply {
+            setHasFixedSize(true)
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
 
     }
 
