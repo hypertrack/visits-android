@@ -16,7 +16,7 @@ const val VISITED = "Visited"
 const val PENDING = "Pending"
 
 class DeliveriesRepository(
-    val context: Context,
+    private val context: Context,
     private val apiClient: ApiClient,
     private val deliveriesStorage: DeliveriesStorage
 ) {
@@ -32,6 +32,7 @@ class DeliveriesRepository(
         Log.d(TAG, "Got geofences $geofences")
         val currentItems = deliveryListItems.value?.filterIsInstance<Delivery>()?.associateBy { it._id } ?: emptyMap()
         val newDeliveries = toDeliveries(geofences, currentItems)
+        deliveriesStorage.saveDeliveries(newDeliveries.filterIsInstance<Delivery>())
         _deliveryListItems.postValue(newDeliveries)
     }
 
