@@ -57,11 +57,11 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
-            android:name="com.hypertrack.android.ui.ListActivity"
+            android:name="com.hypertrack.android.ui.DeliveryListActivity"
              android:windowSoftInputMode="stateAlwaysHidden" />
 
-        <activity android:name="com.hypertrack.android.ui.JobDetailActivity"
-            android:parentActivityName="com.hypertrack.android.ui.ListActivity"
+        <activity android:name="com.hypertrack.android.ui.DeliveryDetailActivity"
+            android:parentActivityName="com.hypertrack.android.ui.DeliveryListActivity"
             />
 
 

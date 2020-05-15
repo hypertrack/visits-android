@@ -21,8 +21,8 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.Address
 import com.hypertrack.android.ui.CheckInActivity
-import com.hypertrack.android.ui.JobDetailActivity
-import com.hypertrack.android.ui.ListActivity
+import com.hypertrack.android.ui.DeliveryDetailActivity
+import com.hypertrack.android.ui.DeliveryListActivity
 import com.hypertrack.android.ui.SplashScreen
 import com.hypertrack.android.utils.Destination
 import com.hypertrack.logistics.android.github.R
@@ -201,8 +201,8 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
     val targetActivity = when (destination) {
         Destination.SPLASH_SCREEN -> SplashScreen::class.java
         Destination.LOGIN -> CheckInActivity::class.java
-        Destination.LIST_VIEW -> ListActivity::class.java
-        Destination.DETAILS_VIEW -> JobDetailActivity::class.java
+        Destination.LIST_VIEW -> DeliveryListActivity::class.java
+        Destination.DETAILS_VIEW -> DeliveryDetailActivity::class.java
     }
 
     if (javaClass == targetActivity) {

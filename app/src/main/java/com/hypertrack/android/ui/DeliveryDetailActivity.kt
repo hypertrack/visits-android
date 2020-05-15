@@ -46,7 +46,7 @@ import java.io.IOException
 import java.util.*
 
 
-class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
+class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private val CAMERA_REQUEST = 1
@@ -172,9 +172,9 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun initRecyclerView() {
 
         linearLayoutManager =
-            LinearLayoutManager(this@JobDetailActivity, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(this@DeliveryDetailActivity, LinearLayoutManager.VERTICAL, false)
 
-        onItemsAdapter = ItemsAdapter(this@JobDetailActivity, onAdapterItemClick!!)
+        onItemsAdapter = ItemsAdapter(this@DeliveryDetailActivity, onAdapterItemClick!!)
 
         rvItems.layoutManager = linearLayoutManager
 
@@ -409,7 +409,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
             tvTakePicture.text = getString(R.string.replace_picture)
 
-            Picasso.with(this@JobDetailActivity).load(currentDelivery.deliveryPicture)
+            Picasso.with(this@DeliveryDetailActivity).load(currentDelivery.deliveryPicture)
                 .into(ivDeliveryPic)
 
             ivClose.visibility = View.VISIBLE
@@ -524,7 +524,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // Show Message when user decline location permission
     private fun showMessageOKCancel(message: String, finishActiivty: Boolean = true) {
-        AlertDialog.Builder(this@JobDetailActivity)
+        AlertDialog.Builder(this@DeliveryDetailActivity)
             .setMessage(message)
             .setPositiveButton("OK") { dialog, which -> askCameraPermission() }
             .setNegativeButton("Cancel") { dialog, which ->
@@ -584,7 +584,7 @@ class JobDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             setResult(DELIVERY_UPDATE_RESULT_CODE)
 
         startActivity(
-            Intent(this@JobDetailActivity, ListActivity::class.java)
+            Intent(this@DeliveryDetailActivity, DeliveryListActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         )
 

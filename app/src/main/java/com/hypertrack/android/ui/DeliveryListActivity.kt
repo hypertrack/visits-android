@@ -15,14 +15,14 @@ import com.hypertrack.android.adapters.DeliveryListAdapter
 import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.showProgressBar
 import com.hypertrack.android.utils.Injector
-import com.hypertrack.android.view_models.ListActivityViewModel
+import com.hypertrack.android.view_models.DeliveryListViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_job_listing.*
 
 
-class ListActivity : AppCompatActivity() {
+class DeliveryListActivity : AppCompatActivity() {
 
-    private val listActivityViewModel : ListActivityViewModel by viewModels {
+    private val deliveryListViewModel : DeliveryListViewModel by viewModels {
         Injector.provideListActivityViewModelFactory(this.applicationContext)
     }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -32,10 +32,10 @@ class ListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_listing)
 
-        viewAdapter = DeliveryListAdapter(listActivityViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
+        viewAdapter = DeliveryListAdapter(deliveryListViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int) {
                 Log.d(TAG, "Clicked delivery at position $position")
-                val delivery = listActivityViewModel.deliveries.value?.get(position)
+                val delivery = deliveryListViewModel.deliveries.value?.get(position)
                 delivery?.let { if (it is Delivery) showDeliveryDetails(it) }
             }
         })
@@ -43,7 +43,7 @@ class ListActivity : AppCompatActivity() {
         viewManager = LinearLayoutManager(this)
 
 
-        listActivityViewModel.deliveries
+        deliveryListViewModel.deliveries
             .observe(this, Observer {
                 deliveries -> Log.d(TAG, "Got deliveries $deliveries")
                 viewAdapter.notifyDataSetChanged()
@@ -63,7 +63,7 @@ class ListActivity : AppCompatActivity() {
     private fun showDeliveryDetails(delivery: Delivery) {
 
                 startActivityForResult(
-                    Intent(this@ListActivity, JobDetailActivity::class.java)
+                    Intent(this@DeliveryListActivity, DeliveryDetailActivity::class.java)
                         .putExtra(KEY_EXTRA_DELIVERY_ID, delivery._id),
                     DELIVERY_UPDATE_RESULT_CODE
                 )

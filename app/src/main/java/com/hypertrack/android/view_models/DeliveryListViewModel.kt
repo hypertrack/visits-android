@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.DeliveriesRepository
 import kotlinx.coroutines.launch
 
-class ListActivityViewModel(private val deliveriesRepository: DeliveriesRepository) : ViewModel() {
+class DeliveryListViewModel(private val deliveriesRepository: DeliveriesRepository) : ViewModel() {
 
     val deliveries = deliveriesRepository.deliveryListItems
 

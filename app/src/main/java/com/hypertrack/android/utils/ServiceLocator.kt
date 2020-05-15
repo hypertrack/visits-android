@@ -9,7 +9,7 @@ import com.hypertrack.android.AUTH_URL
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.view_models.ListActivityViewModel
+import com.hypertrack.android.view_models.DeliveryListViewModel
 import com.hypertrack.sdk.HyperTrack
 
 class ServiceLocator(private val application: Application) {
@@ -72,7 +72,7 @@ class ListActivityViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            ListActivityViewModel::class.java -> return ListActivityViewModel(deliveriesRepository) as T
+            DeliveryListViewModel::class.java -> return DeliveryListViewModel(deliveriesRepository) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }
