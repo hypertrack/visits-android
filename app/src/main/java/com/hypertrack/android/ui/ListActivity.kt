@@ -14,6 +14,7 @@ import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.adapters.DeliveryListAdapter
 import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.showProgressBar
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.view_models.ListActivityViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_job_listing.*
@@ -21,7 +22,9 @@ import kotlinx.android.synthetic.main.activity_job_listing.*
 
 class ListActivity : AppCompatActivity() {
 
-    private val listActivityViewModel : ListActivityViewModel by viewModels()
+    private val listActivityViewModel : ListActivityViewModel by viewModels {
+        Injector.provideListActivityViewModelFactory(this.applicationContext)
+    }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
 

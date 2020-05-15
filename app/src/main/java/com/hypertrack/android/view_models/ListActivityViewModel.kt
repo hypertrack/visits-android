@@ -1,16 +1,11 @@
 package com.hypertrack.android.view_models
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.DeliveriesRepository
-import com.hypertrack.android.utils.getServiceLocator
 import kotlinx.coroutines.launch
 
-class ListActivityViewModel(application: Application) : AndroidViewModel(application) {
-
-
-    private val deliveriesRepository: DeliveriesRepository = application.getServiceLocator().getDeliveriesRepo()
+class ListActivityViewModel(private val deliveriesRepository: DeliveriesRepository) : ViewModel() {
 
     val deliveries = deliveriesRepository.deliveryListItems
 
@@ -19,8 +14,6 @@ class ListActivityViewModel(application: Application) : AndroidViewModel(applica
             deliveriesRepository.refreshDeliveries()
         }
     }
-
-
 
 }
 

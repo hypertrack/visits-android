@@ -1,13 +1,16 @@
 package com.hypertrack.android.utils
 
 import android.app.Application
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.hypertrack.android.AUTH_URL
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.view_models.ListActivityViewModel
 import com.hypertrack.sdk.HyperTrack
-import java.lang.IllegalStateException
 
 class ServiceLocator(private val application: Application) {
 
@@ -35,13 +38,42 @@ class ServiceLocator(private val application: Application) {
         return ApiClient(accessTokenRepository, BASE_URL, accessTokenRepository.deviceId)
     }
 
-    fun getDeliveriesRepo(): DeliveriesRepository {
-        return DeliveriesRepository(
-            application.applicationContext,
-            getDeliveriesApiClient(),
-            getMyPreferences(application)
-        )
-    }
 }
 
 fun Application.getServiceLocator() = ServiceLocator(this)
+
+object Injector {
+    private fun getGson() = Gson()
+
+    private fun getMyPreferences(context: Context): MyPreferences =
+        MyPreferences(context, getGson())
+
+    private fun getDeliveriesApiClient(context: Context): ApiClient {
+        val accessTokenRepository = getMyPreferences(context).restoreRepository() ?: throw IllegalStateException("No access token repository was saved")
+        return ApiClient(accessTokenRepository, BASE_URL, accessTokenRepository.deviceId)
+    }
+    private fun getDeliveriesRepo(context: Context): DeliveriesRepository {
+        return DeliveriesRepository(
+            context,
+            getDeliveriesApiClient(context),
+            getMyPreferences(context)
+        )
+    }
+    fun provideListActivityViewModelFactory(context: Context): ListActivityViewModelFactory {
+        val repository = getDeliveriesRepo(context)
+        return ListActivityViewModelFactory(repository)
+    }
+}
+
+class ListActivityViewModelFactory(
+    private val deliveriesRepository: DeliveriesRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+
+        when (modelClass) {
+            ListActivityViewModel::class.java -> return ListActivityViewModel(deliveriesRepository) as T
+            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
+        }
+    }
+}
