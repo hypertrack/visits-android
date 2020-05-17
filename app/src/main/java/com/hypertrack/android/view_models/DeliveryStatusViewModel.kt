@@ -1,42 +1,28 @@
 package com.hypertrack.android.view_models
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.LatLng
+import com.hypertrack.android.repository.DeliveriesRepository
 import com.hypertrack.android.repository.Delivery
-import com.hypertrack.android.repository.DeliveryStatusRepo
 
-class DeliveryStatusViewModel(application : Application) : AndroidViewModel(application) {
+class DeliveryStatusViewModel(
+    private val deliveriesRepository: DeliveriesRepository,
+    private val id: String
+) : ViewModel() {
 
-    var deliveryStatusRepo: DeliveryStatusRepo? = null
+    val delivery: LiveData<Delivery> = deliveriesRepository.deliveryForId(id)
 
-    var deliveryStatus: LiveData<Delivery>? = null
 
-    private var changeMediator: MediatorLiveData<Delivery>? = null
-
-    init {
-
-        deliveryStatusRepo = DeliveryStatusRepo(application)
-
-        changeMediator = MediatorLiveData()
-
-        singleDriverApiResponse()
+    fun onDeliveryNoteChanged(newNote : String) {
+        deliveriesRepository.updateDeliveryNote(id, newNote)
     }
 
-    // call repo method for init API
-    fun callStatusMethod(driverId : String,type : String) {
-
-        deliveryStatusRepo?.callChangeDeliveryStatus(driverId,type)
+    fun onMarkedCompleted() = deliveriesRepository.markCompleted(id)
+    fun getLatLng(): LatLng {
+        return LatLng(delivery.value!!.latitude, delivery.value!!.longitude)
     }
-
-    // add response here for getting
-    private fun singleDriverApiResponse() {
-
-        deliveryStatus = deliveryStatusRepo?.getResponse()
-
-        changeMediator?.addSource(deliveryStatus!!) {
-            print("Check in repo")
-        }
+    fun getLabel() : String {
+        return "Parcel ${delivery.value?._id}"
     }
 }

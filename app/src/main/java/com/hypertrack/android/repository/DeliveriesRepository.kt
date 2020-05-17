@@ -84,7 +84,7 @@ data class Delivery(val _id : String,
                     val deliveryNote : String = "", var deliveryPicture : String = "",
                     var enteredAt :String = "",
                     val completedAt : String = "", val exitedAt : String = "",
-                    val latitude : Double? = null, val longitude: Double? = null) : DeliveryListItem() {
+                    val latitude : Double = 47.839042, val longitude: Double = 35.101726) : DeliveryListItem() {
     val status: String
     get() {
         return when {

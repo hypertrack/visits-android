@@ -75,7 +75,7 @@ class DeliveryListActivity : AppCompatActivity() {
 
         if (resultCode == DELIVERY_UPDATE_RESULT_CODE) {
             showProgressBar()
-            // TODO Denys - refetch deliveries
+            // TODO Denys - refetch deliveries ??
         }
     }
 

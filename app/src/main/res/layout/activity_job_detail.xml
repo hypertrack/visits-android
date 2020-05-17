@@ -62,6 +62,20 @@
             android:fillViewport="true"
             android:fitsSystemWindows="true">
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitleCustomerNote2"
+                android:layout_width="328dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="80dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/delivery_notes"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
+                app:layout_constraintTop_toTopOf="@id/ivNote" />
+
             <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -176,39 +190,6 @@
                 app:layout_constraintStart_toStartOf="@id/tvTitleCustomerNote"
                 app:layout_constraintTop_toBottomOf="@id/tvTitleCustomerNote" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivItems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
-                app:srcCompat="@drawable/ic_item" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTitleItems"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/medium"
-                android:text="@string/items"
-                android:textColor="@color/colorTitle"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ivItems"
-                app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
-                app:layout_constraintTop_toTopOf="@id/ivItems" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvItems"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvTitleItems"
-                app:layout_constraintTop_toBottomOf="@id/ivItems"
-                tools:itemCount="2"
-                tools:listitem="@layout/inflate_scan_item" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivDeliveryNote"
@@ -217,22 +198,9 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rvItems"
+                app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
                 app:srcCompat="@drawable/ic_file" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvDeliveryNotes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/medium"
-                android:text="@string/delivery_notes"
-                android:textColor="@color/colorTitle"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ivDeliveryNote"
-                app:layout_constraintTop_toBottomOf="@id/rvItems"
-                app:layout_constraintTop_toTopOf="@id/ivDeliveryNote" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etDeliveryNote"
@@ -244,13 +212,14 @@
                 android:lines="5"
                 android:padding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvDeliveryNotes"
+                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
                 app:layout_constraintTop_toBottomOf="@id/ivDeliveryNote" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivCamera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -266,6 +235,7 @@
                 android:text="@string/delivery_picture"
                 android:textColor="@color/colorTitle"
                 android:textSize="20sp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivCamera"
                 app:layout_constraintTop_toBottomOf="@id/etDeliveryNote"
@@ -284,7 +254,9 @@
                 android:padding="10dp"
                 android:text="@string/take_picture"
                 android:textColor="@color/colorWhite"
+                android:enabled="false"
                 android:textSize="18sp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
                 app:layout_constraintTop_toBottomOf="@id/ivCamera" />
@@ -298,8 +270,9 @@
                 android:layout_marginEnd="20dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
+                android:visibility="gone"
                 android:scaleType="centerCrop"
-                 android:textColor="@color/colorWhite"
+                android:textColor="@color/colorWhite"
                  app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
                 app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />

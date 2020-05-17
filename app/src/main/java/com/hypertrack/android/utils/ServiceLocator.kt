@@ -10,6 +10,7 @@ import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.view_models.DeliveryListViewModel
+import com.hypertrack.android.view_models.DeliveryStatusViewModel
 import com.hypertrack.sdk.HyperTrack
 
 class ServiceLocator(private val application: Application) {
@@ -62,6 +63,10 @@ object Injector {
     fun provideListActivityViewModelFactory(context: Context): ListActivityViewModelFactory {
         val repository = getDeliveriesRepo(context)
         return ListActivityViewModelFactory(repository)
+    }
+    fun provideDeliveryStatusViewModel(context: Context, deliveryId:String): DeliveryStatusViewModel {
+        val repository = getDeliveriesRepo(context)
+        return DeliveryStatusViewModel(repository, deliveryId)
     }
 }
 
