@@ -79,13 +79,23 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateView(newValue: Delivery) {
         tvCustomerNote.text = newValue.customerNote
         tvAddress.text = newValue.address.street
-        etDeliveryNote.setText(newValue.deliveryNote)
+        if (newValue.deliveryNote != etDeliveryNote.text.toString()) {
+            etDeliveryNote.setText(newValue.deliveryNote)
+        }
+        val completeEnabled = !newValue.isCompleted
+        Log.d(TAG, "Complete button enabled is $completeEnabled")
+        tvComplete.isEnabled = completeEnabled
+        tvComplete.setBackgroundColor(if (completeEnabled) getColor(R.color.colorBlack) else getColor(R.color.colorBtnDisable))
 
     }
 
     private fun addActionListeners() {
         ivBack.setOnClickListener { onBackPressed() }
-        tvComplete.setOnClickListener { deliveryStatusViewModel.onMarkedCompleted() }
+        tvComplete.setOnClickListener {
+            Log.d(TAG, "Complete button pressed")
+            tvComplete.isEnabled = false
+            deliveryStatusViewModel.onMarkedCompleted()
+        }
 
         etDeliveryNote.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) =
