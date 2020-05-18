@@ -8,7 +8,6 @@ import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
 import com.hypertrack.android.utils.OsUtilsProvider
-import com.hypertrack.android.utils.TrackingStateValue
 import java.lang.IllegalArgumentException
 
 const val COMPLETED = "Completed"
@@ -38,12 +37,10 @@ class DeliveriesRepository(
 
     suspend fun refreshDeliveries() {
 
-        val geofences = apiClient.getGeofences()
-        Log.d(TAG, "Got geofences $geofences")
         // if delivery object is already present -> update visited & metadata state. if updated, then post new value in _deliveryItemsById
         // else - create new delivery and add it to _deliveryItemsById
         // post updated deliveryListItems
-        geofences.forEach { geofence ->
+        apiClient.getGeofences().forEach { geofence ->
             val currentValue = _deliveriesMap[geofence.geofence_id]
             if (currentValue == null) {
                 _deliveriesMap[geofence.geofence_id] = Delivery(geofence, osUtilsProvider)

@@ -2,18 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hypertrack.logistics.android.github">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
-
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true" />
-
     <application
         android:name="com.hypertrack.android.utils.MyApplication"
         android:icon="@drawable/ic_logo"
@@ -58,33 +46,14 @@
 
         <activity
             android:name="com.hypertrack.android.ui.DeliveryListActivity"
+            android:launchMode="singleTask"
              android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity android:name="com.hypertrack.android.ui.DeliveryDetailActivity"
             android:parentActivityName="com.hypertrack.android.ui.DeliveryListActivity"
             />
 
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_api_key" />
-
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/file_provider_authority"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/channel_id" />
-
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_api_key" />
         <meta-data android:name="io.branch.sdk.BranchKey" android:value="@string/branch_io_api_key" />
 
     </application>

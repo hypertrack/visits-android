@@ -13,6 +13,7 @@ class HyperTrackService(publishableKey: String, context: Context) {
     private val sdkInstnce = HyperTrack
         .getInstance(context, publishableKey)
         .addTrackingListener(listener)
+        .requestPermissionsIfNecessary()
 
     init {
         when(sdkInstnce.isRunning) {

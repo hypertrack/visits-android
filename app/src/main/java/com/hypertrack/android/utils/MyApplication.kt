@@ -19,6 +19,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        Branch.enableLogging()
         Branch.getAutoInstance(this)
 
         initRetrofitClient()
