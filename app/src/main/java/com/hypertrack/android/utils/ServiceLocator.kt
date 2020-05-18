@@ -7,7 +7,7 @@ import com.google.gson.Gson
 import com.hypertrack.android.AUTH_URL
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiClient
-import com.hypertrack.android.models.HyperTrackService
+import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.view_models.CheckInViewModel
 import com.hypertrack.android.view_models.DeliveryListViewModel
@@ -20,7 +20,10 @@ class ServiceLocator(private val context: Context) {
     fun getAccessTokenRepository(deviceId : String, userName : String) = BasicAuthAccessTokenRepository(AUTH_URL, deviceId, userName)
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
-        return HyperTrackService(publishableKey, context)
+        return HyperTrackService(
+            publishableKey,
+            context
+        )
     }
 
 }
@@ -58,7 +61,10 @@ object Injector {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        return HyperTrackService(publishableKey, context)
+        return HyperTrackService(
+            publishableKey,
+            context
+        )
     }
 
     private fun getDeliveriesRepo(context: Context): DeliveriesRepository {

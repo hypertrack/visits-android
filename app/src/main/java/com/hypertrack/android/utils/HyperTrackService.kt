@@ -1,4 +1,4 @@
-package com.hypertrack.android.models
+package com.hypertrack.android.utils
 
 import android.content.Context
 import com.hypertrack.sdk.HyperTrack
@@ -30,8 +30,11 @@ class HyperTrackService(publishableKey: String, context: Context) {
 }
 
 private class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
-    var state: TrackingStateValue = TrackingStateValue.UNKNOWN
-    override fun onTrackingStart() { state = TrackingStateValue.TRACKING }
+    var state: TrackingStateValue =
+        TrackingStateValue.UNKNOWN
+    override fun onTrackingStart() { state =
+        TrackingStateValue.TRACKING
+    }
 
     override fun onError(p0: TrackingError?) {
         state = TrackingStateValue.ERROR

@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.api.ApiClient
-import com.hypertrack.android.models.HyperTrackService
+import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
 import kotlinx.coroutines.launch

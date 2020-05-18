@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geofence
-import com.hypertrack.android.models.HyperTrackService
+import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
 import com.hypertrack.android.utils.OsUtilsProvider
 import java.lang.IllegalArgumentException

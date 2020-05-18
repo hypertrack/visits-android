@@ -1,7 +1,7 @@
 package com.hypertrack.android.repository
 
 import android.util.Log
-import com.google.gson.annotations.SerializedName
+import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.ServiceLocator
 
@@ -24,20 +24,17 @@ class AccountRepository(
 
         if (token.isEmpty()) return false
 
-        accountDataStorage.saveAccountData(AccountData(key, token))
+        accountDataStorage.saveAccountData(
+            AccountData(
+                key,
+                token
+            )
+        )
         accountDataStorage.persistRepository(accessTokenRepository)
         return true
     }
-
-
 
     companion object {
         const val TAG = "AccountRepo"
     }
 }
-
-
-data class AccountData(
-    @SerializedName("pub_key") val publishableKey : String? = null,
-    @SerializedName("last_token") val lastToken : String? = null
-)
