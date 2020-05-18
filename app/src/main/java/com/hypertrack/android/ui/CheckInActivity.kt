@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.view_models.CheckInViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_checkin_screen.*
@@ -14,7 +15,9 @@ import kotlinx.android.synthetic.main.activity_checkin_screen.*
 
 class CheckInActivity : AppCompatActivity() {
 
-    private val checkInModel: CheckInViewModel by viewModels()
+    private val checkInModel: CheckInViewModel by viewModels {
+        Injector.provideCheckinViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

@@ -1,24 +1,19 @@
 package com.hypertrack.android.view_models
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
-import com.hypertrack.android.utils.getServiceLocator
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-class SplashScreenViewModel (
-    application: Application
-) : AndroidViewModel(application), Branch.BranchReferralInitListener  {
-
-    private val driverRepository = application.getServiceLocator().getDriverRepo()
-    private val accountRepository = application.getServiceLocator().getAccountRepo()
+class SplashScreenViewModel(
+    private val driverRepository: DriverRepo,
+    private val accountRepository: AccountRepository
+) : ViewModel(), Branch.BranchReferralInitListener  {
 
     private val _showSpinner = MutableLiveData<Boolean>(true)
     private val _noAccountFragment = MutableLiveData<Boolean>(false)
@@ -61,7 +56,7 @@ class SplashScreenViewModel (
             Log.d(TAG, "Got key $key")
                 try {
                     viewModelScope.launch {
-                        val correctKey = accountRepository.onKeyReceived(key, this@SplashScreenViewModel.getApplication())
+                        val correctKey = accountRepository.onKeyReceived(key)
                         Log.d(TAG, "onKeyReceived finished")
                         if (correctKey) {
                             Log.d(TAG, "Key validated successfully")

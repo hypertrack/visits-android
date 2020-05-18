@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_job_listing.*
 class DeliveryListActivity : AppCompatActivity() {
 
     private val deliveryListViewModel : DeliveryListViewModel by viewModels {
-        Injector.provideListActivityViewModelFactory(this.applicationContext)
+        Injector.provideListActivityViewModelFactory(applicationContext)
     }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager

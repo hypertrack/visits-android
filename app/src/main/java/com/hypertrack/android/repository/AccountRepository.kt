@@ -1,13 +1,12 @@
 package com.hypertrack.android.repository
 
-import android.app.Application
 import android.util.Log
 import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.utils.AccountDataStorage
-import com.hypertrack.android.utils.getServiceLocator
-import com.hypertrack.sdk.HyperTrack
+import com.hypertrack.android.utils.ServiceLocator
 
 class AccountRepository(
+    private val serviceLocator: ServiceLocator,
     private val accountData: AccountData,
     private val accountDataStorage: AccountDataStorage
 ) {
@@ -15,15 +14,12 @@ class AccountRepository(
     val isVerifiedAccount : Boolean
         get() = accountData.lastToken != null
 
-    val publishableKey : String
-        get() = accountData.publishableKey ?: ""
+    suspend fun onKeyReceived(key: String) : Boolean {
 
-    suspend fun onKeyReceived(key: String, application: Application) : Boolean {
+        val sdk = serviceLocator.getHyperTrackService(key)
+        Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
 
-        val sdk = HyperTrack.getInstance(application.applicationContext, key)
-        Log.d(TAG, "HyperTrack deviceId ${sdk.deviceID}")
-
-        val accessTokenRepository = application.getServiceLocator().getAccessTokenRepository(sdk.deviceID, key)
+        val accessTokenRepository = serviceLocator.getAccessTokenRepository(sdk.deviceId, key)
         val token = accessTokenRepository.refreshTokenAsync()
 
         if (token.isEmpty()) return false

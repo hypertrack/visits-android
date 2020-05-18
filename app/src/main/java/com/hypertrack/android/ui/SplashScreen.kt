@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import com.hypertrack.android.dismissProgressBar
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.showProgressBar
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 import io.branch.referral.Branch
@@ -19,7 +20,9 @@ import kotlinx.android.synthetic.main.splash_screen_layout.*
 class SplashScreen : AppCompatActivity() {
 
 
-    private val splashScreenViewModel: SplashScreenViewModel by viewModels()
+    private val splashScreenViewModel: SplashScreenViewModel by viewModels {
+        Injector.provideSplashScreenViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
