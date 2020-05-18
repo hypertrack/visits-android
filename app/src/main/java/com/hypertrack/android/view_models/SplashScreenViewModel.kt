@@ -51,7 +51,7 @@ class SplashScreenViewModel(
 
     override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
         Log.d(TAG, "Branch init finished with params $referringParams")
-        val key = referringParams?.optString("publishable_key")!!
+        val key = referringParams?.optString("publishable_key")?:""
         if (key.isNotEmpty()) {
             Log.d(TAG, "Got key $key")
                 try {

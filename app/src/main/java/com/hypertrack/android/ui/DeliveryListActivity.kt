@@ -3,6 +3,7 @@ package com.hypertrack.android.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -15,6 +16,7 @@ import com.hypertrack.android.adapters.DeliveryListAdapter
 import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.showProgressBar
 import com.hypertrack.android.utils.Injector
+import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.android.view_models.DeliveryListViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_job_listing.*
@@ -55,6 +57,23 @@ class DeliveryListActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = viewAdapter
         }
+
+        deliveryListViewModel.trackingState.observe(this, Observer { state ->
+            val unvisible = -1
+            val colorId =  when (state) {
+                TrackingStateValue.ERROR -> R.color.colorTrackingError
+                TrackingStateValue.STOP -> R.color.colorTrackingStopped
+                TrackingStateValue.TRACKING -> R.color.colorTrackingActive
+                else -> unvisible
+            }
+
+            if (colorId == unvisible) {
+                tvTrackerStatus.visibility = View.GONE
+            } else {
+                tvTrackerStatus.setBackgroundColor(getColor(colorId))
+            }
+
+        })
 
     }
 

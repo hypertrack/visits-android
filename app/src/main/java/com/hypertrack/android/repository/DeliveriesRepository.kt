@@ -8,12 +8,11 @@ import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.utils.TrackingStateValue
 import java.lang.IllegalArgumentException
 
 const val COMPLETED = "Completed"
-
 const val VISITED = "Visited"
-
 const val PENDING = "Pending"
 
 class DeliveriesRepository(
@@ -34,6 +33,8 @@ class DeliveriesRepository(
 
     val deliveryListItems: LiveData<List<DeliveryListItem>>
         get() = _deliveryListItems
+
+    val trackingState = hyperTrackService.state
 
     suspend fun refreshDeliveries() {
 
@@ -69,6 +70,7 @@ class DeliveriesRepository(
 
         val updatedNote = target.updateNote(newNote)
         _deliveriesMap[id] = updatedNote
+        hyperTrackService.sendUpdatedNote(id, newNote)
         deliveriesStorage.saveDeliveries(_deliveriesMap.values.toList())
         _deliveryItemsById[id]?.postValue(updatedNote)
         _deliveryListItems.postValue(_deliveriesMap.values.sortedWithHeaders())
@@ -79,14 +81,13 @@ class DeliveriesRepository(
         if (target.isCompleted) return
         val completedDelivery = target.complete(osUtilsProvider.getCurrentTimestamp())
         _deliveriesMap[id] = completedDelivery
+        hyperTrackService.sendCompletionEvent(id)
         deliveriesStorage.saveDeliveries(_deliveriesMap.values.toList())
         _deliveryItemsById[id]?.postValue(completedDelivery)
         _deliveryListItems.postValue(_deliveriesMap.values.sortedWithHeaders())
     }
 
-
     companion object { const val TAG = "DeliveriesRepository"}
-
 
 }
 

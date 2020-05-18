@@ -9,6 +9,8 @@ class DeliveryListViewModel(private val deliveriesRepository: DeliveriesReposito
 
     val deliveries = deliveriesRepository.deliveryListItems
 
+    val trackingState = deliveriesRepository.trackingState
+
     init {
         viewModelScope.launch {
             deliveriesRepository.refreshDeliveries()

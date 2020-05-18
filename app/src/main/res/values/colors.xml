@@ -15,5 +15,8 @@
     <color name="colorListStatus">#1A7CB8</color>
     <color name="colorVisitedBg">#D0B44E</color>
     <color name="colorCompletedBg">#24C963</color>
+    <color name="colorTrackingActive">#24C963</color>
+    <color name="colorTrackingError">#EB5B64</color>
+    <color name="colorTrackingStopped">#A0A0A0</color>
 
 </resources>
