@@ -1,24 +1,13 @@
 package com.hypertrack.android
 
-import android.Manifest
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.location.Geocoder
 import android.util.Log
 import android.view.Window
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.Address
 import com.hypertrack.android.ui.CheckInActivity
 import com.hypertrack.android.ui.DeliveryDetailActivity
@@ -26,14 +15,9 @@ import com.hypertrack.android.ui.DeliveryListActivity
 import com.hypertrack.android.ui.SplashScreen
 import com.hypertrack.android.utils.Destination
 import com.hypertrack.logistics.android.github.R
-import java.io.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 private var dialog: Dialog? = null
-
-const val CAMERA_PERMISSION_REQUEST_CODE = 3
 
 const val DELIVERY_UPDATE_RESULT_CODE = 4
 
@@ -42,11 +26,6 @@ const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
 const val AUTH_HEADER_KEY = "Authorization"
 const val AUTH_URL = "https://live-api.htprod.hypertrack.com/authenticate"
-
-// Show Toast using this extension function
-fun Context.showToast(text: String) {
-    Toast.makeText(this, text, Toast.LENGTH_LONG).show()
-}
 
 // Show Progress Bar on anywhere
 fun Context.showProgressBar() {
@@ -66,131 +45,12 @@ fun Context.showProgressBar() {
 // Dismiss Progress bar
 fun dismissProgressBar() = dialog?.dismiss()
 
-// check Camera permission
-fun Activity.askCameraPermission(): Boolean {
-
-    if (ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) != PERMISSION_GRANTED
-    ) {
-
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_REQUEST_CODE
-        )
-
-        return false
-    }
-
-    return true
-}
-
 // Create address from Delivery Object
 fun createAddress(address: Address): String {
 
     return address.street.plus("\n").plus(address.city).plus(",").plus(address.country)
         .plus("-${address.postalCode}")
 
-}
-
-// Encode Image and convert into base 64 String
-fun encodeImage(imageFile: File): ByteArray? {
-    var fis: FileInputStream? = null
-    try {
-        fis = FileInputStream(imageFile)
-    } catch (e: FileNotFoundException) {
-        e.printStackTrace()
-    }
-
-    val bm = BitmapFactory.decodeStream(fis)
-    val baos = ByteArrayOutputStream()
-    if (bm == null)
-        return null
-    bm.compress(Bitmap.CompressFormat.JPEG, 30, baos)   // Compress image quality
-    val b = baos.toByteArray()
-    //Base64.de
-    return b
-
-}
-
-
-fun convertSeverDateToTime(rawDate: String): String {
-
-    var date: Date? = null
-    var output = ""
-    //2019-08-29T09:42:40.653
-    //2019-08-12T05:40:00-04:00
-    //24 July 2019 - 1:00 pm
-    val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
-    df.timeZone = TimeZone.getTimeZone("UTC")
-    val sdf = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
-
-    try {
-        //Conversion of input String to date
-        date = df.parse(rawDate)
-        output = sdf.format(date)
-
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-    return output
-}
-
-fun Context.getLocationFromAddress(strAddress: String): LatLng? {
-
-    val coder = Geocoder(this)
-    var address = listOf<android.location.Address>()
-    var p1: LatLng = LatLng(0.0, 0.0)
-
-    try {
-        // May throw an IOException
-        address = coder.getFromLocationName(strAddress, 5);
-        if (address == null) {
-            return null
-        }
-
-        val location: android.location.Address = address[0]
-        p1 = LatLng(location.latitude, location.longitude)
-
-    } catch (ex: IOException) {
-
-        ex.printStackTrace()
-    }
-
-    return p1
-}
-
-fun Context.getAddressFromCoordinates(latitude: Double, longitude: Double) : Address {
-    val coder = Geocoder(this)
-    val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
-    address?.let {
-        return Address(
-            (address.thoroughfare?:"").replace(address.subThoroughfare?:"", ""),
-            address.postalCode?:"",
-            address.locality?:"",
-            address.countryName?:""
-        )
-    }
-    return Address("Unknown location at ($latitude, $longitude)", "","", "")
-
-}
-
-// Show Error message when no driver list fetch
-fun Context.showAlertMessage(message: String, finishActiivty: Boolean = true) {
-    AlertDialog.Builder(this)
-        .setMessage(message)
-        .setPositiveButton("OK") { dialog, which ->
-
-            dialog.dismiss()
-            if (finishActiivty)
-                (this as Activity).finish()
-
-        }
-        .create()
-        .show()
 }
 
 

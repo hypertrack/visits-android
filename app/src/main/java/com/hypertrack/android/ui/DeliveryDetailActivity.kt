@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.google.android.gms.location.LocationServices
@@ -76,7 +78,7 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateView(newValue: Delivery) {
         tvCustomerNote.text = newValue.customerNote
-        tvAddress.text = newValue.address.toString()
+        tvAddress.text = newValue.address.street
         etDeliveryNote.setText(newValue.deliveryNote)
 
     }
@@ -113,6 +115,8 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         setResult(Activity.RESULT_OK)
         navigateTo(Destination.LIST_VIEW)
     }
+
+    companion object {const val TAG = "DeliveryDetailActivity"}
 
 }
 

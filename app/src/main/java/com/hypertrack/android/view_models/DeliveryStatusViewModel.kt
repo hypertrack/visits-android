@@ -1,5 +1,6 @@
 package com.hypertrack.android.view_models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -15,6 +16,7 @@ class DeliveryStatusViewModel(
 
 
     fun onDeliveryNoteChanged(newNote : String) {
+        Log.d(TAG, "onDeliveryNoteChanged $newNote")
         deliveriesRepository.updateDeliveryNote(id, newNote)
     }
 
@@ -25,4 +27,6 @@ class DeliveryStatusViewModel(
     fun getLabel() : String {
         return "Parcel ${delivery.value?._id}"
     }
+
+    companion object {const val TAG = "DeliveryStatusVM"}
 }

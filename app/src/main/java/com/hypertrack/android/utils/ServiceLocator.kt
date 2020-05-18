@@ -53,9 +53,15 @@ object Injector {
         val accessTokenRepository = getMyPreferences(context).restoreRepository() ?: throw IllegalStateException("No access token repository was saved")
         return ApiClient(accessTokenRepository, BASE_URL, accessTokenRepository.deviceId)
     }
+
+    private fun getOsUtilsProvider(context: Context) : OsUtilsProvider {
+        return OsUtilsProvider(context)
+
+    }
+
     private fun getDeliveriesRepo(context: Context): DeliveriesRepository {
         return DeliveriesRepository(
-            context,
+            getOsUtilsProvider(context),
             getDeliveriesApiClient(context),
             getMyPreferences(context)
         )

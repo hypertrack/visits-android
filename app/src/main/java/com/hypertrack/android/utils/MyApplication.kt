@@ -3,6 +3,7 @@ package com.hypertrack.android.utils
 import android.app.Application
 import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiInterface
+import com.hypertrack.sdk.HyperTrack
 import io.branch.referral.Branch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -18,12 +19,11 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Branch.enableLogging()
         Branch.getAutoInstance(this)
 
         initRetrofitClient()
 
-//        HyperTrack.enableDebugLogging()
+        HyperTrack.enableDebugLogging()
     }
 
     // Get App Client reference
