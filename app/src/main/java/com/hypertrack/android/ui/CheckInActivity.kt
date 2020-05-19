@@ -1,5 +1,8 @@
 package com.hypertrack.android.ui
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,6 +21,8 @@ class CheckInActivity : AppCompatActivity() {
     private val checkInModel: CheckInViewModel by viewModels {
         Injector.provideCheckinViewModelFactory(applicationContext)
     }
+
+    private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -40,11 +45,32 @@ class CheckInActivity : AppCompatActivity() {
         }
 
         checkInModel.enableCheckIn
-            .observe(this, Observer { enable -> btnCheckIn.isEnabled = enable })
+            .observe(this, Observer { enable ->
+                btnCheckIn.isEnabled = enable
+                btnCheckIn.setBackgroundColor(getColor(if (enable) R.color.colorBlack else R.color.colorBtnDisable))
+            })
 
         checkInModel.destination
             .observe(this, Observer { destination -> navigateTo(destination) })
+
+        checkInModel.showProgresss.observe(this, Observer {show ->
+            if (show) showProgress() else dismissProgress()
+        })
     }
+
+
+        private fun showProgress() {
+
+            val newDialog = dialog ?: Dialog(this)
+            newDialog.setCancelable(false)
+            newDialog.setContentView(R.layout.dialog_progress_bar)
+            newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            newDialog.show()
+
+            dialog = newDialog
+        }
+
+        private fun dismissProgress() = dialog?.dismiss()
 
     companion object { const val TAG = "CheckInAct" }
 

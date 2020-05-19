@@ -9,6 +9,7 @@ import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CheckInViewModel(
@@ -20,6 +21,10 @@ class CheckInViewModel(
     private val _checkInButtonEnabled = MutableLiveData<Boolean>(false)
 
     private val _destination = MutableLiveData<Destination>(Destination.LOGIN)
+
+    private val _showProgress = MutableLiveData<Boolean>(false)
+    val showProgresss
+        get() = _showProgress
 
     val enableCheckIn: LiveData<Boolean>
         get() = _checkInButtonEnabled
@@ -38,6 +43,7 @@ class CheckInViewModel(
     fun onLoginClick(inputText: CharSequence?) {
         inputText?.let {
             _checkInButtonEnabled.postValue(false)
+            _showProgress.postValue(true)
             val driverId = it.toString()
             Log.d(TAG, "Proceeding with Driver Id $driverId")
             hyperTrackService.driverId = driverId
@@ -45,6 +51,7 @@ class CheckInViewModel(
             viewModelScope.launch {
                 deliveriesApiClient.checkinCall()
                 _destination.postValue(Destination.PERMISSION_REQUEST)
+                _showProgress.postValue(false)
             }
             return
         }
