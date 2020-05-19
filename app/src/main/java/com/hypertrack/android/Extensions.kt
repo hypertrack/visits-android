@@ -17,14 +17,6 @@ import com.hypertrack.logistics.android.github.R
 
 private var dialog: Dialog? = null
 
-const val DELIVERY_UPDATE_RESULT_CODE = 4
-
-const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
-
-const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
-const val AUTH_HEADER_KEY = "Authorization"
-const val AUTH_URL = "https://live-api.htprod.hypertrack.com/authenticate"
-
 // Show Progress Bar on anywhere
 fun Context.showProgressBar() {
 

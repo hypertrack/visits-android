@@ -14,7 +14,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.utils.Destination

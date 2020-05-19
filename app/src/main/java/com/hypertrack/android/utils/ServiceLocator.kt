@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
-import com.hypertrack.android.AUTH_URL
-import com.hypertrack.android.BASE_URL
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.repository.*
@@ -17,7 +15,8 @@ import com.hypertrack.android.view_models.SplashScreenViewModel
 class ServiceLocator(private val context: Context) {
 
 
-    fun getAccessTokenRepository(deviceId : String, userName : String) = BasicAuthAccessTokenRepository(AUTH_URL, deviceId, userName)
+    fun getAccessTokenRepository(deviceId : String, userName : String) = BasicAuthAccessTokenRepository(
+        AUTH_URL, deviceId, userName)
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         return HyperTrackService(
@@ -44,7 +43,8 @@ object Injector {
         val accessTokenRepository =
             getMyPreferences(context).restoreRepository()
                 ?: throw IllegalStateException("No access token repository was saved")
-        return ApiClient(accessTokenRepository, BASE_URL, accessTokenRepository.deviceId)
+        return ApiClient(accessTokenRepository,
+            BASE_URL, accessTokenRepository.deviceId)
     }
 
     private fun getAccountRepo(context: Context) =
@@ -142,3 +142,6 @@ class SplashScreenViewModelFactory(
         }
     }
 }
+
+const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
+const val AUTH_URL = "https://live-api.htprod.hypertrack.com/authenticate"

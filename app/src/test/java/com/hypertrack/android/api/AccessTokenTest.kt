@@ -1,6 +1,6 @@
 package com.hypertrack.android.api
 
-import com.hypertrack.android.AUTH_HEADER_KEY
+import com.hypertrack.android.repository.AUTH_HEADER_KEY
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import okhttp3.OkHttpClient
 import okhttp3.Request

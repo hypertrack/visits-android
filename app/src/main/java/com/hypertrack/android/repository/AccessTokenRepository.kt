@@ -4,7 +4,6 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
-import com.hypertrack.android.AUTH_HEADER_KEY
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -110,3 +109,5 @@ data class BasicAuthAccessTokenConfig(
     val userPwd: String = "",
     var token: String? = null
 )
+
+const val AUTH_HEADER_KEY = "Authorization"

@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.DELIVERY_UPDATE_RESULT_CODE
-import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.adapters.DeliveryListAdapter
 import com.hypertrack.android.repository.Delivery
 import com.hypertrack.android.utils.Injector
@@ -91,3 +89,5 @@ class DeliveryListActivity : AppCompatActivity() {
 
 }
 
+const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
+const val DELIVERY_UPDATE_RESULT_CODE = 4

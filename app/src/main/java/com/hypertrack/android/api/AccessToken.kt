@@ -1,7 +1,7 @@
 package com.hypertrack.android.api
 
 import android.util.Log
-import com.hypertrack.android.AUTH_HEADER_KEY
+import com.hypertrack.android.repository.AUTH_HEADER_KEY
 import com.hypertrack.android.repository.AccessTokenRepository
 import okhttp3.*
 import java.lang.IllegalStateException
