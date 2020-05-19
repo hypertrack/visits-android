@@ -3,7 +3,9 @@ package com.hypertrack.android.utils
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
+import com.hypertrack.sdk.ServiceNotificationConfig
 import com.hypertrack.sdk.TrackingError
 import com.hypertrack.sdk.TrackingStateObserver
 
@@ -13,6 +15,12 @@ class HyperTrackService(publishableKey: String, context: Context) {
     private val sdkInstnce = HyperTrack
         .getInstance(context, publishableKey)
         .addTrackingListener(listener)
+        .setTrackingNotificationConfig(
+            ServiceNotificationConfig.Builder()
+                .setSmallIcon(R.drawable.ic_logo_small)
+                .build()
+        )
+        .allowMockLocations()
         .requestPermissionsIfNecessary()
 
     init {
