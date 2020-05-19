@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -28,13 +29,14 @@ class DeliveryListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_job_listing)
 
         viewAdapter = DeliveryListAdapter(deliveryListViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int) {
                 Log.d(TAG, "Clicked delivery at position $position")
                 val delivery = deliveryListViewModel.deliveries.value?.get(position)
-                delivery?.let { if (it is Delivery) showDeliveryDetails(it) }
+                delivery?.let { if (it is Delivery) showDeliveryDetails(it, position) }
             }
         })
 
@@ -74,20 +76,24 @@ class DeliveryListActivity : AppCompatActivity() {
 
     }
 
-
-    // Implement click from adapter class
-    private fun showDeliveryDetails(delivery: Delivery) {
-
-                startActivityForResult(
-                    Intent(this@DeliveryListActivity, DeliveryDetailActivity::class.java)
-                        .putExtra(KEY_EXTRA_DELIVERY_ID, delivery._id),
-                    42
-                )
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        data?.dataString?.toIntOrNull()?.let { position ->
+            Log.d(TAG, "Item in pos $position was changed")
+            viewAdapter.notifyItemChanged(position)
+        }
     }
+
+    private fun showDeliveryDetails(delivery: Delivery, position: Int) = startActivityForResult(
+        Intent(this@DeliveryListActivity, DeliveryDetailActivity::class.java)
+            .putExtra(KEY_EXTRA_DELIVERY_ID, delivery._id)
+            .putExtra(KEY_EXTRA_DELIVERY_POS, position.toString()),
+        42
+    )
 
     companion object { const val TAG = "ListActivity" }
 
 }
 
 const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
+const val KEY_EXTRA_DELIVERY_POS = "delivery_position"

@@ -1,7 +1,7 @@
 package com.hypertrack.android
 
+import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -17,7 +17,9 @@ private var dialog: Dialog? = null
 val pass: Unit = Unit
 
 // Show Progress Bar on anywhere
-fun Context.showProgressBar() {
+fun Activity.showProgressBar() {
+
+    if (isFinishing) return
 
     val newDialog = dialog ?: Dialog(this)
 
@@ -52,6 +54,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
     }
 
     startActivity(Intent(this, targetActivity))
-    finish()
+    if (destination != Destination.DETAILS_VIEW)
+        finish()
 
 }

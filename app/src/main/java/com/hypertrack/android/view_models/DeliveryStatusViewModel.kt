@@ -13,20 +13,21 @@ class DeliveryStatusViewModel(
 ) : ViewModel() {
 
     val delivery: LiveData<Delivery> = deliveriesRepository.deliveryForId(id)
+    var deliveryNote = delivery.value?.deliveryNote?:""
 
 
     fun onDeliveryNoteChanged(newNote : String) {
         Log.d(TAG, "onDeliveryNoteChanged $newNote")
-        deliveriesRepository.updateDeliveryNote(id, newNote)
+        deliveryNote = newNote
     }
 
     fun onMarkedCompleted() = deliveriesRepository.markCompleted(id)
-    fun getLatLng(): LatLng {
-        return LatLng(delivery.value!!.latitude, delivery.value!!.longitude)
-    }
-    fun getLabel() : String {
-        return "Parcel ${delivery.value?._id}"
-    }
+
+    fun getLatLng(): LatLng = LatLng(delivery.value!!.latitude, delivery.value!!.longitude)
+
+    fun getLabel() : String = "Parcel ${delivery.value?._id}"
+
+    fun onBackPressed() = deliveriesRepository.updateDeliveryNote(id, deliveryNote)
 
     companion object {const val TAG = "DeliveryStatusVM"}
 }

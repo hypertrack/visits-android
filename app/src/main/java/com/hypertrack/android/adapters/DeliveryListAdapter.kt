@@ -27,18 +27,16 @@ class DeliveryListAdapter(
         when (viewType) {
             R.layout.inflate_header_item -> {
 
-                val itemView = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.inflate_header_item, parent, false)
-
-                return HeaderViewHolder(itemView)
+                return HeaderViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.inflate_header_item, parent, false)
+                )
             }
 
             else -> {
 
-                val itemView = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.inflater_delivery_item, parent, false)
-
-                return DeliveryViewHolder(itemView)
+                return DeliveryViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.inflater_delivery_item, parent, false)
+                )
 
             }
         }
@@ -71,9 +69,7 @@ class DeliveryListAdapter(
 
     }
 
-    override fun getItemCount(): Int {
-        return deliveries.value?.size ?: 0
-    }
+    override fun getItemCount(): Int = deliveries.value?.size ?: 0
 
     override fun getItemViewType(position: Int): Int {
         return if (deliveries.value?.get(position) is HeaderDeliveryItem)

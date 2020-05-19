@@ -2,6 +2,7 @@ package com.hypertrack.android.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
@@ -53,6 +54,9 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    private val deliveryPosition: String
+        get() = intent?.getStringExtra(KEY_EXTRA_DELIVERY_POS)?:""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_detail)
@@ -83,7 +87,10 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addActionListeners() {
-        ivBack.setOnClickListener { onBackPressed() }
+        ivBack.setOnClickListener {
+            deliveryStatusViewModel.onBackPressed()
+            onBackPressed()
+        }
         tvComplete.setOnClickListener {
             Log.d(TAG, "Complete button pressed")
             tvComplete.isEnabled = false
@@ -114,9 +121,11 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     override fun onBackPressed() {
-
-        setResult(Activity.RESULT_OK)
-        navigateTo(Destination.LIST_VIEW)
+        val data = Intent()
+        data.data = Uri.parse(deliveryPosition)
+        setResult(Activity.RESULT_OK, data)
+        finish()
+//        navigateTo(Destination.LIST_VIEW)
     }
 
     companion object {const val TAG = "DeliveryDetailActivity"}
