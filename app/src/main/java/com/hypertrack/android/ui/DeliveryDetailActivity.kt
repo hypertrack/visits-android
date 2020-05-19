@@ -9,12 +9,10 @@ import android.text.TextWatcher
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.navigateTo
@@ -43,11 +41,11 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
             map.addMarker(MarkerOptions().position(latLng).title(label))
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.0f))
-            LocationServices.getFusedLocationProviderClient(this).lastLocation.addOnSuccessListener { location ->
-                val markerOptions = MarkerOptions().position(LatLng(location.latitude, location.longitude)).title("Your Current Location")
-                map.addMarker(markerOptions)
-
-            }
+//            LocationServices.getFusedLocationProviderClient(this).lastLocation.addOnSuccessListener { location ->
+//                val markerOptions = MarkerOptions().position(LatLng(location.latitude, location.longitude)).title("Your Current Location")
+//                map.addMarker(markerOptions)
+//
+//            }
             map.uiSettings.apply {
                 isMyLocationButtonEnabled = true
                 isZoomControlsEnabled = true
