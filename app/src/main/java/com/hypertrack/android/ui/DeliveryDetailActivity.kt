@@ -27,10 +27,7 @@ private const val CAMERA_REQUEST = 1
 
 class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
-
-
     private lateinit var deliveryStatusViewModel: DeliveryStatusViewModel
-
 
     override fun onMapReady(p0: GoogleMap?) {
 

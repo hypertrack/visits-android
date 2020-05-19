@@ -13,8 +13,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name="com.hypertrack.android.ui.PermissionRequestActivity"
-            android:label="@string/title_activity_permission_request"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_permission_request"></activity>
         <activity
             android:name="com.hypertrack.android.ui.SplashScreen"
             android:launchMode="singleTask"

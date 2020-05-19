@@ -66,6 +66,7 @@ class DeliveryListActivity : AppCompatActivity() {
             if (colorId == invisible) {
                 tvTrackerStatus.visibility = View.GONE
             } else {
+                tvTrackerStatus.visibility = View.VISIBLE
                 tvTrackerStatus.setBackgroundColor(getColor(colorId))
             }
 
