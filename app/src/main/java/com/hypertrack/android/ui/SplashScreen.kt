@@ -1,14 +1,10 @@
 package com.hypertrack.android.ui
 
-import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.Injector
@@ -18,14 +14,13 @@ import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.splash_screen_layout.*
 
-class SplashScreen : AppCompatActivity() {
+class SplashScreen : ProgressDialogActivity() {
 
 
     private val splashScreenViewModel: SplashScreenViewModel by viewModels {
         Injector.provideSplashScreenViewModelFactory(applicationContext)
     }
 
-    private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,18 +66,6 @@ class SplashScreen : AppCompatActivity() {
     }
 
 
-    private fun showProgress() {
-
-        val newDialog = dialog ?: Dialog(this)
-        newDialog.setCancelable(false)
-        newDialog.setContentView(R.layout.dialog_progress_bar)
-        newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        newDialog.show()
-
-        dialog = newDialog
-    }
-
-    private fun dismissProgress() = dialog?.dismiss()
 
     companion object { const val TAG = "SplashScreen" }
 }

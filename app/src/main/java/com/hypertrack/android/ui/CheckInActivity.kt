@@ -1,13 +1,9 @@
 package com.hypertrack.android.ui
 
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.Injector
@@ -16,13 +12,11 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_checkin_screen.*
 
 
-class CheckInActivity : AppCompatActivity() {
+class CheckInActivity : ProgressDialogActivity() {
 
     private val checkInModel: CheckInViewModel by viewModels {
         Injector.provideCheckinViewModelFactory(applicationContext)
     }
-
-    private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -57,20 +51,6 @@ class CheckInActivity : AppCompatActivity() {
             if (show) showProgress() else dismissProgress()
         })
     }
-
-
-        private fun showProgress() {
-
-            val newDialog = dialog ?: Dialog(this)
-            newDialog.setCancelable(false)
-            newDialog.setContentView(R.layout.dialog_progress_bar)
-            newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            newDialog.show()
-
-            dialog = newDialog
-        }
-
-        private fun dismissProgress() = dialog?.dismiss()
 
     companion object { const val TAG = "CheckInAct" }
 

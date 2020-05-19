@@ -1,14 +1,10 @@
 package com.hypertrack.android.ui
 
-import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,15 +17,13 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_job_listing.*
 
 
-class DeliveryListActivity : AppCompatActivity() {
+class DeliveryListActivity : ProgressDialogActivity() {
 
     private val deliveryListViewModel : DeliveryListViewModel by viewModels {
         Injector.provideListActivityViewModelFactory(applicationContext)
     }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-
-    private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,19 +90,6 @@ class DeliveryListActivity : AppCompatActivity() {
             .putExtra(KEY_EXTRA_DELIVERY_POS, position.toString()),
         42
     )
-
-    private fun showProgress() {
-
-        val newDialog = dialog ?: Dialog(this)
-        newDialog.setCancelable(false)
-        newDialog.setContentView(R.layout.dialog_progress_bar)
-        newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        newDialog.show()
-
-        dialog = newDialog
-    }
-
-    private fun dismissProgress() = dialog?.dismiss()
 
     companion object { const val TAG = "ListActivity" }
 
