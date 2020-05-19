@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +13,6 @@ import com.hypertrack.android.DELIVERY_UPDATE_RESULT_CODE
 import com.hypertrack.android.KEY_EXTRA_DELIVERY_ID
 import com.hypertrack.android.adapters.DeliveryListAdapter
 import com.hypertrack.android.repository.Delivery
-import com.hypertrack.android.showProgressBar
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.android.view_models.DeliveryListViewModel
@@ -59,15 +57,15 @@ class DeliveryListActivity : AppCompatActivity() {
         }
 
         deliveryListViewModel.trackingState.observe(this, Observer { state ->
-            val unvisible = -1
+            val invisible = -1
             val colorId =  when (state) {
                 TrackingStateValue.ERROR -> R.color.colorTrackingError
                 TrackingStateValue.STOP -> R.color.colorTrackingStopped
                 TrackingStateValue.TRACKING -> R.color.colorTrackingActive
-                else -> unvisible
+                else -> invisible
             }
 
-            if (colorId == unvisible) {
+            if (colorId == invisible) {
                 tvTrackerStatus.visibility = View.GONE
             } else {
                 tvTrackerStatus.setBackgroundColor(getColor(colorId))
@@ -86,35 +84,6 @@ class DeliveryListActivity : AppCompatActivity() {
                         .putExtra(KEY_EXTRA_DELIVERY_ID, delivery._id),
                     DELIVERY_UPDATE_RESULT_CODE
                 )
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == DELIVERY_UPDATE_RESULT_CODE) {
-            showProgressBar()
-            // TODO Denys - refetch deliveries ??
-        }
-    }
-
-    private fun makeTrackerStatus() {
-
-        var createStatusText = ""
-
-        val isTracking = false
-
-        if (isTracking) {
-            createStatusText = "Location tracking is active"
-
-            tvTrackerStatus.setBackgroundColor(
-                ContextCompat.getColor(this, R.color.colorListStatus))
-
-        } else {
-            createStatusText = "Location tracking is inactive"
-
-            tvTrackerStatus.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
-        }
 
     }
 
