@@ -1,39 +1,13 @@
 package com.hypertrack.android
 
-import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.ui.*
 import com.hypertrack.android.utils.Destination
-import com.hypertrack.logistics.android.github.R
 
-
-private var dialog: Dialog? = null
 
 val pass: Unit = Unit
-
-// Show Progress Bar on anywhere
-fun Activity.showProgressBar() {
-
-    if (isFinishing) return
-
-    val newDialog = dialog ?: Dialog(this)
-
-    newDialog.setCancelable(false)
-    newDialog.setContentView(R.layout.dialog_progress_bar)
-    newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    newDialog.show()
-
-    dialog = newDialog
-
-}
-
-// Dismiss Progress bar
-fun dismissProgressBar() = dialog?.dismiss()
 
 
 fun AppCompatActivity.navigateTo(destination: Destination) {

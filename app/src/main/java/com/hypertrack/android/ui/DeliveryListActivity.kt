@@ -1,7 +1,9 @@
 package com.hypertrack.android.ui
 
-import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -27,6 +29,8 @@ class DeliveryListActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
 
+    private var dialog: Dialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
@@ -39,7 +43,6 @@ class DeliveryListActivity : AppCompatActivity() {
                 delivery?.let { if (it is Delivery) showDeliveryDetails(it, position) }
             }
         })
-
         viewManager = LinearLayoutManager(this)
 
 
@@ -49,12 +52,12 @@ class DeliveryListActivity : AppCompatActivity() {
                 viewAdapter.notifyDataSetChanged()
             })
 
-        val rV = recyclerView
-        rV.apply {
-            setHasFixedSize(true)
+        recyclerView.apply {
             layoutManager = viewManager
             adapter = viewAdapter
         }
+
+        ivRefresh.setOnClickListener { deliveryListViewModel.rerfeshDeliveries() }
 
         deliveryListViewModel.trackingState.observe(this, Observer { state ->
             val invisible = -1
@@ -73,6 +76,9 @@ class DeliveryListActivity : AppCompatActivity() {
             }
 
         })
+        deliveryListViewModel.showSpinner.observe(this, Observer { show ->
+            if(show) showProgress() else dismissProgress()
+        })
 
     }
 
@@ -90,6 +96,19 @@ class DeliveryListActivity : AppCompatActivity() {
             .putExtra(KEY_EXTRA_DELIVERY_POS, position.toString()),
         42
     )
+
+    private fun showProgress() {
+
+        val newDialog = dialog ?: Dialog(this)
+        newDialog.setCancelable(false)
+        newDialog.setContentView(R.layout.dialog_progress_bar)
+        newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        newDialog.show()
+
+        dialog = newDialog
+    }
+
+    private fun dismissProgress() = dialog?.dismiss()
 
     companion object { const val TAG = "ListActivity" }
 
