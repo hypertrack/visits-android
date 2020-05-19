@@ -8,11 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.createAddress
-import com.hypertrack.android.repository.Delivery
-import com.hypertrack.android.repository.DeliveryListItem
-import com.hypertrack.android.repository.HeaderDeliveryItem
-import com.hypertrack.android.repository.VISITED
+import com.hypertrack.android.repository.*
 import com.hypertrack.logistics.android.github.R
 
 // Job adapter (Multiple type jobs Pending,Completed,Visited)
@@ -58,7 +54,8 @@ class DeliveryListAdapter(
             }
             is Delivery -> {
                 val deliveryView = holder as DeliveryViewHolder
-                deliveryView.tvDescription.text = createAddress(item.address)
+                deliveryView.tvDescription.text =
+                    createAddress(item.address)
                 deliveryView.tvTitle.text = item.delivery_id
                 deliveryView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
                 deliveryView.ivCompass.visibility = if (item.status == VISITED) View.VISIBLE else View.INVISIBLE
@@ -110,5 +107,13 @@ class DeliveryListAdapter(
     interface OnListAdapterClick {
         fun onJobItemClick(position: Int)
     }
+
+}
+
+// Create address from Delivery Object
+fun createAddress(address: Address): String {
+
+    return address.street.plus("\n").plus(address.city).plus(", ").plus(address.country)
+        .plus("-${address.postalCode}")
 
 }

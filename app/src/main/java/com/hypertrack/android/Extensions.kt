@@ -6,9 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
-import com.hypertrack.android.repository.Address
 import com.hypertrack.android.ui.CheckInActivity
 import com.hypertrack.android.ui.DeliveryDetailActivity
 import com.hypertrack.android.ui.DeliveryListActivity
@@ -32,7 +30,6 @@ fun Context.showProgressBar() {
 
     val newDialog = dialog ?: Dialog(this)
 
-    newDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
     newDialog.setCancelable(false)
     newDialog.setContentView(R.layout.dialog_progress_bar)
     newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -44,14 +41,6 @@ fun Context.showProgressBar() {
 
 // Dismiss Progress bar
 fun dismissProgressBar() = dialog?.dismiss()
-
-// Create address from Delivery Object
-fun createAddress(address: Address): String {
-
-    return address.street.plus("\n").plus(address.city).plus(",").plus(address.country)
-        .plus("-${address.postalCode}")
-
-}
 
 
 fun AppCompatActivity.navigateTo(destination: Destination) {
