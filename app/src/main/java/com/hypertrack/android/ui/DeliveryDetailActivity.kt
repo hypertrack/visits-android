@@ -30,6 +30,25 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var deliveryStatusViewModel: DeliveryStatusViewModel
 
+    private val deliveryPosition: String
+        get() = intent?.getStringExtra(KEY_EXTRA_DELIVERY_POS)?:""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_job_detail)
+
+
+        val deliveryId = intent?.getStringExtra(KEY_EXTRA_DELIVERY_ID)!!
+        deliveryStatusViewModel = Injector.provideDeliveryStatusViewModel(this.applicationContext, deliveryId)
+
+        deliveryStatusViewModel.delivery.observe(this, Observer { updateView(it) }
+        )
+
+        addActionListeners()
+        (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
+
+    }
+
     override fun onMapReady(p0: GoogleMap?) {
 
         p0?.let { map ->
@@ -51,26 +70,6 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         }
-    }
-
-
-    private val deliveryPosition: String
-        get() = intent?.getStringExtra(KEY_EXTRA_DELIVERY_POS)?:""
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_job_detail)
-
-
-        val deliveryId = intent?.getStringExtra(KEY_EXTRA_DELIVERY_ID)!!
-        deliveryStatusViewModel = Injector.provideDeliveryStatusViewModel(this.applicationContext, deliveryId)
-
-        deliveryStatusViewModel.delivery.observe(this, Observer { updateView(it) }
-        )
-
-        addActionListeners()
-        (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
-
     }
 
     private fun updateView(newValue: Delivery) {

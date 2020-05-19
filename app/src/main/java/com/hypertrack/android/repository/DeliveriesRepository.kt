@@ -9,6 +9,7 @@ import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
 import com.hypertrack.android.utils.OsUtilsProvider
 import java.lang.IllegalArgumentException
+import java.lang.StringBuilder
 
 const val COMPLETED = "Completed"
 const val VISITED = "Visited"
@@ -157,10 +158,17 @@ data class Delivery(val _id : String,
 
     constructor(geofence: Geofence, osUtilsProvider: OsUtilsProvider) : this(
         _id = geofence.geofence_id,
-        customerNote = geofence.metadata.toString(),
+        customerNote = toNote(geofence.metadata),
         address = osUtilsProvider.getAddressFromCoordinates(geofence.latitude, geofence.longitude),
 //        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
     latitude = geofence.latitude, longitude = geofence.longitude)
+
+}
+
+private fun toNote(metadata: Map<String, Any>): String {
+    val result = StringBuilder()
+    metadata.forEach { (key, value) -> result.append("$key: $value\n") }
+    return result.toString().dropLast(1)
 }
 
 
