@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hypertrack.logistics.android.github">
@@ -10,21 +11,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <activity
-            android:launchMode="singleTask"
+            android:name="com.hypertrack.android.ui.PermissionRequestActivity"
+            android:label="@string/title_activity_permission_request"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name="com.hypertrack.android.ui.SplashScreen"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <!-- Branch URI Scheme -->
             <intent-filter>
                 <data android:scheme="hypertrack-logistics" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
@@ -32,29 +38,35 @@
             <!-- Branch App Links (optional) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="hypertrack-logistics.app.link" />
-                <data android:scheme="https" android:host="hypertrack-logistics.app.link" />
+
+                <data
+                    android:host="hypertrack-logistics.app.link"
+                    android:scheme="https" />
+                <data
+                    android:host="hypertrack-logistics.app.link"
+                    android:scheme="https" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name="com.hypertrack.android.ui.CheckInActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name="com.hypertrack.android.ui.DeliveryListActivity"
             android:launchMode="singleTask"
-             android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name="com.hypertrack.android.ui.DeliveryDetailActivity"
+            android:parentActivityName="com.hypertrack.android.ui.DeliveryListActivity" />
 
-        <activity android:name="com.hypertrack.android.ui.DeliveryDetailActivity"
-            android:parentActivityName="com.hypertrack.android.ui.DeliveryListActivity"
-            />
-
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_api_key" />
-        <meta-data android:name="io.branch.sdk.BranchKey" android:value="@string/branch_io_api_key" />
-
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_api_key" />
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="@string/branch_io_api_key" />
     </application>
+
 </manifest>

@@ -7,15 +7,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.hypertrack.android.ui.CheckInActivity
-import com.hypertrack.android.ui.DeliveryDetailActivity
-import com.hypertrack.android.ui.DeliveryListActivity
-import com.hypertrack.android.ui.SplashScreen
+import com.hypertrack.android.ui.*
 import com.hypertrack.android.utils.Destination
 import com.hypertrack.logistics.android.github.R
 
 
 private var dialog: Dialog? = null
+
+val pass: Unit = Unit
 
 // Show Progress Bar on anywhere
 fun Context.showProgressBar() {
@@ -42,6 +41,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
     val targetActivity = when (destination) {
         Destination.SPLASH_SCREEN -> SplashScreen::class.java
         Destination.LOGIN -> CheckInActivity::class.java
+        Destination.PERMISSION_REQUEST -> PermissionRequestActivity::class.java
         Destination.LIST_VIEW -> DeliveryListActivity::class.java
         Destination.DETAILS_VIEW -> DeliveryDetailActivity::class.java
     }

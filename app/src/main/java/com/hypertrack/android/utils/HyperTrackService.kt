@@ -12,7 +12,7 @@ import com.hypertrack.sdk.TrackingStateObserver
 class HyperTrackService(publishableKey: String, context: Context) {
 
     private val listener = TrackingState()
-    private val sdkInstnce = HyperTrack
+    private val sdkInstance = HyperTrack
         .getInstance(context, publishableKey)
         .addTrackingListener(listener)
         .setTrackingNotificationConfig(
@@ -21,10 +21,9 @@ class HyperTrackService(publishableKey: String, context: Context) {
                 .build()
         )
         .allowMockLocations()
-        .requestPermissionsIfNecessary()
 
     init {
-        when(sdkInstnce.isRunning) {
+        when(sdkInstance.isRunning) {
             true -> listener.onTrackingStart()
             else -> listener.onTrackingStop()
         }
@@ -33,21 +32,21 @@ class HyperTrackService(publishableKey: String, context: Context) {
     var driverId: String
     get() = throw NotImplementedError()
     set(value) {
-        sdkInstnce.setDeviceMetadata(mapOf("driver_id" to value))
+        sdkInstance.setDeviceMetadata(mapOf("driver_id" to value))
     }
 
     val deviceId: String
-        get() = sdkInstnce.deviceID
+        get() = sdkInstance.deviceID
 
     val state: LiveData<TrackingStateValue>
         get() = listener.state
 
     fun sendUpdatedNote(id: String, newNote: String) {
-        sdkInstnce.addTripMarker(mapOf(GEOFENCE_ID to id, "delivery_note" to newNote))
+        sdkInstance.addTripMarker(mapOf(GEOFENCE_ID to id, "delivery_note" to newNote))
     }
 
     fun sendCompletionEvent(id: String) {
-        sdkInstnce.addTripMarker(mapOf(GEOFENCE_ID to id, "completed" to true))
+        sdkInstance.addTripMarker(mapOf(GEOFENCE_ID to id, "completed" to true))
     }
 
     companion object { private const val GEOFENCE_ID = "geofence_id" }

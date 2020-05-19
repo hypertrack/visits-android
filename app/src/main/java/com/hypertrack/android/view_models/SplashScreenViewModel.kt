@@ -36,7 +36,7 @@ class SplashScreenViewModel(
             driverRepository.hasDriverId -> {
                 // already logged in
                 _showSpinner.postValue(false)
-                _destination.postValue(Destination.LIST_VIEW)
+                _destination.postValue(Destination.PERMISSION_REQUEST)
             }
             accountRepository.isVerifiedAccount -> {
                 // publishable key already verified

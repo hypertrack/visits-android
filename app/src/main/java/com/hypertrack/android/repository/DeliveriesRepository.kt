@@ -131,7 +131,6 @@ data class Delivery(val _id : String,
 
     fun update(geofence: Geofence) : Delivery {
         return this // TODO Denys - update when API adds support to geofence events
-//        val pass: Unit = Unit
 //        when {
 //            (geofence.entered_at != enteredAt) -> pass
 //            (geofence.exited_at != exitedAt) -> pass

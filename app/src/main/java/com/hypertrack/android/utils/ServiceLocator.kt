@@ -7,10 +7,7 @@ import com.google.gson.Gson
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.view_models.CheckInViewModel
-import com.hypertrack.android.view_models.DeliveryListViewModel
-import com.hypertrack.android.view_models.DeliveryStatusViewModel
-import com.hypertrack.android.view_models.SplashScreenViewModel
+import com.hypertrack.android.view_models.*
 
 class ServiceLocator(private val context: Context) {
 

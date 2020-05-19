@@ -20,5 +20,5 @@ class MyApplication : Application() {
 }
 
 enum class Destination {
-    SPLASH_SCREEN, LOGIN, LIST_VIEW, DETAILS_VIEW
+    SPLASH_SCREEN, LOGIN, PERMISSION_REQUEST, LIST_VIEW, DETAILS_VIEW
 }

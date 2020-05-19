@@ -44,7 +44,7 @@ class CheckInViewModel(
             driverRepo.driverId = driverId
             viewModelScope.launch {
                 deliveriesApiClient.checkinCall()
-                _destination.postValue(Destination.LIST_VIEW)
+                _destination.postValue(Destination.PERMISSION_REQUEST)
             }
             return
         }
