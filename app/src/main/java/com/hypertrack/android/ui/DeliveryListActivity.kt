@@ -81,14 +81,13 @@ class DeliveryListActivity : AppCompatActivity() {
                 startActivityForResult(
                     Intent(this@DeliveryListActivity, DeliveryDetailActivity::class.java)
                         .putExtra(KEY_EXTRA_DELIVERY_ID, delivery._id),
-                    DELIVERY_UPDATE_RESULT_CODE
+                    42
                 )
 
     }
 
-    companion object {const val TAG = "ListActivity"}
+    companion object { const val TAG = "ListActivity" }
 
 }
 
 const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
-const val DELIVERY_UPDATE_RESULT_CODE = 4
