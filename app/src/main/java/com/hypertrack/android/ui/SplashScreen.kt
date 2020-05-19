@@ -32,10 +32,6 @@ class SplashScreen : AppCompatActivity() {
             .noAccountFragment.observe(this, Observer<Boolean> { show ->
                     noPkFragment.visibility = if (show) View.VISIBLE else View.GONE
             })
-        splashScreenViewModel.spinner
-            .observe(this, Observer {
-                    show -> if (show) showProgressBar() else dismissProgressBar()
-            })
         splashScreenViewModel.destination
             .observe(this, Observer { destination -> navigateTo(destination) })
 
@@ -46,6 +42,10 @@ class SplashScreen : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart")
+        splashScreenViewModel.spinner
+            .observe(this, Observer {
+                    show -> if (show) showProgressBar() else dismissProgressBar()
+            })
         try {
             Branch.sessionBuilder(this)
                 .withCallback(splashScreenViewModel).withData(intent?.data).init()
