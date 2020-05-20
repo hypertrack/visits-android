@@ -38,9 +38,6 @@ class DeliveriesRepository(
 
     suspend fun refreshDeliveries() {
 
-        // if delivery object is already present -> update visited & metadata state. if updated, then post new value in _deliveryItemsById
-        // else - create new delivery and add it to _deliveryItemsById
-        // post updated deliveryListItems
         apiClient.getGeofences().forEach { geofence ->
             val currentValue = _deliveriesMap[geofence.geofence_id]
             if (currentValue == null) {
@@ -48,7 +45,12 @@ class DeliveriesRepository(
             } else {
                 val newValue = currentValue.update(geofence)
                 _deliveriesMap[geofence.geofence_id] = newValue
-                _deliveryItemsById[geofence.geofence_id]?.postValue(newValue)
+                // getValue/postValue invocations below are called on different instances:
+                // `getValue` is called on Map with default value
+                // while `postValue` is for MutableLiveData
+                _deliveryItemsById
+                    .getValue(geofence.geofence_id) // returns MutableLiveData instance
+                    .postValue(newValue) // updates MutableLiveData
             }
         }
 
