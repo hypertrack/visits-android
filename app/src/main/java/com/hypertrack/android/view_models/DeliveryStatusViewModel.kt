@@ -13,7 +13,7 @@ class DeliveryStatusViewModel(
 ) : ViewModel() {
 
     val delivery: LiveData<Delivery> = deliveriesRepository.deliveryForId(id)
-    var deliveryNote = delivery.value?.deliveryNote?:""
+    private var deliveryNote = delivery.value?.deliveryNote?:""
 
 
     fun onDeliveryNoteChanged(newNote : String) {
@@ -23,9 +23,12 @@ class DeliveryStatusViewModel(
 
     fun onMarkedCompleted() = deliveriesRepository.markCompleted(id)
 
-    fun getLatLng(): LatLng = LatLng(delivery.value!!.latitude, delivery.value!!.longitude)
+    fun getLatLng(): LatLng = LatLng(
+        delivery.value?.latitude?:37.79337833161658,
+        delivery.value?.longitude?:-122.39470660686493
+    )
 
-    fun getLabel() : String = "Parcel ${delivery.value?._id}"
+    fun getLabel() : String = "Parcel ${delivery.value?._id?:"unknown"}"
 
     fun onBackPressed() = deliveriesRepository.updateDeliveryNote(id, deliveryNote)
 

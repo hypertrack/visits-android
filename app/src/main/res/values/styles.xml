@@ -29,4 +29,9 @@
         <item name="android:textColor">@color/tertiary_2_xdark</item>
     </style>
 
+    <style name="LoaderDialog" parent="android:Theme.Holo.Dialog.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 </resources>

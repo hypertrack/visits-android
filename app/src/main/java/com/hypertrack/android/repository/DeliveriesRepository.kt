@@ -29,7 +29,7 @@ class DeliveriesRepository(
             = MutableLiveData(_deliveriesMap.values.sortedWithHeaders())
 
     private val _deliveryItemsById: Map<String, MutableLiveData<Delivery>>
-            = _deliveriesMap.mapValues { MutableLiveData(it.value) }
+            = _deliveriesMap.mapValues { MutableLiveData(it.value) }.withDefault { MutableLiveData() }
 
     val deliveryListItems: LiveData<List<DeliveryListItem>>
         get() = _deliveryListItems
@@ -56,9 +56,8 @@ class DeliveriesRepository(
         _deliveryListItems.postValue(_deliveriesMap.values.sortedWithHeaders())
     }
 
-    fun deliveryForId(id: String): LiveData<Delivery> {
-        return _deliveryItemsById[id]?: throw IllegalArgumentException("No delivery for id $id")
-    }
+    fun deliveryForId(id: String): LiveData<Delivery> =
+        _deliveryItemsById.getValue(id)
 
     fun updateDeliveryNote(id: String, newNote: String) {
         Log.d(TAG, "Updating delivery $id with note $newNote")

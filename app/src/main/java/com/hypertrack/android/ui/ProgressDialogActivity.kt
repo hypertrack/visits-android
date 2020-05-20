@@ -1,29 +1,40 @@
 package com.hypertrack.android.ui
 
+import android.annotation.SuppressLint
 import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
+import com.airbnb.lottie.LottieAnimationView
 import com.hypertrack.logistics.android.github.R
 
 
+@SuppressLint("Registered")
 open class ProgressDialogActivity : AppCompatActivity() {
 
 
-    private var dialog: Dialog? = null
+    private val dialog by lazy {  AnimatedDialog(this) }
 
-    protected fun showProgress() {
+    protected fun showProgress() = dialog.show()
 
-        val newDialog = dialog ?: Dialog(this)
-        newDialog.setCancelable(false)
-        newDialog.setContentView(R.layout.dialog_progress_bar)
-        newDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        newDialog.show()
+    protected fun dismissProgress() = dialog.dismiss()
 
-        dialog = newDialog
+
+}
+
+class AnimatedDialog(context: Context): Dialog(context, R.style.LoaderDialog) {
+    init {
+        setContentView(R.layout.dialog_progress_bar)
+    }
+    private val animation = findViewById<LottieAnimationView>(R.id.loader)
+
+    override fun show() {
+        super.show()
+        setCancelable(false)
+        animation.playAnimation()
     }
 
-    protected fun dismissProgress() = dialog?.dismiss()
-
-
+    override fun dismiss() {
+        animation.cancelAnimation()
+        super.dismiss()
+    }
 }
