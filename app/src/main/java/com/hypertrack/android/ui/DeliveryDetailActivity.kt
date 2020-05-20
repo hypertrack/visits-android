@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -41,6 +42,11 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         addActionListeners()
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
+        deliveryStatusViewModel.showNoteUpdatedToast.observe(this, Observer { show ->
+            if (show) Toast
+                .makeText(this, "Delivery note was updated", Toast.LENGTH_LONG)
+                .show()
+        })
 
     }
 

@@ -66,11 +66,11 @@ class DeliveriesRepository(
            return _deliveryItemsById[id]?:throw IllegalArgumentException("No delivery for id $id")
         }
 
-    fun updateDeliveryNote(id: String, newNote: String) {
+    fun updateDeliveryNote(id: String, newNote: String): Boolean {
         Log.d(TAG, "Updating delivery $id with note $newNote")
         val target = _deliveriesMap[id] ?: throw IllegalArgumentException("No delivery for id $id")
         // Brake infinite cycle
-        if (target.deliveryNote == newNote) return
+        if (target.deliveryNote == newNote) return false
 
         val updatedNote = target.updateNote(newNote)
         _deliveriesMap[id] = updatedNote
@@ -78,6 +78,7 @@ class DeliveriesRepository(
         deliveriesStorage.saveDeliveries(_deliveriesMap.values.toList())
         _deliveryItemsById[id]?.postValue(updatedNote)
         _deliveryListItems.postValue(_deliveriesMap.values.sortedWithHeaders())
+        return true
     }
 
     fun markCompleted(id: String) {

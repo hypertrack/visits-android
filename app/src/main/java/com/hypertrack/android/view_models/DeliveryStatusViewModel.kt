@@ -2,6 +2,7 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.DeliveriesRepository
@@ -14,6 +15,11 @@ class DeliveryStatusViewModel(
 
     val delivery: LiveData<Delivery> = deliveriesRepository.deliveryForId(id)
     private var deliveryNote = delivery.value?.deliveryNote?:""
+
+    private val _showNoteUpdatedToast = MutableLiveData(false)
+
+    val showNoteUpdatedToast: LiveData<Boolean>
+        get() = _showNoteUpdatedToast
 
 
     fun onDeliveryNoteChanged(newNote : String) {
@@ -30,7 +36,11 @@ class DeliveryStatusViewModel(
 
     fun getLabel() : String = "Parcel ${delivery.value?._id?:"unknown"}"
 
-    fun onBackPressed() = deliveriesRepository.updateDeliveryNote(id, deliveryNote)
+    fun onBackPressed() {
+        val noteChanged = deliveriesRepository.updateDeliveryNote(id, deliveryNote)
+        _showNoteUpdatedToast.postValue(noteChanged)
+
+    }
 
     companion object {const val TAG = "DeliveryStatusVM"}
 }
