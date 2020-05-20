@@ -19,4 +19,8 @@
     <color name="colorTrackingError">#EB5B64</color>
     <color name="colorTrackingStopped">#A0A0A0</color>
 
+    <color name="colorHyperTrackGreen">#00ce5b</color>
+    <color name="tertiary_2_xdark">#4c4b5d</color>
+
+
 </resources>

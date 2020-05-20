@@ -77,7 +77,13 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         val completeEnabled = !newValue.isCompleted
         Log.d(TAG, "Complete button enabled is $completeEnabled")
         tvComplete.isEnabled = completeEnabled
-        tvComplete.setBackgroundColor(if (completeEnabled) getColor(R.color.colorBlack) else getColor(R.color.colorBtnDisable))
+        tvComplete.background = getDrawable(
+            if (completeEnabled) R.drawable.bg_button
+            else R.drawable.bg_button_disabled
+        )
+        tvComplete.text = if (completeEnabled)
+            getString(R.string.mark_completed)
+        else getString(R.string.completed)
 
     }
 

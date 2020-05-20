@@ -17,11 +17,14 @@
     <string name="delivery_picture">Delivery Picture</string>
     <string name="take_picture">Take Picture</string>
     <string name="mark_completed">Mark Completed</string>
-    <string name="use_the_link_to_login">Please use the link to login or contact your manager</string>
+    <string name="completed">Completed</string>
+    <string name="use_the_link_to_login">Please use the link to login or contact your manager to get one</string>
     <string name="deliveries">Deliveries</string>
-    <string name="permission_rational">We need to access your location and activity data\n to match visits to deliveries</string>
-    <string name="continue_btn_text">Continue</string>
+    <string name="permission_rational">We need your permission to access location and activity data</string>
+    <string name="continue_btn_text">Allow</string>
     <string name="title_activity_permission_request">PermissionRequestActivity</string>
+    <string name="allow_location_access">Allow Location Access</string>
+    <string name="hypertrack_logistics_app">HyperTrack Logistics App</string>
 
 
 </resources>

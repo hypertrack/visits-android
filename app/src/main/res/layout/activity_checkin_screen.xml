@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorGrey"
     android:fillViewport="true"
     android:fitsSystemWindows="true">
 
@@ -11,60 +10,40 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorGrey"
+        android:background="@color/colorWhite"
+        android:layout_marginBottom="20dp"
         android:nestedScrollingEnabled="true">
 
         <LinearLayout
+            android:id="@+id/logoContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/colorWhite"
+            android:layout_marginBottom="24dp"
             android:gravity="center"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/view"
+            android:padding="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/etDriverId"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/logo" />
 
-
         </LinearLayout>
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            app:layout_constraintBottom_toTopOf="@id/etDriverId"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/btnCheckIn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:background="@color/colorBtnDisable"
-            android:fontFamily="@font/medium"
-            android:gravity="center"
-            android:enabled="false"
-            android:padding="15dp"
-            android:text="@string/check_in"
-            android:textColor="@color/colorWhite"
-            android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etDriverId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="24dp"
+            android:layout_marginBottom="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
             android:background="@drawable/edit_driver_bg"
             android:drawableStart="@drawable/ic_profile"
             android:drawablePadding="10dp"
@@ -79,10 +58,24 @@
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@id/btnCheckIn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/btnCheckIn"
+            style="@style/ButtonStyle"
+            android:background="@drawable/bg_button_disabled"
+            android:layout_width="match_parent"
+            android:layout_margin="20dp"
+            android:padding="10dp"
+            android:clickable="false"
+            android:enabled="false"
+            android:gravity="center"
+            android:text="@string/check_in"
+            android:textColor="@color/colorWhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -278,13 +278,12 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvComplete"
+                style="@style/ButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:background="@color/colorBlack"
+                android:padding="10dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
-                android:padding="15dp"
                 android:text="@string/mark_completed"
                 android:textColor="@color/colorWhite"
                 android:textSize="20sp"

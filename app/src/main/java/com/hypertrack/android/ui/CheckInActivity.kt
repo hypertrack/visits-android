@@ -41,7 +41,10 @@ class CheckInActivity : ProgressDialogActivity() {
         checkInModel.enableCheckIn
             .observe(this, Observer { enable ->
                 btnCheckIn.isEnabled = enable
-                btnCheckIn.setBackgroundColor(getColor(if (enable) R.color.colorBlack else R.color.colorBtnDisable))
+                btnCheckIn.background = getDrawable(
+                    if (enable) R.drawable.bg_button
+                    else R.drawable.bg_button_disabled
+                )
             })
 
         checkInModel.destination
