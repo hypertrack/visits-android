@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -15,16 +14,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import com.hypertrack.android.navigateTo
 import com.hypertrack.android.repository.Delivery
-import com.hypertrack.android.utils.Destination
-import com.hypertrack.android.utils.Injector
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.DeliveryStatusViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_job_detail.*
 
-
-private const val CAMERA_REQUEST = 1
 
 class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -39,7 +34,8 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         val deliveryId = intent?.getStringExtra(KEY_EXTRA_DELIVERY_ID)!!
-        deliveryStatusViewModel = Injector.provideDeliveryStatusViewModel(this.applicationContext, deliveryId)
+        deliveryStatusViewModel = (application as MyApplication).injector
+            .provideDeliveryStatusViewModel(this.applicationContext, deliveryId)
 
         deliveryStatusViewModel.delivery.observe(this, Observer { updateView(it) }
         )
@@ -107,24 +103,11 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CAMERA_REQUEST) { /* TODO Denys*/ }
-    }
-
-
-    // open camera intent and capture image
-    private fun dispatchTakePictureIntent() =
-        startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), CAMERA_REQUEST)
-
-
     override fun onBackPressed() {
         val data = Intent()
         data.data = Uri.parse(deliveryPosition)
         setResult(Activity.RESULT_OK, data)
         finish()
-//        navigateTo(Destination.LIST_VIEW)
     }
 
     companion object {const val TAG = "DeliveryDetailActivity"}

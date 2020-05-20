@@ -27,6 +27,8 @@ class ServiceLocator(private val context: Context) {
 
 object Injector {
 
+    private var deliveriesRepository: DeliveriesRepository? = null
+
     private fun getGson() = Gson()
 
     private fun getMyPreferences(context: Context): MyPreferences =
@@ -65,15 +67,19 @@ object Injector {
     }
 
     private fun getDeliveriesRepo(context: Context): DeliveriesRepository {
+        deliveriesRepository?.let { return it }
 
         getMyPreferences(context).getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        return DeliveriesRepository(
+        val result = DeliveriesRepository(
             getOsUtilsProvider(context),
             getDeliveriesApiClient(context),
             getMyPreferences(context),
             getHyperTrackService(context)
         )
+        deliveriesRepository = result
+
+        return result
     }
 
     fun provideListActivityViewModelFactory(context: Context): ListActivityViewModelFactory {

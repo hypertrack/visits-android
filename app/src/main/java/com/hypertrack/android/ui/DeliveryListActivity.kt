@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.adapters.DeliveryListAdapter
 import com.hypertrack.android.repository.Delivery
-import com.hypertrack.android.utils.Injector
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.android.view_models.DeliveryListViewModel
 import com.hypertrack.logistics.android.github.R
@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_job_listing.*
 class DeliveryListActivity : ProgressDialogActivity() {
 
     private val deliveryListViewModel : DeliveryListViewModel by viewModels {
-        Injector.provideListActivityViewModelFactory(applicationContext)
+        (application as MyApplication).injector.provideListActivityViewModelFactory(applicationContext)
     }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager

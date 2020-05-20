@@ -7,7 +7,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
-import com.hypertrack.android.utils.Injector
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 import io.branch.referral.Branch
@@ -18,7 +18,7 @@ class SplashScreen : ProgressDialogActivity() {
 
 
     private val splashScreenViewModel: SplashScreenViewModel by viewModels {
-        Injector.provideSplashScreenViewModelFactory(applicationContext)
+        (application as MyApplication).injector.provideSplashScreenViewModelFactory(applicationContext)
     }
 
 
@@ -27,7 +27,7 @@ class SplashScreen : ProgressDialogActivity() {
         setContentView(R.layout.splash_screen_layout)
 
         splashScreenViewModel
-            .noAccountFragment.observe(this, Observer<Boolean> { show ->
+            .noAccountFragment.observe(this, Observer { show ->
                     noPkFragment.visibility = if (show) View.VISIBLE else View.GONE
             })
         splashScreenViewModel.destination
