@@ -22,7 +22,7 @@ class DeliveryListViewModel(private val deliveriesRepository: DeliveriesReposito
 
     val deliveries = deliveriesRepository.deliveryListItems
 
-    val trackingState = deliveriesRepository.trackingState
+    val statusLabel = deliveriesRepository.statusLabel
 
     init {
         viewModelScope.launch {

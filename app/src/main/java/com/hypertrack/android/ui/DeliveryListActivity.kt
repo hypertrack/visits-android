@@ -53,8 +53,9 @@ class DeliveryListActivity : ProgressDialogActivity() {
 
         ivRefresh.setOnClickListener { deliveryListViewModel.rerfeshDeliveries() }
 
-        deliveryListViewModel.trackingState.observe(this, Observer { state ->
+        deliveryListViewModel.statusLabel.observe(this, Observer { stateAndLabel ->
             val invisible = -1
+            val state = stateAndLabel.first
             val colorId =  when (state) {
                 TrackingStateValue.ERROR -> R.color.colorTrackingError
                 TrackingStateValue.STOP -> R.color.colorTrackingStopped
@@ -68,6 +69,9 @@ class DeliveryListActivity : ProgressDialogActivity() {
                 tvTrackerStatus.visibility = View.VISIBLE
                 tvTrackerStatus.setBackgroundColor(getColor(colorId))
             }
+
+            tvTrackerStatus.text = stateAndLabel.second
+
 
         })
         deliveryListViewModel.showSpinner.observe(this, Observer { show ->

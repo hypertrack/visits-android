@@ -2,12 +2,15 @@ package com.hypertrack.android.repository
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.utils.TrackingStateValue
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 
@@ -34,7 +37,23 @@ class DeliveriesRepository(
     val deliveryListItems: LiveData<List<DeliveryListItem>>
         get() = _deliveryListItems
 
-    val trackingState = hyperTrackService.state
+    private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
+
+    init{
+        _status.addSource(hyperTrackService.state, Observer { state ->
+            val label = _status.value?.second?:""
+            _status.postValue(state to label)
+        } )
+        _status.addSource(deliveryListItems, Observer { items ->
+            val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
+            val label = items.toStatusLabel()
+            val fineLabel = if (label.isNotEmpty()) label else "No assigned deliveries"
+            _status.postValue(trackingState to fineLabel)
+        })
+    }
+
+    val statusLabel: LiveData<Pair<TrackingStateValue, String>>
+        get() = _status
 
     suspend fun refreshDeliveries() {
 
@@ -104,6 +123,14 @@ private fun Collection<Delivery>.sortedWithHeaders(): List<DeliveryListItem> {
         result.addAll(grouped[deliveryType] ?: emptyList())
     }
     return result
+}
+
+private fun List<DeliveryListItem>.toStatusLabel(): String {
+    return filterIsInstance<Delivery>()
+        .groupBy { it.status }
+        .entries.
+        fold("")
+        {acc, entry -> acc + "${entry.value.size} ${entry.key} item${if (entry.value.size == 1) "" else "s"}"}
 }
 
 sealed class DeliveryListItem
