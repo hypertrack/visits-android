@@ -28,8 +28,8 @@ class DeliveriesRepository(
     private val _deliveryListItems: MutableLiveData<List<DeliveryListItem>>
             = MutableLiveData(_deliveriesMap.values.sortedWithHeaders())
 
-    private val _deliveryItemsById: Map<String, MutableLiveData<Delivery>>
-            = _deliveriesMap.mapValues { MutableLiveData(it.value) }.withDefault { MutableLiveData() }
+    private val _deliveryItemsById: MutableMap<String, MutableLiveData<Delivery>>
+            = _deliveriesMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
 
     val deliveryListItems: LiveData<List<DeliveryListItem>>
         get() = _deliveryListItems
@@ -39,27 +39,32 @@ class DeliveriesRepository(
     suspend fun refreshDeliveries() {
 
         apiClient.getGeofences().forEach { geofence ->
+            Log.d(TAG, "Processing geofence $geofence")
             val currentValue = _deliveriesMap[geofence.geofence_id]
             if (currentValue == null) {
-                _deliveriesMap[geofence.geofence_id] = Delivery(geofence, osUtilsProvider)
+                val delivery = Delivery(geofence, osUtilsProvider)
+                _deliveriesMap[delivery._id] = delivery
+                _deliveryItemsById[delivery._id] = MutableLiveData(delivery)
             } else {
                 val newValue = currentValue.update(geofence)
                 _deliveriesMap[geofence.geofence_id] = newValue
                 // getValue/postValue invocations below are called on different instances:
                 // `getValue` is called on Map with default value
                 // while `postValue` is for MutableLiveData
-                _deliveryItemsById
-                    .getValue(geofence.geofence_id) // returns MutableLiveData instance
-                    .postValue(newValue) // updates MutableLiveData
+                _deliveryItemsById[geofence.geofence_id]?.postValue(newValue) // updates MutableLiveData
             }
         }
+        Log.d(TAG, "Updated _deliveriesMap $_deliveriesMap")
+        Log.d(TAG, "Updated _deliveryItemsById $_deliveryItemsById")
 
         deliveriesStorage.saveDeliveries(_deliveriesMap.values.toList())
         _deliveryListItems.postValue(_deliveriesMap.values.sortedWithHeaders())
+        Log.d(TAG, "Updated _deliveryListItems $_deliveryListItems")
     }
 
-    fun deliveryForId(id: String): LiveData<Delivery> =
-        _deliveryItemsById.getValue(id)
+    fun deliveryForId(id: String): LiveData<Delivery> {
+           return _deliveryItemsById[id]?:throw IllegalArgumentException("No delivery for id $id")
+        }
 
     fun updateDeliveryNote(id: String, newNote: String) {
         Log.d(TAG, "Updating delivery $id with note $newNote")

@@ -37,8 +37,7 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         deliveryStatusViewModel = (application as MyApplication).injector
             .provideDeliveryStatusViewModel(this.applicationContext, deliveryId)
 
-        deliveryStatusViewModel.delivery.observe(this, Observer { updateView(it) }
-        )
+        deliveryStatusViewModel.delivery.observe(this, Observer { updateView(it) })
 
         addActionListeners()
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
@@ -49,6 +48,7 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
         p0?.let { map ->
             val latLng = deliveryStatusViewModel.getLatLng()
+            Log.d(TAG, "Got latlng $latLng")
             val label = deliveryStatusViewModel.getLabel()
 
             map.addMarker(MarkerOptions().position(latLng).title(label))
