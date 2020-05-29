@@ -1,9 +1,15 @@
 package com.hypertrack.android.api
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import java.lang.IllegalArgumentException
+import java.lang.reflect.Type
 
 interface ApiInterface {
 
@@ -31,12 +37,42 @@ data class Geofence (
     @SerializedName("single_use") val single_use : Boolean
 ) {
     val latitude: Double
-        get() = geometry.coordinates[1]
+        get() = geometry.latitude
     val longitude: Double
-        get() = geometry.coordinates[0]
+        get() = geometry.longitude
+
+    val type: String
+        get() = geometry.type
 }
 
-data class Geometry (
-    @SerializedName("coordinates") val coordinates : List<Double>,
-    @SerializedName("type") val type : String
-)
+class Point (
+    @SerializedName("coordinates") override val coordinates : List<Double>
+) : Geometry() {
+    override val type: String
+        get() = "Point"
+
+    override val latitude: Double
+        get() = coordinates[1]
+
+    override val longitude: Double
+        get() = coordinates[0]
+}
+
+class Polygon (
+    @SerializedName("coordinates") override val coordinates : List<List<Double>>
+) : Geometry() {
+    override val type: String
+            get() = "Polygon"
+    override val latitude: Double
+        get() = coordinates.map { it[1] }.average()
+    override val longitude: Double
+        get() = coordinates.map { it[0] }.average()
+}
+
+abstract class Geometry {
+    abstract val coordinates: List<*>
+    abstract val type: String
+    abstract val latitude: Double
+    abstract val longitude: Double
+}
+
