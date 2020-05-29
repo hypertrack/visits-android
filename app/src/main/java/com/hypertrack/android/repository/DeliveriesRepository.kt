@@ -57,7 +57,8 @@ class DeliveriesRepository(
 
     suspend fun refreshDeliveries() {
 
-        apiClient.getGeofences().forEach { geofence ->
+        val geofences = apiClient.getGeofences()
+        geofences.forEach { geofence ->
             Log.d(TAG, "Processing geofence $geofence")
             val currentValue = _deliveriesMap[geofence.geofence_id]
             if (currentValue == null) {
@@ -73,6 +74,11 @@ class DeliveriesRepository(
                 _deliveryItemsById[geofence.geofence_id]?.postValue(newValue) // updates MutableLiveData
             }
         }
+        val deletedEntries = _deliveriesMap.keys - geofences.map { it.geofence_id }
+        Log.d(TAG, "Entries missing in update and will be deleted $deletedEntries")
+        _deliveriesMap -= deletedEntries
+        _deliveryItemsById -= deletedEntries
+
         Log.d(TAG, "Updated _deliveriesMap $_deliveriesMap")
         Log.d(TAG, "Updated _deliveryItemsById $_deliveryItemsById")
 
@@ -87,7 +93,7 @@ class DeliveriesRepository(
 
     fun updateDeliveryNote(id: String, newNote: String): Boolean {
         Log.d(TAG, "Updating delivery $id with note $newNote")
-        val target = _deliveriesMap[id] ?: throw IllegalArgumentException("No delivery for id $id")
+        val target = _deliveriesMap[id] ?: return false
         // Brake infinite cycle
         if (target.deliveryNote == newNote) return false
 
@@ -101,7 +107,7 @@ class DeliveriesRepository(
     }
 
     fun markCompleted(id: String) {
-        val target = _deliveriesMap[id] ?: throw IllegalArgumentException("No delivery for id $id")
+        val target = _deliveriesMap[id] ?: return
         if (target.isCompleted) return
         val completedDelivery = target.complete(osUtilsProvider.getCurrentTimestamp())
         _deliveriesMap[id] = completedDelivery
