@@ -4,15 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geofence
-import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
+import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TrackingStateValue
-import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 
 const val COMPLETED = "Completed"
 const val VISITED = "Visited"
@@ -40,16 +37,16 @@ class DeliveriesRepository(
     private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
 
     init{
-        _status.addSource(hyperTrackService.state, Observer { state ->
+        _status.addSource(hyperTrackService.state) { state ->
             val label = _status.value?.second?:""
             _status.postValue(state to label)
-        } )
-        _status.addSource(deliveryListItems, Observer { items ->
+        }
+        _status.addSource(deliveryListItems) { items ->
             val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
             val label = items.toStatusLabel()
             val fineLabel = if (label.isNotEmpty()) label else "No assigned deliveries"
             _status.postValue(trackingState to fineLabel)
-        })
+        }
     }
 
     val statusLabel: LiveData<Pair<TrackingStateValue, String>>

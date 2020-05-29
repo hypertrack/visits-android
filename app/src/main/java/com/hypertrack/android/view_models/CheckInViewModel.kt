@@ -6,10 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.api.ApiClient
-import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
-import kotlinx.coroutines.Dispatchers
+import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
 class CheckInViewModel(
@@ -18,11 +17,11 @@ class CheckInViewModel(
     private val deliveriesApiClient: ApiClient
 ) : ViewModel() {
 
-    private val _checkInButtonEnabled = MutableLiveData<Boolean>(false)
+    private val _checkInButtonEnabled = MutableLiveData(false)
 
-    private val _destination = MutableLiveData<Destination>(Destination.LOGIN)
+    private val _destination = MutableLiveData(Destination.LOGIN)
 
-    private val _showProgress = MutableLiveData<Boolean>(false)
+    private val _showProgress = MutableLiveData(false)
     val showProgresss
         get() = _showProgress
 

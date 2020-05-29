@@ -6,7 +6,7 @@ import com.hypertrack.android.repository.Address
 import java.text.SimpleDateFormat
 import java.util.*
 
-class OsUtilsProvider(val context: Context) {
+class OsUtilsProvider(private val context: Context) {
     fun getCurrentTimestamp(): String {
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
         df.timeZone = TimeZone.getTimeZone("UTC")

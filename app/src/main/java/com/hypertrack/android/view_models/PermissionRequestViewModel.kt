@@ -5,12 +5,10 @@ import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.utils.Destination
-import com.hypertrack.sdk.permissions.PermissionsRequestActivity
 
 class PermissionRequestViewModel(application: Application) : AndroidViewModel(application) {
 

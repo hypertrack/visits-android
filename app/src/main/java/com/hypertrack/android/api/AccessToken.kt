@@ -23,7 +23,7 @@ class AccessTokenInterceptor(private val accessTokenRepository: AccessTokenRepos
 
 }
 
-class UserAgentInterceptor(): Interceptor {
+class UserAgentInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val networkingLibrary = userAgent

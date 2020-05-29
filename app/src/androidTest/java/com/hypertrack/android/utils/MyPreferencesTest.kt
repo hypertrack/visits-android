@@ -35,12 +35,12 @@ class MyPreferencesTest {
     @Test
     fun crudDriver() {
 
-        val driver_id = "Kowalski"
+        val driverId = "Kowalski"
 
-        val driver = Driver(driver_id)
+        val driver = Driver(driverId)
         myPreferences.saveDriver(driver)
         val restoredDriver = myPreferences.getDriverValue()
-        assertEquals(driver_id, restoredDriver.driverId)
+        assertEquals(driverId, restoredDriver.driverId)
         myPreferences.clearPreferences()
     }
 

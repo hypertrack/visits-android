@@ -90,7 +90,7 @@ interface AccountDataStorage {
 
     fun getAccountData() : AccountData
 
-    fun saveAccountData(accountData: AccountData) : Unit
+    fun saveAccountData(accountData: AccountData)
 
     fun getDriverValue(): Driver
 
