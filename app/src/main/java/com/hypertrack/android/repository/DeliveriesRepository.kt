@@ -120,7 +120,12 @@ private fun Collection<Delivery>.sortedWithHeaders(): List<DeliveryListItem> {
     val result = ArrayList<DeliveryListItem>(this.size + grouped.keys.size)
     grouped.keys.forEach { deliveryType ->
         result.add(HeaderDeliveryItem(deliveryType))
-        result.addAll(grouped[deliveryType] ?: emptyList())
+        result.addAll(
+            grouped[deliveryType]
+                ?.sortedWith(compareBy { it.createdAt })
+                ?.reversed()
+                ?: emptyList()
+        )
     }
     return result
 }
@@ -201,6 +206,7 @@ data class Delivery(val _id : String,
         _id = geofence.geofence_id,
         customerNote = toNote(geofence.metadata),
         address = osUtilsProvider.getAddressFromCoordinates(geofence.latitude, geofence.longitude),
+        createdAt = geofence.created_at,
 //        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
     latitude = geofence.latitude, longitude = geofence.longitude)
 
