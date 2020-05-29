@@ -8,11 +8,11 @@ import com.hypertrack.android.repository.DeliveriesRepository
 import kotlinx.coroutines.launch
 
 class DeliveryListViewModel(private val deliveriesRepository: DeliveriesRepository) : ViewModel() {
-    private val _showSpinner = MutableLiveData<Boolean>(false)
+    private val _showSpinner = MutableLiveData(false)
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
-    fun rerfeshDeliveries() {
+    fun refreshDeliveries() {
         _showSpinner.postValue(true)
         viewModelScope.launch {
             deliveriesRepository.refreshDeliveries()

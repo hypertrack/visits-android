@@ -4,15 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geofence
-import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.DeliveriesStorage
+import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TrackingStateValue
-import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 
 const val COMPLETED = "Completed"
 const val VISITED = "Visited"
@@ -40,16 +37,16 @@ class DeliveriesRepository(
     private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
 
     init{
-        _status.addSource(hyperTrackService.state, Observer { state ->
+        _status.addSource(hyperTrackService.state) { state ->
             val label = _status.value?.second?:""
             _status.postValue(state to label)
-        } )
-        _status.addSource(deliveryListItems, Observer { items ->
+        }
+        _status.addSource(deliveryListItems) { items ->
             val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
             val label = items.toStatusLabel()
             val fineLabel = if (label.isNotEmpty()) label else "No assigned deliveries"
             _status.postValue(trackingState to fineLabel)
-        })
+        }
     }
 
     val statusLabel: LiveData<Pair<TrackingStateValue, String>>
@@ -57,7 +54,8 @@ class DeliveriesRepository(
 
     suspend fun refreshDeliveries() {
 
-        apiClient.getGeofences().forEach { geofence ->
+        val geofences = apiClient.getGeofences()
+        geofences.forEach { geofence ->
             Log.d(TAG, "Processing geofence $geofence")
             val currentValue = _deliveriesMap[geofence.geofence_id]
             if (currentValue == null) {
@@ -73,6 +71,11 @@ class DeliveriesRepository(
                 _deliveryItemsById[geofence.geofence_id]?.postValue(newValue) // updates MutableLiveData
             }
         }
+        val deletedEntries = _deliveriesMap.keys - geofences.map { it.geofence_id }
+        Log.d(TAG, "Entries missing in update and will be deleted $deletedEntries")
+        _deliveriesMap -= deletedEntries
+        _deliveryItemsById -= deletedEntries
+
         Log.d(TAG, "Updated _deliveriesMap $_deliveriesMap")
         Log.d(TAG, "Updated _deliveryItemsById $_deliveryItemsById")
 
@@ -87,7 +90,7 @@ class DeliveriesRepository(
 
     fun updateDeliveryNote(id: String, newNote: String): Boolean {
         Log.d(TAG, "Updating delivery $id with note $newNote")
-        val target = _deliveriesMap[id] ?: throw IllegalArgumentException("No delivery for id $id")
+        val target = _deliveriesMap[id] ?: return false
         // Brake infinite cycle
         if (target.deliveryNote == newNote) return false
 
@@ -101,7 +104,7 @@ class DeliveriesRepository(
     }
 
     fun markCompleted(id: String) {
-        val target = _deliveriesMap[id] ?: throw IllegalArgumentException("No delivery for id $id")
+        val target = _deliveriesMap[id] ?: return
         if (target.isCompleted) return
         val completedDelivery = target.complete(osUtilsProvider.getCurrentTimestamp())
         _deliveriesMap[id] = completedDelivery
@@ -120,7 +123,12 @@ private fun Collection<Delivery>.sortedWithHeaders(): List<DeliveryListItem> {
     val result = ArrayList<DeliveryListItem>(this.size + grouped.keys.size)
     grouped.keys.forEach { deliveryType ->
         result.add(HeaderDeliveryItem(deliveryType))
-        result.addAll(grouped[deliveryType] ?: emptyList())
+        result.addAll(
+            grouped[deliveryType]
+                ?.sortedWith(compareBy { it.createdAt })
+                ?.reversed()
+                ?: emptyList()
+        )
     }
     return result
 }
@@ -165,7 +173,14 @@ data class Delivery(val _id : String,
     fun hasNotes() = deliveryNote.isNotEmpty()
 
     fun update(geofence: Geofence) : Delivery {
-        return this // TODO Denys - update when API adds support to geofence events
+
+        return if (toNote(geofence.metadata) == customerNote) this
+            else Delivery(
+                _id, delivery_id, driver_id, toNote(geofence.metadata),
+                createdAt, updatedAt, address, deliveryNote, deliveryPicture, enteredAt,
+                completedAt, exitedAt, latitude, longitude
+            )
+        // TODO Denys - update when API adds support to geofence events
 //        when {
 //            (geofence.entered_at != enteredAt) -> pass
 //            (geofence.exited_at != exitedAt) -> pass
@@ -194,6 +209,7 @@ data class Delivery(val _id : String,
         _id = geofence.geofence_id,
         customerNote = toNote(geofence.metadata),
         address = osUtilsProvider.getAddressFromCoordinates(geofence.latitude, geofence.longitude),
+        createdAt = geofence.created_at,
 //        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
     latitude = geofence.latitude, longitude = geofence.longitude)
 

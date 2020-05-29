@@ -51,12 +51,11 @@ class DeliveryListActivity : ProgressDialogActivity() {
             adapter = viewAdapter
         }
 
-        ivRefresh.setOnClickListener { deliveryListViewModel.rerfeshDeliveries() }
+        ivRefresh.setOnClickListener { deliveryListViewModel.refreshDeliveries() }
 
         deliveryListViewModel.statusLabel.observe(this, Observer { stateAndLabel ->
             val invisible = -1
-            val state = stateAndLabel.first
-            val colorId =  when (state) {
+            val colorId =  when (stateAndLabel.first) {
                 TrackingStateValue.ERROR -> R.color.colorTrackingError
                 TrackingStateValue.STOP -> R.color.colorTrackingStopped
                 TrackingStateValue.TRACKING -> R.color.colorTrackingActive

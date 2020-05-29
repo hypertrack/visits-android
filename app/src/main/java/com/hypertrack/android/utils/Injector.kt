@@ -3,6 +3,7 @@ package com.hypertrack.android.utils
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
 import com.hypertrack.android.api.*
@@ -30,7 +31,7 @@ object Injector {
 
     private var deliveriesRepository: DeliveriesRepository? = null
 
-    public fun getGson() = GsonBuilder()
+    fun getGson() : Gson = GsonBuilder()
         .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
             .of(Geometry::class.java)
             .registerSubtype(Point::class.java, "Point")

@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
+import com.hypertrack.android.api.UserAgentInterceptor
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -26,7 +27,9 @@ class BasicAuthAccessTokenRepository(
     private var token: String? = null
 ) : AccessTokenRepository {
 
-    private val okHttpClient : OkHttpClient by lazy { OkHttpClient() }
+    private val okHttpClient : OkHttpClient by lazy {
+        OkHttpClient.Builder().addInterceptor(UserAgentInterceptor()).build()
+    }
 
     private val request: Request by lazy {
         Request.Builder()

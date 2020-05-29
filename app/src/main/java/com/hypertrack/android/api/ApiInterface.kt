@@ -1,15 +1,9 @@
 package com.hypertrack.android.api
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import java.lang.IllegalArgumentException
-import java.lang.reflect.Type
 
 interface ApiInterface {
 
