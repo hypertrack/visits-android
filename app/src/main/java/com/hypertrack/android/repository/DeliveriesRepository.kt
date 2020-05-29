@@ -130,7 +130,7 @@ private fun List<DeliveryListItem>.toStatusLabel(): String {
         .groupBy { it.status }
         .entries.
         fold("")
-        {acc, entry -> acc + "${entry.value.size} ${entry.key} item${if (entry.value.size == 1) "" else "s"}"}
+        {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
 }
 
 sealed class DeliveryListItem
@@ -199,7 +199,8 @@ data class Delivery(val _id : String,
 
 }
 
-private fun toNote(metadata: Map<String, Any>): String {
+private fun toNote(metadata: Map<String, Any>?): String {
+    if (metadata == null) return ""
     val result = StringBuilder()
     metadata.forEach { (key, value) -> result.append("$key: $value\n") }
     return result.toString().dropLast(1)

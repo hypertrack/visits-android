@@ -3,8 +3,9 @@ package com.hypertrack.android.utils
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
-import com.hypertrack.android.api.ApiClient
+import com.google.gson.GsonBuilder
+import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
+import com.hypertrack.android.api.*
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.view_models.*
@@ -29,7 +30,12 @@ object Injector {
 
     private var deliveriesRepository: DeliveriesRepository? = null
 
-    private fun getGson() = Gson()
+    public fun getGson() = GsonBuilder()
+        .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
+            .of(Geometry::class.java)
+            .registerSubtype(Point::class.java, "Point")
+            .registerSubtype(Polygon::class.java, "Polygon"))
+        .create()
 
     private fun getMyPreferences(context: Context): MyPreferences =
         MyPreferences(context, getGson())
