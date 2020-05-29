@@ -165,7 +165,14 @@ data class Delivery(val _id : String,
     fun hasNotes() = deliveryNote.isNotEmpty()
 
     fun update(geofence: Geofence) : Delivery {
-        return this // TODO Denys - update when API adds support to geofence events
+
+        return if (toNote(geofence.metadata) == customerNote) this
+            else Delivery(
+                _id, delivery_id, driver_id, toNote(geofence.metadata),
+                createdAt, updatedAt, address, deliveryNote, deliveryPicture, enteredAt,
+                completedAt, exitedAt, latitude, longitude
+            )
+        // TODO Denys - update when API adds support to geofence events
 //        when {
 //            (geofence.entered_at != enteredAt) -> pass
 //            (geofence.exited_at != exitedAt) -> pass
