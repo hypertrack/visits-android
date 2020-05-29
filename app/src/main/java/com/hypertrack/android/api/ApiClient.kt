@@ -21,6 +21,7 @@ class ApiClient(
             OkHttpClient.Builder()
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
+                .addInterceptor(UserAgentInterceptor())
                 .build()
         )
         .build().create(ApiInterface::class.java)

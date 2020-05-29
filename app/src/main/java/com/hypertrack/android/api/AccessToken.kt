@@ -1,8 +1,11 @@
 package com.hypertrack.android.api
 
+import android.os.Build
 import android.util.Log
 import com.hypertrack.android.repository.AUTH_HEADER_KEY
 import com.hypertrack.android.repository.AccessTokenRepository
+import com.hypertrack.logistics.android.github.BuildConfig
+import okhttp3.internal.userAgent
 import okhttp3.*
 import java.lang.IllegalStateException
 
@@ -14,6 +17,21 @@ class AccessTokenInterceptor(private val accessTokenRepository: AccessTokenRepos
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = accessTokenRepository.getAccessToken()
         val request = chain.request().newBuilder().addHeader("Authorization","Bearer $token").build()
+        return chain.proceed(request)
+
+    }
+
+}
+
+class UserAgentInterceptor(): Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val networkingLibrary = userAgent
+        val request = chain.request().newBuilder()
+            .addHeader("User-Agent",
+                "LogisticsApp/${BuildConfig.VERSION_NAME} $networkingLibrary Android/${Build.VERSION.RELEASE}"
+            )
+            .build()
         return chain.proceed(request)
 
     }
