@@ -14,16 +14,18 @@ class OsUtilsProvider(val context: Context) {
     }
 
     fun getAddressFromCoordinates(latitude: Double, longitude: Double) : Address {
-        val coder = Geocoder(context)
-        val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
-        address?.let {
-            return Address(
-                address.thoroughfare?:"Unnamed street",
-                address.postalCode?:"",
-                address.locality?:"Unknown city",
-                address.countryName?:"Nowhere"
-            )
-        }
+        try {
+            val coder = Geocoder(context)
+            val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
+            address?.let {
+                return Address(
+                    address.thoroughfare?:"Unnamed street",
+                    address.postalCode?:"",
+                    address.locality?:"Unknown city",
+                    address.countryName?:"Nowhere"
+                )
+            }
+        } catch (_: Throwable) { }
         return Address("Unknown location at ($latitude, $longitude)", "","", "")
     }
 }

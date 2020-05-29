@@ -199,7 +199,8 @@ data class Delivery(val _id : String,
 
 }
 
-private fun toNote(metadata: Map<String, Any>): String {
+private fun toNote(metadata: Map<String, Any>?): String {
+    if (metadata == null) return ""
     val result = StringBuilder()
     metadata.forEach { (key, value) -> result.append("$key: $value\n") }
     return result.toString().dropLast(1)
