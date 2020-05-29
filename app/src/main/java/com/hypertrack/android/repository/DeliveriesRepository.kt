@@ -130,7 +130,7 @@ private fun List<DeliveryListItem>.toStatusLabel(): String {
         .groupBy { it.status }
         .entries.
         fold("")
-        {acc, entry -> acc + "${entry.value.size} ${entry.key} item${if (entry.value.size == 1) "" else "s"}"}
+        {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
 }
 
 sealed class DeliveryListItem
