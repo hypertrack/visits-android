@@ -19,14 +19,14 @@ interface ApiInterface {
 }
 
 data class Geofence (
-    @SerializedName("all_devices") val all_devices : Boolean,
+    @SerializedName("all_devices") val all_devices : Boolean?,
     @SerializedName("created_at") val created_at : String,
     @SerializedName("delete_at") val delete_at : String?,
     @SerializedName("device_id") val device_id : String,
-    @SerializedName("device_ids") val device_ids : List<String>,
+    @SerializedName("device_ids") val device_ids : List<String> = emptyList(),
     @SerializedName("geofence_id") val geofence_id : String,
     @SerializedName("geometry") val geometry : Geometry,
-    @SerializedName("metadata") val metadata : Map<String, Any>,
+    @SerializedName("metadata") val metadata : Map<String, Any> = emptyMap(),
     @SerializedName("radius") val radius : Int,
     @SerializedName("single_use") val single_use : Boolean
 ) {
