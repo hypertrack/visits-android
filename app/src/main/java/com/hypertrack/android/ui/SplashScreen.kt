@@ -49,7 +49,8 @@ class SplashScreen : ProgressDialogActivity() {
                 .withCallback(splashScreenViewModel).withData(intent?.data).init()
         } catch (e: Throwable) {
             Log.d(TAG, "Failed to initialize Branch IO")
-            splashScreenViewModel.onInitFinished(null, BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
+            splashScreenViewModel.onInitFinished(null, null,
+                BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
         }
     }
 
@@ -57,11 +58,19 @@ class SplashScreen : ProgressDialogActivity() {
         super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent")
 
-        try {
-            Branch.sessionBuilder(this).withCallback(splashScreenViewModel).reInit()
-        } catch (e: Throwable) {
-            Log.d(TAG, "Failed to re-init Branch IO")
-            splashScreenViewModel.onInitFinished(null, BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
+        intent?.let {
+            intent.putExtra("branch_force_new_session", true)
+            setIntent(intent)
+            try {
+                Branch.sessionBuilder(this)
+                    .withCallback(splashScreenViewModel)
+                    .withData(intent.data)
+                    .reInit()
+            } catch (e: Throwable) {
+                Log.d(TAG, "Failed to re-init Branch IO")
+                splashScreenViewModel.onInitFinished(null, null,
+                    BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
+            }
         }
     }
 
