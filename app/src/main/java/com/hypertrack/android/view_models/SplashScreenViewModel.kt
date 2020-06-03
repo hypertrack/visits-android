@@ -5,15 +5,16 @@ import androidx.lifecycle.*
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
+import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
+import io.branch.referral.util.LinkProperties
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class SplashScreenViewModel(
     private val driverRepository: DriverRepo,
     private val accountRepository: AccountRepository
-) : ViewModel(), Branch.BranchReferralInitListener  {
+) : ViewModel(), Branch.BranchUniversalReferralInitListener  {
 
     private val _showSpinner = MutableLiveData<Boolean>(true)
     private val _noAccountFragment = MutableLiveData<Boolean>(false)
@@ -49,9 +50,14 @@ class SplashScreenViewModel(
         }
     }
 
-    override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
-        Log.d(TAG, "Branch init finished with params $referringParams")
-        val key = referringParams?.optString("publishable_key")?:""
+    override fun onInitFinished(
+        branchUniversalObject: BranchUniversalObject?,
+        linkProperties: LinkProperties?,
+        error: BranchError?
+    ) {
+
+        Log.d(TAG, "Branch payload is ${branchUniversalObject?.contentMetadata?.customMetadata}")
+        val key = branchUniversalObject?.contentMetadata?.customMetadata?.get("publishable_key")?:""
         if (key.isNotEmpty()) {
             Log.d(TAG, "Got key $key")
                 try {
