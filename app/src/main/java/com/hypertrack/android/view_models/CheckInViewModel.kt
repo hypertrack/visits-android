@@ -56,6 +56,14 @@ class CheckInViewModel(
         }
 
     }
+
+    fun checkAutoLogin() {
+        Log.v(TAG, "checkAutoLogin")
+        if (driverRepo.hasDriverId) {
+            onLoginClick(driverRepo.driverId)
+        }
+    }
+
     companion object {
         const val TAG = "CheckInVM"
     }

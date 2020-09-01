@@ -53,6 +53,8 @@ class CheckInActivity : ProgressDialogActivity() {
         checkInModel.showProgresss.observe(this, Observer {show ->
             if (show) showProgress() else dismissProgress()
         })
+
+        checkInModel.checkAutoLogin()
     }
 
     companion object { const val TAG = "CheckInAct" }

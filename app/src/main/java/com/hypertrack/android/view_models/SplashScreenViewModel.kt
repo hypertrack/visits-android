@@ -58,6 +58,8 @@ class SplashScreenViewModel(
 
         Log.d(TAG, "Branch payload is ${branchUniversalObject?.contentMetadata?.customMetadata}")
         val key = branchUniversalObject?.contentMetadata?.customMetadata?.get("publishable_key")?:""
+        val email = branchUniversalObject?.contentMetadata?.customMetadata?.get("email")?:""
+        Log.v(TAG, "Got email $email and pk $key")
         if (key.isNotEmpty()) {
             Log.d(TAG, "Got key $key")
                 try {
@@ -66,8 +68,9 @@ class SplashScreenViewModel(
                         Log.d(TAG, "onKeyReceived finished")
                         if (correctKey) {
                             Log.d(TAG, "Key validated successfully")
-
                             _showSpinner.postValue(false)
+                            if (email.isNotEmpty())
+                                driverRepository.driverId = email
                             _destination.postValue(Destination.LOGIN)
                         } else {
                             noPkHanlder()
