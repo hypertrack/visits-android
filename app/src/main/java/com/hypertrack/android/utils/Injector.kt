@@ -99,7 +99,7 @@ object Injector {
     }
 
     fun provideCheckinViewModelFactory(context: Context) : CheckinViewModelFactory {
-        return CheckinViewModelFactory(getDriverRepo(context), getHyperTrackService(context), getDeliveriesApiClient(context))
+        return CheckinViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
     }
 
     fun provideSplashScreenViewModelFactory(context: Context): SplashScreenViewModelFactory {
@@ -123,14 +123,13 @@ class ListActivityViewModelFactory(
 
 class CheckinViewModelFactory(
     private val driverRepo: DriverRepo,
-    private val hyperTrackService: HyperTrackService,
-    private val deliveriesApiClient: ApiClient
+    private val hyperTrackService: HyperTrackService
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            CheckInViewModel::class.java -> return CheckInViewModel(driverRepo, hyperTrackService, deliveriesApiClient) as T
+            CheckInViewModel::class.java -> return CheckInViewModel(driverRepo, hyperTrackService) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }
