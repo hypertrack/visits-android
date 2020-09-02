@@ -10,6 +10,8 @@ import com.hypertrack.android.utils.VisitsStorage
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TrackingStateValue
+import java.util.*
+import kotlin.collections.ArrayList
 
 const val COMPLETED = "Completed"
 const val VISITED = "Visited"
@@ -37,6 +39,7 @@ class VisitsRepository(
     private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
 
     private val _hasOngoingLocalVisit = MutableLiveData<Boolean>(false)
+    private var localVisit: Visit? = null
 
     val hasOngoingLocalVisit: LiveData<Boolean>
         get() = _hasOngoingLocalVisit
@@ -87,7 +90,7 @@ class VisitsRepository(
                 _visitItemsById[geofence.geofence_id]?.postValue(newValue) // updates MutableLiveData
             }
         }
-        val deletedEntries = _visitsMap.keys - geofences.map { it.geofence_id }
+        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - geofences.map { it.geofence_id }
         Log.d(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
@@ -143,9 +146,26 @@ class VisitsRepository(
 
     fun processLocalVisit() {
         Log.d(TAG, "processLocalVisit")
-//        TODO("Not yet implemented")
-        // If we have ongoing visit - complete it
-        // else - create new local visit
+        localVisit?.let { ongoingVisit ->
+            markCompleted(ongoingVisit._id)
+            _hasOngoingLocalVisit.postValue(false)
+            return
+        }
+
+        val newVisit = Visit(
+            _id=UUID.randomUUID().toString(),
+            createdAt = osUtilsProvider.getCurrentTimestamp(),
+            enteredAt = osUtilsProvider.getCurrentTimestamp()
+        )
+        val id = newVisit._id
+        _visitsMap[id] = newVisit
+        hyperTrackService.createVisitStartEvent(id)
+        visitsStorage.saveVisits(_visitsMap.values.toList())
+        _visitItemsById[id]?.postValue(newVisit)
+        _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        localVisit = newVisit
+        _hasOngoingLocalVisit.postValue(true)
+
     }
 
     companion object { const val TAG = "VisitsRepository"}
@@ -176,31 +196,31 @@ private fun List<VisitListItem>.toStatusLabel(): String {
 }
 
 sealed class VisitListItem
-data class HeaderVisitItem(val text : String) : VisitListItem()
-data class Visit(val _id : String,
-                 val visit_id : String = "", val driver_id : String = "", val customerNote : String = "",
-                 val createdAt : String = "", val updatedAt : String = "",
-                 val address : Address = Address(
+data class HeaderVisitItem(val text: String) : VisitListItem()
+data class Visit(val _id: String,
+                 val visit_id: String = "", val driver_id: String = "", val customerNote: String = "",
+                 val createdAt: String = "", val address: Address = Address(
         "",
         "",
         "",
         ""
     ),
-                 val visitNote : String = "", var visitPicture : String = "",
-                 var enteredAt :String = "",
-                 val completedAt : String = "", val exitedAt : String = "",
-                 val latitude : Double = 47.839042, val longitude: Double = 35.101726) : VisitListItem() {
+                 val visitNote: String = "", var visitPicture: String = "",
+                 var enteredAt:String = "",
+                 val completedAt: String = "", val exitedAt: String = "",
+                 val latitude: Double? = null, val longitude: Double? = null): VisitListItem() {
     val isCompleted: Boolean
         get() = status == COMPLETED
 
     val status: String
-    get() {
-        return when {
-            completedAt.isNotEmpty() -> COMPLETED
-            enteredAt.isNotEmpty() -> VISITED
-            else -> PENDING
-        }
-    }
+        get() = when {
+                completedAt.isNotEmpty() -> COMPLETED
+                enteredAt.isNotEmpty() -> VISITED
+                else -> PENDING
+            }
+
+    val isNotLocal:Boolean
+        get() = (latitude != null && longitude != null)
 
     fun hasPicture() = visitPicture.isNotEmpty()
 
@@ -211,7 +231,7 @@ data class Visit(val _id : String,
         return if (toNote(geofence.metadata) == customerNote) this
             else Visit(
                 _id, visit_id, driver_id, toNote(geofence.metadata),
-                createdAt, updatedAt, address, visitNote, visitPicture, enteredAt,
+                createdAt, address, visitNote, visitPicture, enteredAt,
                 completedAt, exitedAt, latitude, longitude
             )
         // TODO Denys - update when API adds support to geofence events
@@ -229,13 +249,13 @@ data class Visit(val _id : String,
 
     fun updateNote(newNote: String): Visit {
         return Visit(_id, visit_id, driver_id, customerNote,
-        createdAt, updatedAt, address, newNote, visitPicture, enteredAt,
+        createdAt, address, newNote, visitPicture, enteredAt,
             completedAt, exitedAt, latitude, longitude)
     }
 
     fun complete(completedAt: String): Visit {
         return Visit(_id, visit_id, driver_id, customerNote,
-            createdAt, updatedAt, address, visitNote, visitPicture, enteredAt,
+            createdAt, address, visitNote, visitPicture, enteredAt,
             completedAt, exitedAt, latitude, longitude)
     }
 

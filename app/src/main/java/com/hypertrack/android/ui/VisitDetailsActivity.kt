@@ -53,24 +53,16 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(p0: GoogleMap?) {
 
         p0?.let { map ->
-            val latLng = visitDetailsViewModel.getLatLng()
+            map.uiSettings.apply {
+                isMyLocationButtonEnabled = true
+                isZoomControlsEnabled = true
+            }
+            val latLng = visitDetailsViewModel.getLatLng()?:return
             Log.d(TAG, "Got latlng $latLng")
             val label = visitDetailsViewModel.getLabel()
 
             map.addMarker(MarkerOptions().position(latLng).title(label))
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.0f))
-//            LocationServices.getFusedLocationProviderClient(this).lastLocation.addOnSuccessListener { location ->
-//                val markerOptions = MarkerOptions().position(LatLng(location.latitude, location.longitude)).title("Your Current Location")
-//                map.addMarker(markerOptions)
-//
-//            }
-            map.uiSettings.apply {
-                isMyLocationButtonEnabled = true
-                isZoomControlsEnabled = true
-            }
-
-
-
         }
     }
 

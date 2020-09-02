@@ -49,6 +49,10 @@ class HyperTrackService(publishableKey: String, context: Context) {
         sdkInstance.addTripMarker(mapOf(GEOFENCE_ID to id, "completed" to true))
     }
 
+    fun createVisitStartEvent(id: String) {
+        sdkInstance.addTripMarker(mapOf(GEOFENCE_ID to id, "created" to true))
+    }
+
     companion object { private const val GEOFENCE_ID = "geofence_id" }
 }
 

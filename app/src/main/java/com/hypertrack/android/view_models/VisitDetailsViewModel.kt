@@ -29,10 +29,10 @@ class VisitDetailsViewModel(
 
     fun onMarkedCompleted() = visitsRepository.markCompleted(id)
 
-    fun getLatLng(): LatLng = LatLng(
-        visit.value?.latitude?:37.79337833161658,
-        visit.value?.longitude?:-122.39470660686493
-    )
+    fun getLatLng(): LatLng?  {
+        visit.value?.latitude?.let { lat -> visit.value?.longitude?.let { lng -> return LatLng(lat, lng) } }
+        return null
+    }
 
     fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
 
