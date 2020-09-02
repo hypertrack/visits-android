@@ -29,7 +29,7 @@ class ServiceLocator(private val context: Context) {
 
 object Injector {
 
-    private var deliveriesRepository: DeliveriesRepository? = null
+    private var visitsRepository: VisitsRepository? = null
 
     fun getGson() : Gson = GsonBuilder()
         .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
@@ -45,7 +45,7 @@ object Injector {
 
     private fun getDriverRepo(context: Context) = DriverRepo(getDriver(context),getMyPreferences(context))
 
-    private fun getDeliveriesApiClient(context: Context): ApiClient {
+    private fun getVisitsApiClient(context: Context): ApiClient {
         val accessTokenRepository =
             getMyPreferences(context).restoreRepository()
                 ?: throw IllegalStateException("No access token repository was saved")
@@ -73,29 +73,29 @@ object Injector {
         )
     }
 
-    private fun getDeliveriesRepo(context: Context): DeliveriesRepository {
-        deliveriesRepository?.let { return it }
+    private fun getVisitsRepo(context: Context): VisitsRepository {
+        visitsRepository?.let { return it }
 
         getMyPreferences(context).getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        val result = DeliveriesRepository(
+        val result = VisitsRepository(
             getOsUtilsProvider(context),
-            getDeliveriesApiClient(context),
+            getVisitsApiClient(context),
             getMyPreferences(context),
             getHyperTrackService(context)
         )
-        deliveriesRepository = result
+        visitsRepository = result
 
         return result
     }
 
     fun provideListActivityViewModelFactory(context: Context): ListActivityViewModelFactory {
-        val repository = getDeliveriesRepo(context)
+        val repository = getVisitsRepo(context)
         return ListActivityViewModelFactory(repository)
     }
 
-    fun provideDeliveryStatusViewModel(context: Context, deliveryId:String): DeliveryStatusViewModel {
-        return DeliveryStatusViewModel(getDeliveriesRepo(context), deliveryId)
+    fun provideVisitStatusViewModel(context: Context, visitId:String): VisitDetailsViewModel {
+        return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
     fun provideCheckinViewModelFactory(context: Context) : CheckinViewModelFactory {
@@ -109,13 +109,13 @@ object Injector {
 }
 
 class ListActivityViewModelFactory(
-    private val deliveriesRepository: DeliveriesRepository
+    private val visitsRepository: VisitsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            DeliveryListViewModel::class.java -> return DeliveryListViewModel(deliveriesRepository) as T
+            VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(visitsRepository) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }

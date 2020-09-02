@@ -28,7 +28,7 @@ class ApiClientTest {
 
     companion object {
         const val DEVICE_ID = "42"
-        const val DELIVERIES =
+        const val VISITS =
             """
                 [
                   {
@@ -141,7 +141,7 @@ class ApiClientTest {
     @Test
     fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
 
-        mockWebServer.enqueue(MockResponse().setBody(DELIVERIES))
+        mockWebServer.enqueue(MockResponse().setBody(VISITS))
         val geofences = runBlocking {
             apiClient.getGeofences()
         }

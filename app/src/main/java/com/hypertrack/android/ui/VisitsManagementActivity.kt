@@ -8,18 +8,18 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.adapters.DeliveryListAdapter
-import com.hypertrack.android.repository.Delivery
+import com.hypertrack.android.adapters.VisitListAdapter
+import com.hypertrack.android.repository.Visit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
-import com.hypertrack.android.view_models.DeliveryListViewModel
+import com.hypertrack.android.view_models.VisitsManagementViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_job_listing.*
+import kotlinx.android.synthetic.main.activity_visits_management.*
 
 
-class DeliveryListActivity : ProgressDialogActivity() {
+class VisitsManagementActivity : ProgressDialogActivity() {
 
-    private val deliveryListViewModel : DeliveryListViewModel by viewModels {
+    private val visitsManagementViewModel : VisitsManagementViewModel by viewModels {
         (application as MyApplication).injector.provideListActivityViewModelFactory(applicationContext)
     }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -28,21 +28,21 @@ class DeliveryListActivity : ProgressDialogActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
-        setContentView(R.layout.activity_job_listing)
+        setContentView(R.layout.activity_visits_management)
 
-        viewAdapter = DeliveryListAdapter(deliveryListViewModel.deliveries, object: DeliveryListAdapter.OnListAdapterClick{
+        viewAdapter = VisitListAdapter(visitsManagementViewModel.visits, object: VisitListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int) {
-                Log.d(TAG, "Clicked delivery at position $position")
-                val delivery = deliveryListViewModel.deliveries.value?.get(position)
-                delivery?.let { if (it is Delivery) showDeliveryDetails(it, position) }
+                Log.d(TAG, "Clicked visit at position $position")
+                val visit = visitsManagementViewModel.visits.value?.get(position)
+                visit?.let { if (it is Visit) showVisitDetails(it, position) }
             }
         })
         viewManager = LinearLayoutManager(this)
 
 
-        deliveryListViewModel.deliveries
+        visitsManagementViewModel.visits
             .observe(this, Observer {
-                deliveries -> Log.d(TAG, "Got deliveries $deliveries")
+                visits -> Log.d(TAG, "Got visits $visits")
                 viewAdapter.notifyDataSetChanged()
             })
 
@@ -51,9 +51,9 @@ class DeliveryListActivity : ProgressDialogActivity() {
             adapter = viewAdapter
         }
 
-        ivRefresh.setOnClickListener { deliveryListViewModel.refreshDeliveries() }
+        ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
 
-        deliveryListViewModel.statusLabel.observe(this, Observer { stateAndLabel ->
+        visitsManagementViewModel.statusLabel.observe(this, Observer { stateAndLabel ->
             val invisible = -1
             val colorId =  when (stateAndLabel.first) {
                 TrackingStateValue.ERROR -> R.color.colorTrackingError
@@ -73,7 +73,7 @@ class DeliveryListActivity : ProgressDialogActivity() {
 
 
         })
-        deliveryListViewModel.showSpinner.observe(this, Observer { show ->
+        visitsManagementViewModel.showSpinner.observe(this, Observer { show ->
             if(show) showProgress() else dismissProgress()
         })
 
@@ -87,10 +87,10 @@ class DeliveryListActivity : ProgressDialogActivity() {
         }
     }
 
-    private fun showDeliveryDetails(delivery: Delivery, position: Int) = startActivityForResult(
-        Intent(this@DeliveryListActivity, DeliveryDetailActivity::class.java)
-            .putExtra(KEY_EXTRA_DELIVERY_ID, delivery._id)
-            .putExtra(KEY_EXTRA_DELIVERY_POS, position.toString()),
+    private fun showVisitDetails(visit: Visit, position: Int) = startActivityForResult(
+        Intent(this@VisitsManagementActivity, VisitDetailsActivity::class.java)
+            .putExtra(KEY_EXTRA_VISIT_ID, visit._id)
+            .putExtra(KEY_EXTRA_VISIT_POS, position.toString()),
         42
     )
 
@@ -98,5 +98,5 @@ class DeliveryListActivity : ProgressDialogActivity() {
 
 }
 
-const val KEY_EXTRA_DELIVERY_ID = "delivery_id"
-const val KEY_EXTRA_DELIVERY_POS = "delivery_position"
+const val KEY_EXTRA_VISIT_ID = "delivery_id"
+const val KEY_EXTRA_VISIT_POS = "delivery_position"

@@ -12,8 +12,8 @@ import com.hypertrack.android.repository.*
 import com.hypertrack.logistics.android.github.R
 
 // Job adapter (Multiple type jobs Pending,Completed,Visited)
-class DeliveryListAdapter(
-    private val deliveries: LiveData<List<DeliveryListItem>>,
+class VisitListAdapter(
+    private val visits: LiveData<List<VisitListItem>>,
     onclick: OnListAdapterClick
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -34,8 +34,8 @@ class DeliveryListAdapter(
 
             else -> {
 
-                return DeliveryViewHolder(LayoutInflater.from(parent.context)
-                        .inflate(R.layout.inflater_delivery_item, parent, false)
+                return VisitViewHolder(LayoutInflater.from(parent.context)
+                        .inflate(R.layout.inflater_visit_item, parent, false)
                 )
 
             }
@@ -45,19 +45,19 @@ class DeliveryListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        when (val item = deliveries.value?.get(holder.adapterPosition)) {
-            is HeaderDeliveryItem -> {
+        when (val item = visits.value?.get(holder.adapterPosition)) {
+            is HeaderVisitItem -> {
                 val headerView = holder as HeaderViewHolder
                 headerView.tvHeaderText.text = item.text
             }
-            is Delivery -> {
-                val deliveryView = holder as DeliveryViewHolder
-                deliveryView.tvDescription.text =
+            is Visit -> {
+                val visitView = holder as VisitViewHolder
+                visitView.tvDescription.text =
                     createAddress(item.address)
-                deliveryView.tvTitle.text = item.delivery_id
-                deliveryView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
-                deliveryView.ivCompass.visibility = if (item.status == VISITED) View.VISIBLE else View.INVISIBLE
-                deliveryView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.INVISIBLE
+                visitView.tvTitle.text = item.visit_id
+                visitView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
+                visitView.ivCompass.visibility = if (item.status == VISITED) View.VISIBLE else View.INVISIBLE
+                visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.INVISIBLE
 
             }
         }
@@ -69,13 +69,13 @@ class DeliveryListAdapter(
 
     }
 
-    override fun getItemCount(): Int = deliveries.value?.size ?: 0
+    override fun getItemCount(): Int = visits.value?.size ?: 0
 
     override fun getItemViewType(position: Int): Int {
-        return if (deliveries.value?.get(position) is HeaderDeliveryItem)
+        return if (visits.value?.get(position) is HeaderVisitItem)
             R.layout.inflate_header_item
         else {
-            R.layout.inflater_delivery_item
+            R.layout.inflater_visit_item
         }
 
     }
@@ -87,7 +87,7 @@ class DeliveryListAdapter(
     }
 
 
-    inner class DeliveryViewHolder(holder: View) : RecyclerView.ViewHolder(holder) {
+    inner class VisitViewHolder(holder: View) : RecyclerView.ViewHolder(holder) {
 
         internal var tvTitle: TextView = holder.findViewById(R.id.tvTitle) as TextView
         internal var tvDescription: TextView = holder.findViewById(R.id.tvDescription) as TextView
@@ -106,7 +106,7 @@ class DeliveryListAdapter(
 
 }
 
-// Create address from Delivery Object
+// Create address from Visit Object
 fun createAddress(address: Address): String {
 
     return address.street.plus("\n").plus(address.city).plus(", ").plus(address.country)

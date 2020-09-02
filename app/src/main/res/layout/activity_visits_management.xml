@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:fontFamily="@font/bold"
-            android:text="@string/deliveries"
+            android:text="@string/visits"
             android:textColor="@color/colorBlack"
             android:textSize="20sp" />
 

@@ -4,29 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hypertrack.android.repository.DeliveriesRepository
+import com.hypertrack.android.repository.VisitsRepository
 import kotlinx.coroutines.launch
 
-class DeliveryListViewModel(private val deliveriesRepository: DeliveriesRepository) : ViewModel() {
+class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) : ViewModel() {
     private val _showSpinner = MutableLiveData(false)
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
-    fun refreshDeliveries() {
+    fun refreshVisits() {
         _showSpinner.postValue(true)
         viewModelScope.launch {
-            deliveriesRepository.refreshDeliveries()
+            visitsRepository.refreshVisits()
             _showSpinner.postValue(false)
         }
     }
 
-    val deliveries = deliveriesRepository.deliveryListItems
+    val visits = visitsRepository.visitListItems
 
-    val statusLabel = deliveriesRepository.statusLabel
+    val statusLabel = visitsRepository.statusLabel
 
     init {
         viewModelScope.launch {
-            deliveriesRepository.refreshDeliveries()
+            visitsRepository.refreshVisits()
         }
     }
 

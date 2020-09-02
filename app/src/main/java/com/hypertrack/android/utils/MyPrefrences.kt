@@ -7,11 +7,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.repository.Delivery
+import com.hypertrack.android.repository.Visit
 
 
 class MyPreferences(context: Context, private val gson: Gson) :
-    AccountDataStorage, DeliveriesStorage {
+    AccountDataStorage, VisitsStorage {
 
     private val getPreferences : SharedPreferences
             = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
@@ -62,16 +62,16 @@ class MyPreferences(context: Context, private val gson: Gson) :
         getPreferences.edit()?.putString(ACCESS_REPO_KEY, gson.toJson(repo.getConfig()))?.apply()
     }
 
-    override fun saveDeliveries(deliveries: List<Delivery>) {
-        getPreferences.edit().putString(DELIVERIES_KEY, gson.toJson(deliveries))?.apply()
+    override fun saveVisits(visits: List<Visit>) {
+        getPreferences.edit().putString(VISITS_KEY, gson.toJson(visits))?.apply()
     }
 
-    override fun restoreDeliveries(): List<Delivery> {
-        val typeToken = object : TypeToken<List<Delivery>>() {}.type
+    override fun restoreVisits(): List<Visit> {
+        val typeToken = object : TypeToken<List<Visit>>() {}.type
         try {
-            return gson.fromJson(getPreferences.getString(DELIVERIES_KEY, null), typeToken)
+            return gson.fromJson(getPreferences.getString(VISITS_KEY, null), typeToken)
         } catch (e: Throwable) {
-            Log.w(TAG, "Can't deserialize deliveries ${e.message}")
+            Log.w(TAG, "Can't deserialize visits ${e.message}")
         }
         return emptyList()
     }
@@ -80,7 +80,7 @@ class MyPreferences(context: Context, private val gson: Gson) :
         const val DRIVER_KEY = "com.hypertrack.android.utils.driver"
         const val ACCESS_REPO_KEY = "com.hypertrack.android.utils.access_token_repo"
         const val ACCOUNT_KEY = "com.hypertrack.android.utils.accountKey"
-        const val DELIVERIES_KEY = "com.hypertrack.android.utils.deliveries"
+        const val VISITS_KEY = "com.hypertrack.android.utils.deliveries"
         const val TAG = "MyPrefs"
     }
 
@@ -99,7 +99,7 @@ interface AccountDataStorage {
     fun restoreRepository(): BasicAuthAccessTokenRepository?
 }
 
-interface DeliveriesStorage {
-    fun saveDeliveries(deliveries: List<Delivery>)
-    fun restoreDeliveries() : List<Delivery>
+interface VisitsStorage {
+    fun saveVisits(visits: List<Visit>)
+    fun restoreVisits() : List<Visit>
 }

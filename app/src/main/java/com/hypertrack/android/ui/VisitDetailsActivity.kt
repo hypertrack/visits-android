@@ -15,36 +15,36 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import com.hypertrack.android.repository.Delivery
+import com.hypertrack.android.repository.Visit
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.DeliveryStatusViewModel
+import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_job_detail.*
+import kotlinx.android.synthetic.main.activity_visit_detail.*
 
 
-class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
+class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var deliveryStatusViewModel: DeliveryStatusViewModel
+    private lateinit var visitDetailsViewModel: VisitDetailsViewModel
 
-    private val deliveryPosition: String
-        get() = intent?.getStringExtra(KEY_EXTRA_DELIVERY_POS)?:""
+    private val visitPosition: String
+        get() = intent?.getStringExtra(KEY_EXTRA_VISIT_POS)?:""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_job_detail)
+        setContentView(R.layout.activity_visit_detail)
 
 
-        val deliveryId = intent?.getStringExtra(KEY_EXTRA_DELIVERY_ID)!!
-        deliveryStatusViewModel = (application as MyApplication).injector
-            .provideDeliveryStatusViewModel(this.applicationContext, deliveryId)
+        val visitId = intent?.getStringExtra(KEY_EXTRA_VISIT_ID)!!
+        visitDetailsViewModel = (application as MyApplication).injector
+            .provideVisitStatusViewModel(this.applicationContext, visitId)
 
-        deliveryStatusViewModel.delivery.observe(this, Observer { updateView(it) })
+        visitDetailsViewModel.visit.observe(this, Observer { updateView(it) })
 
         addActionListeners()
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
-        deliveryStatusViewModel.showNoteUpdatedToast.observe(this, Observer { show ->
+        visitDetailsViewModel.showNoteUpdatedToast.observe(this, Observer { show ->
             if (show) Toast
-                .makeText(this, "Delivery note was updated", Toast.LENGTH_LONG)
+                .makeText(this, "Visit note was updated", Toast.LENGTH_LONG)
                 .show()
         })
 
@@ -53,9 +53,9 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(p0: GoogleMap?) {
 
         p0?.let { map ->
-            val latLng = deliveryStatusViewModel.getLatLng()
+            val latLng = visitDetailsViewModel.getLatLng()
             Log.d(TAG, "Got latlng $latLng")
-            val label = deliveryStatusViewModel.getLabel()
+            val label = visitDetailsViewModel.getLabel()
 
             map.addMarker(MarkerOptions().position(latLng).title(label))
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.0f))
@@ -74,11 +74,11 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun updateView(newValue: Delivery) {
+    private fun updateView(newValue: Visit) {
         tvCustomerNote.text = newValue.customerNote
         tvAddress.text = newValue.address.street
-        if (newValue.deliveryNote != etDeliveryNote.text.toString()) {
-            etDeliveryNote.setText(newValue.deliveryNote)
+        if (newValue.visitNote != etVisitNote.text.toString()) {
+            etVisitNote.setText(newValue.visitNote)
         }
         val completeEnabled = !newValue.isCompleted
         Log.d(TAG, "Complete button enabled is $completeEnabled")
@@ -95,18 +95,18 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun addActionListeners() {
         ivBack.setOnClickListener {
-            deliveryStatusViewModel.onBackPressed()
+            visitDetailsViewModel.onBackPressed()
             onBackPressed()
         }
         tvComplete.setOnClickListener {
             Log.d(TAG, "Complete button pressed")
             tvComplete.isEnabled = false
-            deliveryStatusViewModel.onMarkedCompleted()
+            visitDetailsViewModel.onMarkedCompleted()
         }
 
-        etDeliveryNote.addTextChangedListener(object : TextWatcher {
+        etVisitNote.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) =
-                deliveryStatusViewModel.onDeliveryNoteChanged(s.toString())
+                visitDetailsViewModel.onVisitNoteChanged(s.toString())
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -117,12 +117,12 @@ class DeliveryDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onBackPressed() {
         val data = Intent()
-        data.data = Uri.parse(deliveryPosition)
+        data.data = Uri.parse(visitPosition)
         setResult(Activity.RESULT_OK, data)
         finish()
     }
 
-    companion object {const val TAG = "DeliveryDetailActivity"}
+    companion object {const val TAG = "VisitDetailsActivity"}
 
 }
 

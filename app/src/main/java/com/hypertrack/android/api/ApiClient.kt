@@ -26,11 +26,11 @@ class ApiClient(
         )
         .build().create(ApiInterface::class.java)
 
-    suspend fun checkinCall() = api.makeDriverCheckIn(deviceId)
+    suspend fun checkinCall() = api.clockIn(deviceId)
 
-    suspend fun checkoutCall() = api.makeDriverCheckOut(deviceId)
+    suspend fun checkoutCall() = api.clockOut(deviceId)
 
-    suspend fun getGeofences() = api.getDeliveries(deviceId)
+    suspend fun getGeofences() = api.getVisits(deviceId)
 
 }
 

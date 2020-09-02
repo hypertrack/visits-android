@@ -53,12 +53,12 @@
             android:name="com.hypertrack.android.ui.CheckInActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.hypertrack.android.ui.DeliveryListActivity"
+            android:name="com.hypertrack.android.ui.VisitsManagementActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.hypertrack.android.ui.DeliveryDetailActivity"
-            android:parentActivityName="com.hypertrack.android.ui.DeliveryListActivity" />
+            android:name="com.hypertrack.android.ui.VisitDetailsActivity"
+            android:parentActivityName="com.hypertrack.android.ui.VisitsManagementActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

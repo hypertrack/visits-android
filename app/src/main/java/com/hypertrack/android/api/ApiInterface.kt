@@ -8,13 +8,13 @@ import retrofit2.http.Path
 interface ApiInterface {
 
     @POST("client/devices/{device_id}/start")
-    suspend fun makeDriverCheckIn(@Path("device_id") deviceId: String)
+    suspend fun clockIn(@Path("device_id") deviceId: String)
 
     @POST("client/devices/{device_id}/stop")
-    suspend fun makeDriverCheckOut(@Path("device_id")deviceId : String)
+    suspend fun clockOut(@Path("device_id")deviceId : String)
 
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getDeliveries(@Path("device_id")deviceId : String) : List<Geofence>
+    suspend fun getVisits(@Path("device_id")deviceId : String) : List<Geofence>
 
 }
 
