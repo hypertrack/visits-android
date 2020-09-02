@@ -16,7 +16,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
 
     val targetActivity = when (destination) {
         Destination.SPLASH_SCREEN -> SplashScreen::class.java
-        Destination.LOGIN -> CheckInActivity::class.java
+        Destination.LOGIN -> LoginActivity::class.java
         Destination.PERMISSION_REQUEST -> PermissionRequestActivity::class.java
         Destination.VISITS_MANAGEMENT -> VisitsManagementActivity::class.java
         Destination.VISIT_DETAILS -> VisitDetailsActivity::class.java

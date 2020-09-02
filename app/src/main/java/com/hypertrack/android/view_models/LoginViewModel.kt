@@ -10,7 +10,7 @@ import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
-class CheckInViewModel(
+class LoginViewModel(
     private val driverRepo: DriverRepo,
     private val hyperTrackService: HyperTrackService
 ) : ViewModel() {
@@ -62,6 +62,6 @@ class CheckInViewModel(
     }
 
     companion object {
-        const val TAG = "CheckInVM"
+        const val TAG = "LoginVM"
     }
 }

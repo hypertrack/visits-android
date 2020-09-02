@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.hypertrack.android.ui.CheckInActivity"
+            android:name="com.hypertrack.android.ui.LoginActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name="com.hypertrack.android.ui.VisitsManagementActivity"

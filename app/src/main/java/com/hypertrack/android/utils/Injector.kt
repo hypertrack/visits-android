@@ -129,7 +129,7 @@ class CheckinViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            CheckInViewModel::class.java -> return CheckInViewModel(driverRepo, hyperTrackService) as T
+            LoginViewModel::class.java -> return LoginViewModel(driverRepo, hyperTrackService) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }
