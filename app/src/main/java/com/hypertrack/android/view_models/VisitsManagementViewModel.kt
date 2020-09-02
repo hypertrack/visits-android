@@ -1,16 +1,29 @@
 package com.hypertrack.android.view_models
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.hypertrack.android.repository.VisitsRepository
 import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) : ViewModel() {
-    val clockinButtonText: LiveData<CharSequence> = TODO("Not yet implemented")
-    val checkinButtonText: LiveData<CharSequence> = TODO("Not yet implemented")
+
+    private val _clockinButtonText = MediatorLiveData<CharSequence>()
+    init {
+        _clockinButtonText.addSource(visitsRepository.isTracking) { tracking ->
+            _clockinButtonText.postValue(if (tracking) "Clock Out" else "Clock In")
+        }
+    }
+    val clockinButtonText: LiveData<CharSequence>
+        get() = _clockinButtonText
+
+    private val _checkinButtonText = MediatorLiveData<CharSequence>()
+    init {
+        _checkinButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
+            _checkinButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
+        }
+    }
+    val checkinButtonText: LiveData<CharSequence>
+        get() = _checkinButtonText
 
     private val _showSpinner = MutableLiveData(false)
     val showSpinner: LiveData<Boolean>

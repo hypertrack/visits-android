@@ -36,6 +36,11 @@ class VisitsRepository(
 
     private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
 
+    private val _hasOngoingLocalVisit = MutableLiveData<Boolean>(false)
+
+    val hasOngoingLocalVisit: LiveData<Boolean>
+        get() = _hasOngoingLocalVisit
+
     init{
         _status.addSource(hyperTrackService.state) { state ->
             val label = _status.value?.second?:""
@@ -52,9 +57,20 @@ class VisitsRepository(
     val statusLabel: LiveData<Pair<TrackingStateValue, String>>
         get() = _status
 
+    private val _isTracking = MediatorLiveData<Boolean>()
+    init {
+        _isTracking.addSource(hyperTrackService.state) {
+            _isTracking.postValue(it == TrackingStateValue.TRACKING)
+        }
+    }
+
+    val isTracking: LiveData<Boolean>
+        get() = _isTracking
+
+
     suspend fun refreshVisits() {
 
-        val geofences = apiClient.getGeofences()
+        val geofences = apiClient.getVisits()
         geofences.forEach { geofence ->
             Log.d(TAG, "Processing geofence $geofence")
             val currentValue = _visitsMap[geofence.geofence_id]
@@ -116,7 +132,7 @@ class VisitsRepository(
 
     suspend fun switchTracking() {
         Log.d(TAG, "switch Tracking")
-//        TODO("Not yet implemented")
+        apiClient.clockIn()
     }
 
     fun processLocalVisit() {
