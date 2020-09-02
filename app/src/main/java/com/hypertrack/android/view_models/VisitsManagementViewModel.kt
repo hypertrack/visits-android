@@ -29,7 +29,10 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
-    private val _enableCheckin = MutableLiveData(false)
+    private val _enableCheckin = MediatorLiveData<Boolean>()
+    init {
+        _enableCheckin.addSource(visitsRepository.isTracking) { _enableCheckin.postValue(it) }
+    }
     val enableCheckin: LiveData<Boolean>
         get() = _enableCheckin
 
@@ -57,9 +60,7 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
     }
 
     val visits = visitsRepository.visitListItems
-
     val statusLabel = visitsRepository.statusLabel
-
 
     init {
         viewModelScope.launch {

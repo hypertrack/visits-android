@@ -132,7 +132,13 @@ class VisitsRepository(
 
     suspend fun switchTracking() {
         Log.d(TAG, "switch Tracking")
-        apiClient.clockIn()
+        if (_isTracking.value == true) {
+            Log.v(TAG, "Stop tracking")
+            apiClient.clockOut()
+        } else {
+            Log.v(TAG, "Start tracking")
+            apiClient.clockIn()
+        }
     }
 
     fun processLocalVisit() {
