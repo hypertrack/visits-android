@@ -114,6 +114,18 @@ class VisitsRepository(
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
     }
 
+    suspend fun switchTracking() {
+        Log.d(TAG, "switch Tracking")
+//        TODO("Not yet implemented")
+    }
+
+    fun processLocalVisit() {
+        Log.d(TAG, "processLocalVisit")
+//        TODO("Not yet implemented")
+        // If we have ongoing visit - complete it
+        // else - create new local visit
+    }
+
     companion object { const val TAG = "VisitsRepository"}
 
 }

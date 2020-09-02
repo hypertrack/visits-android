@@ -51,8 +51,6 @@ class VisitsManagementActivity : ProgressDialogActivity() {
             adapter = viewAdapter
         }
 
-        ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
-
         visitsManagementViewModel.statusLabel.observe(this, Observer { stateAndLabel ->
             val invisible = -1
             val colorId =  when (stateAndLabel.first) {
@@ -73,10 +71,20 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
 
         })
+
         visitsManagementViewModel.showSpinner.observe(this, Observer { show ->
             if(show) showProgress() else dismissProgress()
         })
 
+        visitsManagementViewModel.enableCheckin.observe(this, Observer { enabled ->
+            checkIn.isEnabled = enabled
+        })
+
+        ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
+        clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
+        checkIn.setOnClickListener {
+            visitsManagementViewModel.checkin()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

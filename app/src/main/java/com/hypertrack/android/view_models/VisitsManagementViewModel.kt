@@ -1,5 +1,6 @@
 package com.hypertrack.android.view_models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,12 +13,31 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
+    private val _enableCheckin = MutableLiveData(false)
+    val enableCheckin: LiveData<Boolean>
+        get() = _enableCheckin
+
     fun refreshVisits() {
         _showSpinner.postValue(true)
         viewModelScope.launch {
             visitsRepository.refreshVisits()
             _showSpinner.postValue(false)
         }
+    }
+
+    fun switchTracking() {
+        Log.v(TAG, "switchTracking")
+        _showSpinner.postValue(true)
+        viewModelScope.launch {
+            visitsRepository.switchTracking()
+            _showSpinner.postValue(false)
+
+        }
+    }
+
+    fun checkin() {
+        Log.v(TAG, "checkin")
+        visitsRepository.processLocalVisit()
     }
 
     val visits = visitsRepository.visitListItems
@@ -28,6 +48,10 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
         viewModelScope.launch {
             visitsRepository.refreshVisits()
         }
+    }
+
+    companion object {
+        const val TAG = "VisitsManagementVM"
     }
 
 }
