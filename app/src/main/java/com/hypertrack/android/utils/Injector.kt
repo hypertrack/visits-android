@@ -89,17 +89,17 @@ object Injector {
         return result
     }
 
-    fun provideListActivityViewModelFactory(context: Context): ListActivityViewModelFactory {
+    fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
-        return ListActivityViewModelFactory(repository)
+        return VisitsManagementViewModelFactory(repository)
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId:String): VisitDetailsViewModel {
         return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
-    fun provideCheckinViewModelFactory(context: Context) : CheckinViewModelFactory {
-        return CheckinViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
+    fun provideLoginViewModelFactory(context: Context) : LoginViewModelFactory {
+        return LoginViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
     }
 
     fun provideSplashScreenViewModelFactory(context: Context): SplashScreenViewModelFactory {
@@ -108,7 +108,7 @@ object Injector {
     }
 }
 
-class ListActivityViewModelFactory(
+class VisitsManagementViewModelFactory(
     private val visitsRepository: VisitsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -121,7 +121,7 @@ class ListActivityViewModelFactory(
     }
 }
 
-class CheckinViewModelFactory(
+class LoginViewModelFactory(
     private val driverRepo: DriverRepo,
     private val hyperTrackService: HyperTrackService
 ) : ViewModelProvider.Factory {

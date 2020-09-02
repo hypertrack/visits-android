@@ -9,19 +9,19 @@ import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.LoginViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_checkin_screen.*
+import kotlinx.android.synthetic.main.activity_login_screen.*
 
 
 class LoginActivity : ProgressDialogActivity() {
 
     private val loginModel: LoginViewModel by viewModels {
-        (application as MyApplication).injector.provideCheckinViewModelFactory(applicationContext)
+        (application as MyApplication).injector.provideLoginViewModelFactory(applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_checkin_screen)
+        setContentView(R.layout.activity_login_screen)
 
         etDriverId.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}

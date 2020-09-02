@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_visits_management.*
 class VisitsManagementActivity : ProgressDialogActivity() {
 
     private val visitsManagementViewModel : VisitsManagementViewModel by viewModels {
-        (application as MyApplication).injector.provideListActivityViewModelFactory(applicationContext)
+        (application as MyApplication).injector.provideVisitsManagementViewModelFactory(applicationContext)
     }
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
