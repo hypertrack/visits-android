@@ -56,7 +56,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
             val colorId =  when (stateAndLabel.first) {
                 TrackingStateValue.ERROR -> R.color.colorTrackingError
                 TrackingStateValue.STOP -> R.color.colorTrackingStopped
-                TrackingStateValue.TRACKING -> R.color.colorTrackingActive
+                TrackingStateValue.TRACKING -> {R.color.colorTrackingActive}
                 else -> invisible
             }
 
@@ -71,20 +71,18 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
 
         })
-
         visitsManagementViewModel.showSpinner.observe(this, Observer { show ->
             if(show) showProgress() else dismissProgress()
         })
-
         visitsManagementViewModel.enableCheckin.observe(this, Observer { enabled ->
             checkIn.isEnabled = enabled
         })
+        visitsManagementViewModel.clockinButtonText.observe(this, Observer { clockIn.text = it })
+        visitsManagementViewModel.checkinButtonText.observe(this, Observer { checkIn.text = it })
 
         ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
-        checkIn.setOnClickListener {
-            visitsManagementViewModel.checkin()
-        }
+        checkIn.setOnClickListener { visitsManagementViewModel.checkin() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

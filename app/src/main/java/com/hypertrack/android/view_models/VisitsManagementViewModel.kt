@@ -9,6 +9,9 @@ import com.hypertrack.android.repository.VisitsRepository
 import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) : ViewModel() {
+    val clockinButtonText: LiveData<CharSequence> = TODO("Not yet implemented")
+    val checkinButtonText: LiveData<CharSequence> = TODO("Not yet implemented")
+
     private val _showSpinner = MutableLiveData(false)
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
@@ -43,6 +46,7 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
     val visits = visitsRepository.visitListItems
 
     val statusLabel = visitsRepository.statusLabel
+
 
     init {
         viewModelScope.launch {
