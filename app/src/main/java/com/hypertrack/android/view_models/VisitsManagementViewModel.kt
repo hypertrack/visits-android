@@ -59,6 +59,11 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
         visitsRepository.processLocalVisit()
     }
 
+    fun possibleLocalVisitCompletion(): Unit {
+        // Local visit change affects Check In/ Check Out state
+        visitsRepository.checkLocalVisitCompleted()
+    }
+
     val visits = visitsRepository.visitListItems
     val statusLabel = visitsRepository.statusLabel
 

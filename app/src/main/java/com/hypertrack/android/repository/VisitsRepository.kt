@@ -167,6 +167,11 @@ class VisitsRepository(
 
     }
 
+    fun checkLocalVisitCompleted() {
+        val isNotCompleted = _visitsMap.getLocalVisit()?.let { true } ?: false
+        _hasOngoingLocalVisit.postValue(isNotCompleted)
+    }
+
     companion object { const val TAG = "VisitsRepository"}
 
 }

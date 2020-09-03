@@ -87,9 +87,11 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult")
         data?.dataString?.toIntOrNull()?.let { position ->
             Log.d(TAG, "Item in pos $position was changed")
             viewAdapter.notifyItemChanged(position)
+            visitsManagementViewModel.possibleLocalVisitCompletion()
         }
     }
 
