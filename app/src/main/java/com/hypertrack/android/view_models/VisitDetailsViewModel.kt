@@ -27,7 +27,11 @@ class VisitDetailsViewModel(
         visitNote = newNote
     }
 
-    fun onMarkedCompleted() = visitsRepository.markCompleted(id)
+    fun onMarkedCompleted() {
+        val noteChanged = visitsRepository.updateVisitNote(id, visitNote)
+        _showNoteUpdatedToast.postValue(noteChanged)
+        visitsRepository.markCompleted(id)
+    }
 
     fun getLatLng(): LatLng?  {
         visit.value?.latitude?.let { lat -> visit.value?.longitude?.let { lng -> return LatLng(lat, lng) } }
