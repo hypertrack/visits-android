@@ -152,10 +152,12 @@ class VisitsRepository(
             return
         }
 
+        val createdAt = osUtilsProvider.getCurrentTimestamp()
         val newLocalVisit = Visit(
             _id=UUID.randomUUID().toString(),
-            createdAt = osUtilsProvider.getCurrentTimestamp(),
-            enteredAt = osUtilsProvider.getCurrentTimestamp()
+            visit_id = "Visit on ${osUtilsProvider.getFineDateTimeString()}",
+            createdAt = createdAt,
+            enteredAt = createdAt
         )
         val id = newLocalVisit._id
         _visitsMap[id] = newLocalVisit

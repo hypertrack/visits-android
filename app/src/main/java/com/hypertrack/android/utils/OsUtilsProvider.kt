@@ -13,6 +13,17 @@ class OsUtilsProvider(private val context: Context) {
         return df.format(Date())
     }
 
+    fun getFineDateTimeString(): String {
+        val df = SimpleDateFormat("MMM d, h:mm", Locale.ENGLISH)
+        df.timeZone = TimeZone.getDefault()
+
+        val postfixFmt = SimpleDateFormat("a", Locale.ENGLISH)
+        postfixFmt.timeZone = TimeZone.getDefault()
+
+        val now = Date()
+        return "${df.format(now)}${postfixFmt.format(now).toLowerCase(Locale.ENGLISH)}"
+    }
+
     fun getAddressFromCoordinates(latitude: Double, longitude: Double) : Address {
         try {
             val coder = Geocoder(context)
