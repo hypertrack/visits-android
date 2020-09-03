@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HyperTrack Logistics Sample</string>
+    <string name="app_name">HyperTrack Visits</string>
     <string name="enter_driver_id">enter driver id</string>
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
 
@@ -22,7 +22,7 @@
     <string name="continue_btn_text">Allow</string>
     <string name="title_activity_permission_request">PermissionRequestActivity</string>
     <string name="allow_location_access">Allow Location Access</string>
-    <string name="hypertrack_logistics_app">HyperTrack Logistics App</string>
+    <string name="hypertrack_logistics_app">HyperTrack Visits App</string>
     <string name="check_in">Check In</string>
     <string name="clock_in">Clock In</string>
     <string name="check_out">Check Out</string>

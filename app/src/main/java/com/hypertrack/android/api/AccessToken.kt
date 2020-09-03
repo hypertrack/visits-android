@@ -29,7 +29,7 @@ class UserAgentInterceptor : Interceptor {
         val networkingLibrary = userAgent
         val request = chain.request().newBuilder()
             .addHeader("User-Agent",
-                "LogisticsApp/${BuildConfig.VERSION_NAME} $networkingLibrary Android/${Build.VERSION.RELEASE}"
+                "VisitsApp/${BuildConfig.VERSION_NAME} $networkingLibrary Android/${Build.VERSION.RELEASE}"
             )
             .build()
         return chain.proceed(request)
