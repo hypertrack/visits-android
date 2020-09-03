@@ -67,13 +67,13 @@
                 android:layout_width="328dp"
                 android:layout_height="32dp"
                 android:fontFamily="@font/medium"
-                android:text="@string/delivery_notes"
+                android:text="@string/visit_notes"
                 android:textColor="@color/colorTitle"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
-                app:layout_constraintTop_toTopOf="@id/ivDeliveryNote" />
+                app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
 
             <fragment
                 android:id="@+id/map"
@@ -191,7 +191,7 @@
 
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivDeliveryNote"
+                android:id="@+id/ivVisitNote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -202,7 +202,7 @@
 
 
             <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/etDeliveryNote"
+                android:id="@+id/etVisitNote"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
@@ -212,7 +212,7 @@
                 android:padding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
-                app:layout_constraintTop_toBottomOf="@id/ivDeliveryNote" />
+                app:layout_constraintTop_toBottomOf="@id/ivVisitNote" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivCamera"
@@ -222,7 +222,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etDeliveryNote"
+                app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:srcCompat="@drawable/ic_cam" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -231,13 +231,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:fontFamily="@font/medium"
-                android:text="@string/delivery_picture"
+                android:text="@string/visit_picture"
                 android:textColor="@color/colorTitle"
                 android:textSize="20sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivCamera"
-                app:layout_constraintTop_toBottomOf="@id/etDeliveryNote"
+                app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:layout_constraintTop_toTopOf="@id/ivCamera" />
 
 
@@ -262,7 +262,7 @@
 
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivDeliveryPic"
+                android:id="@+id/ivVisitPic"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_marginTop="10dp"
@@ -289,7 +289,7 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivDeliveryPic" />
+                app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
 
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -299,8 +299,8 @@
                 android:padding="5dp"
                 android:src="@drawable/ic_close"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/ivDeliveryPic"
-                app:layout_constraintTop_toTopOf="@id/ivDeliveryPic" />
+                app:layout_constraintEnd_toEndOf="@id/ivVisitPic"
+                app:layout_constraintTop_toTopOf="@id/ivVisitPic" />
 
             <View
                 android:layout_width="match_parent"

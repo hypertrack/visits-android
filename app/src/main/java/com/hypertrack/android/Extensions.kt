@@ -16,10 +16,10 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
 
     val targetActivity = when (destination) {
         Destination.SPLASH_SCREEN -> SplashScreen::class.java
-        Destination.LOGIN -> CheckInActivity::class.java
+        Destination.LOGIN -> LoginActivity::class.java
         Destination.PERMISSION_REQUEST -> PermissionRequestActivity::class.java
-        Destination.LIST_VIEW -> DeliveryListActivity::class.java
-        Destination.DETAILS_VIEW -> DeliveryDetailActivity::class.java
+        Destination.VISITS_MANAGEMENT -> VisitsManagementActivity::class.java
+        Destination.VISIT_DETAILS -> VisitDetailsActivity::class.java
     }
 
     if (javaClass == targetActivity) {
@@ -28,7 +28,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
     }
 
     startActivity(Intent(this, targetActivity))
-    if (destination != Destination.DETAILS_VIEW)
+    if (destination != Destination.VISIT_DETAILS)
         finish()
 
 }

@@ -35,7 +35,7 @@ class PermissionRequestViewModel(application: Application) : AndroidViewModel(ap
     fun onPermissionResult() = _destination.postValue(currentDestination())
 
     private fun currentDestination() =
-        if (hasRequiredPermissions()) Destination.LIST_VIEW else Destination.PERMISSION_REQUEST
+        if (hasRequiredPermissions()) Destination.VISITS_MANAGEMENT else Destination.PERMISSION_REQUEST
 
     private fun hasRequiredPermissions(): Boolean {
         return when {

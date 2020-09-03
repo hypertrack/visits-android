@@ -4,7 +4,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
-import com.hypertrack.android.repository.Delivery
+import com.hypertrack.android.repository.Visit
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -60,26 +60,26 @@ class MyPreferencesTest {
     }
 
     @Test
-    fun itShouldReturnEmptyListIfNoDeliveriesSaved() {
-        val deliveries = myPreferences.restoreDeliveries()
-        assertTrue(deliveries.isEmpty())
+    fun itShouldReturnEmptyListIfNoVisitsSaved() {
+        val visits = myPreferences.restoreVisits()
+        assertTrue(visits.isEmpty())
     }
 
     @Test
-    fun crudDeliveries() {
-        val deliveriesExpected = listOf(
-            Delivery(
+    fun crudVisits() {
+        val visitsExpected = listOf(
+            Visit(
                 "pending",
                 "42"
             ),
-            Delivery(
+            Visit(
                 "completed",
                 "24",
                 completedAt = "2020-02-02T20:20:02.020Z"
             )
         )
-        myPreferences.saveDeliveries(deliveriesExpected)
-        val deliveriesGot = myPreferences.restoreDeliveries()
-        assertEquals(deliveriesExpected, deliveriesGot)
+        myPreferences.saveVisits(visitsExpected)
+        val visitsGot = myPreferences.restoreVisits()
+        assertEquals(visitsExpected, visitsGot)
     }
 }

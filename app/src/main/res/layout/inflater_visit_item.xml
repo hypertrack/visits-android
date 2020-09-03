@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/regular"
-            android:text="Delivery Id"
+            android:text="Visit Id"
             android:textColor="@color/colorBlack"
             android:textSize="20sp" />
 

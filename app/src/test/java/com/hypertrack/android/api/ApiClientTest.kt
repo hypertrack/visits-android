@@ -28,7 +28,7 @@ class ApiClientTest {
 
     companion object {
         const val DEVICE_ID = "42"
-        const val DELIVERIES =
+        const val VISITS =
             """
                 [
                   {
@@ -114,7 +114,7 @@ class ApiClientTest {
         // FIXME Denys
         // runBlockingTest in Experimental mode doesn't block for okhttp dispatchers
         runBlocking {
-            val ignored = apiClient.checkinCall()
+            val ignored = apiClient.clockIn()
         }
 
         val request = mockWebServer.takeRequest()
@@ -129,7 +129,7 @@ class ApiClientTest {
 
         mockWebServer.enqueue(MockResponse())
         runBlocking {
-            apiClient.checkoutCall()
+            apiClient.clockOut()
         }
 
         val request = mockWebServer.takeRequest()
@@ -141,9 +141,9 @@ class ApiClientTest {
     @Test
     fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
 
-        mockWebServer.enqueue(MockResponse().setBody(DELIVERIES))
+        mockWebServer.enqueue(MockResponse().setBody(VISITS))
         val geofences = runBlocking {
-            apiClient.getGeofences()
+            apiClient.getVisits()
         }
 
 

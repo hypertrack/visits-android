@@ -5,16 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.DriverRepo
 import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
-class CheckInViewModel(
+class LoginViewModel(
     private val driverRepo: DriverRepo,
-    private val hyperTrackService: HyperTrackService,
-    private val deliveriesApiClient: ApiClient
+    private val hyperTrackService: HyperTrackService
 ) : ViewModel() {
 
     private val _checkInButtonEnabled = MutableLiveData(false)
@@ -48,7 +46,6 @@ class CheckInViewModel(
             hyperTrackService.driverId = driverId
             driverRepo.driverId = driverId
             viewModelScope.launch {
-                deliveriesApiClient.checkinCall()
                 _destination.postValue(Destination.PERMISSION_REQUEST)
                 _showProgress.postValue(false)
             }
@@ -56,7 +53,15 @@ class CheckInViewModel(
         }
 
     }
+
+    fun checkAutoLogin() {
+        Log.v(TAG, "checkAutoLogin")
+        if (driverRepo.hasDriverId) {
+            onLoginClick(driverRepo.driverId)
+        }
+    }
+
     companion object {
-        const val TAG = "CheckInVM"
+        const val TAG = "LoginVM"
     }
 }
