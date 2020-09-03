@@ -38,8 +38,7 @@ class VisitsRepository(
 
     private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
 
-    private val _hasOngoingLocalVisit = MutableLiveData<Boolean>(false)
-    private var localVisit: Visit? = null
+    private val _hasOngoingLocalVisit = MutableLiveData<Boolean>(_visitsMap.getLocalVisit() != null)
 
     val hasOngoingLocalVisit: LiveData<Boolean>
         get() = _hasOngoingLocalVisit
@@ -146,24 +145,24 @@ class VisitsRepository(
 
     fun processLocalVisit() {
         Log.d(TAG, "processLocalVisit")
+        val localVisit = _visitsMap.getLocalVisit()
         localVisit?.let { ongoingVisit ->
             markCompleted(ongoingVisit._id)
             _hasOngoingLocalVisit.postValue(false)
             return
         }
 
-        val newVisit = Visit(
+        val newLocalVisit = Visit(
             _id=UUID.randomUUID().toString(),
             createdAt = osUtilsProvider.getCurrentTimestamp(),
             enteredAt = osUtilsProvider.getCurrentTimestamp()
         )
-        val id = newVisit._id
-        _visitsMap[id] = newVisit
+        val id = newLocalVisit._id
+        _visitsMap[id] = newLocalVisit
         hyperTrackService.createVisitStartEvent(id)
         visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(newVisit)
+        _visitItemsById[id] = MutableLiveData(newLocalVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
-        localVisit = newVisit
         _hasOngoingLocalVisit.postValue(true)
 
     }
@@ -195,6 +194,12 @@ private fun List<VisitListItem>.toStatusLabel(): String {
         {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
 }
 
+private fun Map<String, Visit>.getLocalVisit(): Visit? {
+    val ongoingLocal = values.filter { it.isLocal }.filter { !it.isCompleted }
+    if (ongoingLocal.isEmpty()) return null
+    return ongoingLocal.first()
+}
+
 sealed class VisitListItem
 data class HeaderVisitItem(val text: String) : VisitListItem()
 data class Visit(val _id: String,
@@ -218,6 +223,8 @@ data class Visit(val _id: String,
                 enteredAt.isNotEmpty() -> VISITED
                 else -> PENDING
             }
+
+    val isLocal = !isNotLocal
 
     val isNotLocal:Boolean
         get() = (latitude != null && longitude != null)

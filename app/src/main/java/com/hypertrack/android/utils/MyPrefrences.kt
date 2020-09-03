@@ -69,7 +69,7 @@ class MyPreferences(context: Context, private val gson: Gson) :
     override fun restoreVisits(): List<Visit> {
         val typeToken = object : TypeToken<List<Visit>>() {}.type
         try {
-            return gson.fromJson(getPreferences.getString(VISITS_KEY, null), typeToken)
+            return gson.fromJson(getPreferences.getString(VISITS_KEY, "[]"), typeToken)
         } catch (e: Throwable) {
             Log.w(TAG, "Can't deserialize visits ${e.message}")
         }
