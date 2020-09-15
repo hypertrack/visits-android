@@ -6,7 +6,7 @@ import com.hypertrack.android.repository.VISITED
 import com.hypertrack.android.utils.OsUtilsProvider
 
 data class Visit(val _id: String,
-                 val visit_id: String = "", val driver_id: String = "", val customerNote: String = "",
+                 val visit_id: String = "", val customerNote: String = "",
                  val createdAt: String = "", val address: Address = Address(
         "",
         "",
@@ -52,7 +52,6 @@ data class Visit(val _id: String,
             else Visit(
             _id,
             visit_id,
-            driver_id,
             prototype.customerNote,
             createdAt,
             address,
@@ -80,7 +79,7 @@ data class Visit(val _id: String,
 
     fun updateNote(newNote: String): Visit {
         return Visit(
-            _id, visit_id, driver_id, customerNote,
+            _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, enteredAt,
             completedAt, exitedAt, latitude, longitude, visitType
         )
@@ -88,14 +87,15 @@ data class Visit(val _id: String,
 
     fun complete(completedAt: String): Visit {
         return Visit(
-            _id, visit_id, driver_id, customerNote,
+            _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, enteredAt,
             completedAt, exitedAt, latitude, longitude, visitType
         )
     }
 
     constructor(visitDataSource: VisitDataSource, osUtilsProvider: OsUtilsProvider) : this(
-        _id = visitDataSource.visitId,
+        _id = visitDataSource._id,
+        visit_id = visitDataSource.visitId,
         customerNote = visitDataSource.customerNote,
         address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
         createdAt = visitDataSource.createdAt,
@@ -107,6 +107,7 @@ data class Visit(val _id: String,
 }
 
 interface VisitDataSource {
+    val _id: String
     val visitId: String
     val customerNote: String
     val address: Address?

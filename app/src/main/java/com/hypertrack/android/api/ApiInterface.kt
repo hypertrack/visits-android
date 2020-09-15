@@ -46,9 +46,7 @@ data class Trip(
     @SerializedName("metadata") private val _metadata : Map<String, Any>?,
     @SerializedName("destination") val destination: TripDestination?
 ): VisitDataSource {
-    val shareUrl: String
-        get() = _views?.shareUrl ?: ""
-    override val visitId: String
+    override val _id: String
         get() = tripId ?: ""
     override val createdAt: String
         get() = _createdAt ?: ""
@@ -62,6 +60,11 @@ data class Trip(
         get() = destination?.address?.let { Address(it, "", "", "") }
     override val visitType: VisitType
         get() = VisitType.TRIP
+    override val visitId: String
+        get() = when (destination?.address) {
+            null -> "Trip to [$longitude, $latitude]"
+            else -> "Trip to ${destination.address}"
+        }
 }
 
 data class TripDestination(
@@ -69,7 +72,10 @@ data class TripDestination(
     @SerializedName("geometry") val geometry: Geometry
 )
 
-data class Views(@SerializedName("share_url") val shareUrl: String?)
+data class Views(
+    @SerializedName("share_url") val shareUrl: String?,
+    @SerializedName("embed_url") val embedUrl: String?
+)
 
 data class Geofence(
     @SerializedName("all_devices") val all_devices : Boolean?,
@@ -87,7 +93,7 @@ data class Geofence(
         get() = geometry.latitude
     override val longitude: Double
         get() = geometry.longitude
-    override val visitId: String
+    override val _id: String
         get() = geofence_id
     override val customerNote: String
         get() = metadata.toNote()
@@ -97,6 +103,11 @@ data class Geofence(
         get() = created_at
     override val visitType
         get() = VisitType.GEOFENCE
+    override val visitId: String
+        get() = when (address) {
+            null -> "Geofence at [$longitude, $latitude]"
+            else -> "Geofence at $address"
+        }
     val type: String
         get() = geometry.type
 }

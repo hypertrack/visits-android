@@ -75,8 +75,7 @@ class MyPreferencesTest {
             ),
             Visit(
                 _id = "24",
-                completedAt = "2020-02-02T20:20:02.020Z",
-                visitType = VisitType.GEOFENCE
+                completedAt = "2020-02-02T20:20:02.020Z"
             )
         )
         myPreferences.saveVisits(visitsExpected)

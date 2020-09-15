@@ -80,7 +80,7 @@ class VisitsRepository(
         Log.d(TAG, "Total prototypes $prototypes")
         prototypes.forEach { prototype ->
             Log.v(TAG, "Processing prototype $prototype")
-            val currentValue = _visitsMap[prototype.visitId]
+            val currentValue = _visitsMap[prototype._id]
             if (currentValue == null) {
                 val visit = Visit(
                     prototype,
@@ -90,14 +90,14 @@ class VisitsRepository(
                 _visitItemsById[visit._id] = MutableLiveData(visit)
             } else {
                 val newValue = currentValue.update(prototype)
-                _visitsMap[prototype.visitId] = newValue
+                _visitsMap[prototype._id] = newValue
                 // getValue/postValue invocations below are called on different instances:
                 // `getValue` is called on Map with default value
                 // while `postValue` is for MutableLiveData
-                _visitItemsById[prototype.visitId]?.postValue(newValue) // updates MutableLiveData
+                _visitItemsById[prototype._id]?.postValue(newValue) // updates MutableLiveData
             }
         }
-        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - prototypes.map { it.visitId }
+        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - prototypes.map { it._id }
         Log.v(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
