@@ -43,7 +43,7 @@ data class Trip(
     @SerializedName("trip_id") val tripId: String?,
     @SerializedName("started_at") private val _createdAt: String?,
     @SerializedName("metadata") private val _metadata : Map<String, Any>?,
-    @SerializedName("destination") private val _destination: TripDestination
+    @SerializedName("destination") val destination: TripDestination?
 ): VisitDataSource {
     val shareUrl: String
         get() = _views?.shareUrl ?: ""
@@ -54,11 +54,11 @@ data class Trip(
     override val customerNote: String
         get() = _metadata.toNote()
     override val latitude: Double
-        get() = _destination.geometry.latitude
+        get() = destination?.geometry?.latitude ?: 0.0
     override val longitude: Double
-        get() = _destination.geometry.longitude
+        get() = destination?.geometry?.longitude ?: 0.0
     override val address: Address?
-        get() = _destination.address?.let { Address(it, "", "", "") }
+        get() = destination?.address?.let { Address(it, "", "", "") }
 }
 
 data class TripDestination(

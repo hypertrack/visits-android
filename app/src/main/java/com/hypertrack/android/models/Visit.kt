@@ -1,8 +1,8 @@
 package com.hypertrack.android.models
 
-import com.hypertrack.android.api.Geofence
-import com.hypertrack.android.repository.*
-import com.hypertrack.android.toNote
+import com.hypertrack.android.repository.COMPLETED
+import com.hypertrack.android.repository.PENDING
+import com.hypertrack.android.repository.VISITED
 import com.hypertrack.android.utils.OsUtilsProvider
 
 data class Visit(val _id: String,
@@ -36,14 +36,14 @@ data class Visit(val _id: String,
 
     fun hasNotes() = visitNote.isNotEmpty()
 
-    fun update(geofence: Geofence) : Visit {
+    fun update(prototype: VisitDataSource) : Visit {
 
-        return if (geofence.metadata.toNote() == customerNote) this
+        return if (prototype.customerNote == customerNote) this
             else Visit(
             _id,
             visit_id,
             driver_id,
-            geofence.metadata.toNote(),
+            prototype.customerNote,
             createdAt,
             address,
             visitNote,

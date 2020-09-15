@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.HeaderVisitItem
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.utils.VisitsStorage
 import com.hypertrack.android.utils.HyperTrackService
@@ -73,28 +74,33 @@ class VisitsRepository(
 
 
     suspend fun refreshVisits() {
-
+        Log.d(TAG, "Refreshing visits")
         val geofences = apiClient.getVisits()
-        geofences.forEach { geofence ->
-            Log.d(TAG, "Processing geofence $geofence")
-            val currentValue = _visitsMap[geofence.geofence_id]
+        Log.d(TAG, "Got geofences $geofences")
+        val trips = apiClient.getTripVisits()
+        Log.d(TAG, "Got trips $trips")
+        val prototypes : Set<VisitDataSource> = trips.union(geofences)
+        Log.d(TAG, "Total prototypes $prototypes")
+        prototypes.forEach { prototype ->
+            Log.d(TAG, "Processing geofence $prototype")
+            val currentValue = _visitsMap[prototype.visitId]
             if (currentValue == null) {
                 val visit = Visit(
-                    geofence,
+                    prototype,
                     osUtilsProvider
                 )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
             } else {
-                val newValue = currentValue.update(geofence)
-                _visitsMap[geofence.geofence_id] = newValue
+                val newValue = currentValue.update(prototype)
+                _visitsMap[prototype.visitId] = newValue
                 // getValue/postValue invocations below are called on different instances:
                 // `getValue` is called on Map with default value
                 // while `postValue` is for MutableLiveData
-                _visitItemsById[geofence.geofence_id]?.postValue(newValue) // updates MutableLiveData
+                _visitItemsById[prototype.visitId]?.postValue(newValue) // updates MutableLiveData
             }
         }
-        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - geofences.map { it.geofence_id }
+        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - prototypes.map { it.visitId }
         Log.d(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
