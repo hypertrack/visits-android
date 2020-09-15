@@ -18,7 +18,7 @@ interface ApiInterface {
     suspend fun clockOut(@Path("device_id")deviceId : String)
 
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getGeofencess(@Path("device_id")deviceId : String) : List<Geofence>
+    suspend fun getGeofences(@Path("device_id")deviceId : String) : List<Geofence>
 
     @GET("client/trips")
     suspend fun getTrips(

@@ -30,7 +30,7 @@ class ApiClient(
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getVisits() = api.getGeofencess(deviceId)
+    suspend fun getVisits() = api.getGeofences(deviceId)
 
     suspend fun getTripVisits(): List<Trip> {
         return api.getTrips(deviceId).trips
