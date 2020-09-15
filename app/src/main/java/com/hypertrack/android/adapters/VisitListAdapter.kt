@@ -56,8 +56,7 @@ class VisitListAdapter(
             }
             is Visit -> {
                 val visitView = holder as VisitViewHolder
-                visitView.tvDescription.text =
-                    createAddress(item.address)
+                visitView.tvDescription.text = "" // createAddress(item.address)
                 visitView.tvTitle.text = item.visit_id
                 visitView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
                 visitView.ivCompass.visibility = if (item.status == VISITED) View.VISIBLE else View.INVISIBLE
