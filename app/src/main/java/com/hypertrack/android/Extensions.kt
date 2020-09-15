@@ -32,3 +32,10 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
         finish()
 
 }
+
+fun Map<String, Any>?.toNote(): String {
+    if (this == null) return ""
+    val result = StringBuilder()
+    this.forEach { (key, value) -> result.append("$key: $value\n") }
+    return result.toString().dropLast(1)
+}

@@ -2,6 +2,7 @@ package com.hypertrack.android.models
 
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.toNote
 import com.hypertrack.android.utils.OsUtilsProvider
 
 data class Visit(val _id: String,
@@ -37,12 +38,12 @@ data class Visit(val _id: String,
 
     fun update(geofence: Geofence) : Visit {
 
-        return if (toNote(geofence.metadata) == customerNote) this
+        return if (geofence.metadata.toNote() == customerNote) this
             else Visit(
             _id,
             visit_id,
             driver_id,
-            toNote(geofence.metadata),
+            geofence.metadata.toNote(),
             createdAt,
             address,
             visitNote,
@@ -82,24 +83,26 @@ data class Visit(val _id: String,
         )
     }
 
-    constructor(geofence: Geofence, osUtilsProvider: OsUtilsProvider) : this(
-        _id = geofence.geofence_id,
-        customerNote = toNote(geofence.metadata),
-        address = osUtilsProvider.getAddressFromCoordinates(geofence.latitude, geofence.longitude),
-        createdAt = geofence.created_at,
+    constructor(visitDataSource: VisitDataSource, osUtilsProvider: OsUtilsProvider) : this(
+        _id = visitDataSource.visitId,
+        customerNote = visitDataSource.customerNote,
+        address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
+        createdAt = visitDataSource.createdAt,
 //        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
-    latitude = geofence.latitude, longitude = geofence.longitude)
+    latitude = visitDataSource.latitude, longitude = visitDataSource.longitude)
 
+}
+
+interface VisitDataSource {
+    val visitId: String
+    val customerNote: String
+    val address: Address?
+    val createdAt: String
+    val latitude: Double
+    val longitude: Double
 }
 
 sealed class VisitListItem
 data class HeaderVisitItem(val text: String) : VisitListItem()
-
-private fun toNote(metadata: Map<String, Any>?): String {
-    if (metadata == null) return ""
-    val result = StringBuilder()
-    metadata.forEach { (key, value) -> result.append("$key: $value\n") }
-    return result.toString().dropLast(1)
-}
 
 data class Address (val street : String, val postalCode : String, val city : String, val country : String)

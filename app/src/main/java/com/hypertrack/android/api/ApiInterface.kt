@@ -1,7 +1,9 @@
 package com.hypertrack.android.api
 
 import com.google.gson.annotations.SerializedName
-import com.hypertrack.android.utils.Destination
+import com.hypertrack.android.models.Address
+import com.hypertrack.android.models.VisitDataSource
+import com.hypertrack.android.toNote
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -39,10 +41,24 @@ data class TripResponse(
 data class Trip(
     @SerializedName("views") private val _views: Views?,
     @SerializedName("trip_id") val tripId: String?,
-    @SerializedName("destination") val destination: TripDestination?
-) {
+    @SerializedName("started_at") private val _createdAt: String?,
+    @SerializedName("metadata") private val _metadata : Map<String, Any>?,
+    @SerializedName("destination") private val _destination: TripDestination
+): VisitDataSource {
     val shareUrl: String
         get() = _views?.shareUrl ?: ""
+    override val visitId: String
+        get() = tripId ?: ""
+    override val createdAt: String
+        get() = _createdAt ?: ""
+    override val customerNote: String
+        get() = _metadata.toNote()
+    override val latitude: Double
+        get() = _destination.geometry.latitude
+    override val longitude: Double
+        get() = _destination.geometry.longitude
+    override val address: Address?
+        get() = _destination.address?.let { Address(it, "", "", "") }
 }
 
 data class TripDestination(
@@ -52,7 +68,7 @@ data class TripDestination(
 
 data class Views(@SerializedName("share_url") val shareUrl: String?)
 
-data class Geofence (
+data class Geofence(
     @SerializedName("all_devices") val all_devices : Boolean?,
     @SerializedName("created_at") val created_at : String,
     @SerializedName("delete_at") val delete_at : String?,
@@ -63,12 +79,19 @@ data class Geofence (
     @SerializedName("metadata") val metadata : Map<String, Any>?,
     @SerializedName("radius") val radius : Int,
     @SerializedName("single_use") val single_use : Boolean
-) {
-    val latitude: Double
+): VisitDataSource {
+    override val latitude: Double
         get() = geometry.latitude
-    val longitude: Double
+    override val longitude: Double
         get() = geometry.longitude
-
+    override val visitId: String
+        get() = geofence_id
+    override val customerNote: String
+        get() = metadata.toNote()
+    override val address: Address?
+        get() = null
+    override val createdAt: String
+        get() = created_at
     val type: String
         get() = geometry.type
 }
