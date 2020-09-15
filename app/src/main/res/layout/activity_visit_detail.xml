@@ -276,6 +276,17 @@
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
                 app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
 
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@drawable/ic_close"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/ivVisitPic"
+                app:layout_constraintTop_toTopOf="@id/ivVisitPic" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvComplete"
                 style="@style/ButtonStyle"
@@ -291,16 +302,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
 
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:src="@drawable/ic_close"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/ivVisitPic"
-                app:layout_constraintTop_toTopOf="@id/ivVisitPic" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvPickup"
+                style="@style/ButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_margin="20dp"
+                android:padding="10dp"
+                android:fontFamily="@font/medium"
+                android:gravity="center"
+                android:text="@string/pick_up"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvComplete" />
 
             <View
                 android:layout_width="match_parent"
