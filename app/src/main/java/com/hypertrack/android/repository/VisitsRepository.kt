@@ -123,12 +123,12 @@ class VisitsRepository(
         // Brake infinite cycle
         if (target.visitNote == newNote) return false
 
-        val updatedNote = target.updateNote(newNote)
-        _visitsMap[id] = updatedNote
-        hyperTrackService.sendUpdatedNote(id, newNote)
+        val updatedVisit = target.updateNote(newNote)
+        _visitsMap[id] = updatedVisit
         visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(updatedNote)
+        _visitItemsById[id]?.postValue(updatedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        Log.d(TAG, "Updated visit $updatedVisit")
         return true
     }
 
@@ -137,7 +137,8 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
         _visitsMap[id] = completedVisit
-        hyperTrackService.sendCompletionEvent(id)
+        Log.d(TAG, "Completed visit $completedVisit")
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote)
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id]?.postValue(completedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())

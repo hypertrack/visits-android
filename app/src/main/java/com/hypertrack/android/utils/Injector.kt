@@ -6,10 +6,21 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
-import com.hypertrack.android.api.*
-import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.api.ApiClient
+import com.hypertrack.android.api.Geometry
+import com.hypertrack.android.api.Point
+import com.hypertrack.android.api.Polygon
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.view_models.*
+import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.utils.*
+import com.hypertrack.android.view_models.LoginViewModel
+import com.hypertrack.android.view_models.SplashScreenViewModel
+import com.hypertrack.android.view_models.VisitDetailsViewModel
+import com.hypertrack.android.view_models.VisitsManagementViewModel
+import com.hypertrack.logistics.android.github.R
+import com.hypertrack.sdk.HyperTrack
+import com.hypertrack.sdk.ServiceNotificationConfig
+
 
 class ServiceLocator(private val context: Context) {
 
@@ -18,10 +29,18 @@ class ServiceLocator(private val context: Context) {
         AUTH_URL, deviceId, userName)
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
-        return HyperTrackService(
-            publishableKey,
-            context
-        )
+        val listener = TrackingState()
+        val sdkInstance = HyperTrack
+            .getInstance(context, publishableKey)
+            .addTrackingListener(listener)
+            .setTrackingNotificationConfig(
+                ServiceNotificationConfig.Builder()
+                    .setSmallIcon(R.drawable.ic_logo_small)
+                    .build()
+            )
+            .allowMockLocations()
+
+        return HyperTrackService(listener, sdkInstance)
     }
 
 }
@@ -67,10 +86,7 @@ object Injector {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        return HyperTrackService(
-            publishableKey,
-            context
-        )
+        return ServiceLocator(context).getHyperTrackService(publishableKey)
     }
 
     private fun getVisitsRepo(context: Context): VisitsRepository {
