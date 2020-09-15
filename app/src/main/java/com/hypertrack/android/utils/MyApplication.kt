@@ -1,6 +1,7 @@
 package com.hypertrack.android.utils
 
 import android.app.Application
+import com.hypertrack.sdk.HyperTrack
 import io.branch.referral.Branch
 
 class MyApplication : Application() {
@@ -12,7 +13,7 @@ class MyApplication : Application() {
 //        Branch.enableLogging()
         Branch.getAutoInstance(this)
 
-//        HyperTrack.enableDebugLogging()
+        HyperTrack.enableDebugLogging()
     }
 
     companion object { const val TAG = "MyApplication" }

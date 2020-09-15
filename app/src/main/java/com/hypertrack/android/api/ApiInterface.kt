@@ -1,9 +1,11 @@
 package com.hypertrack.android.api
 
 import com.google.gson.annotations.SerializedName
+import com.hypertrack.android.utils.Destination
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiInterface {
 
@@ -14,9 +16,41 @@ interface ApiInterface {
     suspend fun clockOut(@Path("device_id")deviceId : String)
 
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getVisits(@Path("device_id")deviceId : String) : List<Geofence>
+    suspend fun getGeofencess(@Path("device_id")deviceId : String) : List<Geofence>
+
+    @GET("client/trips")
+    suspend fun getTrips(
+        @Query("device_id")deviceId : String,
+        @Query("pagination_token")paginationToken: String = ""
+    ) : TripResponse
 
 }
+
+data class TripResponse(
+    @SerializedName("data") private val _trips: List<Trip>?,
+    @SerializedName("pagination_token") private val _next: String?
+) {
+    val trips: List<Trip>
+        get() = _trips ?: emptyList()
+    val paginationToken: String
+        get() = _next ?: ""
+}
+
+data class Trip(
+    @SerializedName("views") private val _views: Views?,
+    @SerializedName("trip_id") val tripId: String?,
+    @SerializedName("destination") val destination: TripDestination?
+) {
+    val shareUrl: String
+        get() = _views?.shareUrl ?: ""
+}
+
+data class TripDestination(
+    @SerializedName("address") val address: String?,
+    @SerializedName("geometry") val geometry: Geometry
+)
+
+data class Views(@SerializedName("share_url") val shareUrl: String?)
 
 data class Geofence (
     @SerializedName("all_devices") val all_devices : Boolean?,

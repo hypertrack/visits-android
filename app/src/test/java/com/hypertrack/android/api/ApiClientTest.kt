@@ -93,6 +93,223 @@ class ApiClientTest {
                   }
                 ]
             """
+        const val TRIPS = 
+            """
+            {
+               "pagination_token" : null,
+               "links" : {},
+               "data" : [
+                  {
+                     "device_id" : "42",
+                     "analytics" : {},
+                     "completed_at" : null,
+                     "status" : "active",
+                     "metadata" : {
+                        "reason" : "api-test"
+                     },
+                     "device_info" : {
+                        "sdk_version" : "4.3.1",
+                        "os_version" : "10"
+                     },
+                     "views" : {
+                        "embed_url" : "https://embed.hypertrack.com/trips/0201c34b-53a8-4a4d-9c3d-cd28effd36e3?publishable_key=uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw",
+                        "share_url" : "https://trck.at/mmmnt3kpsc"
+                     },
+                     "trip_id" : "0201c34b-53a8-4a4d-9c3d-cd28effd36e3",
+                     "summary" : null,
+                     "started_at" : "2020-09-15T07:40:32.643897Z"
+                  },
+                  {
+                     "estimate" : {
+                        "arrive_at" : "2020-09-15T09:28:38.176257Z",
+                        "route" : {
+                           "start_address" : "Sobornyi Ave, 196, Zaporizhzhia, Zaporiz'ka oblast, Ukraine, 69000",
+                           "end_address" : "Mykhayla Honcharenka Street, 9, Zaporizhzhia, Zaporiz'ka oblast, Ukraine, 69061",
+                           "duration" : 162,
+                           "polyline" : {
+                              "type" : "LineString",
+                              "coordinates" : [
+                                 [
+                                    35.12218,
+                                    47.84857
+                                 ],
+                                 [
+                                    35.1237,
+                                    47.84984
+                                 ],
+                                 [
+                                    35.12407,
+                                    47.85013
+                                 ],
+                                 [
+                                    35.12415,
+                                    47.85009
+                                 ],
+                                 [
+                                    35.12512,
+                                    47.84959
+                                 ],
+                                 [
+                                    35.12544,
+                                    47.8494
+                                 ],
+                                 [
+                                    35.12483,
+                                    47.84887
+                                 ],
+                                 [
+                                    35.12445,
+                                    47.84856
+                                 ],
+                                 [
+                                    35.12416,
+                                    47.84833
+                                 ],
+                                 [
+                                    35.12363,
+                                    47.84791
+                                 ]
+                              ]
+                           },
+                           "distance" : 569,
+                           "remaining_duration" : 162
+                        },
+                        "reroutes_exceeded" : false
+                     },
+                     "eta_relevance_data" : {
+                        "status" : true
+                     },
+                     "device_id" : "42",
+                     "device_info" : {
+                        "os_version" : "9",
+                        "sdk_version" : "4.6.0-SNAPSHOT"
+                     },
+                     "status" : "active",
+                     "completed_at" : null,
+                     "analytics" : {},
+                     "summary" : null,
+                     "trip_id" : "4ee5713c-250e-4094-b6c6-7c7ae33717b6",
+                     "views" : {
+                        "embed_url" : "https://embed.hypertrack.com/trips/4ee5713c-250e-4094-b6c6-7c7ae33717b6?publishable_key=uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw",
+                        "share_url" : "https://trck.at/mmmntkgzcj"
+                     },
+                     "started_at" : "2020-09-15T07:54:02.305516Z",
+                     "destination" : {
+                        "geometry" : {
+                           "type" : "Point",
+                           "coordinates" : [
+                              35.1235317438841,
+                              47.847959440945
+                           ]
+                        },
+                        "address" : "Mykhayla Honcharenka Street, 9, Zaporizhzhia, Zaporiz'ka oblast, Ukraine, 69061",
+                        "scheduled_at" : null,
+                        "radius" : 30
+                     }
+                  },
+                  {
+                     "device_id" : "42",
+                     "eta_relevance_data" : {
+                        "status" : true
+                     },
+                     "estimate" : {
+                        "arrive_at" : "2020-09-15T09:12:23.584444Z",
+                        "route" : {
+                           "polyline" : {
+                              "type" : "LineString",
+                              "coordinates" : [
+                                 [
+                                    -122.50384,
+                                    37.761
+                                 ],
+                                 [
+                                    -122.50393,
+                                    37.76239
+                                 ],
+                                 [
+                                    -122.50428,
+                                    37.76237
+                                 ],
+                                 [
+                                    -122.50457,
+                                    37.76235
+                                 ],
+                                 [
+                                    -122.50607,
+                                    37.76229
+                                 ],
+                                 [
+                                    -122.50822,
+                                    37.7622
+                                 ],
+                                 [
+                                    -122.50965,
+                                    37.76213
+                                 ],
+                                 [
+                                    -122.50966,
+                                    37.76221
+                                 ]
+                              ]
+                           },
+                           "distance" : 668,
+                           "remaining_duration" : 137,
+                           "start_address" : "1374 44th Ave, San Francisco, CA 94122, USA",
+                           "end_address" : "1300 Great Hwy, San Francisco, CA 94122, USA",
+                           "duration" : 137
+                        },
+                        "reroutes_exceeded" : false
+                     },
+                     "completed_at" : null,
+                     "analytics" : {},
+                     "device_info" : {
+                        "sdk_version" : "4.4.0",
+                        "os_version" : "13.5.1"
+                     },
+                     "status" : "active",
+                     "summary" : null,
+                     "views" : {
+                        "embed_url" : "https://embed.hypertrack.com/trips/6f6d89eb-6b0e-444f-bf32-8601d488c69b?publishable_key=uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw",
+                        "share_url" : "https://trck.at/mmmntdawy3"
+                     },
+                     "trip_id" : "6f6d89eb-6b0e-444f-bf32-8601d488c69b",
+                     "destination" : {
+                        "radius" : 30,
+                        "scheduled_at" : null,
+                        "address" : "1300 Great Hwy, San Francisco, CA 94122, USA",
+                        "geometry" : {
+                           "coordinates" : [
+                              -122.509639,
+                              37.762207
+                           ],
+                           "type" : "Point"
+                        }
+                     },
+                     "started_at" : "2020-09-15T07:51:38.828420Z"
+                  },
+                  {
+                     "device_id" : "42",
+                     "completed_at" : null,
+                     "analytics" : {},
+                     "device_info" : {
+                        "os_version" : "10",
+                        "sdk_version" : "4.3.1"
+                     },
+                     "metadata" : {
+                        "reason" : "api-test"
+                     },
+                     "status" : "active",
+                     "summary" : null,
+                     "views" : {
+                        "embed_url" : "https://embed.hypertrack.com/trips/9b5c5fa6-4f77-4ed6-b03f-4e19c238b8f0?publishable_key=uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw",
+                        "share_url" : "https://trck.at/mmmntqv5qd"
+                     },
+                     "trip_id" : "9b5c5fa6-4f77-4ed6-b03f-4e19c238b8f0",
+                     "started_at" : "2020-09-15T07:58:07.937579Z"
+                  }
+               ]
+            }
+            """
     }
     private val mockWebServer = MockWebServer()
     private lateinit var apiClient : ApiClient
@@ -153,6 +370,22 @@ class ApiClientTest {
         assertEquals("GET", request.method)
 
         assertEquals(4, geofences.size)
+    }
+
+    @Test
+    fun itShouldSendGetRequestToGetListOfTrips() = runBlockingTest {
+
+        mockWebServer.enqueue(MockResponse().setBody(TRIPS))
+        val trips = runBlocking {
+            apiClient.getTripVisits()
+        }
+
+        val request = mockWebServer.takeRequest()
+        val path = request.path
+        assertEquals("/client/trips?device_id=42&pagination_token=", path)
+        assertEquals("GET", request.method)
+
+        assertEquals(2, trips.size)
     }
 
     @After
