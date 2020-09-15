@@ -30,9 +30,9 @@ class ApiClient(
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getVisits() = api.getGeofences(deviceId)
+    suspend fun getGeofences() = api.getGeofences(deviceId)
 
-    suspend fun getTripVisits(): List<Trip> {
+    suspend fun getTrips(): List<Trip> {
         return api.getTrips(deviceId).trips
             .filterNot { it.destination == null || it.tripId.isNullOrEmpty() }
 

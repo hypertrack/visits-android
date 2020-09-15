@@ -74,15 +74,15 @@ class VisitsRepository(
 
 
     suspend fun refreshVisits() {
-        Log.d(TAG, "Refreshing visits")
-        val geofences = apiClient.getVisits()
-        Log.d(TAG, "Got geofences $geofences")
-        val trips = apiClient.getTripVisits()
-        Log.d(TAG, "Got trips $trips")
+        Log.v(TAG, "Refreshing visits")
+        val geofences = apiClient.getGeofences()
+        Log.v(TAG, "Got geofences $geofences")
+        val trips = apiClient.getTrips()
+        Log.v(TAG, "Got trips $trips")
         val prototypes : Set<VisitDataSource> = trips.union(geofences)
         Log.d(TAG, "Total prototypes $prototypes")
         prototypes.forEach { prototype ->
-            Log.d(TAG, "Processing geofence $prototype")
+            Log.v(TAG, "Processing prototype $prototype")
             val currentValue = _visitsMap[prototype.visitId]
             if (currentValue == null) {
                 val visit = Visit(
@@ -101,7 +101,7 @@ class VisitsRepository(
             }
         }
         val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - prototypes.map { it.visitId }
-        Log.d(TAG, "Entries missing in update and will be deleted $deletedEntries")
+        Log.v(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
 

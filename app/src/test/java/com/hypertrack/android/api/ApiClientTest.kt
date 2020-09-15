@@ -360,7 +360,7 @@ class ApiClientTest {
 
         mockWebServer.enqueue(MockResponse().setBody(VISITS))
         val geofences = runBlocking {
-            apiClient.getVisits()
+            apiClient.getGeofences()
         }
 
 
@@ -377,7 +377,7 @@ class ApiClientTest {
 
         mockWebServer.enqueue(MockResponse().setBody(TRIPS))
         val trips = runBlocking {
-            apiClient.getTripVisits()
+            apiClient.getTrips()
         }
 
         val request = mockWebServer.takeRequest()
