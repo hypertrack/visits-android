@@ -3,6 +3,7 @@ package com.hypertrack.android.api
 import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
+import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.toNote
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -59,6 +60,8 @@ data class Trip(
         get() = destination?.geometry?.longitude ?: 0.0
     override val address: Address?
         get() = destination?.address?.let { Address(it, "", "", "") }
+    override val visitType: VisitType
+        get() = VisitType.TRIP
 }
 
 data class TripDestination(
@@ -92,6 +95,8 @@ data class Geofence(
         get() = null
     override val createdAt: String
         get() = created_at
+    override val visitType
+        get() = VisitType.GEOFENCE
     val type: String
         get() = geometry.type
 }

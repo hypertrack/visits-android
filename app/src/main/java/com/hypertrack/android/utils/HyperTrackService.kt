@@ -29,20 +29,19 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     val state: LiveData<TrackingStateValue>
         get() = listener.state
 
-    fun sendCompletionEvent(id: String, visitNote: String) {
-        val payload = mapOf(GEOFENCE_ID to id, "completed" to true, "delivery_note" to visitNote)
+    fun sendCompletionEvent(id: String, visitNote: String, typeKey: String) {
+        val payload = mapOf(typeKey to id, "completed" to true, "delivery_note" to visitNote)
         Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addTripMarker(payload)
     }
 
-    fun createVisitStartEvent(id: String) {
-        sdkInstance.addTripMarker(mapOf(GEOFENCE_ID to id, "created" to true))
+    fun createVisitStartEvent(id: String, typeKey: String) {
+        sdkInstance.addTripMarker(mapOf(typeKey to id, "created" to true))
     }
 
 
 
     companion object {
-        private const val GEOFENCE_ID = "geofence_id"
         private const val TAG = "HyperTrackAdapter"
     }
 }

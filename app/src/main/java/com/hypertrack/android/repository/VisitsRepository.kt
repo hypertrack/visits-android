@@ -5,10 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
-import com.hypertrack.android.models.HeaderVisitItem
-import com.hypertrack.android.models.Visit
-import com.hypertrack.android.models.VisitDataSource
-import com.hypertrack.android.models.VisitListItem
+import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.VisitsStorage
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -138,7 +135,7 @@ class VisitsRepository(
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
         _visitsMap[id] = completedVisit
         Log.d(TAG, "Completed visit $completedVisit")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote)
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey)
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id]?.postValue(completedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
@@ -169,11 +166,12 @@ class VisitsRepository(
             _id = UUID.randomUUID().toString(),
             visit_id = "Visit on ${osUtilsProvider.getFineDateTimeString()}",
             createdAt = createdAt,
-            enteredAt = createdAt
+            enteredAt = createdAt,
+            visitType = VisitType.LOCAL
         )
         val id = newLocalVisit._id
         _visitsMap[id] = newLocalVisit
-        hyperTrackService.createVisitStartEvent(id)
+        hyperTrackService.createVisitStartEvent(id, newLocalVisit.typeKey)
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id] = MutableLiveData(newLocalVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())

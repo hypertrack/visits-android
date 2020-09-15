@@ -16,7 +16,9 @@ data class Visit(val _id: String,
                  val visitNote: String = "", var visitPicture: String = "",
                  var enteredAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
-                 val latitude: Double? = null, val longitude: Double? = null): VisitListItem() {
+                 val latitude: Double? = null, val longitude: Double? = null,
+                 val visitType: VisitType
+ ): VisitListItem() {
     val isCompleted: Boolean
         get() = status == COMPLETED
 
@@ -31,6 +33,14 @@ data class Visit(val _id: String,
 
     val isNotLocal:Boolean
         get() = (latitude != null && longitude != null)
+
+    val typeKey:String
+        get() =
+            when (visitType) {
+                VisitType.TRIP -> "trip_id"
+                VisitType.GEOFENCE -> "geofence_id"
+                VisitType.LOCAL -> "visit_id"
+            }
 
     fun hasPicture() = visitPicture.isNotEmpty()
 
@@ -52,7 +62,8 @@ data class Visit(val _id: String,
             completedAt,
             exitedAt,
             latitude,
-            longitude
+            longitude,
+            visitType
         )
         // TODO Denys - update when API adds support to geofence events
 //        when {
@@ -71,7 +82,7 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, driver_id, customerNote,
             createdAt, address, newNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude
+            completedAt, exitedAt, latitude, longitude, visitType
         )
     }
 
@@ -79,7 +90,7 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, driver_id, customerNote,
             createdAt, address, visitNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude
+            completedAt, exitedAt, latitude, longitude, visitType
         )
     }
 
@@ -89,7 +100,9 @@ data class Visit(val _id: String,
         address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
         createdAt = visitDataSource.createdAt,
 //        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
-    latitude = visitDataSource.latitude, longitude = visitDataSource.longitude)
+        latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
+        visitType = visitDataSource.visitType
+    )
 
 }
 
@@ -100,6 +113,11 @@ interface VisitDataSource {
     val createdAt: String
     val latitude: Double
     val longitude: Double
+    val visitType: VisitType
+}
+
+enum class VisitType {
+    TRIP, GEOFENCE, LOCAL
 }
 
 sealed class VisitListItem
