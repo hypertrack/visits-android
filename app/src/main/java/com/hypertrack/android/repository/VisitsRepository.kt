@@ -129,16 +129,29 @@ class VisitsRepository(
         return true
     }
 
-    fun markCompleted(id: String) {
+    fun markCompleted(id: String, isCompleted: Boolean) {
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
         _visitsMap[id] = completedVisit
-        Log.d(TAG, "Completed visit $completedVisit")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey)
+        Log.d(TAG, "Completed visit $completedVisit isCompleted $isCompleted")
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, isCompleted)
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id]?.postValue(completedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+    }
+
+    fun setPickedUp(id: String) {
+        Log.d(TAG, "Set picked UP $id")
+        val target = _visitsMap[id] ?: return
+        if (target.tripVisitPickedUp == true) return
+        target.tripVisitPickedUp = true
+        Log.v(TAG, "Marked order $target as picked up")
+        hyperTrackService.sendPickedUp(id, target.typeKey)
+        val updatedVisits = _visitsMap.values.toList()
+        visitsStorage.saveVisits(updatedVisits)
+        _visitItemsById[id]?.postValue(target)
+        _visitListItems.postValue(updatedVisits.sortedWithHeaders())
     }
 
     suspend fun switchTracking() {
@@ -156,7 +169,7 @@ class VisitsRepository(
         Log.d(TAG, "processLocalVisit")
         val localVisit = _visitsMap.getLocalVisit()
         localVisit?.let { ongoingVisit ->
-            markCompleted(ongoingVisit._id)
+            markCompleted(ongoingVisit._id, true)
             _hasOngoingLocalVisit.postValue(false)
             return
         }

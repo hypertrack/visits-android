@@ -17,7 +17,7 @@ data class Visit(val _id: String,
                  var enteredAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
-                 val visitType: VisitType
+                 val visitType: VisitType, private var _tripVisitPickedUp: Boolean = false
  ): VisitListItem() {
     val isCompleted: Boolean
         get() = status == COMPLETED
@@ -42,6 +42,11 @@ data class Visit(val _id: String,
                 VisitType.LOCAL -> "visit_id"
             }
 
+
+    var tripVisitPickedUp: Boolean?
+        get() = if (visitType == VisitType.TRIP) _tripVisitPickedUp else null
+        set(value) { _tripVisitPickedUp = value ?: false }
+
     fun hasPicture() = visitPicture.isNotEmpty()
 
     fun hasNotes() = visitNote.isNotEmpty()
@@ -62,7 +67,8 @@ data class Visit(val _id: String,
             exitedAt,
             latitude,
             longitude,
-            visitType
+            visitType,
+            _tripVisitPickedUp
         )
         // TODO Denys - update when API adds support to geofence events
 //        when {
@@ -81,7 +87,7 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude, visitType
+            completedAt, exitedAt, latitude, longitude, visitType, _tripVisitPickedUp
         )
     }
 
@@ -89,7 +95,7 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude, visitType
+            completedAt, exitedAt, latitude, longitude, visitType, _tripVisitPickedUp
         )
     }
 

@@ -1,6 +1,7 @@
 package com.hypertrack.android.utils
 
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitType
 import com.hypertrack.sdk.HyperTrack
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -18,9 +19,9 @@ class HyperTrackServiceTest {
 
         val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
-        val visit = Visit(_id = "42", visitNote = visitNote)
+        val visit = Visit(_id = "42", visitNote = visitNote, visitType = VisitType.LOCAL)
 
-        hyperTrackService.sendCompletionEvent(visit._id, visit.visitNote, visit.typeKey)
+        hyperTrackService.sendCompletionEvent(visit._id, visit.visitNote, visit.typeKey, true)
 
         val captor = argumentCaptor<Map<String, Any>>()
 
