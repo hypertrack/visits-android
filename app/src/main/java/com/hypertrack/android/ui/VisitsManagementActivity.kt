@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.adapters.VisitListAdapter
-import com.hypertrack.android.repository.Visit
+import com.hypertrack.android.models.Visit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.android.view_models.VisitsManagementViewModel

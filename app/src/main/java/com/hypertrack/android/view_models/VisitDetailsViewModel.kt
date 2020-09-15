@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
-import com.hypertrack.android.repository.Visit
+import com.hypertrack.android.models.Visit
 
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,

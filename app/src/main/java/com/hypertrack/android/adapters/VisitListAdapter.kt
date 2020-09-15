@@ -8,6 +8,10 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.hypertrack.android.models.Address
+import com.hypertrack.android.models.HeaderVisitItem
+import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.repository.*
 import com.hypertrack.logistics.android.github.R
 
