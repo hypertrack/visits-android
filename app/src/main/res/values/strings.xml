@@ -27,6 +27,8 @@
     <string name="clock_in">Clock In</string>
     <string name="check_out">Check Out</string>
     <string name="clock_out">Clock Out</string>
+    <string name="pick_up">Pick Up</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>

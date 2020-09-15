@@ -1,9 +1,14 @@
 package com.hypertrack.android.api
 
 import com.google.gson.annotations.SerializedName
+import com.hypertrack.android.models.Address
+import com.hypertrack.android.models.VisitDataSource
+import com.hypertrack.android.models.VisitType
+import com.hypertrack.android.toNote
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiInterface {
 
@@ -14,11 +19,65 @@ interface ApiInterface {
     suspend fun clockOut(@Path("device_id")deviceId : String)
 
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getVisits(@Path("device_id")deviceId : String) : List<Geofence>
+    suspend fun getGeofences(@Path("device_id")deviceId : String) : List<Geofence>
+
+    @GET("client/trips")
+    suspend fun getTrips(
+        @Query("device_id")deviceId : String,
+        @Query("pagination_token")paginationToken: String = ""
+    ) : TripResponse
 
 }
 
-data class Geofence (
+data class TripResponse(
+    @SerializedName("data") private val _trips: List<Trip>?,
+    @SerializedName("pagination_token") private val _next: String?
+) {
+    val trips: List<Trip>
+        get() = _trips ?: emptyList()
+    val paginationToken: String
+        get() = _next ?: ""
+}
+
+data class Trip(
+    @SerializedName("views") private val _views: Views?,
+    @SerializedName("trip_id") val tripId: String?,
+    @SerializedName("started_at") private val _createdAt: String?,
+    @SerializedName("metadata") private val _metadata : Map<String, Any>?,
+    @SerializedName("destination") val destination: TripDestination?
+): VisitDataSource {
+    override val _id: String
+        get() = tripId ?: ""
+    override val createdAt: String
+        get() = _createdAt ?: ""
+    override val customerNote: String
+        get() = _metadata.toNote()
+    override val latitude: Double
+        get() = destination?.geometry?.latitude ?: 0.0
+    override val longitude: Double
+        get() = destination?.geometry?.longitude ?: 0.0
+    override val address: Address?
+        get() = destination?.address?.let { Address(it, "", "", "") }
+    override val visitType: VisitType
+        get() = VisitType.TRIP
+    override val visitId: String
+        get() = when (destination?.address) {
+            null -> "Trip to [$longitude, $latitude]"
+            else -> "Trip to ${destination.address}"
+        }
+}
+
+data class TripDestination(
+    @SerializedName("address") val address: String?,
+    @SerializedName("geometry") val geometry: Geometry
+)
+
+data class Views(
+    @SerializedName("share_url") val shareUrl: String?,
+    @SerializedName("embed_url") val embedUrl: String?
+)
+
+data class Geofence(
     @SerializedName("all_devices") val all_devices : Boolean?,
     @SerializedName("created_at") val created_at : String,
     @SerializedName("delete_at") val delete_at : String?,
@@ -29,12 +88,26 @@ data class Geofence (
     @SerializedName("metadata") val metadata : Map<String, Any>?,
     @SerializedName("radius") val radius : Int,
     @SerializedName("single_use") val single_use : Boolean
-) {
-    val latitude: Double
+): VisitDataSource {
+    override val latitude: Double
         get() = geometry.latitude
-    val longitude: Double
+    override val longitude: Double
         get() = geometry.longitude
-
+    override val _id: String
+        get() = geofence_id
+    override val customerNote: String
+        get() = metadata.toNote()
+    override val address: Address?
+        get() = null
+    override val createdAt: String
+        get() = created_at
+    override val visitType
+        get() = VisitType.GEOFENCE
+    override val visitId: String
+        get() = when (address) {
+            null -> "Geofence at [$longitude, $latitude]"
+            else -> "Geofence at $address"
+        }
     val type: String
         get() = geometry.type
 }

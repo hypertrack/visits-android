@@ -2,9 +2,10 @@ package com.hypertrack.android.utils
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
+import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
-import com.hypertrack.android.repository.Visit
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -69,12 +70,11 @@ class MyPreferencesTest {
     fun crudVisits() {
         val visitsExpected = listOf(
             Visit(
-                "pending",
-                "42"
+                _id="42",
+                visitType = VisitType.LOCAL
             ),
             Visit(
-                "completed",
-                "24",
+                _id = "24",
                 completedAt = "2020-02-02T20:20:02.020Z"
             )
         )

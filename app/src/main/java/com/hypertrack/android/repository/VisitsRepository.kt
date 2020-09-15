@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
-import com.hypertrack.android.api.Geofence
+import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.VisitsStorage
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -71,26 +71,34 @@ class VisitsRepository(
 
 
     suspend fun refreshVisits() {
-
-        val geofences = apiClient.getVisits()
-        geofences.forEach { geofence ->
-            Log.d(TAG, "Processing geofence $geofence")
-            val currentValue = _visitsMap[geofence.geofence_id]
+        Log.v(TAG, "Refreshing visits")
+        val geofences = apiClient.getGeofences()
+        Log.v(TAG, "Got geofences $geofences")
+        val trips = apiClient.getTrips()
+        Log.v(TAG, "Got trips $trips")
+        val prototypes : Set<VisitDataSource> = trips.union(geofences)
+        Log.d(TAG, "Total prototypes $prototypes")
+        prototypes.forEach { prototype ->
+            Log.v(TAG, "Processing prototype $prototype")
+            val currentValue = _visitsMap[prototype._id]
             if (currentValue == null) {
-                val visit = Visit(geofence, osUtilsProvider)
+                val visit = Visit(
+                    prototype,
+                    osUtilsProvider
+                )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
             } else {
-                val newValue = currentValue.update(geofence)
-                _visitsMap[geofence.geofence_id] = newValue
+                val newValue = currentValue.update(prototype)
+                _visitsMap[prototype._id] = newValue
                 // getValue/postValue invocations below are called on different instances:
                 // `getValue` is called on Map with default value
                 // while `postValue` is for MutableLiveData
-                _visitItemsById[geofence.geofence_id]?.postValue(newValue) // updates MutableLiveData
+                _visitItemsById[prototype._id]?.postValue(newValue) // updates MutableLiveData
             }
         }
-        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - geofences.map { it.geofence_id }
-        Log.d(TAG, "Entries missing in update and will be deleted $deletedEntries")
+        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - prototypes.map { it._id }
+        Log.v(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
 
@@ -112,24 +120,38 @@ class VisitsRepository(
         // Brake infinite cycle
         if (target.visitNote == newNote) return false
 
-        val updatedNote = target.updateNote(newNote)
-        _visitsMap[id] = updatedNote
-        hyperTrackService.sendUpdatedNote(id, newNote)
+        val updatedVisit = target.updateNote(newNote)
+        _visitsMap[id] = updatedVisit
         visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(updatedNote)
+        _visitItemsById[id]?.postValue(updatedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        Log.d(TAG, "Updated visit $updatedVisit")
         return true
     }
 
-    fun markCompleted(id: String) {
+    fun markCompleted(id: String, isCompleted: Boolean) {
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
         _visitsMap[id] = completedVisit
-        hyperTrackService.sendCompletionEvent(id)
+        Log.d(TAG, "Completed visit $completedVisit isCompleted $isCompleted")
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, isCompleted)
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id]?.postValue(completedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+    }
+
+    fun setPickedUp(id: String) {
+        Log.d(TAG, "Set picked UP $id")
+        val target = _visitsMap[id] ?: return
+        if (target.tripVisitPickedUp == true) return
+        target.tripVisitPickedUp = true
+        Log.v(TAG, "Marked order $target as picked up")
+        hyperTrackService.sendPickedUp(id, target.typeKey)
+        val updatedVisits = _visitsMap.values.toList()
+        visitsStorage.saveVisits(updatedVisits)
+        _visitItemsById[id]?.postValue(target)
+        _visitListItems.postValue(updatedVisits.sortedWithHeaders())
     }
 
     suspend fun switchTracking() {
@@ -147,21 +169,22 @@ class VisitsRepository(
         Log.d(TAG, "processLocalVisit")
         val localVisit = _visitsMap.getLocalVisit()
         localVisit?.let { ongoingVisit ->
-            markCompleted(ongoingVisit._id)
+            markCompleted(ongoingVisit._id, true)
             _hasOngoingLocalVisit.postValue(false)
             return
         }
 
         val createdAt = osUtilsProvider.getCurrentTimestamp()
         val newLocalVisit = Visit(
-            _id=UUID.randomUUID().toString(),
+            _id = UUID.randomUUID().toString(),
             visit_id = "Visit on ${osUtilsProvider.getFineDateTimeString()}",
             createdAt = createdAt,
-            enteredAt = createdAt
+            enteredAt = createdAt,
+            visitType = VisitType.LOCAL
         )
         val id = newLocalVisit._id
         _visitsMap[id] = newLocalVisit
-        hyperTrackService.createVisitStartEvent(id)
+        hyperTrackService.createVisitStartEvent(id, newLocalVisit.typeKey)
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id] = MutableLiveData(newLocalVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
@@ -207,88 +230,6 @@ private fun Map<String, Visit>.getLocalVisit(): Visit? {
     return ongoingLocal.first()
 }
 
-sealed class VisitListItem
-data class HeaderVisitItem(val text: String) : VisitListItem()
-data class Visit(val _id: String,
-                 val visit_id: String = "", val driver_id: String = "", val customerNote: String = "",
-                 val createdAt: String = "", val address: Address = Address(
-        "",
-        "",
-        "",
-        ""
-    ),
-                 val visitNote: String = "", var visitPicture: String = "",
-                 var enteredAt:String = "",
-                 val completedAt: String = "", val exitedAt: String = "",
-                 val latitude: Double? = null, val longitude: Double? = null): VisitListItem() {
-    val isCompleted: Boolean
-        get() = status == COMPLETED
-
-    val status: String
-        get() = when {
-                completedAt.isNotEmpty() -> COMPLETED
-                enteredAt.isNotEmpty() -> VISITED
-                else -> PENDING
-            }
-
-    val isLocal = !isNotLocal
-
-    val isNotLocal:Boolean
-        get() = (latitude != null && longitude != null)
-
-    fun hasPicture() = visitPicture.isNotEmpty()
-
-    fun hasNotes() = visitNote.isNotEmpty()
-
-    fun update(geofence: Geofence) : Visit {
-
-        return if (toNote(geofence.metadata) == customerNote) this
-            else Visit(
-                _id, visit_id, driver_id, toNote(geofence.metadata),
-                createdAt, address, visitNote, visitPicture, enteredAt,
-                completedAt, exitedAt, latitude, longitude
-            )
-        // TODO Denys - update when API adds support to geofence events
-//        when {
-//            (geofence.entered_at != enteredAt) -> pass
-//            (geofence.exited_at != exitedAt) -> pass
-//            (geofence.metadata.toString() != customerNote) -> pass
-//            else -> return this
-//        }
-//        return Visit(_id, visit_id, driver_id, geofence.metadata.toString(),
-//        createdAt, updatedAt, address, visitNote, visitPicture, geofence.entered_at,
-//            completedAt, geofence.exited_at, latitude, longitude)
-
-    }
-
-    fun updateNote(newNote: String): Visit {
-        return Visit(_id, visit_id, driver_id, customerNote,
-        createdAt, address, newNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude)
-    }
-
-    fun complete(completedAt: String): Visit {
-        return Visit(_id, visit_id, driver_id, customerNote,
-            createdAt, address, visitNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude)
-    }
-
-    constructor(geofence: Geofence, osUtilsProvider: OsUtilsProvider) : this(
-        _id = geofence.geofence_id,
-        customerNote = toNote(geofence.metadata),
-        address = osUtilsProvider.getAddressFromCoordinates(geofence.latitude, geofence.longitude),
-        createdAt = geofence.created_at,
-//        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
-    latitude = geofence.latitude, longitude = geofence.longitude)
-
-}
-
-private fun toNote(metadata: Map<String, Any>?): String {
-    if (metadata == null) return ""
-    val result = StringBuilder()
-    metadata.forEach { (key, value) -> result.append("$key: $value\n") }
-    return result.toString().dropLast(1)
-}
 
 
-data class Address (val street : String, val postalCode : String, val city : String, val country : String)
+

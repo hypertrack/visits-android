@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -15,7 +16,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import com.hypertrack.android.repository.Visit
+import com.hypertrack.android.models.Visit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
@@ -67,6 +68,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateView(newValue: Visit) {
+        Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newValue.customerNote
         tvAddress.text = newValue.address.street
         if (newValue.visitNote != etVisitNote.text.toString()) {
@@ -75,6 +77,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         val completeEnabled = !newValue.isCompleted
         Log.d(TAG, "Complete button enabled is $completeEnabled")
         tvComplete.isEnabled = completeEnabled
+        etVisitNote.isEnabled = completeEnabled
         tvComplete.background = getDrawable(
             if (completeEnabled) R.drawable.bg_button
             else R.drawable.bg_button_disabled
@@ -82,6 +85,24 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         tvComplete.text = if (completeEnabled)
             getString(R.string.mark_completed)
         else getString(R.string.completed)
+
+        when(newValue.tripVisitPickedUp) {
+            null -> tvPickup.visibility = View.GONE
+            false -> {
+                tvPickup.visibility = View.VISIBLE
+                tvPickup.text = getText(R.string.pick_up)
+                tvPickup.isEnabled = true
+            }
+            true -> {
+                tvPickup.visibility = View.VISIBLE
+                tvPickup.text = getText(R.string.cancel)
+                tvPickup.isEnabled = completeEnabled
+                tvPickup.background = getDrawable(
+                    if (completeEnabled) R.drawable.bg_button
+                    else R.drawable.bg_button_disabled
+                )
+            }
+        }
 
     }
 
@@ -93,7 +114,13 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         tvComplete.setOnClickListener {
             Log.d(TAG, "Complete button pressed")
             tvComplete.isEnabled = false
-            visitDetailsViewModel.onMarkedCompleted()
+            etVisitNote.isEnabled = false
+            visitDetailsViewModel.onMarkedCompleted(true)
+        }
+        tvPickup.setOnClickListener {
+            Log.d(TAG, "Pickup/Cancel pressed")
+            tvPickup.isEnabled = false
+            visitDetailsViewModel.onPickupClicked()
         }
 
         etVisitNote.addTextChangedListener(object : TextWatcher {

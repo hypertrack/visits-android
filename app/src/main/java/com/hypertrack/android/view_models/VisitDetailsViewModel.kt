@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
-import com.hypertrack.android.repository.Visit
+import com.hypertrack.android.models.Visit
 
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,
@@ -21,16 +21,24 @@ class VisitDetailsViewModel(
     val showNoteUpdatedToast: LiveData<Boolean>
         get() = _showNoteUpdatedToast
 
-
     fun onVisitNoteChanged(newNote : String) {
         Log.d(TAG, "onVisitNoteChanged $newNote")
         visitNote = newNote
     }
 
-    fun onMarkedCompleted() {
-        val noteChanged = visitsRepository.updateVisitNote(id, visitNote)
-        _showNoteUpdatedToast.postValue(noteChanged)
-        visitsRepository.markCompleted(id)
+    fun onMarkedCompleted(isCompleted: Boolean) {
+        _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
+        visitsRepository.markCompleted(id, isCompleted)
+    }
+
+    fun onPickupClicked() {
+        val wasCancelled = visit.value?.tripVisitPickedUp ?: false
+        if (wasCancelled) {
+            onMarkedCompleted(false)
+        } else {
+            _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
+            visitsRepository.setPickedUp(id)
+        }
     }
 
     fun getLatLng(): LatLng?  {
