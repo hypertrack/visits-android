@@ -35,18 +35,18 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         typeKey: String,
         isCompleted: Boolean
     ) {
-        val completionStatus = if (isCompleted) "completed" else "canceled"
-        val payload = mapOf(typeKey to id, completionStatus to true, "delivery_note" to visitNote)
+        val completionStatus = if (isCompleted) "COMPLETED" else "CANCELED"
+        val payload = mapOf(typeKey to id, "type" to completionStatus, "delivery_note" to visitNote)
         Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addTripMarker(payload)
     }
 
     fun createVisitStartEvent(id: String, typeKey: String) {
-        sdkInstance.addTripMarker(mapOf(typeKey to id, "created" to true))
+        sdkInstance.addTripMarker(mapOf(typeKey to id, "type" to "CREATED"))
     }
 
     fun sendPickedUp(id: String, typeKey: String) {
-        sdkInstance.addTripMarker(mapOf(typeKey to id, "picked_up" to true))
+        sdkInstance.addTripMarker(mapOf(typeKey to id, "type" to "PICKED_UP"))
     }
 
 
