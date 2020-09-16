@@ -158,10 +158,12 @@ class VisitsRepository(
         Log.d(TAG, "switch Tracking")
         if (_isTracking.value == true) {
             Log.v(TAG, "Stop tracking")
+            hyperTrackService.clockOut()
             apiClient.clockOut()
         } else {
             Log.v(TAG, "Start tracking")
             apiClient.clockIn()
+            hyperTrackService.clockIn()
         }
     }
 
