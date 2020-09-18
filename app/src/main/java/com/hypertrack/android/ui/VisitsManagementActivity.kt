@@ -85,6 +85,11 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         checkIn.setOnClickListener { visitsManagementViewModel.checkin() }
     }
 
+    override fun onResume() {
+        super.onResume()
+        visitsManagementViewModel.refreshVisits()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "onActivityResult")
