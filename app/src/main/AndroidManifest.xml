@@ -66,6 +66,13 @@
         <meta-data
             android:name="io.branch.sdk.BranchKey"
             android:value="@string/branch_io_api_key" />
+
+        <service android:name="com.hypertrack.android.messaging.VisitsMessagingService"
+            android:exported="false">
+            <intent-filter android:priority="10" >
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

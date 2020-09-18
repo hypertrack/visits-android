@@ -53,6 +53,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
 
     fun clockIn() { sdkInstance.addTripMarker(mapOf("type" to "CLOCK_IN")) }
 
+    fun syncState() { sdkInstance.syncDeviceSettings() }
 
     companion object {
         private const val TAG = "HyperTrackAdapter"

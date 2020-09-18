@@ -160,9 +160,11 @@ class VisitsRepository(
             Log.v(TAG, "Stop tracking")
             hyperTrackService.clockOut()
             apiClient.clockOut()
+            hyperTrackService.syncState()
         } else {
             Log.v(TAG, "Start tracking")
             apiClient.clockIn()
+            hyperTrackService.syncState()
             hyperTrackService.clockIn()
         }
     }
