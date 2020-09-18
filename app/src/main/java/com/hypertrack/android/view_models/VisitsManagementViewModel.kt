@@ -37,6 +37,8 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
         get() = _enableCheckin
 
     fun refreshVisits() {
+        if (_showSpinner.value == true) return
+
         _showSpinner.postValue(true)
         viewModelScope.launch {
             visitsRepository.refreshVisits()

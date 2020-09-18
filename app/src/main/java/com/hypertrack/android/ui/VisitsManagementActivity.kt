@@ -90,6 +90,14 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         visitsManagementViewModel.refreshVisits()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.d(TAG, "onNewIntent with extras ${intent?.extras}")
+        if (intent?.action == Intent.ACTION_SYNC) {
+            visitsManagementViewModel.refreshVisits()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "onActivityResult")
