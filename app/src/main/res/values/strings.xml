@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HyperTrack Visits</string>
+    <string name="app_name">Visits</string>
     <string name="enter_driver_id">enter driver id</string>
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
 
