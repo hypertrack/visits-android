@@ -25,7 +25,7 @@ class HyperTrackServiceTest {
 
         val captor = argumentCaptor<Map<String, Any>>()
 
-        verify(sdk).addTripMarker(captor.capture())
+        verify(sdk).addGeotag(captor.capture())
         val payload = captor.value
         assertTrue(payload.isNotEmpty())
         assertTrue(payload.containsKey("delivery_note"))
