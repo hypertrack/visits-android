@@ -10,7 +10,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -39,11 +39,11 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         visitDetailsViewModel = (application as MyApplication).injector
             .provideVisitStatusViewModel(this.applicationContext, visitId)
 
-        visitDetailsViewModel.visit.observe(this, Observer { updateView(it) })
+        visitDetailsViewModel.visit.observe(this, { updateView(it) })
 
         addActionListeners()
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
-        visitDetailsViewModel.showNoteUpdatedToast.observe(this, Observer { show ->
+        visitDetailsViewModel.showNoteUpdatedToast.observe(this, { show ->
             if (show) Toast
                 .makeText(this, "Visit note was updated", Toast.LENGTH_LONG)
                 .show()
@@ -78,7 +78,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d(TAG, "Complete button enabled is $completeEnabled")
         tvComplete.isEnabled = completeEnabled
         etVisitNote.isEnabled = completeEnabled
-        tvComplete.background = getDrawable(
+        tvComplete.background = ContextCompat.getDrawable(this,
             if (completeEnabled) R.drawable.bg_button
             else R.drawable.bg_button_disabled
         )
@@ -97,7 +97,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
                 tvPickup.visibility = View.VISIBLE
                 tvPickup.text = getText(R.string.cancel)
                 tvPickup.isEnabled = completeEnabled
-                tvPickup.background = getDrawable(
+                tvPickup.background = ContextCompat.getDrawable(this,
                     if (completeEnabled) R.drawable.bg_button
                     else R.drawable.bg_button_disabled
                 )

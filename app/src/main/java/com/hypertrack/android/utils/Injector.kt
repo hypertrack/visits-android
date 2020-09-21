@@ -12,7 +12,6 @@ import com.hypertrack.android.api.Point
 import com.hypertrack.android.api.Polygon
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
-import com.hypertrack.android.utils.*
 import com.hypertrack.android.view_models.LoginViewModel
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.android.view_models.VisitDetailsViewModel
