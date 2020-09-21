@@ -295,7 +295,7 @@
                 android:padding="10dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
-                android:text="@string/mark_completed"
+                android:text="@string/check_out"
                 android:textColor="@color/colorWhite"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"

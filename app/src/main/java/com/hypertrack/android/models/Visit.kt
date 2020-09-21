@@ -4,6 +4,8 @@ import com.hypertrack.android.repository.COMPLETED
 import com.hypertrack.android.repository.PENDING
 import com.hypertrack.android.repository.VISITED
 import com.hypertrack.android.utils.OsUtilsProvider
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 data class Visit(val _id: String,
                  val visit_id: String = "", val customerNote: String = "",
@@ -24,15 +26,27 @@ data class Visit(val _id: String,
 
     val status: String
         get() = when {
-                completedAt.isNotEmpty() -> COMPLETED
-                enteredAt.isNotEmpty() -> VISITED
-                else -> PENDING
-            }
+            completedAt.isNotEmpty() -> COMPLETED
+            enteredAt.isNotEmpty() -> VISITED
+            else -> PENDING
+        }
 
-    val isLocal = !isNotLocal
+    val isLocal = visitType == VisitType.LOCAL
 
-    val isNotLocal:Boolean
-        get() = (latitude != null && longitude != null)
+    val isDeletable: Boolean
+        get() {
+            return !isLocal &&
+                    !(visitType == VisitType.TRIP && isOngoingOrCompletedRecently())
+        }
+
+    private fun isOngoingOrCompletedRecently(): Boolean {
+        if (completedAt.isEmpty()) return true
+        return try {
+            completedAt.isLaterThanADayAgo()
+        } catch (ignored: Throwable) {
+            false
+        }
+    }
 
     val typeKey:String
         get() =
@@ -111,6 +125,9 @@ data class Visit(val _id: String,
     )
 
 }
+
+private fun String.isLaterThanADayAgo(): Boolean =
+    Instant.parse(this).isAfter(Instant.now().minus(1, ChronoUnit.DAYS))
 
 interface VisitDataSource {
     val _id: String

@@ -2,6 +2,7 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -20,6 +21,13 @@ class VisitDetailsViewModel(
 
     val showNoteUpdatedToast: LiveData<Boolean>
         get() = _showNoteUpdatedToast
+
+    private val _isEditable = MediatorLiveData<Boolean>()
+    init {
+        _isEditable.addSource(visitsRepository.isTracking, _isEditable::postValue)
+    }
+    val isEditable: LiveData<Boolean>
+        get() = _isEditable
 
     fun onVisitNoteChanged(newNote : String) {
         Log.d(TAG, "onVisitNoteChanged $newNote")
