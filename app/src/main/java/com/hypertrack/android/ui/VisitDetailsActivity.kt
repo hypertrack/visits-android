@@ -39,9 +39,15 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         visitDetailsViewModel = (application as MyApplication).injector
             .provideVisitStatusViewModel(this.applicationContext, visitId)
 
-        visitDetailsViewModel.visit.observe(this, { updateView(it) })
+        visitDetailsViewModel.visit.observe(this) {
+            updateView(it, visitDetailsViewModel.isEditable.value?:false)
+        }
+        visitDetailsViewModel.isEditable.observe(this) {
+            updateView(visitDetailsViewModel.visit.value!!, it)
+            addActionListeners(it)
+        }
 
-        addActionListeners()
+        addActionListeners(visitDetailsViewModel.isEditable.value?:false)
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
         visitDetailsViewModel.showNoteUpdatedToast.observe(this, { show ->
             if (show) Toast
@@ -67,22 +73,22 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun updateView(newValue: Visit) {
+    private fun updateView(newValue: Visit, isEditable: Boolean) {
         Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newValue.customerNote
         tvAddress.text = newValue.address.street
         if (newValue.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newValue.visitNote)
         }
-        val completeEnabled = !newValue.isCompleted
-        Log.d(TAG, "Complete button enabled is $completeEnabled")
-        tvComplete.isEnabled = completeEnabled
-        etVisitNote.isEnabled = completeEnabled
+        val isCompletable = !newValue.isCompleted
+        Log.d(TAG, "Check out button completable is $isCompletable and editable $isEditable")
+        tvComplete.isEnabled = isCompletable && isEditable
+        etVisitNote.isEnabled = isCompletable
         tvComplete.background = ContextCompat.getDrawable(this,
-            if (completeEnabled) R.drawable.bg_button
+            if (isCompletable && isEditable) R.drawable.bg_button
             else R.drawable.bg_button_disabled
         )
-        tvComplete.text = if (completeEnabled)
+        tvComplete.text = if (isCompletable)
             getString(R.string.check_out)
         else getString(R.string.completed)
 
@@ -91,14 +97,19 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             false -> {
                 tvPickup.visibility = View.VISIBLE
                 tvPickup.text = getText(R.string.pick_up)
-                tvPickup.isEnabled = true
+                val isPickable = isEditable && !isCompletable
+                tvPickup.isEnabled = isPickable // no pickup for completed visits
+                tvPickup.background = ContextCompat.getDrawable(this,
+                    if (isPickable) R.drawable.bg_button
+                    else R.drawable.bg_button_disabled
+                )
             }
             true -> {
                 tvPickup.visibility = View.VISIBLE
                 tvPickup.text = getText(R.string.cancel)
-                tvPickup.isEnabled = completeEnabled
+                tvPickup.isEnabled = isCompletable && isEditable
                 tvPickup.background = ContextCompat.getDrawable(this,
-                    if (completeEnabled) R.drawable.bg_button
+                    if (isCompletable && isEditable) R.drawable.bg_button
                     else R.drawable.bg_button_disabled
                 )
             }
@@ -106,11 +117,22 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    private fun addActionListeners() {
+    private fun addActionListeners(isEditable: Boolean) {
         ivBack.setOnClickListener {
             visitDetailsViewModel.onBackPressed()
             onBackPressed()
         }
+
+        etVisitNote.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) =
+                visitDetailsViewModel.onVisitNoteChanged(s.toString())
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        })
+
+        if (!isEditable) return
         tvComplete.setOnClickListener {
             Log.d(TAG, "Complete button pressed")
             tvComplete.isEnabled = false
@@ -122,15 +144,6 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             tvPickup.isEnabled = false
             visitDetailsViewModel.onPickupClicked()
         }
-
-        etVisitNote.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) =
-                visitDetailsViewModel.onVisitNoteChanged(s.toString())
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-        })
     }
 
 
