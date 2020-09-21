@@ -97,7 +97,7 @@ class VisitsRepository(
                 _visitItemsById[prototype._id]?.postValue(newValue) // updates MutableLiveData
             }
         }
-        val deletedEntries = _visitsMap.filter { it.value.isNotLocal }.keys - prototypes.map { it._id }
+        val deletedEntries = _visitsMap.filter { it.value.isDeletable }.keys - prototypes.map { it._id }
         Log.v(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
