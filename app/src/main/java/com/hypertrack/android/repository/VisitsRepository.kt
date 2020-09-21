@@ -154,7 +154,7 @@ class VisitsRepository(
         _visitListItems.postValue(updatedVisits.sortedWithHeaders())
     }
 
-    suspend fun switchTracking() {
+    fun switchTracking() {
         Log.d(TAG, "switch Tracking")
         if (_isTracking.value == true) {
             Log.v(TAG, "Stop tracking")
