@@ -83,7 +83,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             else R.drawable.bg_button_disabled
         )
         tvComplete.text = if (completeEnabled)
-            getString(R.string.mark_completed)
+            getString(R.string.check_out)
         else getString(R.string.completed)
 
         when(newValue.tripVisitPickedUp) {
