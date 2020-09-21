@@ -49,11 +49,15 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         sdkInstance.addTripMarker(mapOf(typeKey to id, "type" to "PICK_UP"))
     }
 
-    fun clockOut() { sdkInstance.addTripMarker(mapOf("type" to "CLOCK_OUT")) }
+    fun clockOut() {
+        sdkInstance.addTripMarker(mapOf("type" to "CLOCK_OUT"))
+        sdkInstance.stop()
+    }
 
-    fun clockIn() { sdkInstance.addTripMarker(mapOf("type" to "CLOCK_IN")) }
-
-    fun syncState() { sdkInstance.syncDeviceSettings() }
+    fun clockIn() {
+        sdkInstance.start()
+        sdkInstance.addTripMarker(mapOf("type" to "CLOCK_IN"))
+    }
 
     companion object {
         private const val TAG = "HyperTrackAdapter"
