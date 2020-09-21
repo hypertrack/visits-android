@@ -97,7 +97,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             false -> {
                 tvPickup.visibility = View.VISIBLE
                 tvPickup.text = getText(R.string.pick_up)
-                val isPickable = isEditable && !isCompletable
+                val isPickable = isEditable && isCompletable
                 tvPickup.isEnabled = isPickable // no pickup for completed visits
                 tvPickup.background = ContextCompat.getDrawable(this,
                     if (isPickable) R.drawable.bg_button

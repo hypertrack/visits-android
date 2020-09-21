@@ -13,7 +13,7 @@ class MyApplication : Application() {
 //        Branch.enableLogging()
         Branch.getAutoInstance(this)
 
-        HyperTrack.enableDebugLogging()
+//        HyperTrack.enableDebugLogging()
     }
 
     companion object { const val TAG = "MyApplication" }
