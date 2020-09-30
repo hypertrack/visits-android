@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,6 +84,11 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
         checkIn.setOnClickListener { visitsManagementViewModel.checkin() }
+        visitsManagementViewModel.showToast.observe(this) { msg ->
+            if (msg.isNotEmpty()) Toast
+                .makeText(this, msg, Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     override fun onResume() {

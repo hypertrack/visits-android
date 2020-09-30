@@ -21,7 +21,7 @@ import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
 
 
-class ServiceLocator(private val context: Context) {
+class ServiceLocator {
 
 
     fun getAccessTokenRepository(deviceId : String, userName : String) = BasicAuthAccessTokenRepository(
@@ -30,7 +30,7 @@ class ServiceLocator(private val context: Context) {
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         val listener = TrackingState()
         val sdkInstance = HyperTrack
-            .getInstance(context, publishableKey)
+            .getInstance(publishableKey)
             .addTrackingListener(listener)
             .setTrackingNotificationConfig(
                 ServiceNotificationConfig.Builder()
@@ -72,7 +72,7 @@ object Injector {
     }
 
     private fun getAccountRepo(context: Context) =
-        AccountRepository(ServiceLocator(context), getAccountData(context), getMyPreferences(context))
+        AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
 
     private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()
 
@@ -85,7 +85,7 @@ object Injector {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        return ServiceLocator(context).getHyperTrackService(publishableKey)
+        return ServiceLocator().getHyperTrackService(publishableKey)
     }
 
     private fun getVisitsRepo(context: Context): VisitsRepository {

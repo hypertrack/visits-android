@@ -80,6 +80,7 @@ class SplashScreenViewModel(
                     return
                 } catch (e : Throwable) {
                     Log.w(TAG, "Cannot validate the key", e)
+                    noPkHanlder()
                 }
         } else {
             error?.let { Log.e(TAG, "Branch IO init failed. $error") }
