@@ -20,7 +20,11 @@ class AccountRepository(
         Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
 
         val accessTokenRepository = serviceLocator.getAccessTokenRepository(sdk.deviceId, key)
-        val token = accessTokenRepository.refreshTokenAsync()
+        val token = try {
+            accessTokenRepository.refreshTokenAsync()
+        } catch (ignored: Throwable) {
+            ""
+        }
 
         if (token.isEmpty()) return false
 
