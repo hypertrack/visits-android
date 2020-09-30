@@ -29,6 +29,10 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
+    private val _showToast = MutableLiveData("")
+    val showToast: LiveData<String>
+        get() = _showToast
+
     private val _enableCheckin = MediatorLiveData<Boolean>()
     init {
         _enableCheckin.addSource(visitsRepository.isTracking) { _enableCheckin.postValue(it) }
@@ -41,7 +45,11 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
 
         _showSpinner.postValue(true)
         viewModelScope.launch {
-            visitsRepository.refreshVisits()
+            try {
+                visitsRepository.refreshVisits()
+            } catch (e: Throwable) {
+                _showToast.postValue("Got error refreshing visits $e")
+            }
             _showSpinner.postValue(false)
         }
     }
