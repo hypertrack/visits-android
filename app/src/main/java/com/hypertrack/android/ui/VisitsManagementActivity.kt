@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.adapters.VisitListAdapter
@@ -42,7 +41,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
 
         visitsManagementViewModel.visits
-            .observe(this, Observer {
+            .observe(this, {
                 visits -> Log.d(TAG, "Got visits $visits")
                 viewAdapter.notifyDataSetChanged()
             })
@@ -52,7 +51,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
             adapter = viewAdapter
         }
 
-        visitsManagementViewModel.statusLabel.observe(this, Observer { stateAndLabel ->
+        visitsManagementViewModel.statusLabel.observe(this) { stateAndLabel ->
             val invisible = -1
             val colorId =  when (stateAndLabel.first) {
                 TrackingStateValue.ERROR -> R.color.colorTrackingError
@@ -71,19 +70,19 @@ class VisitsManagementActivity : ProgressDialogActivity() {
             tvTrackerStatus.text = stateAndLabel.second
 
 
-        })
-        visitsManagementViewModel.showSpinner.observe(this, Observer { show ->
+        }
+        visitsManagementViewModel.showSpinner.observe(this) { show ->
             if(show) showProgress() else dismissProgress()
-        })
-        visitsManagementViewModel.enableCheckin.observe(this, Observer { enabled ->
+        }
+        visitsManagementViewModel.enableCheckIn.observe(this) { enabled ->
             checkIn.isEnabled = enabled
-        })
-        visitsManagementViewModel.clockinButtonText.observe(this, Observer { clockIn.text = it })
-        visitsManagementViewModel.checkinButtonText.observe(this, Observer { checkIn.text = it })
+        }
+        visitsManagementViewModel.clockInButtonText.observe(this) { clockIn.text = it }
+        visitsManagementViewModel.checkInButtonText.observe(this) { checkIn.text = it }
 
         ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
-        checkIn.setOnClickListener { visitsManagementViewModel.checkin() }
+        checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(this) { msg ->
             if (msg.isNotEmpty()) Toast
                 .makeText(this, msg, Toast.LENGTH_LONG)
@@ -121,7 +120,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         42
     )
 
-    companion object { const val TAG = "ListActivity" }
+    companion object { const val TAG = "VisitsManagementAct" }
 
 }
 

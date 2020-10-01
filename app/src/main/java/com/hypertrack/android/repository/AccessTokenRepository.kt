@@ -48,6 +48,11 @@ class BasicAuthAccessTokenRepository(
             .newCall(request)
             .execute()
             .use { response -> token = getTokenFromResponse(response)}
+//        try {
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Failed to refresh the token")
+//            token = null
+//        }
 
         Log.v(TAG, "Updated bearer token $token" )
         return token ?: ""
