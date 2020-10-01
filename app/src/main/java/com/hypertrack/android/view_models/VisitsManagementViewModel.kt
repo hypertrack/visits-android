@@ -3,6 +3,9 @@ package com.hypertrack.android.view_models
 import android.util.Log
 import androidx.lifecycle.*
 import com.hypertrack.android.repository.VisitsRepository
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) : ViewModel() {
@@ -44,12 +47,18 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
         if (_showSpinner.value == true) return
 
         _showSpinner.postValue(true)
-        viewModelScope.launch {
-            try {
-                visitsRepository.refreshVisits()
-            } catch (e: Throwable) {
-                _showToast.postValue("Got error refreshing visits $e")
+
+         val coroutineExceptionHandler = CoroutineExceptionHandler{_ , throwable ->
+            Log.e(TAG, "Got error $throwable in coroutine")
+        }
+        try {
+            MainScope().launch(Dispatchers.IO + coroutineExceptionHandler) {
+                     visitsRepository.refreshVisits()
             }
+        } catch (e: Throwable) {
+            Log.e(TAG, "Got error $e refreshing visits")
+            _showToast.postValue("Got error refreshing visits $e")
+        } finally {
             _showSpinner.postValue(false)
         }
     }
@@ -76,12 +85,6 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
 
     val visits = visitsRepository.visitListItems
     val statusLabel = visitsRepository.statusLabel
-
-    init {
-        viewModelScope.launch {
-            visitsRepository.refreshVisits()
-        }
-    }
 
     companion object {
         const val TAG = "VisitsManagementVM"

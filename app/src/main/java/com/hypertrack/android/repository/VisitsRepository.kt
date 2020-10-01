@@ -10,6 +10,7 @@ import com.hypertrack.android.utils.VisitsStorage
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TrackingStateValue
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 

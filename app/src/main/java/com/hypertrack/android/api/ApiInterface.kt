@@ -5,6 +5,8 @@ import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.toNote
+import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -19,13 +21,13 @@ interface ApiInterface {
     suspend fun clockOut(@Path("device_id")deviceId : String)
 
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getGeofences(@Path("device_id")deviceId : String) : List<Geofence>
+    suspend fun getGeofences(@Path("device_id")deviceId : String) : Response<List<Geofence>>
 
     @GET("client/trips")
     suspend fun getTrips(
         @Query("device_id")deviceId : String,
         @Query("pagination_token")paginationToken: String = ""
-    ) : TripResponse
+    ) : Response<TripResponse>
 
 }
 
