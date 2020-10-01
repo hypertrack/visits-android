@@ -51,15 +51,15 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
          val coroutineExceptionHandler = CoroutineExceptionHandler{_ , throwable ->
             Log.e(TAG, "Got error $throwable in coroutine")
         }
-        try {
-            MainScope().launch(Dispatchers.IO + coroutineExceptionHandler) {
-                     visitsRepository.refreshVisits()
+        MainScope().launch(Dispatchers.IO + coroutineExceptionHandler) {
+            try {
+                visitsRepository.refreshVisits()
+            } catch (e: Throwable) {
+                Log.e(TAG, "Got error $e refreshing visits")
+                _showToast.postValue("Got error refreshing visits $e")
+            } finally {
+                _showSpinner.postValue(false)
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "Got error $e refreshing visits")
-            _showToast.postValue("Got error refreshing visits $e")
-        } finally {
-            _showSpinner.postValue(false)
         }
     }
 

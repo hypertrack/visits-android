@@ -43,6 +43,7 @@ class ApiClient(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Got exception while fetching geofences $e")
+            throw Exception(e)
         }
         return emptyList()
     }
@@ -54,6 +55,7 @@ class ApiClient(
                 return response.body()?.trips?.filterNot { it.destination == null || it.tripId.isNullOrEmpty() }?: emptyList()
         } catch (e: Exception) {
             Log.w(TAG, "Got exception while trying to refresh trips $e")
+            throw Exception(e)
         }
         return emptyList()
 
