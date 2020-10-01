@@ -10,23 +10,23 @@ import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) : ViewModel() {
 
-    private val _clockinButtonText = MediatorLiveData<CharSequence>()
+    private val _clockInButtonText = MediatorLiveData<CharSequence>()
     init {
-        _clockinButtonText.addSource(visitsRepository.isTracking) { tracking ->
-            _clockinButtonText.postValue(if (tracking) "Clock Out" else "Clock In")
+        _clockInButtonText.addSource(visitsRepository.isTracking) { tracking ->
+            _clockInButtonText.postValue(if (tracking) "Clock Out" else "Clock In")
         }
     }
-    val clockinButtonText: LiveData<CharSequence>
-        get() = _clockinButtonText
+    val clockInButtonText: LiveData<CharSequence>
+        get() = _clockInButtonText
 
-    private val _checkinButtonText = MediatorLiveData<CharSequence>()
+    private val _checkInButtonText = MediatorLiveData<CharSequence>()
     init {
-        _checkinButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
-            _checkinButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
+        _checkInButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
+            _checkInButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
         }
     }
-    val checkinButtonText: LiveData<CharSequence>
-        get() = _checkinButtonText
+    val checkInButtonText: LiveData<CharSequence>
+        get() = _checkInButtonText
 
     private val _showSpinner = MutableLiveData(false)
     val showSpinner: LiveData<Boolean>
@@ -36,12 +36,12 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
     val showToast: LiveData<String>
         get() = _showToast
 
-    private val _enableCheckin = MediatorLiveData<Boolean>()
+    private val _enableCheckIn = MediatorLiveData<Boolean>()
     init {
-        _enableCheckin.addSource(visitsRepository.isTracking) { _enableCheckin.postValue(it) }
+        _enableCheckIn.addSource(visitsRepository.isTracking) { _enableCheckIn.postValue(it) }
     }
-    val enableCheckin: LiveData<Boolean>
-        get() = _enableCheckin
+    val enableCheckIn: LiveData<Boolean>
+        get() = _enableCheckIn
 
     fun refreshVisits() {
         if (_showSpinner.value == true) return
@@ -73,12 +73,12 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
         }
     }
 
-    fun checkin() {
+    fun checkIn() {
         Log.v(TAG, "checkin")
         visitsRepository.processLocalVisit()
     }
 
-    fun possibleLocalVisitCompletion(): Unit {
+    fun possibleLocalVisitCompletion() {
         // Local visit change affects Check In/ Check Out state
         visitsRepository.checkLocalVisitCompleted()
     }
