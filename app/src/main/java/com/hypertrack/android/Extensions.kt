@@ -36,6 +36,8 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
 fun Map<String, Any>?.toNote(): String {
     if (this == null) return ""
     val result = StringBuilder()
-    this.forEach { (key, value) -> result.append("$key: $value\n") }
+    this
+        .filter { (key, _) -> !key.startsWith("ht_") }
+        .forEach { (key, value) -> result.append("$key: $value\n") }
     return result.toString().dropLast(1)
 }
