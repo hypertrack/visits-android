@@ -14,6 +14,12 @@ class AccountRepository(
     val isVerifiedAccount : Boolean
         get() = accountData.lastToken != null
 
+    var isManualCheckInAllowed: Boolean
+        get() = accountData.isCheckInEnabled
+        set(value) {
+            accountData.isCheckInEnabled = value
+        }
+
     suspend fun onKeyReceived(key: String) : Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
@@ -31,7 +37,8 @@ class AccountRepository(
         accountDataStorage.saveAccountData(
             AccountData(
                 key,
-                token
+                token,
+                accountData.isCheckInEnabled
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)

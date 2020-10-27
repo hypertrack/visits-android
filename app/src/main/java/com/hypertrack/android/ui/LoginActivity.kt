@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.MyApplication
@@ -39,16 +40,16 @@ class LoginActivity : ProgressDialogActivity() {
         }
 
         loginModel.enableCheckIn
-            .observe(this, Observer { enable ->
+            .observe(this, { enable ->
                 btnCheckIn.isEnabled = enable
-                btnCheckIn.background = getDrawable(
+                btnCheckIn.background = ContextCompat.getDrawable(this,
                     if (enable) R.drawable.bg_button
                     else R.drawable.bg_button_disabled
                 )
             })
 
         loginModel.destination
-            .observe(this, Observer { destination -> navigateTo(destination) })
+            .observe(this, { destination -> navigateTo(destination) })
 
         loginModel.showProgresss.observe(this, Observer { show ->
             if (show) showProgress() else dismissProgress()

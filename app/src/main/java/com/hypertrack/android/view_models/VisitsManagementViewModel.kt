@@ -2,13 +2,17 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) : ViewModel() {
+class VisitsManagementViewModel(
+    private val visitsRepository: VisitsRepository,
+    accountRepository: AccountRepository
+) : ViewModel() {
 
     private val _clockInButtonText = MediatorLiveData<CharSequence>()
     init {
@@ -21,8 +25,10 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
 
     private val _checkInButtonText = MediatorLiveData<CharSequence>()
     init {
-        _checkInButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
-            _checkInButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
+        if (accountRepository.isManualCheckInAllowed) {
+            _checkInButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
+                _checkInButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
+            }
         }
     }
     val checkInButtonText: LiveData<CharSequence>
@@ -38,7 +44,11 @@ class VisitsManagementViewModel(private val visitsRepository: VisitsRepository) 
 
     private val _enableCheckIn = MediatorLiveData<Boolean>()
     init {
-        _enableCheckIn.addSource(visitsRepository.isTracking) { _enableCheckIn.postValue(it) }
+        if (accountRepository.isManualCheckInAllowed) {
+            _enableCheckIn.addSource(visitsRepository.isTracking) { _enableCheckIn.postValue(it) }
+        } else {
+            _enableCheckIn.postValue(false)
+        }
     }
     val enableCheckIn: LiveData<Boolean>
         get() = _enableCheckIn

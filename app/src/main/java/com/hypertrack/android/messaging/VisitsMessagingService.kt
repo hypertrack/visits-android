@@ -1,5 +1,6 @@
 package com.hypertrack.android.messaging
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -7,6 +8,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hypertrack.android.ui.VisitsManagementActivity
 import com.hypertrack.sdk.HyperTrackMessagingService
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class VisitsMessagingService: HyperTrackMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
