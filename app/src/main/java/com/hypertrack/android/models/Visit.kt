@@ -1,5 +1,6 @@
 package com.hypertrack.android.models
 
+import android.annotation.SuppressLint
 import com.hypertrack.android.repository.COMPLETED
 import com.hypertrack.android.repository.PENDING
 import com.hypertrack.android.repository.VISITED
@@ -126,6 +127,7 @@ data class Visit(val _id: String,
 
 }
 
+@SuppressLint("NewApi")
 private fun String.isLaterThanADayAgo(): Boolean =
     Instant.parse(this).isAfter(Instant.now().minus(1, ChronoUnit.DAYS))
 
