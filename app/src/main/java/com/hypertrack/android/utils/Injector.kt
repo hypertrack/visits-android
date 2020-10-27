@@ -106,7 +106,8 @@ object Injector {
 
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
-        return VisitsManagementViewModelFactory(repository)
+        val accountRepository = getAccountRepo(context)
+        return VisitsManagementViewModelFactory(repository, accountRepository)
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId:String): VisitDetailsViewModel {
@@ -124,13 +125,17 @@ object Injector {
 }
 
 class VisitsManagementViewModelFactory(
-    private val visitsRepository: VisitsRepository
+    private val visitsRepository: VisitsRepository,
+    val accountRepository: AccountRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(visitsRepository) as T
+            VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(
+                visitsRepository,
+                accountRepository
+            ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }

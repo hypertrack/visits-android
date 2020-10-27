@@ -16,10 +16,9 @@ class SplashScreenViewModel(
     private val accountRepository: AccountRepository
 ) : ViewModel(), Branch.BranchUniversalReferralInitListener  {
 
-    private val _showSpinner = MutableLiveData<Boolean>(true)
-    private val _noAccountFragment = MutableLiveData<Boolean>(false)
-    private val _destination = MutableLiveData<Destination>(
-        Destination.SPLASH_SCREEN)
+    private val _showSpinner = MutableLiveData(true)
+    private val _noAccountFragment = MutableLiveData(false)
+    private val _destination = MutableLiveData(Destination.SPLASH_SCREEN)
 
     /** Show a loading spinner if true */
     val spinner: LiveData<Boolean>
@@ -59,7 +58,9 @@ class SplashScreenViewModel(
         Log.d(TAG, "Branch payload is ${branchUniversalObject?.contentMetadata?.customMetadata}")
         val key = branchUniversalObject?.contentMetadata?.customMetadata?.get("publishable_key")?:""
         val email = branchUniversalObject?.contentMetadata?.customMetadata?.get("email")?:""
-        Log.v(TAG, "Got email $email and pk $key")
+        val driverId = branchUniversalObject?.contentMetadata?.customMetadata?.get("driver_id")?:""
+        val showCheckIn = branchUniversalObject?.contentMetadata?.customMetadata?.get("show_manual_visits")?:""
+        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn")
         if (key.isNotEmpty()) {
             Log.d(TAG, "Got key $key")
                 try {
@@ -68,9 +69,11 @@ class SplashScreenViewModel(
                         Log.d(TAG, "onKeyReceived finished")
                         if (correctKey) {
                             Log.d(TAG, "Key validated successfully")
+
+
                             _showSpinner.postValue(false)
-                            if (email.isNotEmpty())
-                                driverRepository.driverId = email
+                            if (email.isNotEmpty() || driverId.isNotEmpty())
+                                driverRepository.driverId = if (email.isNotEmpty()) email else driverId
                             _destination.postValue(Destination.LOGIN)
                         } else {
                             noPkHanlder()
