@@ -13,16 +13,16 @@ import com.hypertrack.android.models.Visit
 class MyPreferences(context: Context, private val gson: Gson) :
     AccountDataStorage, VisitsStorage {
 
-    private val getPreferences : SharedPreferences
+    private val sharedPreferences : SharedPreferences
             = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
     override fun saveDriver(driverModel: Driver) {
         val serializedModel = gson.toJson(driverModel)
-        getPreferences.edit()?.putString(DRIVER_KEY, serializedModel)?.apply()
+        sharedPreferences.edit()?.putString(DRIVER_KEY, serializedModel)?.apply()
     }
 
     override fun getDriverValue(): Driver {
-        val driverDetails = getPreferences.getString(DRIVER_KEY, null)
+        val driverDetails = sharedPreferences.getString(DRIVER_KEY, null)
         driverDetails?.let {
             return gson.fromJson(driverDetails,Driver::class.java)
         }
@@ -31,23 +31,23 @@ class MyPreferences(context: Context, private val gson: Gson) :
     }
 
     fun clearPreferences() {
-        getPreferences.edit()?.clear()?.apply()
+        sharedPreferences.edit()?.clear()?.apply()
     }
 
     override fun getAccountData() : AccountData {
         return try {
-            gson.fromJson(getPreferences.getString(ACCOUNT_KEY, "{}"), AccountData::class.java)
+            gson.fromJson(sharedPreferences.getString(ACCOUNT_KEY, "{}"), AccountData::class.java)
         } catch (ignored: Throwable) {
             AccountData()
         }
     }
 
     override fun saveAccountData(accountData: AccountData) {
-        getPreferences.edit()?.putString(ACCOUNT_KEY, gson.toJson(accountData))?.apply()
+        sharedPreferences.edit()?.putString(ACCOUNT_KEY, gson.toJson(accountData))?.apply()
     }
 
     override fun restoreRepository() : BasicAuthAccessTokenRepository? {
-        getPreferences.getString(ACCESS_REPO_KEY, null)?.let {
+        sharedPreferences.getString(ACCESS_REPO_KEY, null)?.let {
             try {
                 val config = gson.fromJson(it, BasicAuthAccessTokenConfig::class.java)
                 return BasicAuthAccessTokenRepository(config)
@@ -59,17 +59,17 @@ class MyPreferences(context: Context, private val gson: Gson) :
     }
 
     override fun persistRepository(repo: AccessTokenRepository) {
-        getPreferences.edit()?.putString(ACCESS_REPO_KEY, gson.toJson(repo.getConfig()))?.apply()
+        sharedPreferences.edit()?.putString(ACCESS_REPO_KEY, gson.toJson(repo.getConfig()))?.apply()
     }
 
     override fun saveVisits(visits: List<Visit>) {
-        getPreferences.edit().putString(VISITS_KEY, gson.toJson(visits))?.apply()
+        sharedPreferences.edit().putString(VISITS_KEY, gson.toJson(visits))?.apply()
     }
 
     override fun restoreVisits(): List<Visit> {
         val typeToken = object : TypeToken<List<Visit>>() {}.type
         try {
-            return gson.fromJson(getPreferences.getString(VISITS_KEY, "[]"), typeToken)
+            return gson.fromJson(sharedPreferences.getString(VISITS_KEY, "[]"), typeToken)
         } catch (e: Throwable) {
             Log.w(TAG, "Can't deserialize visits ${e.message}")
         }
