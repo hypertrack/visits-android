@@ -77,6 +77,10 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         visitsManagementViewModel.enableCheckIn.observe(this) { enabled ->
             checkIn.isEnabled = enabled
         }
+        if (visitsManagementViewModel.showCheckIn)
+            checkIn.visibility = View.VISIBLE
+        else
+            checkIn.visibility = View.GONE
         visitsManagementViewModel.clockInButtonText.observe(this) { clockIn.text = it }
         visitsManagementViewModel.checkInButtonText.observe(this) { checkIn.text = it }
 
