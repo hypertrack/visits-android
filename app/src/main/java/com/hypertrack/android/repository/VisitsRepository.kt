@@ -53,7 +53,7 @@ class VisitsRepository(
         _status.addSource(visitListItems) { items ->
             val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
             val label = items.toStatusLabel()
-            val fineLabel = if (label.isNotEmpty()) label else "No planned visits"
+            val fineLabel = if (label.isNotEmpty()) label else osUtilsProvider.getStringResourceForId(R.string.no_planned_visits)
             _status.postValue(trackingState to fineLabel)
         }
     }

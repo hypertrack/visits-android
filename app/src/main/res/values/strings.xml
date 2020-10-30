@@ -36,6 +36,9 @@
     <string name="trip_to">Trip to </string>
     <string name="geofence_at">Geofence at </string>
     <string name="local_visit_on">Local Visit On </string>
-
-
+    <string name="item_singular">Item</string>
+    <string name="item_plural">Items</string>
+    <string name="visited">Visited</string>
+    <string name="pending">Pending</string>
+    <string name="no_planned_visits">"No planned visits"</string>
 </resources>
