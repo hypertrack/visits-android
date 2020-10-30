@@ -5,7 +5,7 @@ import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.toNote
-import retrofit2.Call
+import com.hypertrack.logistics.android.github.R
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -62,11 +62,10 @@ data class Trip(
         get() = destination?.address?.let { Address(it, "", "", "") }
     override val visitType: VisitType
         get() = VisitType.TRIP
-    override val visitId: String
-        get() = when (destination?.address) {
-            null -> "Trip to [$longitude, $latitude]"
-            else -> "Trip to ${destination.address}"
-        }
+    override val visitNamePrefixId: Int
+        get() = R.string.trip_to
+    override val visitNameSuffix: String
+        get() = if (destination?.address == null) "[$longitude, $latitude]" else "${destination.address}"
 }
 
 data class TripDestination(
@@ -105,11 +104,10 @@ data class Geofence(
         get() = created_at
     override val visitType
         get() = VisitType.GEOFENCE
-    override val visitId: String
-        get() = when (address) {
-            null -> "Geofence at [$longitude, $latitude]"
-            else -> "Geofence at $address"
-        }
+    override val visitNamePrefixId: Int
+        get() = R.string.geofence_at
+    override val visitNameSuffix: String
+        get() = if (address == null) "[$longitude, $latitude]" else "$address"
     val type: String
         get() = geometry.type
 }

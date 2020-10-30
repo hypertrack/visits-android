@@ -10,6 +10,7 @@ import com.hypertrack.android.utils.VisitsStorage
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TrackingStateValue
+import com.hypertrack.logistics.android.github.R
 import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
@@ -178,7 +179,7 @@ class VisitsRepository(
         val createdAt = osUtilsProvider.getCurrentTimestamp()
         val newLocalVisit = Visit(
             _id = UUID.randomUUID().toString(),
-            visit_id = "Visit on ${osUtilsProvider.getFineDateTimeString()}",
+            visit_id = osUtilsProvider.getStringResourceForId(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
             createdAt = createdAt,
             enteredAt = createdAt,
             visitType = VisitType.LOCAL

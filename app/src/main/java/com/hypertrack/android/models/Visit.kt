@@ -116,7 +116,7 @@ data class Visit(val _id: String,
 
     constructor(visitDataSource: VisitDataSource, osUtilsProvider: OsUtilsProvider) : this(
         _id = visitDataSource._id,
-        visit_id = visitDataSource.visitId,
+        visit_id = osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId) + visitDataSource.visitNameSuffix,
         customerNote = visitDataSource.customerNote,
         address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
         createdAt = visitDataSource.createdAt,
@@ -133,13 +133,14 @@ private fun String.isLaterThanADayAgo(): Boolean =
 
 interface VisitDataSource {
     val _id: String
-    val visitId: String
     val customerNote: String
     val address: Address?
     val createdAt: String
     val latitude: Double
     val longitude: Double
     val visitType: VisitType
+    val visitNamePrefixId: Int
+    val visitNameSuffix: String
 }
 
 enum class VisitType {
