@@ -65,12 +65,10 @@ class SplashScreenViewModel(
             Log.d(TAG, "Got key $key")
                 try {
                     viewModelScope.launch {
-                        val correctKey = accountRepository.onKeyReceived(key)
+                        val correctKey = accountRepository.onKeyReceived(key, showCheckIn)
                         Log.d(TAG, "onKeyReceived finished")
                         if (correctKey) {
                             Log.d(TAG, "Key validated successfully")
-
-
                             _showSpinner.postValue(false)
                             if (email.isNotEmpty() || driverId.isNotEmpty())
                                 driverRepository.driverId = if (email.isNotEmpty()) email else driverId

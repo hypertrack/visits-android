@@ -53,6 +53,8 @@ class VisitsManagementViewModel(
     val enableCheckIn: LiveData<Boolean>
         get() = _enableCheckIn
 
+    val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
+
     fun refreshVisits() {
         if (_showSpinner.value == true) return
 

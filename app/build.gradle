@@ -14,8 +14,8 @@ android {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 251
-        versionName "0.2.5"
+        versionCode 260
+        versionName "0.2.6-alpha01"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
     }
@@ -65,7 +65,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
     implementation 'androidx.core:core-ktx:1.3.2'
 

@@ -29,6 +29,16 @@
     <string name="clock_out">Clock Out</string>
     <string name="pick_up">Pick Up</string>
     <string name="cancel">Cancel</string>
-
-
+    <string name="unnamed_street">Unnamed street</string>
+    <string name="unknown_city">Unknown city</string>
+    <string name="unknown_country">Nowhere</string>
+    <string name="unknown_location_at">\"Unknown location at \"</string>
+    <string name="trip_to">Trip to </string>
+    <string name="geofence_at">Geofence at </string>
+    <string name="local_visit_on">Local Visit On </string>
+    <string name="item_singular">Item</string>
+    <string name="item_plural">Items</string>
+    <string name="visited">Visited</string>
+    <string name="pending">Pending</string>
+    <string name="no_planned_visits">"No planned visits"</string>
 </resources>
