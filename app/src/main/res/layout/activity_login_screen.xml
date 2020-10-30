@@ -29,9 +29,21 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="360dp"
+                android:layout_height="360dp"
+                app:layout_constraintDimensionRatio="H,1:1"
+                app:srcCompat="@drawable/logo" />
+            <TextView
+                android:id="@+id/appName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/logo" />
+                android:text="@string/app_name"
+                android:textSize="44sp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </LinearLayout>
 
