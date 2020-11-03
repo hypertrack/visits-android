@@ -41,4 +41,5 @@
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
     <string name="no_planned_visits">"No planned visits"</string>
+    <string name="splashscreenlogo">splashScreenLogo</string>
 </resources>

@@ -3,7 +3,6 @@ package com.hypertrack.android.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.activity.viewModels
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.MyApplication
@@ -11,7 +10,6 @@ import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
-import kotlinx.android.synthetic.main.splash_screen_layout.*
 
 class SplashScreen : ProgressDialogActivity() {
 
@@ -27,7 +25,7 @@ class SplashScreen : ProgressDialogActivity() {
 
         splashScreenViewModel
             .noAccountFragment.observe(this, { show ->
-                    noPkFragment.visibility = if (show) View.VISIBLE else View.GONE
+                    Log.d(TAG,"No pk fragment $show")
             })
         splashScreenViewModel.destination
             .observe(this, { destination -> navigateTo(destination) })
