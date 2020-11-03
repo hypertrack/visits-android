@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.SplashScreenViewModel
@@ -27,11 +26,11 @@ class SplashScreen : ProgressDialogActivity() {
         setContentView(R.layout.splash_screen_layout)
 
         splashScreenViewModel
-            .noAccountFragment.observe(this, Observer { show ->
+            .noAccountFragment.observe(this, { show ->
                     noPkFragment.visibility = if (show) View.VISIBLE else View.GONE
             })
         splashScreenViewModel.destination
-            .observe(this, Observer { destination -> navigateTo(destination) })
+            .observe(this, { destination -> navigateTo(destination) })
 
         splashScreenViewModel.login()
 
@@ -41,7 +40,7 @@ class SplashScreen : ProgressDialogActivity() {
         super.onStart()
         Log.d(TAG, "onStart")
         splashScreenViewModel.spinner
-            .observe(this, Observer { show ->
+            .observe(this, { show ->
                 if (show) showProgress() else dismissProgress()
             })
         try {
