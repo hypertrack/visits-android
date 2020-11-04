@@ -42,4 +42,7 @@
     <string name="pending">Pending</string>
     <string name="no_planned_visits">"No planned visits"</string>
     <string name="splashscreenlogo">splashScreenLogo</string>
+    <string name="deeplink_failed">Deeplink Failed</string>
+    <string name="login_hint">Cannot get login from the deeplink. Sign in or contact your manager to get the link.</string>
+    <string name="email_address">Email Address</string>
 </resources>
