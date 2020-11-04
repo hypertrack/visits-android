@@ -19,6 +19,8 @@ import com.hypertrack.android.view_models.VisitsManagementViewModel
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
+import com.hypertrack.sdk.config.HTConfig
+import com.hypertrack.sdk.utils.HyperTrackInitProvider
 
 
 class ServiceLocator {
@@ -29,6 +31,8 @@ class ServiceLocator {
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         val listener = TrackingState()
+        HTConfig.getConfig(HyperTrackInitProvider.applicationContext)
+            .updateBaseUrl("https://devpoc-api.htdev.hypertrack.com/")
         val sdkInstance = HyperTrack
             .getInstance(publishableKey)
             .addTrackingListener(listener)
@@ -172,5 +176,5 @@ class SplashScreenViewModelFactory(
     }
 }
 
-const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
-const val AUTH_URL = "https://live-api.htprod.hypertrack.com/authenticate"
+const val BASE_URL = "https://devpoc-app-backend.htdev.hypertrack.com"
+const val AUTH_URL = "https://devpoc-api.htdev.hypertrack.com/authenticate"
