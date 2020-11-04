@@ -1,20 +1,20 @@
 package com.hypertrack.android.view_models
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepo
+import com.hypertrack.android.utils.DeeplinkResultListener
 import com.hypertrack.android.utils.Destination
-import io.branch.indexing.BranchUniversalObject
-import io.branch.referral.Branch
-import io.branch.referral.BranchError
-import io.branch.referral.util.LinkProperties
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
     private val driverRepository: DriverRepo,
     private val accountRepository: AccountRepository
-) : ViewModel(), Branch.BranchUniversalReferralInitListener  {
+) : ViewModel(), DeeplinkResultListener  {
 
     private val _showSpinner = MutableLiveData(true)
     private val _noAccountFragment = MutableLiveData(false)
@@ -44,52 +44,46 @@ class SplashScreenViewModel(
                 _destination.postValue(Destination.LOGIN)
             }
             else -> {
-                Log.d(TAG, "No publishable key found, waiting for Branch IO")
+                Log.d(TAG, "No publishable key found, waiting for Deeplink result")
             }
         }
     }
 
-    override fun onInitFinished(
-        branchUniversalObject: BranchUniversalObject?,
-        linkProperties: LinkProperties?,
-        error: BranchError?
-    ) {
+    override fun onDeeplinkResult(parameters: Map<String, Any>) {
+        Log.d(TAG, "Got deeplink result $parameters")
 
-        Log.d(TAG, "Branch payload is ${branchUniversalObject?.contentMetadata?.customMetadata}")
-        val key = branchUniversalObject?.contentMetadata?.customMetadata?.get("publishable_key")?:""
-        val email = branchUniversalObject?.contentMetadata?.customMetadata?.get("email")?:""
-        val driverId = branchUniversalObject?.contentMetadata?.customMetadata?.get("driver_id")?:""
-        val showCheckIn = branchUniversalObject?.contentMetadata?.customMetadata?.get("show_manual_visits")?:""
+        val key = parameters["publishable_key"] as String?
+        val email = parameters["email"] as String?
+        val driverId = parameters["driver_id"] as String?
+        val showCheckIn = parameters["show_manual_visits"] as String? ?:""
         Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn")
-        if (key.isNotEmpty()) {
+        if (key != null) {
             Log.d(TAG, "Got key $key")
-                try {
-                    viewModelScope.launch {
-                        val correctKey = accountRepository.onKeyReceived(key, showCheckIn)
-                        Log.d(TAG, "onKeyReceived finished")
-                        if (correctKey) {
-                            Log.d(TAG, "Key validated successfully")
-                            _showSpinner.postValue(false)
-                            if (email.isNotEmpty() || driverId.isNotEmpty())
-                                driverRepository.driverId = if (email.isNotEmpty()) email else driverId
-                            _destination.postValue(Destination.LOGIN)
-                        } else {
-                            noPkHanlder()
-                        }
+            try {
+                viewModelScope.launch {
+                    val correctKey = accountRepository.onKeyReceived(key, showCheckIn)
+                    Log.d(TAG, "onKeyReceived finished")
+                    if (correctKey) {
+                        Log.d(TAG, "Key validated successfully")
+                        _showSpinner.postValue(false)
+                        driverId?.let { driverRepository.driverId = it}
+                        email?.let { driverRepository.driverId = it }
+                        _destination.postValue(Destination.LOGIN)
+                    } else {
+                        noPkHanlder()
                     }
-                    Log.d(TAG, "coroutine finished")
-                    return
-                } catch (e : Throwable) {
-                    Log.w(TAG, "Cannot validate the key", e)
-                    noPkHanlder()
                 }
+                Log.d(TAG, "coroutine finished")
+                return
+            } catch (e : Throwable) {
+                Log.w(TAG, "Cannot validate the key", e)
+                noPkHanlder()
+            }
         } else {
-            error?.let { Log.e(TAG, "Branch IO init failed. $error") }
+            parameters["error"]?.let {  Log.e(TAG, "Deeplink processing failed. $it") }
             noPkHanlder()
 
         }
-
-
     }
 
     private fun noPkHanlder() {

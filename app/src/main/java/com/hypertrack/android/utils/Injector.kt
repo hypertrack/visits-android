@@ -49,6 +49,8 @@ object Injector {
 
     private var visitsRepository: VisitsRepository? = null
 
+    val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor()
+
     fun getGson() : Gson = GsonBuilder()
         .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
             .of(Geometry::class.java)

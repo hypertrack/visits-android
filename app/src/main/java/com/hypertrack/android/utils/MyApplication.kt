@@ -2,17 +2,15 @@ package com.hypertrack.android.utils
 
 import android.app.Application
 import com.hypertrack.sdk.HyperTrack
-import io.branch.referral.Branch
 
 class MyApplication : Application() {
 
     val injector: Injector = Injector
+
     override fun onCreate() {
         super.onCreate()
 
-//        Branch.enableLogging()
-        Branch.getAutoInstance(this)
-
+        injector.deeplinkProcessor.appOnCreate(this)
 //        HyperTrack.enableDebugLogging()
     }
 

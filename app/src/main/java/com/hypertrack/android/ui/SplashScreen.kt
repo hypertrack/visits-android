@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import com.hypertrack.android.navigateTo
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
-import io.branch.referral.Branch
-import io.branch.referral.BranchError
 
 class SplashScreen : ProgressDialogActivity() {
 
@@ -17,6 +16,8 @@ class SplashScreen : ProgressDialogActivity() {
     private val splashScreenViewModel: SplashScreenViewModel by viewModels {
         (application as MyApplication).injector.provideSplashScreenViewModelFactory(applicationContext)
     }
+
+    private val deepLinkProcessor = Injector.deeplinkProcessor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,37 +42,18 @@ class SplashScreen : ProgressDialogActivity() {
             .observe(this, { show ->
                 if (show) showProgress() else dismissProgress()
             })
-        try {
-            Branch.sessionBuilder(this)
-                .withCallback(splashScreenViewModel).withData(intent?.data).init()
-        } catch (e: Throwable) {
-            Log.d(TAG, "Failed to initialize Branch IO")
-            splashScreenViewModel.onInitFinished(null, null,
-                BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
-        }
+
+        deepLinkProcessor.activityOnStart(this, intent, splashScreenViewModel)
+
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent")
 
-        intent?.let {
-            intent.putExtra("branch_force_new_session", true)
-            setIntent(intent)
-            try {
-                Branch.sessionBuilder(this)
-                    .withCallback(splashScreenViewModel)
-                    .withData(intent.data)
-                    .reInit()
-            } catch (e: Throwable) {
-                Log.d(TAG, "Failed to re-init Branch IO")
-                splashScreenViewModel.onInitFinished(null, null,
-                    BranchError(e.message, BranchError.ERR_BRANCH_INIT_FAILED))
-            }
-        }
+        deepLinkProcessor.activityOnNewIntent(this, intent, splashScreenViewModel)
+
     }
-
-
 
     companion object { const val TAG = "SplashScreen" }
 }
