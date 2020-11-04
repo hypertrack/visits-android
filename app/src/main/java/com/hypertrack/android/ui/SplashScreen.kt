@@ -31,8 +31,6 @@ class SplashScreen : ProgressDialogActivity() {
         splashScreenViewModel.destination
             .observe(this, { destination -> navigateTo(destination) })
 
-        splashScreenViewModel.login()
-
     }
 
     override fun onStart() {

@@ -17,7 +17,7 @@ class LoginViewModel(
 
     private val _checkInButtonEnabled = MutableLiveData(false)
 
-    private val _destination = MutableLiveData(Destination.LOGIN)
+    private val _destination = MutableLiveData(Destination.DRIVER_ID_INPUT)
 
     private val _showProgress = MutableLiveData(false)
     val showProgresss

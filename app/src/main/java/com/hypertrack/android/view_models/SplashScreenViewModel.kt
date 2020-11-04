@@ -41,10 +41,11 @@ class SplashScreenViewModel(
             accountRepository.isVerifiedAccount -> {
                 // publishable key already verified
                 _showSpinner.postValue(false)
-                _destination.postValue(Destination.LOGIN)
+                _destination.postValue(Destination.DRIVER_ID_INPUT)
             }
             else -> {
-                Log.d(TAG, "No publishable key found, waiting for Deeplink result")
+                Log.d(TAG, "No publishable key found")
+                noPkHanlder()
             }
         }
     }
@@ -68,20 +69,20 @@ class SplashScreenViewModel(
                         _showSpinner.postValue(false)
                         driverId?.let { driverRepository.driverId = it}
                         email?.let { driverRepository.driverId = it }
-                        _destination.postValue(Destination.LOGIN)
+                        _destination.postValue(Destination.DRIVER_ID_INPUT)
                     } else {
-                        noPkHanlder()
+                        login()
                     }
                 }
                 Log.d(TAG, "coroutine finished")
                 return
             } catch (e : Throwable) {
                 Log.w(TAG, "Cannot validate the key", e)
-                noPkHanlder()
+                login()
             }
         } else {
             parameters["error"]?.let {  Log.e(TAG, "Deeplink processing failed. $it") }
-            noPkHanlder()
+            login()
 
         }
     }
@@ -89,7 +90,8 @@ class SplashScreenViewModel(
     private fun noPkHanlder() {
         Log.e(TAG, "No publishable key")
         _showSpinner.postValue(false)
-        _noAccountFragment.postValue(true)
+        _destination.postValue(Destination.LOGIN)
+
     }
 
     companion object {
