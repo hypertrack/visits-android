@@ -45,4 +45,6 @@
     <string name="deeplink_failed">Deeplink Failed</string>
     <string name="login_hint">Cannot get login from the deeplink. Sign in or contact your manager to get the link.</string>
     <string name="email_address">Email Address</string>
+    <string name="log_in">Log In</string>
+    <string name="password">Password</string>
 </resources>
