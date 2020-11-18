@@ -18,6 +18,9 @@ android {
         versionName "0.2.7-SNAPSHOT"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
+        resValue "string", "awsLoginTestUserName", rootProject.properties.awsLoginTestUserName
+        resValue "string", "awsLoginTestUserPwd", rootProject.properties.awsLoginTestUserPwd
+        resValue "string", "awsLoginTestExpectedPk", rootProject.properties.awsLoginTestExpectedPk
     }
     signingConfigs {
         release {
@@ -86,7 +89,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.3'
     implementation 'com.squareup.retrofit2:converter-scalars:2.6.3'
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
 
     implementation 'com.airbnb.android:lottie:3.1.0'
 
@@ -97,7 +100,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-appindexing:19.1.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 
-    testImplementation 'junit:junit:4.13'
+    // Cognito
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.16.7'
+
+    testImplementation 'junit:junit:4.13.1'
     //noinspection GradleDependency
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.2.2'
     //noinspection GradleDependency
