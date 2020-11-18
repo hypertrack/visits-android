@@ -10,7 +10,7 @@ import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
-class LoginViewModel(
+class DriverLoginViewModel(
     private val driverRepo: DriverRepo,
     private val hyperTrackService: HyperTrackService
 ) : ViewModel() {

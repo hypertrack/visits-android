@@ -12,7 +12,7 @@ import com.hypertrack.android.api.Point
 import com.hypertrack.android.api.Polygon
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
-import com.hypertrack.android.view_models.LoginViewModel
+import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.android.view_models.VisitsManagementViewModel
@@ -151,7 +151,7 @@ class LoginViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            LoginViewModel::class.java -> return LoginViewModel(driverRepo, hyperTrackService) as T
+            DriverLoginViewModel::class.java -> return DriverLoginViewModel(driverRepo, hyperTrackService) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }

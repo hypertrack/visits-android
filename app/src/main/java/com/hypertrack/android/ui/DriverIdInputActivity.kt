@@ -8,14 +8,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.hypertrack.android.navigateTo
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.LoginViewModel
+import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_driver_id_input.*
 
 
 class DriverIdInputActivity : ProgressDialogActivity() {
 
-    private val loginModel: LoginViewModel by viewModels {
+    private val driverLoginModel: DriverLoginViewModel by viewModels {
         (application as MyApplication).injector.provideLoginViewModelFactory(applicationContext)
     }
 
@@ -30,16 +30,16 @@ class DriverIdInputActivity : ProgressDialogActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                s?.let {loginModel.onTextChanged(it)}
+                s?.let {driverLoginModel.onTextChanged(it)}
             }
         })
 
         btnCheckIn.setOnClickListener {
-            loginModel.onLoginClick(etDriverId.text)
+            driverLoginModel.onLoginClick(etDriverId.text)
             btnCheckIn.isEnabled = false
         }
 
-        loginModel.enableCheckIn
+        driverLoginModel.enableCheckIn
             .observe(this, { enable ->
                 btnCheckIn.isEnabled = enable
                 btnCheckIn.background = ContextCompat.getDrawable(this,
@@ -48,14 +48,14 @@ class DriverIdInputActivity : ProgressDialogActivity() {
                 )
             })
 
-        loginModel.destination
+        driverLoginModel.destination
             .observe(this, { destination -> navigateTo(destination) })
 
-        loginModel.showProgresss.observe(this, Observer { show ->
+        driverLoginModel.showProgresss.observe(this, Observer { show ->
             if (show) showProgress() else dismissProgress()
         })
 
-        loginModel.checkAutoLogin()
+        driverLoginModel.checkAutoLogin()
     }
 
     companion object { const val TAG = "LoginAct" }
