@@ -175,4 +175,5 @@ class SplashScreenViewModelFactory(
 }
 
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
-const val AUTH_URL = "https://live-api.htprod.hypertrack.com/authenticate"
+const val LIVE_API_URL_BASE  = "https://live-api.htprod.hypertrack.com/"
+const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"

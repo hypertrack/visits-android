@@ -12,7 +12,7 @@ class AwsLoginProviderTest {
 
     @Test
     fun itShouldGetTokenByNameAndPassword() {
-        val accountLoginProvider: AccountLoginProvider = CognitoAccountLoginProvider(ctx)
+        val accountLoginProvider: AccountLoginProvider = CognitoAccountLoginProvider(ctx, LIVE_API_URL_BASE)
         val login = ctx.resources.getString(R.string.awsLoginTestUserName)
         val pwd = ctx.resources.getString(R.string.awsLoginTestUserPwd)
         val expected = ctx.resources.getString(R.string.awsLoginTestExpectedPk)

@@ -17,25 +17,21 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 
 interface AccountLoginProvider {
+    /** @return publishable key for an account or empty string if fails */
     suspend fun getPublishableKey(login: String, password: String) : String
 }
 
-interface TokenForPublishableKeyExchangeService {
-    @GET("api-key")
-    suspend fun getPublishableKey(@Header("Authorization") token: String) : Response<PublishableKeyContainer>
-}
-
-class CognitoAccountLoginProvider(val ctx: Context) : AccountLoginProvider {
+class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiUrl: String) : AccountLoginProvider {
     @ExperimentalCoroutinesApi
     override suspend fun getPublishableKey(login: String, password: String): String {
 
         // get Cognito token
         val userStateDetails = awsInitCallWrapper() ?: return ""
-        Log.d(TAG, "Initialized with user State $userStateDetails")
+        Log.v(TAG, "Initialized with user State $userStateDetails")
         val signInResult = awsLoginCallWrapper(login, password) ?: return ""
-        Log.d(TAG, "Sign in result $signInResult")
+        Log.v(TAG, "Sign in result $signInResult")
         val idToken = awsTokenCallWrapper() ?: return ""
-        Log.d(TAG, "Got id token $idToken")
+        Log.v(TAG, "Got id token $idToken")
         val pk = getPublishableKeyFromToken(idToken)
         AWSMobileClient.getInstance().signOut()
         Log.d(TAG, "Got pk $pk")
@@ -47,9 +43,7 @@ class CognitoAccountLoginProvider(val ctx: Context) : AccountLoginProvider {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().initialize(ctx, object : Callback<UserStateDetails> {
                 override fun onResult(result: UserStateDetails?) = it.resume(result) {}
-
                 override fun onError(e: Exception?) = it.resume(null) {}
-
             })
         }
     }
@@ -59,9 +53,7 @@ class CognitoAccountLoginProvider(val ctx: Context) : AccountLoginProvider {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().signIn(login, password, emptyMap(), object : Callback<SignInResult> {
                 override fun onResult(result: SignInResult?) = it.resume(result) {}
-
                 override fun onError(e: Exception?) = it.resume(null) {}
-
             })
         }
     }
@@ -70,19 +62,15 @@ class CognitoAccountLoginProvider(val ctx: Context) : AccountLoginProvider {
     private suspend fun awsTokenCallWrapper() : String? {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
-                override fun onResult(result: Tokens?) {
-                    it.resume(result?.idToken?.tokenString) {}
-                }
-
+                override fun onResult(result: Tokens?) = it.resume(result?.idToken?.tokenString) {}
                 override fun onError(e: Exception?) = it.resume(null) {}
-
             })
         }
     }
 
     private suspend fun getPublishableKeyFromToken(token: String) : String {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://live-api.htprod.hypertrack.com/")
+            .baseUrl(baseApiUrl)
             .addConverterFactory(GsonConverterFactory.create(Injector.getGson()))
             .build()
         val service = retrofit.create(TokenForPublishableKeyExchangeService::class.java)
@@ -95,6 +83,9 @@ class CognitoAccountLoginProvider(val ctx: Context) : AccountLoginProvider {
     companion object {const val TAG = "CognitoAccountProvider"}
 }
 
-data class PublishableKeyContainer(
-    @SerializedName("key") val publishableKey: String?
-)
+interface TokenForPublishableKeyExchangeService {
+    @GET("api-key")
+    suspend fun getPublishableKey(@Header("Authorization") token: String) : Response<PublishableKeyContainer>
+}
+
+data class PublishableKeyContainer(@SerializedName("key") val publishableKey: String?)
