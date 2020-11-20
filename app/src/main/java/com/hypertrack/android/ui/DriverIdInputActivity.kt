@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_driver_id_input.*
 class DriverIdInputActivity : ProgressDialogActivity() {
 
     private val driverLoginModel: DriverLoginViewModel by viewModels {
-        (application as MyApplication).injector.provideLoginViewModelFactory(applicationContext)
+        (application as MyApplication).injector.provideDriverLoginViewModelFactory(applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

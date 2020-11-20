@@ -20,7 +20,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
         Destination.PERMISSION_REQUEST -> PermissionRequestActivity::class.java
         Destination.VISITS_MANAGEMENT -> VisitsManagementActivity::class.java
         Destination.VISIT_DETAILS -> VisitDetailsActivity::class.java
-        Destination.LOGIN -> LoginActivity::class.java
+        Destination.LOGIN -> AccountLoginActivity::class.java
     }
 
     if (javaClass == targetActivity) {
