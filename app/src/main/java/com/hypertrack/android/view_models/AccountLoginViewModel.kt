@@ -53,7 +53,7 @@ class AccountLoginViewModel(
     fun onLoginClick() {
         Log.v(TAG, "onLoginClick")
         _isLoginButtonClickable.postValue(false)
-        _showProgress.postValue(true)
+        _showProgress.value = true
         viewModelScope.launch {
             val pk = loginProvider.getPublishableKey(login, password)
             if (pk.isNotBlank() && accountRepository.onKeyReceived(pk, "true")) {
@@ -61,10 +61,10 @@ class AccountLoginViewModel(
             } else {
                 // show error toast
                 Log.w(TAG, "Can't login with $login account")
+                _showToast.value = true
             }
-        }
         _showProgress.postValue(false)
-//        _showToast.postValue(false)
+        }
 
     }
 
@@ -73,6 +73,7 @@ class AccountLoginViewModel(
         if (login.isNotBlank() && password.isNotBlank() && _isLoginButtonClickable.value == false) {
             Log.v(TAG, "enabling Button")
             _isLoginButtonClickable.postValue(true)
+            _showToast.postValue(false)
         }
     }
 

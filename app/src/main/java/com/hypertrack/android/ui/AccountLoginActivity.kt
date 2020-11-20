@@ -48,9 +48,13 @@ class AccountLoginActivity : ProgressDialogActivity() {
         accountLoginViewModel.destination.observe(this) { navigateTo(it) }
         accountLoginViewModel.showToast.observe(this) { show ->
             Log.d(TAG, "show toast $show")
-            if (show) Toast
-                .makeText(this, getString(R.string.account_login_error_message), Toast.LENGTH_LONG)
-                .show()
+            if (show) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.account_login_error_message),
+                    Toast.LENGTH_LONG
+                )                    .show()
+            }
         }
 
         btnLogIn.setOnClickListener { accountLoginViewModel.onLoginClick() }
