@@ -60,7 +60,7 @@
             android:drawablePadding="10dp"
             android:fontFamily="@font/medium"
             android:gravity="center_vertical"
-            android:inputType="textNoSuggestions"
+            android:inputType="textEmailAddress"
             android:maxLines="1"
             android:padding="10dp"
             android:paddingStart="5dp"
