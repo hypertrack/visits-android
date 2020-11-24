@@ -46,7 +46,7 @@ class AccountLoginActivity : ProgressDialogActivity() {
         })
 
         accountLoginViewModel.destination.observe(this) { navigateTo(it) }
-        accountLoginViewModel.showToast.observe(this) { show ->
+        accountLoginViewModel.showLoginFailureToast.observe(this) { show ->
             Log.d(TAG, "show toast $show")
             if (show) {
                 Toast.makeText(
@@ -54,7 +54,7 @@ class AccountLoginActivity : ProgressDialogActivity() {
                     getString(R.string.account_login_error_message),
                     Toast.LENGTH_LONG
                 )                    .show()
-                deeplinkHint.text = ""
+                deeplinkHint.text = getString(R.string.check_login_credentials_hint)
             }
         }
 

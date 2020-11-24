@@ -18,7 +18,7 @@ class AccountLoginViewModel(
     private var login = ""
     private var password = ""
 
-    val showToast: LiveData<Boolean>
+    val showLoginFailureToast: LiveData<Boolean>
     get() = _showToast
 
     val showProgress: LiveData<Boolean>

@@ -48,4 +48,5 @@
     <string name="log_in">Log In</string>
     <string name="password">Password</string>
     <string name="account_login_error_message">Can\'t login with provided credentials</string>
+    <string name="check_login_credentials_hint" />
 </resources>
