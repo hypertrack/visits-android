@@ -54,6 +54,7 @@ class AccountLoginActivity : ProgressDialogActivity() {
                     getString(R.string.account_login_error_message),
                     Toast.LENGTH_LONG
                 )                    .show()
+                deeplinkHint.text = ""
             }
         }
 
