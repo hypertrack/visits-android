@@ -85,6 +85,7 @@
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/passwordInput"
+            android:inputType = "textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
@@ -93,7 +94,6 @@
             android:drawablePadding="10dp"
             android:fontFamily="@font/medium"
             android:gravity="center_vertical"
-            android:inputType="textNoSuggestions"
             android:maxLines="1"
             android:padding="10dp"
             android:paddingStart="5dp"
