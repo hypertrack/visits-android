@@ -14,7 +14,7 @@ android {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 271
+        versionCode 272
         versionName "0.2.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
