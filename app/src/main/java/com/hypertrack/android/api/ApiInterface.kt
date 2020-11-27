@@ -65,7 +65,7 @@ data class Trip(
     override val visitNamePrefixId: Int
         get() = R.string.trip_to
     override val visitNameSuffix: String
-        get() = if (destination?.address == null) "[$longitude, $latitude]" else "${destination.address}"
+        get() = if (destination?.address == null) " [$longitude, $latitude]" else " ${destination.address}"
 }
 
 data class TripDestination(

@@ -116,7 +116,7 @@ data class Visit(val _id: String,
 
     constructor(visitDataSource: VisitDataSource, osUtilsProvider: OsUtilsProvider) : this(
         _id = visitDataSource._id,
-        visit_id = osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId) + visitDataSource.visitNameSuffix,
+        visit_id = "${osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId)} ${visitDataSource.visitNameSuffix}",
         customerNote = visitDataSource.customerNote,
         address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
         createdAt = visitDataSource.createdAt,

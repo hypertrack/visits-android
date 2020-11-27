@@ -10,14 +10,14 @@ import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
-class LoginViewModel(
+class DriverLoginViewModel(
     private val driverRepo: DriverRepo,
     private val hyperTrackService: HyperTrackService
 ) : ViewModel() {
 
     private val _checkInButtonEnabled = MutableLiveData(false)
 
-    private val _destination = MutableLiveData(Destination.LOGIN)
+    private val _destination = MutableLiveData(Destination.DRIVER_ID_INPUT)
 
     private val _showProgress = MutableLiveData(false)
     val showProgresss

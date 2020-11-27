@@ -50,7 +50,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.hypertrack.android.ui.LoginActivity"
+            android:name="com.hypertrack.android.ui.DriverIdInputActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name="com.hypertrack.android.ui.AccountLoginActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name="com.hypertrack.android.ui.VisitsManagementActivity"

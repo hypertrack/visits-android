@@ -33,12 +33,20 @@
     <string name="unknown_city">Unknown city</string>
     <string name="unknown_country">Nowhere</string>
     <string name="unknown_location_at">\"Unknown location at \"</string>
-    <string name="trip_to">Trip to </string>
-    <string name="geofence_at">Geofence at </string>
+    <string name="trip_to">Trip to</string>
+    <string name="geofence_at">Geofence at</string>
     <string name="local_visit_on">Local Visit On </string>
     <string name="item_singular">Item</string>
     <string name="item_plural">Items</string>
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
     <string name="no_planned_visits">"No planned visits"</string>
+    <string name="splashscreenlogo">splashScreenLogo</string>
+    <string name="account_login_header_text">Sign into your account</string>
+    <string name="login_hint">Cannot get login from the deeplink. Sign in or contact your manager to get the link.</string>
+    <string name="email_address">Email Address</string>
+    <string name="log_in">Log In</string>
+    <string name="password">Password</string>
+    <string name="account_login_error_message">Can\'t login with provided credentials</string>
+    <string name="check_login_credentials_hint" />
 </resources>

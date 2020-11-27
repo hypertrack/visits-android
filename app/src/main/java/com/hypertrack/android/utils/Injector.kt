@@ -12,10 +12,7 @@ import com.hypertrack.android.api.Point
 import com.hypertrack.android.api.Polygon
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
-import com.hypertrack.android.view_models.LoginViewModel
-import com.hypertrack.android.view_models.SplashScreenViewModel
-import com.hypertrack.android.view_models.VisitDetailsViewModel
-import com.hypertrack.android.view_models.VisitsManagementViewModel
+import com.hypertrack.android.view_models.*
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
@@ -48,6 +45,8 @@ class ServiceLocator {
 object Injector {
 
     private var visitsRepository: VisitsRepository? = null
+
+    val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor()
 
     fun getGson() : Gson = GsonBuilder()
         .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
@@ -104,6 +103,9 @@ object Injector {
         return result
     }
 
+    private fun getLoginProvider(context: Context): AccountLoginProvider
+            = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
+
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
         val accountRepository = getAccountRepo(context)
@@ -114,9 +116,14 @@ object Injector {
         return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
-    fun provideLoginViewModelFactory(context: Context) : LoginViewModelFactory {
-        return LoginViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
+    fun provideDriverLoginViewModelFactory(context: Context) : DriverLoginViewModelFactory {
+        return DriverLoginViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
     }
+
+    fun provideAccountLoginViewModelFactory(context: Context) : AccountLoginViewModelFactory {
+        return AccountLoginViewModelFactory(getLoginProvider(context), getAccountRepo(context))
+    }
+
 
     fun provideSplashScreenViewModelFactory(context: Context): SplashScreenViewModelFactory {
         return SplashScreenViewModelFactory(getDriverRepo(context), getAccountRepo(context))
@@ -141,7 +148,7 @@ class VisitsManagementViewModelFactory(
     }
 }
 
-class LoginViewModelFactory(
+class DriverLoginViewModelFactory(
     private val driverRepo: DriverRepo,
     private val hyperTrackService: HyperTrackService
 ) : ViewModelProvider.Factory {
@@ -149,7 +156,21 @@ class LoginViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         when (modelClass) {
-            LoginViewModel::class.java -> return LoginViewModel(driverRepo, hyperTrackService) as T
+            DriverLoginViewModel::class.java -> return DriverLoginViewModel(driverRepo, hyperTrackService) as T
+            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
+        }
+    }
+}
+
+class AccountLoginViewModelFactory(
+    private val accountLoginProvider: AccountLoginProvider,
+    private val accountRepository: AccountRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+
+        when (modelClass) {
+            AccountLoginViewModel::class.java -> return AccountLoginViewModel(accountLoginProvider, accountRepository) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }
@@ -173,4 +194,5 @@ class SplashScreenViewModelFactory(
 }
 
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
-const val AUTH_URL = "https://live-api.htprod.hypertrack.com/authenticate"
+const val LIVE_API_URL_BASE  = "https://live-api.htprod.hypertrack.com/"
+const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"
