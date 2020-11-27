@@ -36,7 +36,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         isCompleted: Boolean
     ) {
         val completionStatus = if (isCompleted) "CHECK_OUT" else "CANCEL"
-        val payload = mapOf(typeKey to id, "type" to completionStatus, "delivery_note" to visitNote)
+        val payload = mapOf(typeKey to id, "type" to completionStatus, "visit_note" to visitNote)
         Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload)
     }
