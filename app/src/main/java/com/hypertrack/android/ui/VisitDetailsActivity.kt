@@ -82,33 +82,33 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         val isCompletable = !newValue.isCompleted
         Log.d(TAG, "Check out button completable is $isCompletable and editable $isEditable")
-        tvComplete.isEnabled = isCompletable && isEditable
+        tvUpperButton.isEnabled = isCompletable && isEditable
         etVisitNote.isEnabled = isCompletable
-        tvComplete.background = ContextCompat.getDrawable(this,
+        tvUpperButton.background = ContextCompat.getDrawable(this,
             if (isCompletable && isEditable) R.drawable.bg_button
             else R.drawable.bg_button_disabled
         )
-        tvComplete.text = if (isCompletable)
+        tvUpperButton.text = if (isCompletable)
             getString(R.string.check_out)
         else getString(R.string.completed)
 
         when(newValue.tripVisitPickedUp) {
-            null -> tvPickup.visibility = View.GONE
+            null -> tvLowerButton.visibility = View.GONE
             false -> {
-                tvPickup.visibility = View.VISIBLE
-                tvPickup.text = getText(R.string.pick_up)
+                tvLowerButton.visibility = View.VISIBLE
+                tvLowerButton.text = getText(R.string.pick_up)
                 val isPickable = isEditable && isCompletable
-                tvPickup.isEnabled = isPickable // no pickup for completed visits
-                tvPickup.background = ContextCompat.getDrawable(this,
+                tvLowerButton.isEnabled = isPickable // no pickup for completed visits
+                tvLowerButton.background = ContextCompat.getDrawable(this,
                     if (isPickable) R.drawable.bg_button
                     else R.drawable.bg_button_disabled
                 )
             }
             true -> {
-                tvPickup.visibility = View.VISIBLE
-                tvPickup.text = getText(R.string.cancel)
-                tvPickup.isEnabled = isCompletable && isEditable
-                tvPickup.background = ContextCompat.getDrawable(this,
+                tvLowerButton.visibility = View.VISIBLE
+                tvLowerButton.text = getText(R.string.cancel)
+                tvLowerButton.isEnabled = isCompletable && isEditable
+                tvLowerButton.background = ContextCompat.getDrawable(this,
                     if (isCompletable && isEditable) R.drawable.bg_button
                     else R.drawable.bg_button_disabled
                 )
@@ -133,15 +133,15 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         if (!isEditable) return
-        tvComplete.setOnClickListener {
+        tvUpperButton.setOnClickListener {
             Log.d(TAG, "Complete button pressed")
-            tvComplete.isEnabled = false
+            tvUpperButton.isEnabled = false
             etVisitNote.isEnabled = false
             visitDetailsViewModel.onMarkedCompleted(true)
         }
-        tvPickup.setOnClickListener {
+        tvLowerButton.setOnClickListener {
             Log.d(TAG, "Pickup/Cancel pressed")
-            tvPickup.isEnabled = false
+            tvLowerButton.isEnabled = false
             visitDetailsViewModel.onPickupClicked()
         }
     }
