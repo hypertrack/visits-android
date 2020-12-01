@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitStatus
 
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,
@@ -15,7 +16,16 @@ class VisitDetailsViewModel(
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
-    private var visitNote = visit.value?.visitNote?:""
+    private var _visitNote = MutableLiveData((visit.value?.visitNote ?:"") to visitsRepository.canEdit(id))
+    private var _upperButton = MutableLiveData(upperButtonModel(visit.value, visitsRepository.canEdit(id)))
+    private var _lowerButton = MutableLiveData(lowerButtonModel(visit.value, visitsRepository.canEdit(id)))
+
+    val visitNote: LiveData<Pair<String, Boolean>>
+        get() = _visitNote
+    val upperButton: LiveData<Pair<ButtonLabel, Boolean>>
+        get() = _upperButton
+    val lowerButton: LiveData<Pair<ButtonLabel, Boolean>>
+        get() = _lowerButton
 
     private val _showNoteUpdatedToast = MutableLiveData(false)
 
@@ -31,20 +41,21 @@ class VisitDetailsViewModel(
 
     fun onVisitNoteChanged(newNote : String) {
         Log.d(TAG, "onVisitNoteChanged $newNote")
-        visitNote = newNote
     }
 
-    fun onMarkedCompleted(isCompleted: Boolean) {
-        _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
-        visitsRepository.markCompleted(id, isCompleted)
+    fun onUpperButtonClicked() {
+        // depending on visit state that could means to pick up or complete (check out)
+
+//        _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
+//        visitsRepository.markCompleted(id, isCompleted)
     }
 
-    fun onPickupClicked() {
+    fun onLowerButtonClicked() {
         val wasCancelled = visit.value?.tripVisitPickedUp ?: false
         if (wasCancelled) {
-            onMarkedCompleted(false)
+            onUpperButtonClicked()
         } else {
-            _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
+//            _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
             visitsRepository.setPickedUp(id)
         }
     }
@@ -57,10 +68,25 @@ class VisitDetailsViewModel(
     fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
 
     fun onBackPressed() {
-        val noteChanged = visitsRepository.updateVisitNote(id, visitNote)
-        _showNoteUpdatedToast.postValue(noteChanged)
+//        val noteChanged = visitsRepository.updateVisitNote(id, visitNote)
+//        _showNoteUpdatedToast.postValue(noteChanged)
 
     }
 
     companion object {const val TAG = "VisitDetailsVM"}
 }
+
+private fun upperButtonModel(visit: Visit?, canEdit: Boolean): Pair<ButtonLabel, Boolean> = when (visit?.state) {
+    VisitStatus.PENDING -> ButtonLabel.PICK_UP to canEdit
+    VisitStatus.PICKED_UP -> ButtonLabel.PICK_UP to false
+    VisitStatus.VISITED -> ButtonLabel.CHECK_OUT to canEdit
+    else -> ButtonLabel.CHECK_OUT to false
+}
+
+private fun lowerButtonModel(visit: Visit?, canEdit: Boolean): Pair<ButtonLabel, Boolean> = when (visit?.state) {
+    VisitStatus.PENDING, VisitStatus.PICKED_UP -> ButtonLabel.CHECK_IN to canEdit
+    VisitStatus.VISITED -> ButtonLabel.CANCEL to canEdit
+    else -> ButtonLabel.CANCEL to false
+}
+
+enum class ButtonLabel {PICK_UP, CHECK_IN, CHECK_OUT, CANCEL}

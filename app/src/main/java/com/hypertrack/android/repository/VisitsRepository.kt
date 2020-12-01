@@ -199,6 +199,10 @@ class VisitsRepository(
         _hasOngoingLocalVisit.postValue(isNotCompleted)
     }
 
+    fun canEdit(visitId: String) = if (hyperTrackService.state.value == TrackingStateValue.TRACKING)
+        visitForId(visitId).value?.isEditable?:false
+        else false
+
     companion object { const val TAG = "VisitsRepository"}
 
 }
