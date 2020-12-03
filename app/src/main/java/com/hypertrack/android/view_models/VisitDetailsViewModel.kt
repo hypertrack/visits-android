@@ -2,7 +2,7 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
@@ -15,11 +15,32 @@ class VisitDetailsViewModel(
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
-    private var _visitNote = MutableLiveData((visit.value?.visitNote ?:"") to visitsRepository.canEdit(id))
-    private var _upperButton = MutableLiveData(upperButtonModel(visit.value, visitsRepository.canEdit(id)))
-    private var _lowerButton = MutableLiveData(lowerButtonModel(visit.value, visitsRepository.canEdit(id)))
+    private var _visitNote = MediatorLiveData<Pair<String?, Boolean>>() //
+    private var _upperButton = MediatorLiveData<Pair<ButtonLabel, Boolean>>() // (upperButtonModel(visit.value, visitsRepository.canEdit(id)))
+    private var _lowerButton = MediatorLiveData<Pair<ButtonLabel, Boolean>>() // (lowerButtonModel(visit.value, visitsRepository.canEdit(id)))
 
-    val visitNote: LiveData<Pair<String, Boolean>>
+    init {
+        _visitNote.addSource(visitsRepository.visitForId(id)) {
+            _visitNote.postValue(it.visitNote to visitsRepository.canEdit(id))
+        }
+        _visitNote.addSource(visitsRepository.isTracking) { _visitNote.postValue(null to it) }
+
+        _upperButton.addSource(visitsRepository.visitForId(id)) {
+            _upperButton.postValue(upperButtonModel(it, visitsRepository.canEdit(id)))
+        }
+        _upperButton.addSource(visitsRepository.isTracking) {
+            _upperButton.postValue(upperButtonModel(visit.value, it))
+        }
+
+        _lowerButton.addSource(visitsRepository.visitForId(id)) {
+            _lowerButton.postValue(lowerButtonModel(it, visitsRepository.canEdit(id)))
+        }
+        _lowerButton.addSource(visitsRepository.isTracking) {
+            _lowerButton.postValue(lowerButtonModel(visit.value, it))
+        }
+    }
+
+    val visitNote: LiveData<Pair<String?, Boolean>>
         get() = _visitNote
     val upperButton: LiveData<Pair<ButtonLabel, Boolean>>
         get() = _upperButton

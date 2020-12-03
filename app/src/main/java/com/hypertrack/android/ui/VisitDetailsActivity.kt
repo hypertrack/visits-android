@@ -43,9 +43,9 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.visit.observe(this) { updateView(it) }
 
         viewModel.visitNote.observe(this) { (text, isEditable) ->
-            val oldValue = etVisitNote.text?.toString() ?: ""
-            etVisitNote.setText(text)
             etVisitNote.isEnabled = isEditable
+            text?.let { etVisitNote.setText(text) }
+            val oldValue = etVisitNote.text?.toString() ?: ""
             if (oldValue != text) {
                 Toast.makeText(this, "Visit note was updated", Toast.LENGTH_LONG).show()
             }
