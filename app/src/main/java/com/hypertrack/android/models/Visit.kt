@@ -20,7 +20,7 @@ data class Visit(val _id: String,
                  var enteredAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
-                 val visitType: VisitType, private var _tripVisitPickedUp: Boolean = false,
+                 val visitType: VisitType,
                  val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
  ): VisitListItem() {
     val isEditable: Boolean = (state in listOf(VisitStatus.PICKED_UP, VisitStatus.PENDING, VisitStatus.VISITED))
@@ -60,9 +60,7 @@ data class Visit(val _id: String,
             }
 
 
-    var tripVisitPickedUp: Boolean?
-        get() = if (visitType == VisitType.TRIP) _tripVisitPickedUp else null
-        set(value) { _tripVisitPickedUp = value ?: false }
+    val tripVisitPickedUp = state != VisitStatus.PENDING
 
     fun hasPicture() = visitPicture.isNotEmpty()
 
@@ -84,8 +82,7 @@ data class Visit(val _id: String,
             exitedAt,
             latitude,
             longitude,
-            visitType,
-            _tripVisitPickedUp
+            visitType
         )
         // TODO Denys - update when API adds support to geofence events
 //        when {
@@ -104,7 +101,7 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude, visitType, _tripVisitPickedUp
+            completedAt, exitedAt, latitude, longitude, visitType
         )
     }
 
@@ -112,15 +109,15 @@ data class Visit(val _id: String,
 
     fun pickUp() = moveToState(VisitStatus.PICKED_UP)
 
-    fun cancel() = moveToState(VisitStatus.CANCELLED)
+    fun cancel(cancelledAt: String) = moveToState(VisitStatus.CANCELLED, cancelledAt)
 
     fun markVisited() = moveToState(VisitStatus.VISITED)
 
-    private fun moveToState(newState: VisitStatus, completionTime: String? = null): Visit {
+    private fun moveToState(newState: VisitStatus, transitionedAt: String? = null): Visit {
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, enteredAt,
-            completionTime?:completedAt, exitedAt, latitude, longitude, visitType, _tripVisitPickedUp, state = newState
+            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType, state = newState
         )
     }
 

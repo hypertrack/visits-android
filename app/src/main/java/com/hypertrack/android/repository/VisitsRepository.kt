@@ -11,7 +11,6 @@ import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.logistics.android.github.R
-import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -40,7 +39,7 @@ class VisitsRepository(
 
     private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
 
-    private val _hasOngoingLocalVisit = MutableLiveData<Boolean>(_visitsMap.getLocalVisit() != null)
+    private val _hasOngoingLocalVisit = MutableLiveData(_visitsMap.getLocalVisit() != null)
 
     val hasOngoingLocalVisit: LiveData<Boolean>
         get() = _hasOngoingLocalVisit
@@ -123,37 +122,52 @@ class VisitsRepository(
         if (target.visitNote == newNote) return false
 
         val updatedVisit = target.updateNote(newNote)
-        _visitsMap[id] = updatedVisit
-        visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(updatedVisit)
-        _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        updateItem(id, updatedVisit)
         Log.d(TAG, "Updated visit $updatedVisit")
         return true
     }
 
-    fun markCompleted(id: String, isCompleted: Boolean) {
-        val target = _visitsMap[id] ?: return
-        if (target.isCompleted) return
-        val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
-        _visitsMap[id] = completedVisit
-        Log.d(TAG, "Completed visit $completedVisit isCompleted $isCompleted")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, isCompleted)
+    private fun updateItem(id: String, updatedVisit: Visit) {
+        _visitsMap[id] = updatedVisit
         visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(completedVisit)
+        _visitItemsById[id]?.postValue(updatedVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
     }
 
     fun setPickedUp(id: String) {
         Log.d(TAG, "Set picked UP $id")
         val target = _visitsMap[id] ?: return
-        if (target.tripVisitPickedUp == true) return
-        target.tripVisitPickedUp = true
+        if (target.tripVisitPickedUp) return
+        val updatedVisit = target.pickUp()
         Log.v(TAG, "Marked order $target as picked up")
         hyperTrackService.sendPickedUp(id, target.typeKey)
-        val updatedVisits = _visitsMap.values.toList()
-        visitsStorage.saveVisits(updatedVisits)
-        _visitItemsById[id]?.postValue(target)
-        _visitListItems.postValue(updatedVisits.sortedWithHeaders())
+        updateItem(id, updatedVisit)
+    }
+
+    fun setCheckedIn(id: String) {
+        Log.d(TAG, "Set picked UP $id")
+        val target = _visitsMap[id] ?: return
+        val updatedVisit = target.markVisited()
+        Log.v(TAG, "Marked order $target as picked up")
+        hyperTrackService.sendPickedUp(id, target.typeKey)
+        updateItem(id, updatedVisit)    }
+
+    fun setCompleted(id: String, isCompleted: Boolean) {
+        val target = _visitsMap[id] ?: return
+        if (target.isCompleted) return
+        val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
+        Log.d(TAG, "Completed visit $completedVisit isCompleted $isCompleted")
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, isCompleted)
+        updateItem(id, completedVisit)
+    }
+
+    fun setCancelled(id: String) {
+        val target = _visitsMap[id] ?: return
+        if (target.isCompleted) return
+        val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp())
+        Log.d(TAG, "Cancelled visit $completedVisit")
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false)
+        updateItem(id, completedVisit)
     }
 
     fun switchTracking() {
@@ -171,7 +185,7 @@ class VisitsRepository(
         Log.d(TAG, "processLocalVisit")
         val localVisit = _visitsMap.getLocalVisit()
         localVisit?.let { ongoingVisit ->
-            markCompleted(ongoingVisit._id, true)
+            setCompleted(ongoingVisit._id, true)
             _hasOngoingLocalVisit.postValue(false)
             return
         }
