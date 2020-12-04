@@ -15,12 +15,17 @@ class AccountRepository(
         get() = accountData.lastToken != null
 
     var isManualCheckInAllowed: Boolean
-        get() = accountData.isCheckInEnabled
+        get() = accountData.isManualVisitEnabled
         set(value) {
-            accountData.isCheckInEnabled = value
+            accountData.isManualVisitEnabled = value
         }
+    var isAutoCheckInEnabled: Boolean
+        get() = accountData.autoCheckIn
+    set(value)  {
+        accountData.autoCheckIn = value
+    }
 
-    suspend fun onKeyReceived(key: String, checkInEnabled: String) : Boolean {
+    suspend fun onKeyReceived(key: String, checkInEnabled: String = "false", autoCheckIn: String = "true") : Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
         Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
@@ -36,12 +41,16 @@ class AccountRepository(
         if (checkInEnabled in listOf("true", "True")) {
             isManualCheckInAllowed = true
         }
+        if (autoCheckIn in listOf("false", "False")) {
+            isAutoCheckInEnabled = false
+        }
 
         accountDataStorage.saveAccountData(
             AccountData(
-                key,
-                token,
-                isManualCheckInAllowed
+                publishableKey = key,
+                lastToken = token,
+                isManualVisitEnabled = isManualCheckInAllowed,
+                autoCheckIn = isAutoCheckInEnabled
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
