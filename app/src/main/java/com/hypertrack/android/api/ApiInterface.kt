@@ -70,7 +70,8 @@ data class Trip(
 
 data class TripDestination(
     @SerializedName("address") val address: String?,
-    @SerializedName("geometry") val geometry: Geometry
+    @SerializedName("geometry") val geometry: Geometry,
+    @SerializedName("arrived_at") val arrivedAd: String?
 )
 
 data class Views(
