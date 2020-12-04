@@ -43,22 +43,27 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.visit.observe(this) { updateView(it) }
 
         viewModel.visitNote.observe(this) { (text, isEditable) ->
+            Log.v(TAG, "visitNote text $text isEditable $isEditable")
             etVisitNote.isEnabled = isEditable
-            text?.let { etVisitNote.setText(text) }
-            val oldValue = etVisitNote.text?.toString() ?: ""
-            if (oldValue != text) {
-                Toast.makeText(this, "Visit note was updated", Toast.LENGTH_LONG).show()
-            }
+            text.let {  }
+            etVisitNote.setText(text)
         }
 
         viewModel.upperButton.observe(this) { (text, isEnabled) ->
+            Log.v(TAG, "upperButton button label $text isEnabled $isEnabled")
             setButtonText(tvUpperButton, text)
             setButtonEnabled(tvUpperButton, isEnabled)
         }
 
         viewModel.lowerButton.observe(this) { (text, isEnabled) ->
+            Log.v(TAG, "lowerButton button label $text isEnabled $isEnabled")
             setButtonText(tvLowerButton, text)
             setButtonEnabled(tvLowerButton, isEnabled)
+        }
+
+        viewModel.showToast.observe(this) {show ->
+            if (show)
+                Toast.makeText(this, getString(R.string.vist_note_updated), Toast.LENGTH_LONG).show()
         }
 
         setActionListeners()

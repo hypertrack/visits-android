@@ -108,16 +108,14 @@ class VisitsRepository(
 
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
-        Log.d(TAG, "Updated _visitListItems $_visitListItems")
+        Log.d(TAG, "Updated _visitListItems ${_visitListItems.value}")
     }
 
-    fun visitForId(id: String): LiveData<Visit> {
-           return _visitItemsById[id]?:throw IllegalArgumentException("No visit for id $id")
-        }
+    fun visitForId(id: String): LiveData<Visit> = _visitItemsById[id]?:throw IllegalArgumentException("No visit for id $id")
 
     fun updateVisitNote(id: String, newNote: String): Boolean {
-        Log.d(TAG, "Updating visit $id with note $newNote")
         val target = _visitsMap[id] ?: return false
+        Log.d(TAG, "Updating visit $target with note $newNote")
         // Brake infinite cycle
         if (target.visitNote == newNote) return false
 
@@ -145,11 +143,11 @@ class VisitsRepository(
     }
 
     fun setCheckedIn(id: String) {
-        Log.d(TAG, "Set picked UP $id")
+        Log.d(TAG, "Set checked in $id")
         val target = _visitsMap[id] ?: return
         val updatedVisit = target.markVisited()
-        Log.v(TAG, "Marked order $target as picked up")
-        hyperTrackService.sendPickedUp(id, target.typeKey)
+        Log.v(TAG, "Marked order $target as checked in")
+        hyperTrackService.createVisitStartEvent(id, target.typeKey)
         updateItem(id, updatedVisit)    }
 
     fun setCompleted(id: String, isCompleted: Boolean) {

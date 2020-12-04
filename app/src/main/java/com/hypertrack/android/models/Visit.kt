@@ -101,7 +101,8 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude, visitType
+            completedAt, exitedAt, latitude, longitude, visitType,
+            state
         )
     }
 

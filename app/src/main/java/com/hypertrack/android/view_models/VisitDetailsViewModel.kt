@@ -3,6 +3,7 @@ package com.hypertrack.android.view_models
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
@@ -15,15 +16,17 @@ class VisitDetailsViewModel(
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
-    private var _visitNote = MediatorLiveData<Pair<String?, Boolean>>() //
+    private var _visitNote = MediatorLiveData<Pair<String, Boolean>>() //
     private var _upperButton = MediatorLiveData<Pair<ButtonLabel, Boolean>>() // (upperButtonModel(visit.value, visitsRepository.canEdit(id)))
     private var _lowerButton = MediatorLiveData<Pair<ButtonLabel, Boolean>>() // (lowerButtonModel(visit.value, visitsRepository.canEdit(id)))
+    private var _showToast = MutableLiveData(false)
+    private var updatedNote: String = visit.value?.visitNote?:""
 
     init {
         _visitNote.addSource(visitsRepository.visitForId(id)) {
             _visitNote.postValue(it.visitNote to visitsRepository.canEdit(id))
         }
-        _visitNote.addSource(visitsRepository.isTracking) { _visitNote.postValue(null to it) }
+        _visitNote.addSource(visitsRepository.isTracking) { _visitNote.postValue(updatedNote to it) }
 
         _upperButton.addSource(visitsRepository.visitForId(id)) {
             _upperButton.postValue(upperButtonModel(it, visitsRepository.canEdit(id)))
@@ -40,16 +43,18 @@ class VisitDetailsViewModel(
         }
     }
 
-    val visitNote: LiveData<Pair<String?, Boolean>>
+    val visitNote: LiveData<Pair<String, Boolean>>
         get() = _visitNote
     val upperButton: LiveData<Pair<ButtonLabel, Boolean>>
         get() = _upperButton
     val lowerButton: LiveData<Pair<ButtonLabel, Boolean>>
         get() = _lowerButton
+    val showToast: LiveData<Boolean>
+        get() = _showToast
 
     fun onVisitNoteChanged(newNote : String) {
         Log.d(TAG, "onVisitNoteChanged $newNote")
-        visitsRepository.updateVisitNote(id, newNote)
+        updatedNote = newNote
     }
 
     fun onUpperButtonClicked() {
@@ -63,6 +68,7 @@ class VisitDetailsViewModel(
                 else -> Log.w(TAG, "Unexpected upper button click for state ${it.state} for visit id $id")
             }
         }
+        updateVisitNote()
 
     }
 
@@ -78,6 +84,7 @@ class VisitDetailsViewModel(
                 else -> Log.w(TAG, "Unexpected upper button click for state ${it.state} for visit id $id")
             }
         }
+        updateVisitNote()
     }
 
     fun getLatLng(): LatLng?  {
@@ -87,8 +94,11 @@ class VisitDetailsViewModel(
 
     fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
 
-    fun onBackPressed() {
-        visitsRepository.updateVisitNote(id, visit.value?.visitNote?:"")
+    fun onBackPressed() = updateVisitNote()
+
+    private fun updateVisitNote() {
+        val isNoteChanged = visitsRepository.updateVisitNote(id, updatedNote)
+        if (isNoteChanged) _showToast.postValue(true)
     }
 
     companion object {const val TAG = "VisitDetailsVM"}
