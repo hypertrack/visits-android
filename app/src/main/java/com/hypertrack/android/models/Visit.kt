@@ -17,7 +17,7 @@ data class Visit(val _id: String,
         ""
     ),
                  val visitNote: String = "", var visitPicture: String = "",
-                 var enteredAt:String = "",
+                 var visitedAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
                  val visitType: VisitType,
@@ -30,7 +30,7 @@ data class Visit(val _id: String,
     val status: String
         get() = when {
             completedAt.isNotEmpty() -> COMPLETED
-            enteredAt.isNotEmpty() -> VISITED
+            visitedAt.isNotEmpty() -> VISITED
             else -> PENDING
         }
 
@@ -67,8 +67,8 @@ data class Visit(val _id: String,
     fun hasNotes() = visitNote.isNotEmpty()
 
     fun update(prototype: VisitDataSource) : Visit {
-
-        return if (prototype.customerNote == customerNote) this
+        // prototype can have visitedAt field that we need to copy or
+        return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
             else Visit(
             _id,
             visit_id,
@@ -77,12 +77,13 @@ data class Visit(val _id: String,
             address,
             visitNote,
             visitPicture,
-            enteredAt,
+            visitedAt = prototype.visitedAt?:visitedAt,
             completedAt,
             exitedAt,
             latitude,
             longitude,
-            visitType
+            visitType,
+            state = adjustState(state, prototype.visitedAt)
         )
         // TODO Denys - update when API adds support to geofence events
 //        when {
@@ -97,10 +98,18 @@ data class Visit(val _id: String,
 
     }
 
+    private fun adjustState(state: VisitStatus, visitedAt: String?): VisitStatus {
+        val visitStatus = when (state) {
+            VisitStatus.PICKED_UP, VisitStatus.PENDING -> if (visitedAt != null) VisitStatus.VISITED else state
+            else -> state
+        }
+        return visitStatus
+    }
+
     fun updateNote(newNote: String): Visit {
         return Visit(
             _id, visit_id, customerNote,
-            createdAt, address, newNote, visitPicture, enteredAt,
+            createdAt, address, newNote, visitPicture, visitedAt,
             completedAt, exitedAt, latitude, longitude, visitType,
             state
         )
@@ -117,7 +126,7 @@ data class Visit(val _id: String,
     private fun moveToState(newState: VisitStatus, transitionedAt: String? = null): Visit {
         return Visit(
             _id, visit_id, customerNote,
-            createdAt, address, visitNote, visitPicture, enteredAt,
+            createdAt, address, visitNote, visitPicture, visitedAt,
             transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType, state = newState
         )
     }
@@ -130,9 +139,10 @@ data class Visit(val _id: String,
         customerNote = visitDataSource.customerNote,
         address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
         createdAt = visitDataSource.createdAt,
-//        enteredAt = geofence.entered_at, completedAt = geofence.completed_at,
+        visitedAt = visitDataSource.visitedAt,
         latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
-        visitType = visitDataSource.visitType
+        visitType = visitDataSource.visitType,
+        state = if (visitDataSource.visitedAt.isEmpty()) VisitStatus.PENDING else VisitStatus.VISITED
     )
 
 }
@@ -146,6 +156,7 @@ interface VisitDataSource {
     val customerNote: String
     val address: Address?
     val createdAt: String
+    val visitedAt: String
     val latitude: Double
     val longitude: Double
     val visitType: VisitType

@@ -193,7 +193,7 @@ class VisitsRepository(
             _id = UUID.randomUUID().toString(),
             visit_id = osUtilsProvider.getStringResourceForId(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
             createdAt = createdAt,
-            enteredAt = createdAt,
+            visitedAt = createdAt,
             visitType = VisitType.LOCAL
         )
         val id = newLocalVisit._id

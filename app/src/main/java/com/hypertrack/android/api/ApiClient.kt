@@ -3,10 +3,6 @@ package com.hypertrack.android.api
 import android.util.Log
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -52,6 +48,7 @@ class ApiClient(
         try {
             val response = api.getTrips(deviceId)
             if (response.isSuccessful)
+                Log.v(TAG, "Got response ${response.body()}")
                 return response.body()?.trips?.filterNot { it.destination == null || it.tripId.isNullOrEmpty() }?: emptyList()
         } catch (e: Exception) {
             Log.w(TAG, "Got exception while trying to refresh trips $e")
@@ -62,6 +59,8 @@ class ApiClient(
 
 
     }
+
+    companion object { const val TAG = "ApiClient"}
 
 }
 
