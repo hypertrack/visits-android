@@ -7,9 +7,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -18,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.view_models.ButtonLabel
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visit_detail.*
@@ -25,7 +26,7 @@ import kotlinx.android.synthetic.main.activity_visit_detail.*
 
 class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var visitDetailsViewModel: VisitDetailsViewModel
+    private lateinit var viewModel: VisitDetailsViewModel
 
     private val visitPosition: String
         get() = intent?.getStringExtra(KEY_EXTRA_VISIT_POS)?:""
@@ -36,25 +37,55 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         val visitId = intent?.getStringExtra(KEY_EXTRA_VISIT_ID)!!
-        visitDetailsViewModel = (application as MyApplication).injector
+        viewModel = (application as MyApplication).injector
             .provideVisitStatusViewModel(this.applicationContext, visitId)
 
-        visitDetailsViewModel.visit.observe(this) {
-            updateView(it, visitDetailsViewModel.isEditable.value?:false)
-        }
-        visitDetailsViewModel.isEditable.observe(this) {
-            updateView(visitDetailsViewModel.visit.value!!, it)
-            addActionListeners(it)
+        viewModel.visit.observe(this) { updateView(it) }
+
+        viewModel.visitNote.observe(this) { (text, isEditable) ->
+            Log.v(TAG, "visitNote text $text isEditable $isEditable")
+            etVisitNote.isEnabled = isEditable
+            text.let {  }
+            etVisitNote.setText(text)
         }
 
-        addActionListeners(visitDetailsViewModel.isEditable.value?:false)
+        viewModel.upperButton.observe(this) { (text, isEnabled) ->
+            Log.v(TAG, "upperButton button label $text isEnabled $isEnabled")
+            setButtonText(tvUpperButton, text)
+            setButtonEnabled(tvUpperButton, isEnabled)
+        }
+
+        viewModel.lowerButton.observe(this) { (text, isEnabled) ->
+            Log.v(TAG, "lowerButton button label $text isEnabled $isEnabled")
+            setButtonText(tvLowerButton, text)
+            setButtonEnabled(tvLowerButton, isEnabled)
+        }
+
+        viewModel.showToast.observe(this) {show ->
+            if (show)
+                Toast.makeText(this, getString(R.string.vist_note_updated), Toast.LENGTH_LONG).show()
+        }
+
+        setActionListeners()
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
-        visitDetailsViewModel.showNoteUpdatedToast.observe(this, { show ->
-            if (show) Toast
-                .makeText(this, "Visit note was updated", Toast.LENGTH_LONG)
-                .show()
-        })
 
+    }
+
+    private fun setButtonEnabled(button: AppCompatTextView, enabled: Boolean) {
+        button.isEnabled = enabled
+        button.background = ContextCompat.getDrawable(this,
+            if (enabled) R.drawable.bg_button
+            else R.drawable.bg_button_disabled
+        )
+    }
+
+    private fun setButtonText(button: AppCompatTextView, text: ButtonLabel) {
+        when (text) {
+            ButtonLabel.PICK_UP -> button.setText(R.string.pick_up)
+            ButtonLabel.CHECK_OUT -> button.setText(R.string.check_out)
+            ButtonLabel.CANCEL -> button.setText(R.string.cancel)
+            ButtonLabel.CHECK_IN -> button.setText(R.string.check_in)
+        }
     }
 
     override fun onMapReady(p0: GoogleMap?) {
@@ -64,85 +95,56 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
                 isMyLocationButtonEnabled = true
                 isZoomControlsEnabled = true
             }
-            val latLng = visitDetailsViewModel.getLatLng()?:return
+            val latLng = viewModel.getLatLng() ?: return
             Log.d(TAG, "Got latlng $latLng")
-            val label = visitDetailsViewModel.getLabel()
+            val label = viewModel.getLabel()
 
             map.addMarker(MarkerOptions().position(latLng).title(label))
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.0f))
         }
     }
 
-    private fun updateView(newValue: Visit, isEditable: Boolean) {
+    private fun updateView(newValue: Visit) {
         Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newValue.customerNote
         tvAddress.text = newValue.address.street
         if (newValue.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newValue.visitNote)
         }
-        val isCompletable = !newValue.isCompleted
-        Log.d(TAG, "Check out button completable is $isCompletable and editable $isEditable")
-        tvComplete.isEnabled = isCompletable && isEditable
-        etVisitNote.isEnabled = isCompletable
-        tvComplete.background = ContextCompat.getDrawable(this,
-            if (isCompletable && isEditable) R.drawable.bg_button
-            else R.drawable.bg_button_disabled
-        )
-        tvComplete.text = if (isCompletable)
-            getString(R.string.check_out)
-        else getString(R.string.completed)
-
-        when(newValue.tripVisitPickedUp) {
-            null -> tvPickup.visibility = View.GONE
-            false -> {
-                tvPickup.visibility = View.VISIBLE
-                tvPickup.text = getText(R.string.pick_up)
-                val isPickable = isEditable && isCompletable
-                tvPickup.isEnabled = isPickable // no pickup for completed visits
-                tvPickup.background = ContextCompat.getDrawable(this,
-                    if (isPickable) R.drawable.bg_button
-                    else R.drawable.bg_button_disabled
-                )
-            }
-            true -> {
-                tvPickup.visibility = View.VISIBLE
-                tvPickup.text = getText(R.string.cancel)
-                tvPickup.isEnabled = isCompletable && isEditable
-                tvPickup.background = ContextCompat.getDrawable(this,
-                    if (isCompletable && isEditable) R.drawable.bg_button
-                    else R.drawable.bg_button_disabled
-                )
-            }
-        }
 
     }
 
-    private fun addActionListeners(isEditable: Boolean) {
+    private fun setActionListeners() {
         ivBack.setOnClickListener {
-            visitDetailsViewModel.onBackPressed()
+            viewModel.onBackPressed()
             onBackPressed()
         }
 
         etVisitNote.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) =
-                visitDetailsViewModel.onVisitNoteChanged(s.toString())
+                viewModel.onVisitNoteChanged(s.toString())
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
         })
 
-        if (!isEditable) return
-        tvComplete.setOnClickListener {
-            Log.d(TAG, "Complete button pressed")
-            tvComplete.isEnabled = false
+        tvUpperButton.setOnClickListener {
+            Log.d(TAG, "Upper button pressed")
+            // stop interactions to avoid simultaneous Complete & Cancel click
+            tvUpperButton.isEnabled = false
             etVisitNote.isEnabled = false
-            visitDetailsViewModel.onMarkedCompleted(true)
+            tvLowerButton.isEnabled = false
+            viewModel.onUpperButtonClicked()
         }
-        tvPickup.setOnClickListener {
-            Log.d(TAG, "Pickup/Cancel pressed")
-            tvPickup.isEnabled = false
-            visitDetailsViewModel.onPickupClicked()
+
+        tvLowerButton.setOnClickListener {
+            Log.d(TAG, "Lower button pressed")
+            // stop interactions to avoid simultaneous Complete & Cancel click
+            tvUpperButton.isEnabled = false
+            etVisitNote.isEnabled = false
+            tvLowerButton.isEnabled = false
+            viewModel.onLowerButtonClicked()
         }
     }
 

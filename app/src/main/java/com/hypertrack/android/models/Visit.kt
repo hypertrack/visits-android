@@ -20,8 +20,10 @@ data class Visit(val _id: String,
                  var enteredAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
-                 val visitType: VisitType, private var _tripVisitPickedUp: Boolean = false
+                 val visitType: VisitType,
+                 val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
  ): VisitListItem() {
+    val isEditable: Boolean = (state in listOf(VisitStatus.PICKED_UP, VisitStatus.PENDING, VisitStatus.VISITED))
     val isCompleted: Boolean
         get() = status == COMPLETED
 
@@ -58,9 +60,7 @@ data class Visit(val _id: String,
             }
 
 
-    var tripVisitPickedUp: Boolean?
-        get() = if (visitType == VisitType.TRIP) _tripVisitPickedUp else null
-        set(value) { _tripVisitPickedUp = value ?: false }
+    val tripVisitPickedUp = state != VisitStatus.PENDING
 
     fun hasPicture() = visitPicture.isNotEmpty()
 
@@ -82,8 +82,7 @@ data class Visit(val _id: String,
             exitedAt,
             latitude,
             longitude,
-            visitType,
-            _tripVisitPickedUp
+            visitType
         )
         // TODO Denys - update when API adds support to geofence events
 //        when {
@@ -102,17 +101,28 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude, visitType, _tripVisitPickedUp
+            completedAt, exitedAt, latitude, longitude, visitType,
+            state
         )
     }
 
-    fun complete(completedAt: String): Visit {
+    fun complete(completedAt: String) = moveToState(VisitStatus.COMPLETED, completedAt)
+
+    fun pickUp() = moveToState(VisitStatus.PICKED_UP)
+
+    fun cancel(cancelledAt: String) = moveToState(VisitStatus.CANCELLED, cancelledAt)
+
+    fun markVisited() = moveToState(VisitStatus.VISITED)
+
+    private fun moveToState(newState: VisitStatus, transitionedAt: String? = null): Visit {
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, enteredAt,
-            completedAt, exitedAt, latitude, longitude, visitType, _tripVisitPickedUp
+            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType, state = newState
         )
     }
+
+
 
     constructor(visitDataSource: VisitDataSource, osUtilsProvider: OsUtilsProvider) : this(
         _id = visitDataSource._id,
@@ -151,3 +161,17 @@ sealed class VisitListItem
 data class HeaderVisitItem(val text: String) : VisitListItem()
 
 data class Address (val street : String, val postalCode : String, val city : String, val country : String)
+
+/**
+ *
+ * Trip and Geofence based visits are in _Pending_ state when they received from the backend.
+ * From this state they are eligible for "PICK_UP" and "CHECK_IN" actions that corresponds to
+ * receiving deliverable and attending visit destination. The former doesn't change it's sorting
+ * the visit is still _Pending_ while the latter moves it to _Visited_ bucket. Local visits
+ * are created in _Visited_ bucket (they are automatically *Checked In*) and cannot be cancelled,
+ * while other _Visited_ items could be cancelled ("CANCEL" action) or completed
+ * ("CHECK_OUT" action).
+ *
+ */
+
+enum class VisitStatus { PENDING, PICKED_UP, VISITED, COMPLETED, CANCELLED }

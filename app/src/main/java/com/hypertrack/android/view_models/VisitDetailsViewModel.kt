@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitStatus
 
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,
@@ -15,38 +16,75 @@ class VisitDetailsViewModel(
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
-    private var visitNote = visit.value?.visitNote?:""
+    private var _visitNote = MediatorLiveData<Pair<String, Boolean>>() //
+    private var _upperButton = MediatorLiveData<Pair<ButtonLabel, Boolean>>() // (upperButtonModel(visit.value, visitsRepository.canEdit(id)))
+    private var _lowerButton = MediatorLiveData<Pair<ButtonLabel, Boolean>>() // (lowerButtonModel(visit.value, visitsRepository.canEdit(id)))
+    private var _showToast = MutableLiveData(false)
+    private var updatedNote: String = visit.value?.visitNote?:""
 
-    private val _showNoteUpdatedToast = MutableLiveData(false)
-
-    val showNoteUpdatedToast: LiveData<Boolean>
-        get() = _showNoteUpdatedToast
-
-    private val _isEditable = MediatorLiveData<Boolean>()
     init {
-        _isEditable.addSource(visitsRepository.isTracking, _isEditable::postValue)
+        _visitNote.addSource(visitsRepository.visitForId(id)) {
+            _visitNote.postValue(it.visitNote to visitsRepository.canEdit(id))
+        }
+        _visitNote.addSource(visitsRepository.isTracking) { _visitNote.postValue(updatedNote to it) }
+
+        _upperButton.addSource(visitsRepository.visitForId(id)) {
+            _upperButton.postValue(upperButtonModel(it, visitsRepository.canEdit(id)))
+        }
+        _upperButton.addSource(visitsRepository.isTracking) {
+            _upperButton.postValue(upperButtonModel(visit.value, it))
+        }
+
+        _lowerButton.addSource(visitsRepository.visitForId(id)) {
+            _lowerButton.postValue(lowerButtonModel(it, visitsRepository.canEdit(id)))
+        }
+        _lowerButton.addSource(visitsRepository.isTracking) {
+            _lowerButton.postValue(lowerButtonModel(visit.value, it))
+        }
     }
-    val isEditable: LiveData<Boolean>
-        get() = _isEditable
+
+    val visitNote: LiveData<Pair<String, Boolean>>
+        get() = _visitNote
+    val upperButton: LiveData<Pair<ButtonLabel, Boolean>>
+        get() = _upperButton
+    val lowerButton: LiveData<Pair<ButtonLabel, Boolean>>
+        get() = _lowerButton
+    val showToast: LiveData<Boolean>
+        get() = _showToast
 
     fun onVisitNoteChanged(newNote : String) {
         Log.d(TAG, "onVisitNoteChanged $newNote")
-        visitNote = newNote
+        updatedNote = newNote
     }
 
-    fun onMarkedCompleted(isCompleted: Boolean) {
-        _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
-        visitsRepository.markCompleted(id, isCompleted)
-    }
+    fun onUpperButtonClicked() {
+        Log.v(TAG, "Upper button click handler")
+        // depending on visit state that could means to pick up or complete (check out)
 
-    fun onPickupClicked() {
-        val wasCancelled = visit.value?.tripVisitPickedUp ?: false
-        if (wasCancelled) {
-            onMarkedCompleted(false)
-        } else {
-            _showNoteUpdatedToast.postValue(visitsRepository.updateVisitNote(id, visitNote))
-            visitsRepository.setPickedUp(id)
+        visit.value?.let {
+            when (it.state) {
+                VisitStatus.PENDING -> visitsRepository.setPickedUp(id)
+                VisitStatus.VISITED, VisitStatus.PICKED_UP -> visitsRepository.setCompleted(id, true)
+                else -> Log.w(TAG, "Unexpected upper button click for state ${it.state} for visit id $id")
+            }
         }
+        updateVisitNote()
+
+    }
+
+    fun onLowerButtonClicked() {
+        Log.v(TAG, "Lower button click handler")
+
+        // depending on visit state that could means to check in or cancel
+
+        visit.value?.let {
+            when (it.state) {
+                VisitStatus.PENDING, VisitStatus.PICKED_UP -> visitsRepository.setCheckedIn(id)
+                VisitStatus.VISITED -> visitsRepository.setCancelled(id)
+                else -> Log.w(TAG, "Unexpected upper button click for state ${it.state} for visit id $id")
+            }
+        }
+        updateVisitNote()
     }
 
     fun getLatLng(): LatLng?  {
@@ -56,11 +94,27 @@ class VisitDetailsViewModel(
 
     fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
 
-    fun onBackPressed() {
-        val noteChanged = visitsRepository.updateVisitNote(id, visitNote)
-        _showNoteUpdatedToast.postValue(noteChanged)
+    fun onBackPressed() = updateVisitNote()
 
+    private fun updateVisitNote() {
+        val isNoteChanged = visitsRepository.updateVisitNote(id, updatedNote)
+        if (isNoteChanged) _showToast.postValue(true)
     }
 
     companion object {const val TAG = "VisitDetailsVM"}
 }
+
+private fun upperButtonModel(visit: Visit?, canEdit: Boolean): Pair<ButtonLabel, Boolean> = when (visit?.state) {
+    VisitStatus.PENDING -> ButtonLabel.PICK_UP to canEdit
+    VisitStatus.PICKED_UP -> ButtonLabel.PICK_UP to false
+    VisitStatus.VISITED -> ButtonLabel.CHECK_OUT to canEdit
+    else -> ButtonLabel.CHECK_OUT to false
+}
+
+private fun lowerButtonModel(visit: Visit?, canEdit: Boolean): Pair<ButtonLabel, Boolean> = when (visit?.state) {
+    VisitStatus.PENDING, VisitStatus.PICKED_UP -> ButtonLabel.CHECK_IN to canEdit
+    VisitStatus.VISITED -> ButtonLabel.CANCEL to canEdit
+    else -> ButtonLabel.CANCEL to false
+}
+
+enum class ButtonLabel {PICK_UP, CHECK_IN, CHECK_OUT, CANCEL}

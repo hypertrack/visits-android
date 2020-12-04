@@ -288,7 +288,7 @@
                 app:layout_constraintTop_toTopOf="@id/ivVisitPic" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvComplete"
+                android:id="@+id/tvUpperButton"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_margin="20dp"
@@ -303,7 +303,7 @@
                 app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvPickup"
+                android:id="@+id/tvLowerButton"
                 style="@style/ButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_margin="20dp"
@@ -315,7 +315,7 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvComplete" />
+                app:layout_constraintTop_toBottomOf="@id/tvUpperButton" />
 
             <View
                 android:layout_width="match_parent"
@@ -323,7 +323,7 @@
                 android:background="@android:color/transparent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvComplete" />
+                app:layout_constraintTop_toBottomOf="@id/tvUpperButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
