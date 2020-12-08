@@ -62,7 +62,7 @@ class SplashScreenViewModel(
         val driverId = parameters["driver_id"] as String?
         val showCheckIn = parameters["show_manual_visits"] as String? ?:""
         val autoCheckIn = parameters["auto_check_in"] as String? ?: ""
-        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn")
+        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn")
         if (key != null) {
             Log.d(TAG, "Got key $key")
             try {

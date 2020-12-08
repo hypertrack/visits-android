@@ -6,10 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
-import com.hypertrack.android.utils.VisitsStorage
-import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.android.utils.OsUtilsProvider
-import com.hypertrack.android.utils.TrackingStateValue
+import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,7 +19,8 @@ class VisitsRepository(
     private val osUtilsProvider: OsUtilsProvider,
     private val apiClient: ApiClient,
     private val visitsStorage: VisitsStorage,
-    private val hyperTrackService: HyperTrackService
+    private val hyperTrackService: HyperTrackService,
+    private val accountPreferences: AccountPreferencesProvider
 ) {
 
     private val _visitsMap: MutableMap<String, Visit>
@@ -85,12 +83,13 @@ class VisitsRepository(
             if (currentValue == null) {
                 val visit = Visit(
                     prototype,
-                    osUtilsProvider
+                    osUtilsProvider,
+                    accountPreferences.isAutoCheckInEnabled
                 )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
             } else {
-                val newValue = currentValue.update(prototype)
+                val newValue = currentValue.update(prototype, accountPreferences.isAutoCheckInEnabled)
                 _visitsMap[prototype._id] = newValue
                 // getValue/postValue invocations below are called on different instances:
                 // `getValue` is called on Map with default value

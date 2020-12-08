@@ -66,7 +66,7 @@ data class Visit(val _id: String,
 
     fun hasNotes() = visitNote.isNotEmpty()
 
-    fun update(prototype: VisitDataSource) : Visit {
+    fun update(prototype: VisitDataSource, isAutoCheckInAllowed: Boolean) : Visit {
         // prototype can have visitedAt field that we need to copy or
         return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
             else Visit(
@@ -77,13 +77,13 @@ data class Visit(val _id: String,
             address,
             visitNote,
             visitPicture,
-            visitedAt = prototype.visitedAt?:visitedAt,
+            visitedAt = prototype.visitedAt,
             completedAt,
             exitedAt,
             latitude,
             longitude,
             visitType,
-            state = adjustState(state, prototype.visitedAt)
+            state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state
         )
         // TODO Denys - update when API adds support to geofence events
 //        when {
@@ -133,7 +133,11 @@ data class Visit(val _id: String,
 
 
 
-    constructor(visitDataSource: VisitDataSource, osUtilsProvider: OsUtilsProvider) : this(
+    constructor(
+        visitDataSource: VisitDataSource,
+        osUtilsProvider: OsUtilsProvider,
+        autoCheckInOnVisit: Boolean
+    ) : this(
         _id = visitDataSource._id,
         visit_id = "${osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId)} ${visitDataSource.visitNameSuffix}",
         customerNote = visitDataSource.customerNote,
@@ -142,7 +146,7 @@ data class Visit(val _id: String,
         visitedAt = visitDataSource.visitedAt,
         latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
         visitType = visitDataSource.visitType,
-        state = if (visitDataSource.visitedAt.isEmpty()) VisitStatus.PENDING else VisitStatus.VISITED
+        state = if (visitDataSource.visitedAt.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
     )
 
 }

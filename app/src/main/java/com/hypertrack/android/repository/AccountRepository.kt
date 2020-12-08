@@ -3,23 +3,24 @@ package com.hypertrack.android.repository
 import android.util.Log
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
+import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.ServiceLocator
 
 class AccountRepository(
     private val serviceLocator: ServiceLocator,
     private val accountData: AccountData,
     private val accountDataStorage: AccountDataStorage
-) {
+) : AccountPreferencesProvider {
 
     val isVerifiedAccount : Boolean
         get() = accountData.lastToken != null
 
-    var isManualCheckInAllowed: Boolean
+    override var isManualCheckInAllowed: Boolean
         get() = accountData.isManualVisitEnabled
         set(value) {
             accountData.isManualVisitEnabled = value
         }
-    var isAutoCheckInEnabled: Boolean
+    override var isAutoCheckInEnabled: Boolean
         get() = accountData.autoCheckIn
     set(value)  {
         accountData.autoCheckIn = value

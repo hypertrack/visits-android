@@ -96,7 +96,8 @@ object Injector {
             getOsUtilsProvider(context),
             getVisitsApiClient(context),
             getMyPreferences(context),
-            getHyperTrackService(context)
+            getHyperTrackService(context),
+            getAccountRepo(context)
         )
         visitsRepository = result
 
@@ -191,6 +192,11 @@ class SplashScreenViewModelFactory(
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }
+}
+
+interface AccountPreferencesProvider {
+    val isManualCheckInAllowed: Boolean
+    val isAutoCheckInEnabled: Boolean
 }
 
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
