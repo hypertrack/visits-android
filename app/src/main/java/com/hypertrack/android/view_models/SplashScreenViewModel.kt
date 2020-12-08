@@ -53,16 +53,21 @@ class SplashScreenViewModel(
     override fun onDeeplinkResult(parameters: Map<String, Any>) {
         Log.d(TAG, "Got deeplink result $parameters")
 
+        // Here we can inject obligatory input (publishable key and driver id)
+        // as well as configuration parameters:
+        //                  show_manual_visits (default false)
+        //                  auto_check_in (default true)
         val key = parameters["publishable_key"] as String?
         val email = parameters["email"] as String?
         val driverId = parameters["driver_id"] as String?
         val showCheckIn = parameters["show_manual_visits"] as String? ?:""
-        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn")
+        val autoCheckIn = parameters["auto_check_in"] as String? ?: ""
+        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn")
         if (key != null) {
             Log.d(TAG, "Got key $key")
             try {
                 viewModelScope.launch {
-                    val correctKey = accountRepository.onKeyReceived(key, showCheckIn)
+                    val correctKey = accountRepository.onKeyReceived(key, showCheckIn, autoCheckIn)
                     Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
                         Log.d(TAG, "Key validated successfully")

@@ -48,6 +48,8 @@ data class Trip(
     @SerializedName("metadata") private val _metadata : Map<String, Any>?,
     @SerializedName("destination") val destination: TripDestination?
 ): VisitDataSource {
+    override val visitedAt: String
+        get() = destination?.arrivedAt?:""
     override val _id: String
         get() = tripId ?: ""
     override val createdAt: String
@@ -70,7 +72,8 @@ data class Trip(
 
 data class TripDestination(
     @SerializedName("address") val address: String?,
-    @SerializedName("geometry") val geometry: Geometry
+    @SerializedName("geometry") val geometry: Geometry,
+    @SerializedName("arrived_at") val arrivedAt: String?
 )
 
 data class Views(
@@ -102,6 +105,8 @@ data class Geofence(
         get() = null
     override val createdAt: String
         get() = created_at
+    override val visitedAt: String
+        get() = ""
     override val visitType
         get() = VisitType.GEOFENCE
     override val visitNamePrefixId: Int

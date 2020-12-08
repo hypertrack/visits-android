@@ -3,24 +3,30 @@ package com.hypertrack.android.repository
 import android.util.Log
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
+import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.ServiceLocator
 
 class AccountRepository(
     private val serviceLocator: ServiceLocator,
     private val accountData: AccountData,
     private val accountDataStorage: AccountDataStorage
-) {
+) : AccountPreferencesProvider {
 
     val isVerifiedAccount : Boolean
         get() = accountData.lastToken != null
 
-    var isManualCheckInAllowed: Boolean
-        get() = accountData.isCheckInEnabled
+    override var isManualCheckInAllowed: Boolean
+        get() = accountData.isManualVisitEnabled
         set(value) {
-            accountData.isCheckInEnabled = value
+            accountData.isManualVisitEnabled = value
         }
+    override var isAutoCheckInEnabled: Boolean
+        get() = accountData.autoCheckIn
+    set(value)  {
+        accountData.autoCheckIn = value
+    }
 
-    suspend fun onKeyReceived(key: String, checkInEnabled: String) : Boolean {
+    suspend fun onKeyReceived(key: String, checkInEnabled: String = "false", autoCheckIn: String = "true") : Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
         Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
@@ -36,12 +42,16 @@ class AccountRepository(
         if (checkInEnabled in listOf("true", "True")) {
             isManualCheckInAllowed = true
         }
+        if (autoCheckIn in listOf("false", "False")) {
+            isAutoCheckInEnabled = false
+        }
 
         accountDataStorage.saveAccountData(
             AccountData(
-                key,
-                token,
-                isManualCheckInAllowed
+                publishableKey = key,
+                lastToken = token,
+                isManualVisitEnabled = isManualCheckInAllowed,
+                autoCheckIn = isAutoCheckInEnabled
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
