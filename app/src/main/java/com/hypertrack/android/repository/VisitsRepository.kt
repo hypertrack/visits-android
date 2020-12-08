@@ -141,20 +141,21 @@ class VisitsRepository(
         updateItem(id, updatedVisit)
     }
 
-    fun setCheckedIn(id: String) {
+    fun setVisited(id: String) {
         Log.d(TAG, "Set checked in $id")
         val target = _visitsMap[id] ?: return
         val updatedVisit = target.markVisited()
         Log.v(TAG, "Marked order $target as checked in")
         hyperTrackService.createVisitStartEvent(id, target.typeKey)
-        updateItem(id, updatedVisit)    }
+        updateItem(id, updatedVisit)
+    }
 
-    fun setCompleted(id: String, isCompleted: Boolean) {
+    fun setCompleted(id: String) {
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
-        Log.d(TAG, "Completed visit $completedVisit isCompleted $isCompleted")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, isCompleted)
+        Log.d(TAG, "Completed visit $completedVisit ")
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true)
         updateItem(id, completedVisit)
     }
 
@@ -182,7 +183,7 @@ class VisitsRepository(
         Log.d(TAG, "processLocalVisit")
         val localVisit = _visitsMap.getLocalVisit()
         localVisit?.let { ongoingVisit ->
-            setCompleted(ongoingVisit._id, true)
+            setCompleted(ongoingVisit._id)
             _hasOngoingLocalVisit.postValue(false)
             return
         }
@@ -210,9 +211,15 @@ class VisitsRepository(
         _hasOngoingLocalVisit.postValue(isNotCompleted)
     }
 
-    fun canEdit(visitId: String) = if (hyperTrackService.state.value == TrackingStateValue.TRACKING)
-        visitForId(visitId).value?.isEditable?:false
-        else false
+    fun canEdit(visitId: String) = visitForId(visitId).value?.isEditable?:false
+
+    fun transitionAllowed(targetState: VisitStatus, visitId: String): Boolean {
+        Log.v(TAG, "transitionAllowed $targetState, $visitId")
+        if (targetState == VisitStatus.VISITED && accountPreferences.isAutoCheckInEnabled) return false
+        val visit = visitForId(visitId).value!!
+        if (visit.state == VisitStatus.COMPLETED) return false
+        return visit.state.canTransitionTo(targetState) && isTracking.value == true
+    }
 
     companion object { const val TAG = "VisitsRepository"}
 

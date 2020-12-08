@@ -7,10 +7,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -18,7 +17,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.ButtonLabel
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visit_detail.*
@@ -35,7 +33,6 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_visit_detail)
 
-
         val visitId = intent?.getStringExtra(KEY_EXTRA_VISIT_ID)!!
         viewModel = (application as MyApplication).injector
             .provideVisitStatusViewModel(this.applicationContext, visitId)
@@ -45,20 +42,22 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.visitNote.observe(this) { (text, isEditable) ->
             Log.v(TAG, "visitNote text $text isEditable $isEditable")
             etVisitNote.isEnabled = isEditable
-            text.let {  }
             etVisitNote.setText(text)
         }
 
-        viewModel.upperButton.observe(this) { (text, isEnabled) ->
-            Log.v(TAG, "upperButton button label $text isEnabled $isEnabled")
-            setButtonText(tvPickUp, text)
-            setButtonEnabled(tvPickUp, isEnabled)
-        }
+        listOf(
+            viewModel.pickUpButton to tvPickUp,
+            viewModel.checkInButton to tvCheckIn,
+            viewModel.checkOutButton to tvCheckOut,
+            viewModel.cancelButton to tvCancel,
 
-        viewModel.lowerButton.observe(this) { (text, isEnabled) ->
-            Log.v(TAG, "lowerButton button label $text isEnabled $isEnabled")
-            setButtonText(tvCheckIn, text)
-            setButtonEnabled(tvCheckIn, isEnabled)
+        ).forEach { (model, view) ->
+            view.visibility = if (model.value == true) View.VISIBLE else View.GONE
+            view.isEnabled = model.value == true
+            model.observe(this) { enabled ->
+                view.visibility = if (enabled) View.VISIBLE else View.GONE
+                view.isEnabled = enabled
+            }
         }
 
         viewModel.showToast.observe(this) {show ->
@@ -69,23 +68,6 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         setActionListeners()
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync(this)
 
-    }
-
-    private fun setButtonEnabled(button: AppCompatTextView, enabled: Boolean) {
-        button.isEnabled = enabled
-        button.background = ContextCompat.getDrawable(this,
-            if (enabled) R.drawable.bg_button
-            else R.drawable.bg_button_disabled
-        )
-    }
-
-    private fun setButtonText(button: AppCompatTextView, text: ButtonLabel) {
-        when (text) {
-            ButtonLabel.PICK_UP -> button.setText(R.string.pick_up)
-            ButtonLabel.CHECK_OUT -> button.setText(R.string.check_out)
-            ButtonLabel.CANCEL -> button.setText(R.string.cancel)
-            ButtonLabel.CHECK_IN -> button.setText(R.string.check_in)
-        }
     }
 
     override fun onMapReady(p0: GoogleMap?) {
@@ -129,24 +111,28 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         })
 
-        tvPickUp.setOnClickListener {
-            Log.d(TAG, "Upper button pressed")
-            // stop interactions to avoid simultaneous Complete & Cancel click
-            tvPickUp.isEnabled = false
-            etVisitNote.isEnabled = false
-            tvCheckIn.isEnabled = false
-            viewModel.onUpperButtonClicked()
+        listOf(
+            tvPickUp to viewModel::onPickUpClicked,
+            tvCheckIn to viewModel::onCheckInClicked,
+            tvCheckOut to viewModel::onCheckOutClicked,
+            tvCancel to viewModel::onCancelClicked
+        ).forEach { (view, action) ->
+            view.setOnClickListener {
+                disableHandlers()
+                action()
+            }
         }
 
-        tvCheckIn.setOnClickListener {
-            Log.d(TAG, "Lower button pressed")
-            // stop interactions to avoid simultaneous Complete & Cancel click
-            tvPickUp.isEnabled = false
-            etVisitNote.isEnabled = false
-            tvCheckIn.isEnabled = false
-            viewModel.onLowerButtonClicked()
-        }
     }
+
+    private fun disableHandlers() =
+        listOf<View>(
+            tvPickUp,
+            tvCheckIn,
+            tvCheckOut,
+            tvCancel,
+            etVisitNote
+        ).forEach { it.isEnabled = false }
 
 
     override fun onBackPressed() {

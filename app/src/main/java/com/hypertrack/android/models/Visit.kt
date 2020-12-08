@@ -23,7 +23,7 @@ data class Visit(val _id: String,
                  val visitType: VisitType,
                  val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
  ): VisitListItem() {
-    val isEditable: Boolean = (state in listOf(VisitStatus.PICKED_UP, VisitStatus.PENDING, VisitStatus.VISITED))
+    val isEditable = state < VisitStatus.COMPLETED
     val isCompleted: Boolean
         get() = status == COMPLETED
 
@@ -189,4 +189,12 @@ data class Address (val street : String, val postalCode : String, val city : Str
  *
  */
 
-enum class VisitStatus { PENDING, PICKED_UP, VISITED, COMPLETED, CANCELLED }
+enum class VisitStatus {
+    PENDING   { override fun canTransitionTo(other: VisitStatus) = other > this },
+    PICKED_UP { override fun canTransitionTo(other: VisitStatus) = other > this },
+    VISITED   { override fun canTransitionTo(other: VisitStatus) = other > this },
+    COMPLETED { override fun canTransitionTo(other: VisitStatus) = false },
+    CANCELLED { override fun canTransitionTo(other: VisitStatus) = false };
+
+    abstract fun canTransitionTo(other: VisitStatus): Boolean
+}
