@@ -51,14 +51,14 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         viewModel.upperButton.observe(this) { (text, isEnabled) ->
             Log.v(TAG, "upperButton button label $text isEnabled $isEnabled")
-            setButtonText(tvUpperButton, text)
-            setButtonEnabled(tvUpperButton, isEnabled)
+            setButtonText(tvPickUp, text)
+            setButtonEnabled(tvPickUp, isEnabled)
         }
 
         viewModel.lowerButton.observe(this) { (text, isEnabled) ->
             Log.v(TAG, "lowerButton button label $text isEnabled $isEnabled")
-            setButtonText(tvLowerButton, text)
-            setButtonEnabled(tvLowerButton, isEnabled)
+            setButtonText(tvCheckIn, text)
+            setButtonEnabled(tvCheckIn, isEnabled)
         }
 
         viewModel.showToast.observe(this) {show ->
@@ -129,21 +129,21 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         })
 
-        tvUpperButton.setOnClickListener {
+        tvPickUp.setOnClickListener {
             Log.d(TAG, "Upper button pressed")
             // stop interactions to avoid simultaneous Complete & Cancel click
-            tvUpperButton.isEnabled = false
+            tvPickUp.isEnabled = false
             etVisitNote.isEnabled = false
-            tvLowerButton.isEnabled = false
+            tvCheckIn.isEnabled = false
             viewModel.onUpperButtonClicked()
         }
 
-        tvLowerButton.setOnClickListener {
+        tvCheckIn.setOnClickListener {
             Log.d(TAG, "Lower button pressed")
             // stop interactions to avoid simultaneous Complete & Cancel click
-            tvUpperButton.isEnabled = false
+            tvPickUp.isEnabled = false
             etVisitNote.isEnabled = false
-            tvLowerButton.isEnabled = false
+            tvCheckIn.isEnabled = false
             viewModel.onLowerButtonClicked()
         }
     }
