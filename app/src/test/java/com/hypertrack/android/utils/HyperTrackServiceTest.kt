@@ -28,8 +28,8 @@ class HyperTrackServiceTest {
         verify(sdk).addGeotag(captor.capture())
         val payload = captor.value
         assertTrue(payload.isNotEmpty())
-        assertTrue(payload.containsKey("delivery_note"))
-        assertTrue(payload["delivery_note"] == visitNote)
+        assertTrue(payload.containsKey("visit_note"))
+        assertTrue(payload["visit_note"] == visitNote)
     }
 
 }
