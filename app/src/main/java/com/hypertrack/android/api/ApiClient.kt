@@ -31,11 +31,39 @@ class ApiClient(
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getGeofences() : List<Geofence> {
+    suspend fun getGeofences(page:  String = "") : List<Geofence> {
         try {
-            val response = api.getGeofences(deviceId)
+            val response = api.getGeofences(deviceId, page)
             if (response.isSuccessful) {
-                return response.body()?: emptyList()
+                val geofences: Collection<Geofence> = response.body()?.geofences ?: return emptyList()
+                if (geofences.isEmpty()) return emptyList()
+                val idsToCheck  = geofences.map { it.geofence_id }.toMutableList()
+                val arrivals = mutableMapOf<String, String>()
+                var nextPageOfMarkers:String? = null
+                do {
+                    val markersResponse =  api.getGeofenceMarkers(deviceId, nextPageOfMarkers?:"")
+                    if (markersResponse.isSuccessful) {
+                        markersResponse.body()?.markers?.let { it.forEach {marker ->
+                                if (!arrivals.keys.contains(marker.geofenceId)) {
+                                    val recordedAt = marker.arrival?.recordedAt
+                                    recordedAt?.let {
+                                        arrivals[marker.geofenceId] = recordedAt
+                                        idsToCheck.remove(marker.geofenceId)
+                                    }
+                                }
+                            }
+                        }
+                        nextPageOfMarkers = markersResponse.body()?.next
+                    }
+
+                } while (idsToCheck.isNotEmpty() && nextPageOfMarkers != null)
+
+                return geofences.map {
+                    if (arrivals.keys.contains(it.geofence_id)) {
+                        it.visitedAt = arrivals[it.geofence_id]?:""
+                    }
+                    it
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Got exception while fetching geofences $e")
@@ -44,12 +72,16 @@ class ApiClient(
         return emptyList()
     }
 
-    suspend fun getTrips(): List<Trip> {
+    suspend fun getTrips(page:  String = ""): List<Trip> {
         try {
-            val response = api.getTrips(deviceId)
-            if (response.isSuccessful)
+            val response = api.getTrips(deviceId, page)
+            if (response.isSuccessful) {
                 Log.v(TAG, "Got response ${response.body()}")
-                return response.body()?.trips?.filterNot { it.destination == null || it.tripId.isNullOrEmpty() }?: emptyList()
+                return response.body()?.trips?.filterNot {
+                    it.destination == null || it.tripId.isNullOrEmpty()
+                }
+                    ?: emptyList()
+            }
         } catch (e: Exception) {
             Log.w(TAG, "Got exception while trying to refresh trips $e")
             throw Exception(e)

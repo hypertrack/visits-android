@@ -1,3 +1,5 @@
+@file:Suppress("BlockingMethodInNonBlockingContext")
+
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -28,70 +30,74 @@ class ApiClientTest {
 
     companion object {
         const val DEVICE_ID = "42"
-        const val VISITS =
+        const val GEOFENCES =
             """
-                [
-                  {
-                    "all_devices": false,
-                    "created_at": "2020-01-16T12:51:00.010934+00:00",
-                    "delete_at": null,
-                    "device_id": "f1b28a9c-4163-3003-a683-b77b42b650bf",
-                    "device_ids": [ "f1b28a9c-4163-3003-a683-b77b42b650bf" ],
-                    "geofence_id": "010b7861-59fc-4157-9fcd-6d2e0c5072d9",
-                    "geometry": {
-                      "coordinates": [ 35.1047817617655, 47.8586030579782 ],
-                      "type": "Point"
+            {
+                "data": [
+                    {
+                        "geofence_id": "010b7861-59fc-4157-9fcd-6d2e0c5072d9",
+                        "account_id": "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
+                        "device_id": "86BB603D-B905-367D-AE3B-3ECFA4428D96",
+                        "single_use": false,
+                        "created_at": "2020-01-16T12:51:00.010934+00:00",
+                        "metadata": { "location": "Ferry Building" },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [ -122.394, 37.7957 ]
+                        },
+                        "archived": false,
+                        "geofence_type": "device",
+                        "radius": 30
                     },
-                    "metadata": { "destination": true },
-                    "radius": 30,
-                    "single_use": false
-                  },
-                  {
-                    "all_devices": false,
-                    "created_at": "2020-01-16T15:27:26.586384+00:00",
-                    "delete_at": null,
-                    "device_id": "f1b28a9c-4163-3003-a683-b77b42b650bf",
-                    "device_ids": [ "f1b28a9c-4163-3003-a683-b77b42b650bf" ],
-                    "geofence_id": "2e2cfdee-e7dc-4bc7-b9d4-bc6483d40060",
-                    "geometry": {
-                      "coordinates": [ 35.1241078, 47.8466593 ],
-                      "type": "Point"
+                    {
+                        "geofence_id": "41085c46-191d-44cd-8366-130be17d8796",
+                        "account_id": "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
+                        "device_id": "86BB603D-B905-367D-AE3B-3ECFA4428D96",
+                        "single_use": false,
+                        "created_at": "2020-01-27T14:33:59.188520+00:00",
+                        "metadata": { "destination": true },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [ 35.1046979427338, 47.8588572595771 ]
+                        },
+                        "archived": false,
+                        "geofence_type": "device",
+                        "radius": 30
                     },
-                    "metadata": { "destination": true },
-                    "radius": 30,
-                    "single_use": false
-                  },
-                  {
-                    "all_devices": false,
-                    "created_at": "2020-01-27T14:33:59.188520+00:00",
-                    "delete_at": null,
-                    "device_id": "f1b28a9c-4163-3003-a683-b77b42b650bf",
-                    "device_ids": [ "f1b28a9c-4163-3003-a683-b77b42b650bf" ],
-                    "geofence_id": "41085c46-191d-44cd-8366-130be17d8796",
-                    "geometry": {
-                      "coordinates": [ 35.1046979427338, 47.8588572595771 ],
-                      "type": "Point"
+                    {
+                        "geofence_id": "2c1f2901-c5a5-43f6-a29e-33e58ca9a19e",
+                        "account_id": "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
+                        "device_id": "86BB603D-B905-367D-AE3B-3ECFA4428D96",
+                        "single_use": false,
+                        "created_at": "2020-02-21T17:51:06.415161+00:00",
+                        "metadata": { "location": "Ferry Building" },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [ -122.394, 37.7957 ]
+                        },
+                        "archived": false,
+                        "geofence_type": "device",
+                        "radius": 50
                     },
-                    "metadata": { "destination": true },
-                    "radius": 30,
-                    "single_use": false
-                  },
-                  {
-                    "all_devices": false,
-                    "created_at": "2020-02-21T17:51:06.415161+00:00",
-                    "delete_at": null,
-                    "device_id": "f1b28a9c-4163-3003-a683-b77b42b650bf",
-                    "device_ids": [ "f1b28a9c-4163-3003-a683-b77b42b650bf" ],
-                    "geofence_id": "2c1f2901-c5a5-43f6-a29e-33e58ca9a19e",
-                    "geometry": {
-                      "coordinates": [ 35.1050107553601, 47.8593037965363 ],
-                      "type": "Point"
-                    },
-                    "metadata": { "destination": true },
-                    "radius": 30,
-                    "single_use": false
-                  }
-                ]
+                    {
+                        "geofence_id": "4aca5fb7-bdab-46b9-a691-1b258a16391b",
+                        "account_id": "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
+                        "device_id": "86BB603D-B905-367D-AE3B-3ECFA4428D96",
+                        "single_use": false,
+                        "created_at": "2020-11-26T14:48:11.727418+00:00",
+                        "metadata": { "location": "Ferry Building" },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [ -122.394, 37.7957 ]
+                        },
+                        "archived": false,
+                        "geofence_type": "device",
+                        "radius": 50
+                    }
+                ],
+                "pagination_token": null,
+                "links": { "next": null }
+            }
             """
         const val TRIPS = 
             """
@@ -310,6 +316,45 @@ class ApiClientTest {
                ]
             }
             """
+        const val MARKERS =
+            """
+            {
+                "data": [
+                    {
+                        "marker_id": "d7fdf8e2-9bb2-427c-8a6f-39be15874cbf",
+                        "device_id": "86BB603D-B905-367D-AE3B-3ECFA4428D96",
+                        "account_id": "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
+                        "trip_id": null,
+                        "created_at": "2020-12-09T09:11:48.423Z",
+                        "arrival": {
+                            "recorded_at": "2020-12-09T09:11:45.980Z",
+                            "location": {
+                                "coordinates": [ -122.393962, 37.795357 ],
+                                "type": "Point"
+                            }
+                        },
+                        "exit": null,
+                        "geofence_id": "010b7861-59fc-4157-9fcd-6d2e0c5072d9",
+                        "metadata": { "location": "Ferry Building" },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [ -122.394, 37.7957 ]
+                        },
+                        "route_to": {},
+                        "geofence_type": "device",
+                        "geofence_metadata": {
+                            "device_geofence": true,
+                            "location": "Ferry Building"
+                        },
+                        "radius": 50
+                    }
+                ],
+                "pagination_token": null,
+                "links": {
+                    "next": null
+                }
+            }
+            """
     }
     private val mockWebServer = MockWebServer()
     private lateinit var apiClient : ApiClient
@@ -331,7 +376,7 @@ class ApiClientTest {
         // FIXME Denys
         // runBlockingTest in Experimental mode doesn't block for okhttp dispatchers
         runBlocking {
-            val ignored = apiClient.clockIn()
+            @Suppress("UNUSED_VARIABLE") val ignored = apiClient.clockIn()
         }
 
         val request = mockWebServer.takeRequest()
@@ -358,7 +403,8 @@ class ApiClientTest {
     @Test
     fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
 
-        mockWebServer.enqueue(MockResponse().setBody(VISITS))
+        mockWebServer.enqueue(MockResponse().setBody(GEOFENCES))
+        mockWebServer.enqueue(MockResponse().setBody(MARKERS))
         val geofences = runBlocking {
             apiClient.getGeofences()
         }
@@ -366,7 +412,7 @@ class ApiClientTest {
 
         val request = mockWebServer.takeRequest()
         val path = request.path
-        assertEquals("/client/devices/$DEVICE_ID/geofences", path)
+        assertEquals("/client/geofences?device_id=$DEVICE_ID&pagination_token=", path)
         assertEquals("GET", request.method)
 
         assertEquals(4, geofences.size)
@@ -382,7 +428,7 @@ class ApiClientTest {
 
         val request = mockWebServer.takeRequest()
         val path = request.path
-        assertEquals("/client/trips?device_id=42&pagination_token=", path)
+        assertEquals("/client/trips?device_id=$DEVICE_ID&pagination_token=", path)
         assertEquals("GET", request.method)
 
         assertEquals(2, trips.size)
