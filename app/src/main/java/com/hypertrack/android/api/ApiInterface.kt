@@ -20,13 +20,22 @@ interface ApiInterface {
     @POST("client/devices/{device_id}/stop")
     suspend fun clockOut(@Path("device_id")deviceId : String)
 
-    @GET("client/devices/{device_id}/geofences")
-    suspend fun getGeofences(@Path("device_id")deviceId : String) : Response<List<Geofence>>
+    @GET("client/geofences")
+    suspend fun getGeofences(
+        @Query("device_id")deviceId : String,
+        @Query("pagination_token")paginationToken: String
+    ) : Response<GeofenceResponse>
+
+    @GET("client/geofences/markers")
+    suspend fun getGeofenceMarkers(
+        @Query("device_id")deviceId : String,
+        @Query("pagination_token")paginationToken: String
+    ) : Response<GeofenceMarkersResponse>
 
     @GET("client/trips")
     suspend fun getTrips(
         @Query("device_id")deviceId : String,
-        @Query("pagination_token")paginationToken: String = ""
+        @Query("pagination_token")paginationToken: String
     ) : Response<TripResponse>
 
 }
@@ -37,6 +46,24 @@ data class TripResponse(
 ) {
     val trips: List<Trip>
         get() = _trips ?: emptyList()
+    val paginationToken: String
+        get() = _next ?: ""
+}
+
+data class GeofenceMarkersResponse(
+    @SerializedName("data") private val _markers: List<GeofenceMarker>?,
+    @SerializedName("pagination_token") val next: String?
+) {
+    val markers: List<GeofenceMarker>
+        get() = _markers ?: emptyList()
+}
+
+data class GeofenceResponse(
+    @SerializedName("data") private val _geofences: List<Geofence>?,
+    @SerializedName("pagination_token") private val _next: String?
+) {
+    val geofences: List<Geofence>
+        get() = _geofences ?: emptyList()
     val paginationToken: String
         get() = _next ?: ""
 }
@@ -82,17 +109,13 @@ data class Views(
 )
 
 data class Geofence(
-    @SerializedName("all_devices") val all_devices : Boolean?,
-    @SerializedName("created_at") val created_at : String,
-    @SerializedName("delete_at") val delete_at : String?,
-    @SerializedName("device_id") val device_id : String,
-    @SerializedName("device_ids") val device_ids : List<String>?,
     @SerializedName("geofence_id") val geofence_id : String,
-    @SerializedName("geometry") val geometry : Geometry,
+    @SerializedName("created_at") val created_at : String,
     @SerializedName("metadata") val metadata : Map<String, Any>?,
-    @SerializedName("radius") val radius : Int,
-    @SerializedName("single_use") val single_use : Boolean
+    @SerializedName("geometry") val geometry : Geometry,
+    @SerializedName("radius") val radius : Int
 ): VisitDataSource {
+    private var _visitedAt = ""
     override val latitude: Double
         get() = geometry.latitude
     override val longitude: Double
@@ -105,8 +128,9 @@ data class Geofence(
         get() = null
     override val createdAt: String
         get() = created_at
-    override val visitedAt: String
-        get() = ""
+    override var visitedAt: String
+        get() = _visitedAt
+        set(value) { _visitedAt = value }
     override val visitType
         get() = VisitType.GEOFENCE
     override val visitNamePrefixId: Int
@@ -148,3 +172,8 @@ abstract class Geometry {
     abstract val longitude: Double
 }
 
+data class GeofenceMarker(
+    @SerializedName("geofence_id") val geofenceId: String,
+    @SerializedName("arrival") val arrival: Arrival?
+)
+data class Arrival(@SerializedName("recorded_at") val recordedAt: String = "")
