@@ -14,8 +14,8 @@ android {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 273
-        versionName "0.2.8-SNAPSHOT"
+        versionCode 280
+        versionName "0.2.8-rc"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
         resValue "string", "awsLoginTestUserName", rootProject.properties.awsLoginTestUserName

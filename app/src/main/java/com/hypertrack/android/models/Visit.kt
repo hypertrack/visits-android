@@ -146,7 +146,7 @@ data class Visit(val _id: String,
         visitedAt = visitDataSource.visitedAt,
         latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
         visitType = visitDataSource.visitType,
-        state = if (visitDataSource.visitedAt.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
+        state = if (visitDataSource.visitedAt?.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
     )
 
 }
