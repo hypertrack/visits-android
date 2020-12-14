@@ -17,13 +17,13 @@ import com.hypertrack.logistics.android.github.R
 
 class PageFragment : Fragment() {
 
-    private lateinit var page: Page
+    private var page:Page? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate with page $page")
-        if (arguments != null) {
-            page = Page.values()[arguments!!.getInt(ARG_PAGE)]
+        arguments?.let {
+            page = Page.values()[it.getInt(ARG_PAGE)]
         }
         Log.d(TAG, "Restored page $page")
     }
@@ -38,12 +38,12 @@ class PageFragment : Fragment() {
             val view = inflater.inflate(R.layout.webview_fragment, container, false)
             if (view is WebView) {
                 view.settings.javaScriptEnabled = true
-                val historyUrl = savedInstanceState?.getString(WEBVIEW_URL)
+                val historyUrl = arguments?.getString(WEBVIEW_URL)
                 view.loadUrl(historyUrl?:"")
             }
             view
         }
-        Page.LIST -> {
+        else -> {
             val view = inflater.inflate(R.layout.visits_list_fragment, container, false)
             if (view is RecyclerView) {
                 val activity = activity as VisitsManagementActivity
@@ -59,7 +59,7 @@ class PageFragment : Fragment() {
     companion object FACTORY {
         const val TAG = "PageFragment"
         const val ARG_PAGE = "ARG_PAGE"
-        const val WEBVIEW_URL = "ARG_PAGE"
+        const val WEBVIEW_URL = "ARG_URL"
         fun newInstance(page: Page, deviceHistoryUrl: String): PageFragment {
             val args = Bundle()
             args.putInt(ARG_PAGE, page.ordinal)
