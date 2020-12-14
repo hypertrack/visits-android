@@ -22,8 +22,8 @@ class VisitsManagementActivity : ProgressDialogActivity() {
     private val visitsManagementViewModel : VisitsManagementViewModel by viewModels {
         (application as MyApplication).injector.provideVisitsManagementViewModelFactory(applicationContext)
     }
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    lateinit var viewAdapter: RecyclerView.Adapter<*>
+    lateinit var viewManager: RecyclerView.LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +48,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
         viewpager.adapter = SimpleFragmentPagerAdapter(
             supportFragmentManager, this, viewAdapter, viewManager,
-            visitsManagementViewModel
+            visitsManagementViewModel.deviceHistoryWebViewUrl
         )
 
         sliding_tabs.setupWithViewPager(viewpager)

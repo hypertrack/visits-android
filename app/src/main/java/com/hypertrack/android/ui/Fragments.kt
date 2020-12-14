@@ -12,16 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.view_models.VisitsManagementViewModel
 import com.hypertrack.logistics.android.github.R
 
 
-class PageFragment(
-    var page: Page,
-    private val visitListsAdapter: RecyclerView.Adapter<*>,
-    private val visitListViewManager: RecyclerView.LayoutManager,
-    private val visitsViewModel: VisitsManagementViewModel
-) : Fragment() {
+class PageFragment : Fragment() {
+
+    private lateinit var page: Page
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,17 +38,20 @@ class PageFragment(
             val view = inflater.inflate(R.layout.webview_fragment, container, false)
             if (view is WebView) {
                 view.settings.javaScriptEnabled = true
-                view.loadUrl(visitsViewModel.deviceHistoryWebViewUrl)
+                val historyUrl = savedInstanceState?.getString(WEBVIEW_URL)
+                view.loadUrl(historyUrl?:"")
             }
             view
         }
         Page.LIST -> {
             val view = inflater.inflate(R.layout.visits_list_fragment, container, false)
-            if (view is RecyclerView)
+            if (view is RecyclerView) {
+                val activity = activity as VisitsManagementActivity
                 view.apply {
-                    layoutManager = visitListViewManager
-                    adapter = visitListsAdapter
+                    layoutManager = activity.viewManager
+                    adapter = activity.viewAdapter
                 }
+            }
             view
         }
     }
@@ -60,15 +59,12 @@ class PageFragment(
     companion object FACTORY {
         const val TAG = "PageFragment"
         const val ARG_PAGE = "ARG_PAGE"
-        fun newInstance(
-            page: Page,
-            visitListsAdapter: RecyclerView.Adapter<*>,
-            visitListViewManager: RecyclerView.LayoutManager,
-            visitsViewModel: VisitsManagementViewModel
-        ): PageFragment {
+        const val WEBVIEW_URL = "ARG_PAGE"
+        fun newInstance(page: Page, deviceHistoryUrl: String): PageFragment {
             val args = Bundle()
             args.putInt(ARG_PAGE, page.ordinal)
-            val fragment = PageFragment(page, visitListsAdapter, visitListViewManager, visitsViewModel)
+            args.putString(WEBVIEW_URL, deviceHistoryUrl)
+            val fragment = PageFragment()
             fragment.arguments = args
             return fragment
         }
@@ -82,7 +78,7 @@ class SimpleFragmentPagerAdapter(
     context: Context,
     private val visitListsAdapter: RecyclerView.Adapter<*>,
     private val visitListViewManager: RecyclerView.LayoutManager,
-    private val visitsViewModel: VisitsManagementViewModel
+    private val deviceHistoryUrl: String
 ) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     private val tabTitles = context.resources.getStringArray(R.array.tab_names)
@@ -90,7 +86,7 @@ class SimpleFragmentPagerAdapter(
     override fun getCount(): Int = tabTitles.size
 
     override fun getItem(position: Int): Fragment = PageFragment.newInstance(
-        Page.values()[position], visitListsAdapter, visitListViewManager, visitsViewModel
+        Page.values()[position], deviceHistoryUrl
     )
 
     override fun getPageTitle(position: Int): CharSequence? = tabTitles[position]
