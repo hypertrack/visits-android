@@ -27,7 +27,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_refresh" />
 
-
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +54,6 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvUserName"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -63,6 +61,7 @@
         android:padding="10dp"
         android:textColor="@color/colorBlack"
         android:textSize="25sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTrackerStatus" />
@@ -71,9 +70,9 @@
         android:id="@+id/clockIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
         android:text="@string/clock_in"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/checkIn"
@@ -86,8 +85,8 @@
         android:id="@+id/checkIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
         android:text="@string/check_in"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,12 +94,27 @@
         app:layout_constraintStart_toEndOf="@+id/clockIn"
         app:layout_constraintTop_toBottomOf="@+id/tvUserName" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/colorWhite"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clockIn" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/sliding_tabs"
+            app:layout_constraintTop_toBottomOf="@+id/clockIn" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/sliding_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/viewpager"
+            app:tabMode="fixed" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

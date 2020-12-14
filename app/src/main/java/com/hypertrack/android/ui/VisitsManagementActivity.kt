@@ -15,6 +15,7 @@ import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.android.view_models.VisitsManagementViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visits_management.*
+import kotlinx.android.synthetic.main.activity_visits_management.view.*
 
 
 class VisitsManagementActivity : ProgressDialogActivity() {
@@ -46,10 +47,16 @@ class VisitsManagementActivity : ProgressDialogActivity() {
                 viewAdapter.notifyDataSetChanged()
             })
 
-        recyclerView.apply {
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+//        recyclerView.apply {
+//            layoutManager = viewManager
+//            adapter = viewAdapter
+//        }
+
+        viewpager.adapter = SampleFragmentPagerAdapter(
+            supportFragmentManager, this
+        )
+
+        sliding_tabs.setupWithViewPager(viewpager)
 
         visitsManagementViewModel.statusLabel.observe(this) { stateAndLabel ->
             val invisible = -1

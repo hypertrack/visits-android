@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:text="Visits List Fragment"/>
+
+
+<!--<androidx.recyclerview.widget.RecyclerView-->
+<!--    android:id="@+id/recyclerView"-->
+<!--    layout_width="match_parent"-->
+<!--    layout_height="0dp"-->
+<!--    background="@color/colorWhite"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android" />-->
