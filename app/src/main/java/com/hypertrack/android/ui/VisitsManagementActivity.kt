@@ -46,10 +46,12 @@ class VisitsManagementActivity : ProgressDialogActivity() {
                 viewAdapter.notifyDataSetChanged()
             })
 
-        recyclerView.apply {
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+        viewpager.adapter = SimpleFragmentPagerAdapter(
+            supportFragmentManager, this, viewAdapter, viewManager,
+            visitsManagementViewModel
+        )
+
+        sliding_tabs.setupWithViewPager(viewpager)
 
         visitsManagementViewModel.statusLabel.observe(this) { stateAndLabel ->
             val invisible = -1

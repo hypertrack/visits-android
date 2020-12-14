@@ -63,12 +63,14 @@ object Injector {
     private fun getDriverRepo(context: Context) = DriverRepo(getDriver(context),getMyPreferences(context))
 
     private fun getVisitsApiClient(context: Context): ApiClient {
-        val accessTokenRepository =
-            getMyPreferences(context).restoreRepository()
-                ?: throw IllegalStateException("No access token repository was saved")
+        val accessTokenRepository = accessTokenRepository(context)
         return ApiClient(accessTokenRepository,
             BASE_URL, accessTokenRepository.deviceId)
     }
+
+    private fun accessTokenRepository(context: Context) =
+        (getMyPreferences(context).restoreRepository()
+            ?: throw IllegalStateException("No access token repository was saved"))
 
     private fun getAccountRepo(context: Context) =
         AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
@@ -110,7 +112,7 @@ object Injector {
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
         val accountRepository = getAccountRepo(context)
-        return VisitsManagementViewModelFactory(repository, accountRepository)
+        return VisitsManagementViewModelFactory(repository, accountRepository, accessTokenRepository(context))
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId:String): VisitDetailsViewModel {
@@ -134,7 +136,8 @@ object Injector {
 
 class VisitsManagementViewModelFactory(
     private val visitsRepository: VisitsRepository,
-    val accountRepository: AccountRepository
+    val accountRepository: AccountRepository,
+    val accessTokenRepository: AccessTokenRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -142,7 +145,8 @@ class VisitsManagementViewModelFactory(
         when (modelClass) {
             VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(
                 visitsRepository,
-                accountRepository
+                accountRepository,
+                accessTokenRepository
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
