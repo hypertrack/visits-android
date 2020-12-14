@@ -11,10 +11,17 @@ import android.webkit.WebView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.hypertrack.android.view_models.VisitsManagementViewModel
 import com.hypertrack.logistics.android.github.R
 
 
-class PageFragment(var page: Page) : Fragment() {
+class PageFragment(
+    var page: Page,
+    private val visitListsAdapter: RecyclerView.Adapter<*>,
+    private val visitListViewManager: RecyclerView.LayoutManager,
+    private val visitsViewModel: VisitsManagementViewModel
+) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,16 +46,29 @@ class PageFragment(var page: Page) : Fragment() {
             }
             view
         }
-        Page.LIST -> inflater.inflate(R.layout.visits_list_fragment, container, false)
+        Page.LIST -> {
+            val view = inflater.inflate(R.layout.visits_list_fragment, container, false)
+            if (view is RecyclerView)
+                view.apply {
+                    layoutManager = visitListViewManager
+                    adapter = visitListsAdapter
+                }
+            view
+        }
     }
 
     companion object FACTORY {
         const val TAG = "PageFragment"
         const val ARG_PAGE = "ARG_PAGE"
-        fun newInstance(page: Page): PageFragment {
+        fun newInstance(
+            page: Page,
+            visitListsAdapter: RecyclerView.Adapter<*>,
+            visitListViewManager: RecyclerView.LayoutManager,
+            visitsViewModel: VisitsManagementViewModel
+        ): PageFragment {
             val args = Bundle()
             args.putInt(ARG_PAGE, page.ordinal)
-            val fragment = PageFragment(page)
+            val fragment = PageFragment(page, visitListsAdapter, visitListViewManager, visitsViewModel)
             fragment.arguments = args
             return fragment
         }
@@ -57,16 +77,21 @@ class PageFragment(var page: Page) : Fragment() {
 
 enum class Page {LIST, VIEW}
 
-class SampleFragmentPagerAdapter(
+class SimpleFragmentPagerAdapter(
     fm: FragmentManager,
-    context: Context
+    context: Context,
+    private val visitListsAdapter: RecyclerView.Adapter<*>,
+    private val visitListViewManager: RecyclerView.LayoutManager,
+    private val visitsViewModel: VisitsManagementViewModel
 ) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     private val tabTitles = context.resources.getStringArray(R.array.tab_names)
 
     override fun getCount(): Int = tabTitles.size
 
-    override fun getItem(position: Int): Fragment = PageFragment.newInstance(Page.values()[position])
+    override fun getItem(position: Int): Fragment = PageFragment.newInstance(
+        Page.values()[position], visitListsAdapter, visitListViewManager, visitsViewModel
+    )
 
     override fun getPageTitle(position: Int): CharSequence? = tabTitles[position]
 
