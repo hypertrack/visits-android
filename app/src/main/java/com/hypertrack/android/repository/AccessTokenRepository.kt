@@ -17,6 +17,7 @@ interface AccessTokenRepository {
     fun getAccessToken(): String
     suspend fun refreshTokenAsync() : String
     fun  getConfig() : Any
+    val deviceHistoryWebViewUrl: String
 }
 
 class BasicAuthAccessTokenRepository(
@@ -92,6 +93,9 @@ class BasicAuthAccessTokenRepository(
     override fun getConfig() : BasicAuthAccessTokenConfig {
         return BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
     }
+
+    override val deviceHistoryWebViewUrl: String
+        get() = "https://embed.hypertrack.com/devices/$deviceId?publishable_key=$userName&map_only=true&back=false"
 
     constructor(
         config: BasicAuthAccessTokenConfig

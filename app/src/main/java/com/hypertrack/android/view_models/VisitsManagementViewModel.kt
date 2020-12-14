@@ -2,6 +2,7 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -11,7 +12,8 @@ import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
-    accountRepository: AccountRepository
+    accountRepository: AccountRepository,
+    private val accessTokenRepository: AccessTokenRepository
 ) : ViewModel() {
 
     private val _clockInButtonText = MediatorLiveData<CharSequence>()
@@ -54,6 +56,8 @@ class VisitsManagementViewModel(
         get() = _enableCheckIn
 
     val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
+
+    val deviceHistoryWebViewUrl = accessTokenRepository.deviceHistoryWebViewUrl
 
     fun refreshVisits() {
         if (_showSpinner.value == true) return

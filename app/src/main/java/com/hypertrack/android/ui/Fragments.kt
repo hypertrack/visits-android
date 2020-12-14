@@ -42,7 +42,7 @@ class PageFragment(
             val view = inflater.inflate(R.layout.webview_fragment, container, false)
             if (view is WebView) {
                 view.settings.javaScriptEnabled = true
-                view.loadUrl("https://embed.hypertrack.com/devices/86BB603D-B905-367D-AE3B-3ECFA4428D96?publishable_key=cQPUCH811xTAGybSMqHxlGt3QWj7_IT-LHQeBsXhAFTwOQR3lfZ8ZXJmiWH3hbUWlIVHpONUmE1owYhgG25owg&map_only=true&back=false\n")
+                view.loadUrl(visitsViewModel.deviceHistoryWebViewUrl)
             }
             view
         }
