@@ -46,6 +46,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         listOf(
+            viewModel.takePictureButton to tvTakePicture,
             viewModel.pickUpButton to tvPickUp,
             viewModel.checkInButton to tvCheckIn,
             viewModel.checkOutButton to tvCheckOut,
@@ -112,6 +113,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         listOf(
+            tvTakePicture to viewModel::onTakePictureClicked,
             tvPickUp to viewModel::onPickUpClicked,
             tvCheckIn to viewModel::onCheckInClicked,
             tvCheckOut to viewModel::onCheckOutClicked,
@@ -127,6 +129,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun disableHandlers() =
         listOf<View>(
+            tvTakePicture,
             tvPickUp,
             tvCheckIn,
             tvCheckOut,

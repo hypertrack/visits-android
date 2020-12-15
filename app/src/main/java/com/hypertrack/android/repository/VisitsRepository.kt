@@ -206,10 +206,9 @@ class VisitsRepository(
 
     }
 
-    fun checkLocalVisitCompleted() {
-        val isNotCompleted = _visitsMap.getLocalVisit()?.let { true } ?: false
-        _hasOngoingLocalVisit.postValue(isNotCompleted)
-    }
+    fun checkLocalVisitCompleted() = _hasOngoingLocalVisit.postValue(
+        _visitsMap.getLocalVisit()?.let { true } ?: false
+    )
 
     fun canEdit(visitId: String) = visitForId(visitId).value?.isEditable?:false
 
@@ -219,6 +218,14 @@ class VisitsRepository(
         val visit = visitForId(visitId).value!!
         if (visit.state == VisitStatus.COMPLETED) return false
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
+    }
+
+    fun updateVisitPhoto(visitId: String, visitPhoto: String?) {
+        Log.d(TAG, "Update photo for visit $visitId")
+//        TODO("Denys: Not Implemented")
+        val target = _visitsMap[visitId] ?: return
+        updateItem(visitId, target)
+
     }
 
     companion object { const val TAG = "VisitsRepository"}

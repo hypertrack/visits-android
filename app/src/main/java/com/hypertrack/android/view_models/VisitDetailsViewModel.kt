@@ -16,6 +16,7 @@ class VisitDetailsViewModel(
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
+    private val _takePictureButton =  MediatorLiveData<Boolean>()
     private val _pickUpButton =  MediatorLiveData<Boolean>()
     private val _checkInButton =  MediatorLiveData<Boolean>()
     private val _checkOutButton =  MediatorLiveData<Boolean>()
@@ -23,6 +24,7 @@ class VisitDetailsViewModel(
     private var _visitNote = MediatorLiveData<Pair<String, Boolean>>() //
     private var _showToast = MutableLiveData(false)
     private var updatedNote: String = visit.value?.visitNote?:""
+    private var visitPhoto: String? = null
 
     init {
         _visitNote.addSource(visitsRepository.visitForId(id)) {
@@ -30,6 +32,7 @@ class VisitDetailsViewModel(
         }
 
         for ((model, targetState) in listOf(
+            _takePictureButton to VisitStatus.COMPLETED,
             _pickUpButton to VisitStatus.PICKED_UP,
             _checkInButton to VisitStatus.VISITED,
             _checkOutButton to VisitStatus.COMPLETED,
@@ -49,6 +52,8 @@ class VisitDetailsViewModel(
         get() = _visitNote
     val showToast: LiveData<Boolean>
         get() = _showToast
+    val takePictureButton: LiveData<Boolean>
+        get() = _takePictureButton
     val pickUpButton: LiveData<Boolean>
         get() = _pickUpButton
     val checkInButton: LiveData<Boolean>
@@ -63,28 +68,34 @@ class VisitDetailsViewModel(
         updatedNote = newNote
     }
 
+    fun onTakePictureClicked() {
+        Log.v(TAG, "Take picture click handler")
+        visitsRepository.setPickedUp(id)
+        updateVisit()
+    }
+
     fun onPickUpClicked() {
         Log.v(TAG, "PickUp click handler")
         visitsRepository.setPickedUp(id)
-        updateVisitNote()
+        updateVisit()
     }
 
     fun onCheckInClicked() {
         Log.v(TAG, "Lower button click handler")
         visitsRepository.setVisited(id)
-        updateVisitNote()
+        updateVisit()
     }
 
     fun onCheckOutClicked() {
         Log.v(TAG, "Check Out click handler")
         visitsRepository.setCompleted(id)
-        updateVisitNote()
+        updateVisit()
     }
 
     fun onCancelClicked() {
         Log.v(TAG, "Cancel click handler")
         visitsRepository.setCancelled(id)
-        updateVisitNote()
+        updateVisit()
     }
 
     fun getLatLng(): LatLng?  {
@@ -94,10 +105,11 @@ class VisitDetailsViewModel(
 
     fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
 
-    fun onBackPressed() = updateVisitNote()
+    fun onBackPressed() = updateVisit()
 
-    private fun updateVisitNote() {
+    private fun updateVisit() {
         val isNoteChanged = visitsRepository.updateVisitNote(id, updatedNote)
+        val isPhotoChanged = visitsRepository.updateVisitPhoto(id, visitPhoto)
         if (isNoteChanged) _showToast.postValue(true)
     }
 

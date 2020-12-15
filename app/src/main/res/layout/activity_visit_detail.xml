@@ -241,20 +241,15 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTakePicture"
+                style="@style/ButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:background="@color/colorTakePicture"
-                android:fontFamily="@font/medium"
+                android:layout_margin="20dp"
                 android:gravity="center"
-                android:padding="10dp"
                 android:text="@string/take_picture"
-                android:textColor="@color/colorWhite"
                 android:enabled="false"
-                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ivCamera" />
 
 
@@ -294,7 +289,6 @@
                 android:gravity="center"
                 android:text="@string/pick_up"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
@@ -309,7 +303,6 @@
                 android:gravity="center"
                 android:text="@string/check_in"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvPickUp" />
@@ -324,7 +317,6 @@
                 android:gravity="center"
                 android:text="@string/check_out"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCheckIn" />
@@ -339,7 +331,6 @@
                 android:gravity="center"
                 android:text="@string/cancel"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCheckOut" />
