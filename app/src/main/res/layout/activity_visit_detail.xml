@@ -218,7 +218,6 @@
                 android:id="@+id/ivCamera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -234,7 +233,6 @@
                 android:text="@string/visit_picture"
                 android:textColor="@color/colorTitle"
                 android:textSize="20sp"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivCamera"
                 app:layout_constraintTop_toBottomOf="@id/etVisitNote"
@@ -255,7 +253,6 @@
                 android:textColor="@color/colorWhite"
                 android:enabled="false"
                 android:textSize="18sp"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
                 app:layout_constraintTop_toBottomOf="@id/ivCamera" />
