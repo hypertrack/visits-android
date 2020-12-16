@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 class ApiClient(
     accessTokenRepository: AccessTokenRepository,
@@ -14,7 +15,7 @@ class ApiClient(
     private val deviceId: String
 ) {
 
-    val api = Retrofit.Builder()
+    val api: ApiInterface = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create(Injector.getGson()))
         .addConverterFactory(ScalarsConverterFactory.create())
@@ -23,6 +24,8 @@ class ApiClient(
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
                 .addInterceptor(UserAgentInterceptor())
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
                 .build()
         )
         .build().create(ApiInterface::class.java)
