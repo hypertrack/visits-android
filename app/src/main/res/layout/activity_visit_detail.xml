@@ -238,21 +238,6 @@
                 app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:layout_constraintTop_toTopOf="@id/ivCamera" />
 
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTakePicture"
-                style="@style/ButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:gravity="center"
-                android:text="@string/take_picture"
-                android:enabled="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivCamera" />
-
-
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivVisitPic"
                 android:layout_width="0dp"
@@ -266,8 +251,20 @@
                 android:textColor="@color/colorWhite"
                  app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
-                app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
+                app:layout_constraintTop_toBottomOf="@id/ivCamera" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTakePicture"
+                style="@style/ButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:gravity="center"
+                android:text="@string/take_picture"
+                android:enabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivClose"
@@ -291,7 +288,7 @@
                 android:textColor="@color/colorWhite"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
+                app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCheckIn"

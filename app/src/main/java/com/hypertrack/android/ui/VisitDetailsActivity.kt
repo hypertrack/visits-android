@@ -1,9 +1,12 @@
 package com.hypertrack.android.ui
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -113,7 +116,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         listOf(
-            tvTakePicture to viewModel::onTakePictureClicked,
+            tvTakePicture to this::dispatchTakePictureIntent,
             tvPickUp to viewModel::onPickUpClicked,
             tvCheckIn to viewModel::onCheckInClicked,
             tvCheckOut to viewModel::onCheckOutClicked,
@@ -126,6 +129,28 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            ivVisitPic.setImageBitmap(imageBitmap)
+            ivVisitPic.visibility = View.VISIBLE
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Log.d(TAG, "dispatchTakePictureIntent")
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        } catch (e: ActivityNotFoundException) {
+            // display error state to the user
+            Log.e(TAG, "Got error $e trying to take a picture")
+
+        }
+    }
+
 
     private fun disableHandlers() =
         listOf<View>(
@@ -145,7 +170,10 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         finish()
     }
 
-    companion object {const val TAG = "VisitDetailsActivity"}
+    companion object {
+        const val TAG = "VisitDetailsActivity"
+        const val REQUEST_IMAGE_CAPTURE = 1
+    }
 
 }
 
