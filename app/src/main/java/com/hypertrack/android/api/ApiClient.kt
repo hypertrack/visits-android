@@ -15,7 +15,7 @@ class ApiClient(
     private val deviceId: String
 ) {
 
-    val api = Retrofit.Builder()
+    val api: ApiInterface = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create(Injector.getGson()))
         .addConverterFactory(ScalarsConverterFactory.create())
