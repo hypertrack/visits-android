@@ -78,7 +78,7 @@ data class Visit(val _id: String,
     fun hasNotes() = visitNote.isNotEmpty()
 
     fun update(prototype: VisitDataSource, isAutoCheckInAllowed: Boolean) : Visit {
-        // prototype can have visitedAt field that we need to copy or
+        // prototype can have visitedAt or metadata field updated that we need to copy or
         return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
             else Visit(
             _id,
@@ -94,18 +94,9 @@ data class Visit(val _id: String,
             latitude,
             longitude,
             visitType,
-            state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state
+            state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state,
+            _icon = _icon
         )
-        // TODO Denys - update when API adds support to geofence events
-//        when {
-//            (geofence.entered_at != enteredAt) -> pass
-//            (geofence.exited_at != exitedAt) -> pass
-//            (geofence.metadata.toString() != customerNote) -> pass
-//            else -> return this
-//        }
-//        return Visit(_id, visit_id, driver_id, geofence.metadata.toString(),
-//        createdAt, updatedAt, address, visitNote, visitPicture, geofence.entered_at,
-//            completedAt, geofence.exited_at, latitude, longitude)
 
     }
 
@@ -122,7 +113,7 @@ data class Visit(val _id: String,
             _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, visitedAt,
             completedAt, exitedAt, latitude, longitude, visitType,
-            state
+            state, _icon = _icon
         )
     }
 
@@ -138,7 +129,8 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, visitedAt,
-            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType, state = newState
+            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType,
+            state = newState, _icon = _icon
         )
     }
 

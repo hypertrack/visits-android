@@ -1,16 +1,13 @@
 package com.hypertrack.android.ui
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -21,12 +18,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
-import com.hypertrack.android.ui.VisitDetailsActivity.Companion.TAG
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visit_detail.*
-import java.io.ByteArrayOutputStream
 
 
 class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -97,6 +92,15 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateView(newValue: Visit) {
         Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newValue.customerNote
+        customerNoteGroup.visibility = if (newValue.customerNote.isEmpty()) View.GONE else View.VISIBLE
+        val takePictureButtonDisabled = tvTakePicture.visibility == View.GONE
+        val hasNoPreview = newValue.icon == null
+        val pictureGroupVisitility =
+            if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
+        Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
+        visitPreviewGroup.visibility = pictureGroupVisitility
+        ivVisitPic.visibility = if (newValue.icon == null) View.GONE else View.VISIBLE
+        ivVisitPic.setImageBitmap(newValue.icon)
         tvAddress.text = newValue.address.street
         if (newValue.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newValue.visitNote)
@@ -151,7 +155,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         try {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        } catch (e: ActivityNotFoundException) {
+        } catch (e: Throwable) {
             // display error state to the user
             Log.e(TAG, "Got error $e trying to take a picture")
 

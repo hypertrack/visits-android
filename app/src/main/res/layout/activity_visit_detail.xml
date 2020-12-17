@@ -63,7 +63,7 @@
             android:fitsSystemWindows="true">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTitleCustomerNote2"
+                android:id="@+id/tvTitleVisitNote"
                 android:layout_width="328dp"
                 android:layout_height="32dp"
                 android:fontFamily="@font/medium"
@@ -249,7 +249,8 @@
                 android:visibility="gone"
                 android:scaleType="centerCrop"
                 android:textColor="@color/colorWhite"
-                 app:layout_constraintEnd_toEndOf="parent"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
                 app:layout_constraintTop_toBottomOf="@id/ivCamera" />
 
@@ -331,6 +332,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCheckOut" />
+
+            <androidx.constraintlayout.widget.Group
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvCustomerNote,ivNote,tvTitleCustomerNote"
+                android:id="@+id/customerNoteGroup"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="ivCamera,tvCameraTitle"
+                android:id="@+id/visitPreviewGroup"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
