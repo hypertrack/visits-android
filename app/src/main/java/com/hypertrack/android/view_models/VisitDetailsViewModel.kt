@@ -1,5 +1,6 @@
 package com.hypertrack.android.view_models
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -68,9 +69,9 @@ class VisitDetailsViewModel(
         updatedNote = newNote
     }
 
-    fun onPictureAdded(encodedImage: String) {
+    fun onPreviwIconAdded(encodedImage: Bitmap) {
         Log.v(TAG, "onPictureAdded handler $encodedImage")
-        visitsRepository.updateVisitPhoto(id, encodedImage)
+        visitsRepository.addPreviewIcon(id, encodedImage)
         updateVisit()
     }
 

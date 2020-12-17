@@ -142,7 +142,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.v(TAG, "Got image ${imageBitmap.height}x${imageBitmap.width}")
             ivVisitPic.setImageBitmap(imageBitmap)
             ivVisitPic.visibility = View.VISIBLE
-            viewModel.onPictureAdded(imageBitmap.toBase64())
+            viewModel.onPreviwIconAdded(imageBitmap)
         }
     }
 
@@ -182,20 +182,6 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         const val REQUEST_IMAGE_CAPTURE = 1
     }
 
-}
-
-fun Bitmap.toBase64(): String {
-    val outputStream = ByteArrayOutputStream()
-    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-    val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
-    Log.d(TAG, "Encoded image $result")
-    return result
-}
-
-fun String.decodeBase64Bitmap(): Bitmap {
-    Log.d(TAG, "decoding image $this")
-    val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
-    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
 
 

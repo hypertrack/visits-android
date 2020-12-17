@@ -1,10 +1,16 @@
 package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.util.Log
 import com.hypertrack.android.repository.COMPLETED
 import com.hypertrack.android.repository.PENDING
 import com.hypertrack.android.repository.VISITED
+import com.hypertrack.android.ui.VisitDetailsActivity
 import com.hypertrack.android.utils.OsUtilsProvider
+import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -21,7 +27,8 @@ data class Visit(val _id: String,
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
                  val visitType: VisitType,
-                 val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
+                 val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING,
+                 private var _icon: String? = null
  ): VisitListItem() {
     val isEditable = state < VisitStatus.COMPLETED
     val isCompleted: Boolean
@@ -61,6 +68,10 @@ data class Visit(val _id: String,
 
 
     val tripVisitPickedUp = state != VisitStatus.PENDING
+
+    var icon: Bitmap?
+        get() = _icon?.decodeBase64Bitmap()
+        set(value) { _icon = value?.toBase64() }
 
     fun hasPicture() = visitPicture.isNotEmpty()
 
@@ -131,8 +142,6 @@ data class Visit(val _id: String,
         )
     }
 
-
-
     constructor(
         visitDataSource: VisitDataSource,
         osUtilsProvider: OsUtilsProvider,
@@ -197,4 +206,18 @@ enum class VisitStatus {
     CANCELLED { override fun canTransitionTo(other: VisitStatus) = false };
 
     abstract fun canTransitionTo(other: VisitStatus): Boolean
+}
+
+fun Bitmap.toBase64(): String {
+    val outputStream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+    Log.d(VisitDetailsActivity.TAG, "Encoded image $result")
+    return result
+}
+
+fun String.decodeBase64Bitmap(): Bitmap {
+    Log.d(VisitDetailsActivity.TAG, "decoding image $this")
+    val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
+    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }

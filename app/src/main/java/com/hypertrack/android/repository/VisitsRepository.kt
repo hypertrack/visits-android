@@ -1,5 +1,6 @@
 package com.hypertrack.android.repository
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -220,12 +221,11 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    fun updateVisitPhoto(visitId: String, visitPhoto: String?) {
-        Log.d(TAG, "Update photo for visit $visitId")
-//        TODO("Denys: Not Implemented")
-        val target = _visitsMap[visitId] ?: return
-        updateItem(visitId, target)
-
+    fun addPreviewIcon(id: String, icon: Bitmap) {
+        Log.d(TAG, "Update photo for visit $id")
+        val target = _visitsMap[id] ?: return
+        target.icon = icon
+        updateItem(id, target)
     }
 
     companion object { const val TAG = "VisitsRepository"}
