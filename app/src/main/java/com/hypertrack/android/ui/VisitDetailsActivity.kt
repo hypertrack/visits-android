@@ -4,11 +4,13 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -19,10 +21,12 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.ui.VisitDetailsActivity.Companion.TAG
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visit_detail.*
+import java.io.ByteArrayOutputStream
 
 
 class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -133,9 +137,12 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
+            val extras = data?.extras?:Bundle()
+            val imageBitmap = extras.get("data") as Bitmap
+            Log.v(TAG, "Got image ${imageBitmap.height}x${imageBitmap.width}")
             ivVisitPic.setImageBitmap(imageBitmap)
             ivVisitPic.visibility = View.VISIBLE
+            viewModel.onPictureAdded(imageBitmap.toBase64())
         }
     }
 
@@ -175,6 +182,20 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         const val REQUEST_IMAGE_CAPTURE = 1
     }
 
+}
+
+fun Bitmap.toBase64(): String {
+    val outputStream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+    Log.d(TAG, "Encoded image $result")
+    return result
+}
+
+fun String.decodeBase64Bitmap(): Bitmap {
+    Log.d(TAG, "decoding image $this")
+    val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
+    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
 
 

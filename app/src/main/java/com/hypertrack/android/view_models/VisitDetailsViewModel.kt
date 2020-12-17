@@ -68,9 +68,9 @@ class VisitDetailsViewModel(
         updatedNote = newNote
     }
 
-    fun onTakePictureClicked() {
-        Log.v(TAG, "Take picture click handler")
-        visitsRepository.setPickedUp(id)
+    fun onPictureAdded(encodedImage: String) {
+        Log.v(TAG, "onPictureAdded handler $encodedImage")
+        visitsRepository.updateVisitPhoto(id, encodedImage)
         updateVisit()
     }
 
@@ -109,7 +109,6 @@ class VisitDetailsViewModel(
 
     private fun updateVisit() {
         val isNoteChanged = visitsRepository.updateVisitNote(id, updatedNote)
-        val isPhotoChanged = visitsRepository.updateVisitPhoto(id, visitPhoto)
         if (isNoteChanged) _showToast.postValue(true)
     }
 
