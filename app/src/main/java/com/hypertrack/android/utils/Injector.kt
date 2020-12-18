@@ -99,12 +99,15 @@ object Injector {
             getVisitsApiClient(context),
             getMyPreferences(context),
             getHyperTrackService(context),
-            getAccountRepo(context)
+            getAccountRepo(context),
+            getImageDecoder(context)
         )
         visitsRepository = result
 
         return result
     }
+
+    private fun getImageDecoder(ctx: Context): ImageDecoder = SimpleImageDecoder(ctx)
 
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
@@ -206,3 +209,4 @@ interface AccountPreferencesProvider {
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
 const val LIVE_API_URL_BASE  = "https://live-api.htprod.hypertrack.com/"
 const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"
+const val MAX_IMAGE_SIDE_LENGTH_PX = 1024

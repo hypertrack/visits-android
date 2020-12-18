@@ -1,8 +1,6 @@
 package com.hypertrack.android.repository
 
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -13,8 +11,6 @@ import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.max
-import kotlin.math.min
 
 const val COMPLETED = "Completed"
 const val VISITED = "Visited"
@@ -25,7 +21,8 @@ class VisitsRepository(
     private val apiClient: ApiClient,
     private val visitsStorage: VisitsStorage,
     private val hyperTrackService: HyperTrackService,
-    private val accountPreferences: AccountPreferencesProvider
+    private val accountPreferences: AccountPreferencesProvider,
+    private val imageDecoder: ImageDecoder
 ) {
 
     private val _visitsMap: MutableMap<String, Visit>
@@ -225,34 +222,19 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    fun addPreviewIcon(id: String, imagePath: String) {
+    suspend fun addPreviewIcon(id: String, imagePath: String)  {
         Log.d(TAG, "Update photo for visit $id")
 
         val target = _visitsMap[id] ?: return
-        // Get the dimensions of the View
-        val targetW: Int = (210 * Resources.getSystem().displayMetrics.density).toInt()
-        val targetH: Int = (160 * Resources.getSystem().displayMetrics.density).toInt()
 
-        val bmOptions = BitmapFactory.Options().apply {
-            // Get the dimensions of the bitmap
-            inJustDecodeBounds = true
-
-            BitmapFactory.decodeFile(imagePath, this)
-
-            val photoW: Int = outWidth
-            val photoH: Int = outHeight
-
-            // Determine how much to scale down the image
-            val scaleFactor: Int = max(1, min(photoW / targetW, photoH / targetH))
-
-            // Decode the image file into a Bitmap sized to fill the View
-            inJustDecodeBounds = false
-            inSampleSize = scaleFactor
-            inPurgeable = true
-        }
-        BitmapFactory.decodeFile(imagePath, bmOptions)?.also { target.icon = it }
+        val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
+        target.icon = imageDecoder.fetchIcon(imagePath,  previewMaxSideLength)
+        Log.v(TAG, "Updated icon in target $target")
 
         updateItem(id, target)
+
+        // TODO Denys schedule image upload
+
     }
 
     companion object { const val TAG = "VisitsRepository"}

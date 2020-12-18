@@ -5,14 +5,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.ImageView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
+import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 
@@ -114,7 +112,9 @@ class VisitDetailsViewModel(
 
     fun onPictureResult(path: String) {
         Log.d(TAG, "onPicResult $path")
-        visitsRepository.addPreviewIcon(id, path)
+        viewModelScope.launch {
+            visitsRepository.addPreviewIcon(id, path)
+        }
         updateVisit()
 
     }
