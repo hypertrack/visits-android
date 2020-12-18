@@ -62,18 +62,6 @@
             android:fillViewport="true"
             android:fitsSystemWindows="true">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTitleVisitNote"
-                android:layout_width="328dp"
-                android:layout_height="32dp"
-                android:fontFamily="@font/medium"
-                android:text="@string/visit_notes"
-                android:textColor="@color/colorTitle"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
-                app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/map"
@@ -200,6 +188,18 @@
                 app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
                 app:srcCompat="@drawable/ic_file" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitleVisitNote"
+                android:layout_width="328dp"
+                android:layout_height="32dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/visit_notes"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
+                app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etVisitNote"

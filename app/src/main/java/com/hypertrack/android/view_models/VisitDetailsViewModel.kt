@@ -1,7 +1,10 @@
 package com.hypertrack.android.view_models
 
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +13,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
+import kotlin.math.max
+import kotlin.math.min
 
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,
@@ -113,8 +118,31 @@ class VisitDetailsViewModel(
         if (isNoteChanged) _showToast.postValue(true)
     }
 
-    fun onPictureResult(path: String) {
-        TODO("Not yet implemented")
+    fun onPictureResult(path: String, imageView: ImageView) {
+        Log.d(TAG, "onPicResult $path")
+        // Get the dimensions of the View
+        val targetW: Int = (210 * Resources.getSystem().displayMetrics.density).toInt()
+        val targetH: Int = (160 * Resources.getSystem().displayMetrics.density).toInt()
+
+        val bmOptions = BitmapFactory.Options().apply {
+            // Get the dimensions of the bitmap
+            inJustDecodeBounds = true
+
+            BitmapFactory.decodeFile(path, this)
+
+            val photoW: Int = outWidth
+            val photoH: Int = outHeight
+
+            // Determine how much to scale down the image
+            val scaleFactor: Int = max(1, min(photoW / targetW, photoH / targetH))
+
+            // Decode the image file into a Bitmap sized to fill the View
+            inJustDecodeBounds = false
+            inSampleSize = scaleFactor
+            inPurgeable = true
+        }
+        BitmapFactory.decodeFile(path, bmOptions)?.also { onPreviwIconAdded(it) }
+
     }
 
     companion object {const val TAG = "VisitDetailsVM"}

@@ -157,7 +157,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
                 viewModel.onPreviwIconAdded(imageBitmap)
             } else {
                 Log.v(TAG, "No preview image was attached to result")
-                viewModel.onPictureResult(currentPhotoPath)
+                viewModel.onPictureResult(currentPhotoPath, ivVisitPic)
             }
         }
     }
