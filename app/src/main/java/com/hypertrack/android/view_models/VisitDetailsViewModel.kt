@@ -74,12 +74,6 @@ class VisitDetailsViewModel(
         updatedNote = newNote
     }
 
-    fun onPreviwIconAdded(encodedImage: Bitmap) {
-        Log.v(TAG, "onPictureAdded handler $encodedImage")
-        visitsRepository.addPreviewIcon(id, encodedImage)
-        updateVisit()
-    }
-
     fun onPickUpClicked() {
         Log.v(TAG, "PickUp click handler")
         visitsRepository.setPickedUp(id)
@@ -118,30 +112,10 @@ class VisitDetailsViewModel(
         if (isNoteChanged) _showToast.postValue(true)
     }
 
-    fun onPictureResult(path: String, imageView: ImageView) {
+    fun onPictureResult(path: String) {
         Log.d(TAG, "onPicResult $path")
-        // Get the dimensions of the View
-        val targetW: Int = (210 * Resources.getSystem().displayMetrics.density).toInt()
-        val targetH: Int = (160 * Resources.getSystem().displayMetrics.density).toInt()
-
-        val bmOptions = BitmapFactory.Options().apply {
-            // Get the dimensions of the bitmap
-            inJustDecodeBounds = true
-
-            BitmapFactory.decodeFile(path, this)
-
-            val photoW: Int = outWidth
-            val photoH: Int = outHeight
-
-            // Determine how much to scale down the image
-            val scaleFactor: Int = max(1, min(photoW / targetW, photoH / targetH))
-
-            // Decode the image file into a Bitmap sized to fill the View
-            inJustDecodeBounds = false
-            inSampleSize = scaleFactor
-            inPurgeable = true
-        }
-        BitmapFactory.decodeFile(path, bmOptions)?.also { onPreviwIconAdded(it) }
+        visitsRepository.addPreviewIcon(id, path)
+        updateVisit()
 
     }
 

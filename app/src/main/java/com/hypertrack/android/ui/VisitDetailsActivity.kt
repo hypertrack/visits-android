@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,11 +22,9 @@ import com.hypertrack.android.models.Visit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
-import com.hypertrack.sdk.utils.Time
 import kotlinx.android.synthetic.main.activity_visit_detail.*
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -147,18 +144,9 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.v(TAG, "Got image capture result $resultCode")
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val extras = data?.extras?:Bundle()
-            if (extras.containsKey("data")) {
-                val imageBitmap = extras.get("data") as Bitmap
-                Log.v(TAG, "Got image ${imageBitmap.height}x${imageBitmap.width}")
-                ivVisitPic.setImageBitmap(imageBitmap)
-                ivVisitPic.visibility = View.VISIBLE
-                viewModel.onPreviwIconAdded(imageBitmap)
-            } else {
-                Log.v(TAG, "No preview image was attached to result")
-                viewModel.onPictureResult(currentPhotoPath, ivVisitPic)
-            }
+            viewModel.onPictureResult(currentPhotoPath)
         }
     }
 
