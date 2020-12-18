@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -21,7 +23,12 @@ import com.hypertrack.android.models.Visit
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
+import com.hypertrack.sdk.utils.Time
 import kotlinx.android.synthetic.main.activity_visit_detail.*
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -142,24 +149,41 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val extras = data?.extras?:Bundle()
-            val imageBitmap = extras.get("data") as Bitmap
-            Log.v(TAG, "Got image ${imageBitmap.height}x${imageBitmap.width}")
-            ivVisitPic.setImageBitmap(imageBitmap)
-            ivVisitPic.visibility = View.VISIBLE
-            viewModel.onPreviwIconAdded(imageBitmap)
+            if (extras.containsKey("data")) {
+                val imageBitmap = extras.get("data") as Bitmap
+                Log.v(TAG, "Got image ${imageBitmap.height}x${imageBitmap.width}")
+                ivVisitPic.setImageBitmap(imageBitmap)
+                ivVisitPic.visibility = View.VISIBLE
+                viewModel.onPreviwIconAdded(imageBitmap)
+            } else {
+                Log.v(TAG, "No preview image was attached to result")
+                viewModel.onPictureResult(currentPhotoPath)
+            }
         }
     }
 
     private fun dispatchTakePictureIntent() {
         Log.d(TAG, "dispatchTakePictureIntent")
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        } catch (e: Throwable) {
-            // display error state to the user
-            Log.e(TAG, "Got error $e trying to take a picture")
-
-        }
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            .also { takePictureIntent ->
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    Toast.makeText(this, getString(R.string.cannot_create_file_msg), Toast.LENGTH_LONG).show()
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.hypertrack.logistics.android.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
+            }
     }
 
 
@@ -179,6 +203,23 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         data.data = Uri.parse(visitPosition)
         setResult(Activity.RESULT_OK, data)
         finish()
+    }
+
+    lateinit var currentPhotoPath: String
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp = "${Date().time}"
+        val storageDir: File = cacheDir
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
     }
 
     companion object {

@@ -50,6 +50,7 @@
     <string name="account_login_error_message">Can\'t login with provided credentials</string>
     <string name="check_login_credentials_hint" />
     <string name="vist_note_updated">Visit note was updated</string>
+    <string name="cannot_create_file_msg">Can\'t create a file for a picture. Check if there\'s enough space</string>
     <string-array
         name="tab_names">
         <item>Visits List</item>

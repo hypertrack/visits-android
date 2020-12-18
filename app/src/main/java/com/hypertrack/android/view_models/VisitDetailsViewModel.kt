@@ -113,5 +113,9 @@ class VisitDetailsViewModel(
         if (isNoteChanged) _showToast.postValue(true)
     }
 
+    fun onPictureResult(path: String) {
+        TODO("Not yet implemented")
+    }
+
     companion object {const val TAG = "VisitDetailsVM"}
 }
