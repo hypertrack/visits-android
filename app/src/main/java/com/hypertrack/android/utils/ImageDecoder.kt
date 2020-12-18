@@ -11,11 +11,12 @@ import kotlin.math.min
  */
 interface ImageDecoder {
     /**@return Bitmap scaled to fit 210x160 square */
-     fun fetchIcon(imagePath: String, maxSideLength: Int): Bitmap
+    fun fetchIcon(imagePath: String, maxSideLength: Int): Bitmap
 }
 
 class SimpleImageDecoder(private val context: Context) : ImageDecoder {
-    override fun fetchIcon(imagePath: String, maxSideLength: Int): Bitmap {
+
+    override fun fetchIcon(imagePath: String, maxSideLength: Int) : Bitmap {
         val options = BitmapFactory.Options().apply {
             // Get the dimensions of the bitmap
             inJustDecodeBounds = true
@@ -36,7 +37,6 @@ class SimpleImageDecoder(private val context: Context) : ImageDecoder {
 
         return BitmapFactory.decodeFile(imagePath, options)
     }
-
 
 }
 

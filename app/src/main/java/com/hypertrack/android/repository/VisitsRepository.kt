@@ -9,6 +9,8 @@ import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -222,18 +224,24 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    suspend fun addPreviewIcon(id: String, imagePath: String)  {
+    suspend fun addPreviewIcon(id: String, imagePath: String) = coroutineScope {
         Log.d(TAG, "Update photo for visit $id")
 
-        val target = _visitsMap[id] ?: return
+        val target = _visitsMap[id]
 
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
-        target.icon = imageDecoder.fetchIcon(imagePath,  previewMaxSideLength)
-        Log.v(TAG, "Updated icon in target $target")
+        launch {
+            target?.icon = imageDecoder.fetchIcon(imagePath, previewMaxSideLength)
+            Log.v(TAG, "Updated icon in target $target")
+            target?.let {  updateItem(id, target)}
+        }
 
-        updateItem(id, target)
+        Log.d(TAG, "Launched preview update task")
 
-        // TODO Denys schedule image upload
+        launch {
+            // TODO Denys schedule image upload
+
+        }
 
     }
 
