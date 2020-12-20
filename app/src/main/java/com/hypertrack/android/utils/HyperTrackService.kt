@@ -33,10 +33,16 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         id: String,
         visitNote: String,
         typeKey: String,
-        isCompleted: Boolean
+        isCompleted: Boolean,
+        visitPicId: String? = null
     ) {
         val completionStatus = if (isCompleted) "CHECK_OUT" else "CANCEL"
-        val payload = mapOf(typeKey to id, "type" to completionStatus, "visit_note" to visitNote)
+        val payload = mapOf(
+            typeKey to id,
+            "type" to completionStatus,
+            "visit_note" to visitNote,
+            "pod" to visitPicId
+        )
         Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload)
     }
@@ -45,8 +51,8 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "CHECK_IN"))
     }
 
-    fun sendPickedUp(id: String, typeKey: String) {
-        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "PICK_UP"))
+    fun sendPickedUp(id: String, typeKey: String, visitPicId: String? = null) {
+        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "PICK_UP", "pod" to visitPicId))
     }
 
     fun clockOut() {

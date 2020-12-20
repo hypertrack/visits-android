@@ -22,7 +22,7 @@ data class Visit(val _id: String,
         "",
         ""
     ),
-                 val visitNote: String = "", var visitPicture: String = "",
+                 val visitNote: String = "", var visitPicture: String? = null,
                  var visitedAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
@@ -73,7 +73,7 @@ data class Visit(val _id: String,
         get() = _icon?.decodeBase64Bitmap()
         set(value) { _icon = value?.toBase64() }
 
-    fun hasPicture() = visitPicture.isNotEmpty()
+    fun hasPicture() = visitPicture?.isNotEmpty()?:false
 
     fun hasNotes() = visitNote.isNotEmpty()
 

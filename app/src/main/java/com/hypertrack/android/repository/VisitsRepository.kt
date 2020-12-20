@@ -143,7 +143,7 @@ class VisitsRepository(
         if (target.tripVisitPickedUp) return
         val updatedVisit = target.pickUp()
         Log.v(TAG, "Marked order $target as picked up")
-        hyperTrackService.sendPickedUp(id, target.typeKey)
+        hyperTrackService.sendPickedUp(id, target.typeKey, target.visitPicture)
         updateItem(id, updatedVisit)
     }
 
@@ -161,7 +161,7 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
         Log.d(TAG, "Completed visit $completedVisit ")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true)
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
 
@@ -170,7 +170,7 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp())
         Log.d(TAG, "Cancelled visit $completedVisit")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false)
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
 
@@ -243,10 +243,16 @@ class VisitsRepository(
         launch {
             val uploadedImage = imageDecoder.fetchIcon(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
             try {
-                apiClient.uploadImage(uploadedImage)
+                val imageKey = apiClient.uploadImage(uploadedImage)
+                target?.let {
+                    target.visitPicture = imageKey
+                    updateItem(id, target)
+                    Log.v(TAG, "Updated visit pic in target $target")
+                }
                 File(imagePath).apply { if (exists()) delete() }
             } catch (e: Exception) {
                 Log.e(TAG, "Error on uploading image ", e)
+                // TODO Denys: Schedule retry
             }
 
         }

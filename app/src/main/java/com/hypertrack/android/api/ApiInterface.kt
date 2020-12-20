@@ -23,7 +23,7 @@ interface ApiInterface {
     suspend fun persistImage(
         @Path("device_id")deviceId : String,
         @Body encodedImage: EncodedImage
-    )
+    ) : Response<ImageResponse>
 
     @GET("client/geofences")
     suspend fun getGeofences(
@@ -76,6 +76,10 @@ data class GeofenceResponse(
     val paginationToken: String
         get() = _next ?: ""
 }
+
+data class ImageResponse(
+    @SerializedName("name") val name: String
+)
 
 data class Trip(
     @SerializedName("views") private val _views: Views?,
