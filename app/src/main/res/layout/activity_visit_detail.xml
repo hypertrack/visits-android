@@ -247,7 +247,7 @@
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:visibility="gone"
-                android:scaleType="centerCrop"
+                android:scaleType="centerInside"
                 android:textColor="@color/colorWhite"
                 android:padding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"

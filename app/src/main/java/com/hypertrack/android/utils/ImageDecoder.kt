@@ -3,6 +3,7 @@ package com.hypertrack.android.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import kotlin.math.max
 import kotlin.math.min
 
@@ -17,6 +18,7 @@ interface ImageDecoder {
 class SimpleImageDecoder : ImageDecoder {
 
     override fun fetchIcon(imagePath: String, maxSideLength: Int) : Bitmap {
+        Log.v(TAG, "fetchIcon $imagePath with size $maxSideLength")
         val options = BitmapFactory.Options().apply {
             // Get the dimensions of the bitmap
             inJustDecodeBounds = true
@@ -25,9 +27,12 @@ class SimpleImageDecoder : ImageDecoder {
 
             val photoW: Int = outWidth
             val photoH: Int = outHeight
+            Log.v(TAG, "captured size ${outWidth}x${outHeight} downscaling to $maxSideLength")
 
             // Determine how much to scale down the image
-            val scaleFactor: Int = max(1, min(photoW / maxSideLength, photoH / maxSideLength))
+            val scaleFactor: Int = listOf(1, photoW / maxSideLength, photoH / maxSideLength).maxOf { it }
+
+            Log.v(TAG, "Computed scale factor $scaleFactor")
 
             // Decode the image file into a Bitmap sized to fill the View
             inJustDecodeBounds = false
@@ -37,6 +42,8 @@ class SimpleImageDecoder : ImageDecoder {
 
         return BitmapFactory.decodeFile(imagePath, options)
     }
+
+    companion object { const val TAG = "ImageDecoder" }
 
 }
 
