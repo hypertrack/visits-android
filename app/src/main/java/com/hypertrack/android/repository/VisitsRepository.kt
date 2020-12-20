@@ -2,6 +2,7 @@ package com.hypertrack.android.repository
 
 import android.content.res.Resources
 import android.util.Log
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +12,7 @@ import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -239,7 +241,13 @@ class VisitsRepository(
         Log.d(TAG, "Launched preview update task")
 
         launch {
-            // TODO Denys schedule image upload
+            val uploadedImage = imageDecoder.fetchIcon(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
+            try {
+                apiClient.uploadImage(uploadedImage)
+                File(imagePath).apply { if (exists()) delete() }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error on uploading image ", e)
+            }
 
         }
 

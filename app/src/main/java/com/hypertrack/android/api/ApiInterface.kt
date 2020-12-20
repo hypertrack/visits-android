@@ -1,16 +1,15 @@
 package com.hypertrack.android.api
 
+import android.graphics.Bitmap
 import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
+import com.hypertrack.android.models.toBase64
 import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface ApiInterface {
 
@@ -19,6 +18,12 @@ interface ApiInterface {
 
     @POST("client/devices/{device_id}/stop")
     suspend fun clockOut(@Path("device_id")deviceId : String)
+
+    @POST("client/devices/{device_id}/image")
+    suspend fun persistImage(
+        @Path("device_id")deviceId : String,
+        @Body encodedImage: EncodedImage
+    )
 
     @GET("client/geofences")
     suspend fun getGeofences(
@@ -38,6 +43,10 @@ interface ApiInterface {
         @Query("pagination_token")paginationToken: String
     ) : Response<TripResponse>
 
+}
+
+data class EncodedImage(@SerializedName("data") val data: String) {
+    constructor(bitmap: Bitmap) : this(bitmap.toBase64())
 }
 
 data class TripResponse(

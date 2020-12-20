@@ -1,5 +1,6 @@
 package com.hypertrack.android.api
 
+import android.graphics.Bitmap
 import android.util.Log
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
@@ -94,6 +95,8 @@ class ApiClient(
 
 
     }
+
+    suspend fun uploadImage(image: Bitmap) = api.persistImage(deviceId, EncodedImage(image))
 
     companion object { const val TAG = "ApiClient"}
 
