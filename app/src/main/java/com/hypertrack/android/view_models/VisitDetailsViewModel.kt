@@ -1,18 +1,12 @@
 package com.hypertrack.android.view_models
 
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.ImageView
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
-import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
+import com.hypertrack.android.repository.VisitsRepository
 import kotlinx.coroutines.launch
-import kotlin.math.max
-import kotlin.math.min
 
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,
