@@ -107,7 +107,7 @@ object Injector {
         return result
     }
 
-    private fun getImageDecoder(ctx: Context): ImageDecoder = SimpleImageDecoder(ctx)
+    private fun getImageDecoder(ctx: Context): ImageDecoder = SimpleImageDecoder()
 
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)

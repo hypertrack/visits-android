@@ -14,7 +14,7 @@ interface ImageDecoder {
     fun fetchIcon(imagePath: String, maxSideLength: Int): Bitmap
 }
 
-class SimpleImageDecoder(private val context: Context) : ImageDecoder {
+class SimpleImageDecoder : ImageDecoder {
 
     override fun fetchIcon(imagePath: String, maxSideLength: Int) : Bitmap {
         val options = BitmapFactory.Options().apply {
