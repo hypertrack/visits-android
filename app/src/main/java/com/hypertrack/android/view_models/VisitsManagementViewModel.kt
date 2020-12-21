@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
+import com.hypertrack.android.utils.CrashReportsProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
     accountRepository: AccountRepository,
-    private val accessTokenRepository: AccessTokenRepository
+    private val accessTokenRepository: AccessTokenRepository,
+    private val crashReportsProvider: CrashReportsProvider
 ) : ViewModel() {
 
     private val _clockInButtonText = MediatorLiveData<CharSequence>()
@@ -72,7 +74,8 @@ class VisitsManagementViewModel(
                 visitsRepository.refreshVisits()
             } catch (e: Throwable) {
                 Log.e(TAG, "Got error $e refreshing visits")
-                _showToast.postValue("Got error refreshing visits $e")
+                crashReportsProvider.logException(e)
+                _showToast.postValue("Can't refresh visits")
             } finally {
                 _showSpinner.postValue(false)
             }

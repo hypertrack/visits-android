@@ -27,7 +27,8 @@ class VisitsRepository(
     private val visitsStorage: VisitsStorage,
     private val hyperTrackService: HyperTrackService,
     private val accountPreferences: AccountPreferencesProvider,
-    private val imageDecoder: ImageDecoder
+    private val imageDecoder: ImageDecoder,
+    private val crashReportsProvider: CrashReportsProvider
 ) {
 
     private val _visitsMap: MutableMap<String, Visit>
@@ -144,7 +145,7 @@ class VisitsRepository(
         if (target.tripVisitPickedUp) return
         val updatedVisit = target.pickUp()
         Log.v(TAG, "Marked order $target as picked up")
-        hyperTrackService.sendPickedUp(id, target.typeKey, target.visitPicture)
+        hyperTrackService.sendPickedUp(id, target.typeKey)
         updateItem(id, updatedVisit)
     }
 
@@ -257,6 +258,26 @@ class VisitsRepository(
     }
 
 
+    suspend fun <T> retryWithBackoff(
+        times: Int = Int.MAX_VALUE,
+        initialDelay: Long = 1000, //  1 sec
+        maxDelay: Long = 10000,    // 10 secs
+        factor: Double = 2.0,
+        block: suspend () -> T): T
+    {
+        var currentDelay = initialDelay
+        repeat(times - 1) {
+            try {
+                return block()
+            } catch (t: Throwable) {
+                crashReportsProvider.logException(t)
+            }
+            delay(currentDelay)
+            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+        }
+        return block() // last attempt
+    }
+
     companion object { const val TAG = "VisitsRepository"}
 
 }
@@ -290,26 +311,6 @@ private fun Map<String, Visit>.getLocalVisit(): Visit? {
     return ongoingLocal.first()
 }
 
-suspend fun <T> retryWithBackoff(
-    times: Int = Int.MAX_VALUE,
-    initialDelay: Long = 1000, //  1 sec
-    maxDelay: Long = 10000,    // 10 secs
-    factor: Double = 2.0,
-    block: suspend () -> T): T
-{
-    var currentDelay = initialDelay
-    repeat(times - 1) {
-        try {
-            return block()
-        } catch (t: Throwable) {
-            // you can log an error here and/or make a more finer-grained
-            // analysis of the cause to see if retry is needed
-        }
-        delay(currentDelay)
-        currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
-    }
-    return block() // last attempt
-}
 
 
 
