@@ -29,7 +29,7 @@ class AccountRepository(
     suspend fun onKeyReceived(key: String, checkInEnabled: String = "false", autoCheckIn: String = "true") : Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
-        Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
+        // Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
 
         val accessTokenRepository = serviceLocator.getAccessTokenRepository(sdk.deviceId, key)
         val token = try {

@@ -78,15 +78,15 @@ class VisitsRepository(
 
 
     suspend fun refreshVisits() {
-        Log.v(TAG, "Refreshing visits")
+        // Log.v(TAG, "Refreshing visits")
         val geofences = apiClient.getGeofences()
-        Log.v(TAG, "Got geofences $geofences")
+        // Log.v(TAG, "Got geofences $geofences")
         val trips = apiClient.getTrips()
-        Log.v(TAG, "Got trips $trips")
+        // Log.v(TAG, "Got trips $trips")
         val prototypes : Set<VisitDataSource> = trips.union(geofences)
-        Log.d(TAG, "Total prototypes $prototypes")
+        // Log.d(TAG, "Total prototypes $prototypes")
         prototypes.forEach { prototype ->
-            Log.v(TAG, "Processing prototype $prototype")
+            // Log.v(TAG, "Processing prototype $prototype")
             val currentValue = _visitsMap[prototype._id]
             if (currentValue == null) {
                 val visit = Visit(
@@ -106,29 +106,29 @@ class VisitsRepository(
             }
         }
         val deletedEntries = _visitsMap.filter { it.value.isDeletable }.keys - prototypes.map { it._id }
-        Log.v(TAG, "Entries missing in update and will be deleted $deletedEntries")
+        // Log.v(TAG, "Entries missing in update and will be deleted $deletedEntries")
         _visitsMap -= deletedEntries
         _visitItemsById -= deletedEntries
 
-        Log.d(TAG, "Updated _visitsMap $_visitsMap")
-        Log.d(TAG, "Updated _visitItemsById $_visitItemsById")
+        // Log.d(TAG, "Updated _visitsMap $_visitsMap")
+        // Log.d(TAG, "Updated _visitItemsById $_visitItemsById")
 
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
-        Log.d(TAG, "Updated _visitListItems ${_visitListItems.value}")
+        // Log.d(TAG, "Updated _visitListItems ${_visitListItems.value}")
     }
 
     fun visitForId(id: String): LiveData<Visit> = _visitItemsById[id]?:throw IllegalArgumentException("No visit for id $id")
 
     fun updateVisitNote(id: String, newNote: String): Boolean {
         val target = _visitsMap[id] ?: return false
-        Log.d(TAG, "Updating visit $target with note $newNote")
+        // Log.d(TAG, "Updating visit $target with note $newNote")
         // Brake infinite cycle
         if (target.visitNote == newNote) return false
 
         val updatedVisit = target.updateNote(newNote)
         updateItem(id, updatedVisit)
-        Log.d(TAG, "Updated visit $updatedVisit")
+        // Log.d(TAG, "Updated visit $updatedVisit")
         return true
     }
 
@@ -140,20 +140,20 @@ class VisitsRepository(
     }
 
     fun setPickedUp(id: String) {
-        Log.d(TAG, "Set picked UP $id")
+        // Log.d(TAG, "Set picked UP $id")
         val target = _visitsMap[id] ?: return
         if (target.tripVisitPickedUp) return
         val updatedVisit = target.pickUp()
-        Log.v(TAG, "Marked order $target as picked up")
+        // Log.v(TAG, "Marked order $target as picked up")
         hyperTrackService.sendPickedUp(id, target.typeKey)
         updateItem(id, updatedVisit)
     }
 
     fun setVisited(id: String) {
-        Log.d(TAG, "Set checked in $id")
+        // Log.d(TAG, "Set checked in $id")
         val target = _visitsMap[id] ?: return
         val updatedVisit = target.markVisited()
-        Log.v(TAG, "Marked order $target as checked in")
+        // Log.v(TAG, "Marked order $target as checked in")
         hyperTrackService.createVisitStartEvent(id, target.typeKey)
         updateItem(id, updatedVisit)
     }
@@ -162,7 +162,7 @@ class VisitsRepository(
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
-        Log.d(TAG, "Completed visit $completedVisit ")
+        // Log.d(TAG, "Completed visit $completedVisit ")
         hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
@@ -171,24 +171,24 @@ class VisitsRepository(
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
         val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp())
-        Log.d(TAG, "Cancelled visit $completedVisit")
+        // Log.d(TAG, "Cancelled visit $completedVisit")
         hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
 
     fun switchTracking() {
-        Log.d(TAG, "switch Tracking")
+        // Log.d(TAG, "switch Tracking")
         if (_isTracking.value == true) {
-            Log.v(TAG, "Stop tracking")
+            // Log.v(TAG, "Stop tracking")
             hyperTrackService.clockOut()
         } else {
-            Log.v(TAG, "Start tracking")
+            // Log.v(TAG, "Start tracking")
             hyperTrackService.clockIn()
         }
     }
 
     fun processLocalVisit() {
-        Log.d(TAG, "processLocalVisit")
+        // Log.d(TAG, "processLocalVisit")
         val localVisit = _visitsMap.getLocalVisit()
         localVisit?.let { ongoingVisit ->
             setCompleted(ongoingVisit._id)
@@ -221,7 +221,7 @@ class VisitsRepository(
     fun canEdit(visitId: String) = visitForId(visitId).value?.isEditable?:false
 
     fun transitionAllowed(targetState: VisitStatus, visitId: String): Boolean {
-        Log.v(TAG, "transitionAllowed $targetState, $visitId")
+        // Log.v(TAG, "transitionAllowed $targetState, $visitId")
         if (targetState == VisitStatus.VISITED && accountPreferences.isAutoCheckInEnabled) return false
         val visit = visitForId(visitId).value!!
         if (visit.state == VisitStatus.COMPLETED) return false
@@ -229,17 +229,17 @@ class VisitsRepository(
     }
 
     suspend fun setImage(id: String, imagePath: String) = coroutineScope {
-        Log.d(TAG, "Update image for visit $id")
+        // Log.d(TAG, "Update image for visit $id")
 
         val target = _visitsMap[id] ?: return@coroutineScope
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
         launch {
             target.icon = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
-            Log.v(TAG, "Updated icon in target $target")
+            // Log.v(TAG, "Updated icon in target $target")
             updateItem(id, target)
         }
 
-        Log.d(TAG, "Launched preview update task")
+        // Log.d(TAG, "Launched preview update task")
         retryWithBackoff(times = 5) { uploadImage(imagePath, target, id) }
 
     }
@@ -253,7 +253,7 @@ class VisitsRepository(
         val imageKey = apiClient.uploadImage(uploadedImage)
         target.visitPicture = imageKey
         updateItem(id, target)
-        Log.v(TAG, "Updated visit pic in target $target")
+        // Log.v(TAG, "Updated visit pic in target $target")
         File(imagePath).apply { if (exists()) delete() }
     }
 

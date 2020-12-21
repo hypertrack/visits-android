@@ -83,7 +83,7 @@ class VisitsManagementViewModel(
     }
 
     fun switchTracking() {
-        Log.v(TAG, "switchTracking")
+        // Log.v(TAG, "switchTracking")
         _showSpinner.postValue(true)
         viewModelScope.launch {
             visitsRepository.switchTracking()
@@ -93,7 +93,7 @@ class VisitsManagementViewModel(
     }
 
     fun checkIn() {
-        Log.v(TAG, "checkin")
+        // Log.v(TAG, "checkin")
         visitsRepository.processLocalVisit()
     }
 

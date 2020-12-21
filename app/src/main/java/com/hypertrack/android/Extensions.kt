@@ -12,7 +12,7 @@ val pass: Unit = Unit
 
 fun AppCompatActivity.navigateTo(destination: Destination) {
 
-    Log.d("Ext", "Navigating to $destination")
+    // Log.d("Ext", "Navigating to $destination")
 
     val targetActivity = when (destination) {
         Destination.SPLASH_SCREEN -> SplashScreen::class.java
@@ -24,7 +24,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
     }
 
     if (javaClass == targetActivity) {
-        Log.d("EXT", "Destination $destination is current activity")
+        // Log.d("EXT", "Destination $destination is current activity")
         return
     }
 

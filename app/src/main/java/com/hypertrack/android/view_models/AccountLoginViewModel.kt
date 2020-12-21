@@ -39,19 +39,19 @@ class AccountLoginViewModel(
     private val _showToast = MutableLiveData(false)
 
     fun onLoginTextChanged(email: CharSequence) {
-        Log.v(TAG, "onLoginTextChanged $email")
+        // Log.v(TAG, "onLoginTextChanged $email")
         login = email.toString()
         enableButtonIfInputNonEmpty()
     }
 
     fun onPasswordTextChanged(pwd: CharSequence) {
-        Log.v(TAG, "onPasswordTextChanged $pwd")
+        // Log.v(TAG, "onPasswordTextChanged $pwd")
         password = pwd.toString()
         enableButtonIfInputNonEmpty()
     }
 
     fun onLoginClick() {
-        Log.v(TAG, "onLoginClick")
+        // Log.v(TAG, "onLoginClick")
         _isLoginButtonClickable.postValue(false)
         _showProgress.value = true
         viewModelScope.launch {
@@ -69,9 +69,9 @@ class AccountLoginViewModel(
     }
 
     private fun enableButtonIfInputNonEmpty() {
-        Log.v(TAG, "enableButtonIfInputNonEmpty")
+        // Log.v(TAG, "enableButtonIfInputNonEmpty")
         if (login.isNotBlank() && password.isNotBlank() && _isLoginButtonClickable.value == false) {
-            Log.v(TAG, "enabling Button")
+            // Log.v(TAG, "enabling Button")
             _isLoginButtonClickable.postValue(true)
             _showToast.postValue(false)
         }

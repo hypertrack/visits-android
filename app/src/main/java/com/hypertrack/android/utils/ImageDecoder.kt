@@ -18,7 +18,7 @@ interface ImageDecoder {
 class SimpleImageDecoder : ImageDecoder {
 
     override fun readBitmap(imagePath: String, maxSideLength: Int) : Bitmap {
-        Log.v(TAG, "fetchIcon $imagePath with size $maxSideLength")
+        // Log.v(TAG, "fetchIcon $imagePath with size $maxSideLength")
         val options = BitmapFactory.Options().apply {
             // Get the dimensions of the bitmap
             inJustDecodeBounds = true
@@ -27,12 +27,12 @@ class SimpleImageDecoder : ImageDecoder {
 
             val photoW: Int = outWidth
             val photoH: Int = outHeight
-            Log.v(TAG, "captured size ${outWidth}x${outHeight} downscaling to $maxSideLength")
+            // Log.v(TAG, "captured size ${outWidth}x${outHeight} downscaling to $maxSideLength")
 
             // Determine how much to scale down the image
             val scaleFactor: Int = listOf(1, photoW / maxSideLength, photoH / maxSideLength).maxOf { it }
 
-            Log.v(TAG, "Computed scale factor $scaleFactor")
+            // Log.v(TAG, "Computed scale factor $scaleFactor")
 
             // Decode the image file into a Bitmap sized to fill the View
             inJustDecodeBounds = false

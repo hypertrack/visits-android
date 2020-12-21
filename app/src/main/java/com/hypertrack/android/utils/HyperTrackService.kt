@@ -43,7 +43,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
             "visit_note" to visitNote,
             "_visit_photo" to visitPicId
         )
-        Log.d(TAG, "Completion event payload $payload")
+        // Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload)
     }
 

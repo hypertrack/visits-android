@@ -26,7 +26,7 @@ class SplashScreen : ProgressDialogActivity() {
 
         splashScreenViewModel
             .noAccountFragment.observe(this, { show ->
-                    Log.d(TAG,"No pk fragment $show")
+                    // Log.d(TAG,"No pk fragment $show")
             })
         splashScreenViewModel.destination
             .observe(this, { destination -> navigateTo(destination) })
@@ -35,7 +35,7 @@ class SplashScreen : ProgressDialogActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart")
+        // Log.d(TAG, "onStart")
         splashScreenViewModel.spinner
             .observe(this, { show ->
                 if (show) showProgress() else dismissProgress()
@@ -47,7 +47,7 @@ class SplashScreen : ProgressDialogActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        Log.d(TAG, "onNewIntent")
+        // Log.d(TAG, "onNewIntent")
 
         deepLinkProcessor.activityOnNewIntent(this, intent, splashScreenViewModel)
 

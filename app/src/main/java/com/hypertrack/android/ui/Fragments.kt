@@ -21,11 +21,11 @@ class PageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate with page $page")
+        // Log.d(TAG, "onCreate with page $page")
         arguments?.let {
             page = Page.values()[it.getInt(ARG_PAGE)]
         }
-        Log.d(TAG, "Restored page $page")
+        // Log.d(TAG, "Restored page $page")
     }
 
     @SuppressLint("SetJavaScriptEnabled")
