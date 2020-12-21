@@ -1,10 +1,16 @@
 package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.util.Log
 import com.hypertrack.android.repository.COMPLETED
 import com.hypertrack.android.repository.PENDING
 import com.hypertrack.android.repository.VISITED
+import com.hypertrack.android.ui.VisitDetailsActivity
 import com.hypertrack.android.utils.OsUtilsProvider
+import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -16,12 +22,13 @@ data class Visit(val _id: String,
         "",
         ""
     ),
-                 val visitNote: String = "", var visitPicture: String = "",
+                 val visitNote: String = "", var visitPicture: String? = null,
                  var visitedAt:String = "",
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
                  val visitType: VisitType,
-                 val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
+                 val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING,
+                 private var _icon: String? = null
  ): VisitListItem() {
     val isEditable = state < VisitStatus.COMPLETED
     val isCompleted: Boolean
@@ -62,12 +69,16 @@ data class Visit(val _id: String,
 
     val tripVisitPickedUp = state != VisitStatus.PENDING
 
-    fun hasPicture() = visitPicture.isNotEmpty()
+    var icon: Bitmap?
+        get() = _icon?.decodeBase64Bitmap()
+        set(value) { _icon = value?.toBase64() }
+
+    fun hasPicture() = visitPicture?.isNotEmpty()?:false
 
     fun hasNotes() = visitNote.isNotEmpty()
 
     fun update(prototype: VisitDataSource, isAutoCheckInAllowed: Boolean) : Visit {
-        // prototype can have visitedAt field that we need to copy or
+        // prototype can have visitedAt or metadata field updated that we need to copy or
         return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
             else Visit(
             _id,
@@ -83,18 +94,9 @@ data class Visit(val _id: String,
             latitude,
             longitude,
             visitType,
-            state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state
+            state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state,
+            _icon = _icon
         )
-        // TODO Denys - update when API adds support to geofence events
-//        when {
-//            (geofence.entered_at != enteredAt) -> pass
-//            (geofence.exited_at != exitedAt) -> pass
-//            (geofence.metadata.toString() != customerNote) -> pass
-//            else -> return this
-//        }
-//        return Visit(_id, visit_id, driver_id, geofence.metadata.toString(),
-//        createdAt, updatedAt, address, visitNote, visitPicture, geofence.entered_at,
-//            completedAt, geofence.exited_at, latitude, longitude)
 
     }
 
@@ -111,7 +113,7 @@ data class Visit(val _id: String,
             _id, visit_id, customerNote,
             createdAt, address, newNote, visitPicture, visitedAt,
             completedAt, exitedAt, latitude, longitude, visitType,
-            state
+            state, _icon = _icon
         )
     }
 
@@ -127,11 +129,10 @@ data class Visit(val _id: String,
         return Visit(
             _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, visitedAt,
-            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType, state = newState
+            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType,
+            state = newState, _icon = _icon
         )
     }
-
-
 
     constructor(
         visitDataSource: VisitDataSource,
@@ -197,4 +198,18 @@ enum class VisitStatus {
     CANCELLED { override fun canTransitionTo(other: VisitStatus) = false };
 
     abstract fun canTransitionTo(other: VisitStatus): Boolean
+}
+
+fun Bitmap.toBase64(): String {
+    val outputStream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
+    Log.d(VisitDetailsActivity.TAG, "Encoded image $result")
+    return result
+}
+
+fun String.decodeBase64Bitmap(): Bitmap {
+    Log.d(VisitDetailsActivity.TAG, "decoding image $this")
+    val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
+    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }

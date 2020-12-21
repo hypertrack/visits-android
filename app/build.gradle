@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
+apply plugin: 'com.google.firebase.crashlytics'
+
 
 android {
     compileSdkVersion 30
@@ -103,6 +105,10 @@ dependencies {
 
     // Cognito
     implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.16.7'
+
+    // Crashlytics
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    implementation 'com.google.firebase:firebase-analytics:18.0.0'
 
     testImplementation 'junit:junit:4.13.1'
     //noinspection GradleDependency

@@ -7,7 +7,7 @@ import com.hypertrack.logistics.android.github.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-class OsUtilsProvider(private val context: Context) {
+class OsUtilsProvider(private val context: Context, private val crashReportsProvider: CrashReportsProvider) {
     fun getCurrentTimestamp(): String {
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
         df.timeZone = TimeZone.getTimeZone("UTC")
@@ -37,7 +37,9 @@ class OsUtilsProvider(private val context: Context) {
                     address.countryName ?: context.getString(R.string.unknown_country)
                 )
             }
-        } catch (_: Throwable) { }
+        } catch (t: Throwable) {
+            crashReportsProvider.logException(t)
+        }
         return Address(
             context.getString(R.string.unknown_location_at)+ "($latitude, $longitude)",
             "",

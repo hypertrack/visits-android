@@ -62,18 +62,6 @@
             android:fillViewport="true"
             android:fitsSystemWindows="true">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTitleCustomerNote2"
-                android:layout_width="328dp"
-                android:layout_height="32dp"
-                android:fontFamily="@font/medium"
-                android:text="@string/visit_notes"
-                android:textColor="@color/colorTitle"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
-                app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/map"
@@ -200,6 +188,18 @@
                 app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
                 app:srcCompat="@drawable/ic_file" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitleVisitNote"
+                android:layout_width="328dp"
+                android:layout_height="32dp"
+                android:fontFamily="@font/medium"
+                android:text="@string/visit_notes"
+                android:textColor="@color/colorTitle"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
+                app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etVisitNote"
@@ -218,7 +218,6 @@
                 android:id="@+id/ivCamera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -234,32 +233,10 @@
                 android:text="@string/visit_picture"
                 android:textColor="@color/colorTitle"
                 android:textSize="20sp"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ivCamera"
                 app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:layout_constraintTop_toTopOf="@id/ivCamera" />
-
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTakePicture"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:background="@color/colorTakePicture"
-                android:fontFamily="@font/medium"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/take_picture"
-                android:textColor="@color/colorWhite"
-                android:enabled="false"
-                android:textSize="18sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
-                app:layout_constraintTop_toBottomOf="@id/ivCamera" />
-
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivVisitPic"
@@ -270,12 +247,25 @@
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:visibility="gone"
-                android:scaleType="centerCrop"
+                android:scaleType="centerInside"
                 android:textColor="@color/colorWhite"
-                 app:layout_constraintEnd_toEndOf="parent"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
-                app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
+                app:layout_constraintTop_toBottomOf="@id/ivCamera" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTakePicture"
+                style="@style/ButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:gravity="center"
+                android:text="@string/take_picture"
+                android:enabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivClose"
@@ -297,10 +287,9 @@
                 android:gravity="center"
                 android:text="@string/pick_up"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
+                app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCheckIn"
@@ -312,7 +301,6 @@
                 android:gravity="center"
                 android:text="@string/check_in"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvPickUp" />
@@ -327,7 +315,6 @@
                 android:gravity="center"
                 android:text="@string/check_out"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCheckIn" />
@@ -342,10 +329,21 @@
                 android:gravity="center"
                 android:text="@string/cancel"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCheckOut" />
+
+            <androidx.constraintlayout.widget.Group
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tvCustomerNote,ivNote,tvTitleCustomerNote"
+                android:id="@+id/customerNoteGroup"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="ivCamera,tvCameraTitle"
+                android:id="@+id/visitPreviewGroup"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

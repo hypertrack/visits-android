@@ -1,5 +1,6 @@
 package com.hypertrack.android.repository
 
+import android.content.res.Resources
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -8,6 +9,11 @@ import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -20,7 +26,9 @@ class VisitsRepository(
     private val apiClient: ApiClient,
     private val visitsStorage: VisitsStorage,
     private val hyperTrackService: HyperTrackService,
-    private val accountPreferences: AccountPreferencesProvider
+    private val accountPreferences: AccountPreferencesProvider,
+    private val imageDecoder: ImageDecoder,
+    private val crashReportsProvider: CrashReportsProvider
 ) {
 
     private val _visitsMap: MutableMap<String, Visit>
@@ -155,7 +163,7 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
         Log.d(TAG, "Completed visit $completedVisit ")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true)
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
 
@@ -164,7 +172,7 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp())
         Log.d(TAG, "Cancelled visit $completedVisit")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false)
+        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
 
@@ -206,10 +214,9 @@ class VisitsRepository(
 
     }
 
-    fun checkLocalVisitCompleted() {
-        val isNotCompleted = _visitsMap.getLocalVisit()?.let { true } ?: false
-        _hasOngoingLocalVisit.postValue(isNotCompleted)
-    }
+    fun checkLocalVisitCompleted() = _hasOngoingLocalVisit.postValue(
+        _visitsMap.getLocalVisit()?.let { true } ?: false
+    )
 
     fun canEdit(visitId: String) = visitForId(visitId).value?.isEditable?:false
 
@@ -219,6 +226,56 @@ class VisitsRepository(
         val visit = visitForId(visitId).value!!
         if (visit.state == VisitStatus.COMPLETED) return false
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
+    }
+
+    suspend fun setImage(id: String, imagePath: String) = coroutineScope {
+        Log.d(TAG, "Update image for visit $id")
+
+        val target = _visitsMap[id] ?: return@coroutineScope
+        val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
+        launch {
+            target.icon = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
+            Log.v(TAG, "Updated icon in target $target")
+            updateItem(id, target)
+        }
+
+        Log.d(TAG, "Launched preview update task")
+        retryWithBackoff(times = 5) { uploadImage(imagePath, target, id) }
+
+    }
+
+    private fun CoroutineScope.uploadImage(
+        imagePath: String,
+        target: Visit,
+        id: String
+    ) = launch {
+        val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
+        val imageKey = apiClient.uploadImage(uploadedImage)
+        target.visitPicture = imageKey
+        updateItem(id, target)
+        Log.v(TAG, "Updated visit pic in target $target")
+        File(imagePath).apply { if (exists()) delete() }
+    }
+
+
+    suspend fun <T> retryWithBackoff(
+        times: Int = Int.MAX_VALUE,
+        initialDelay: Long = 1000, //  1 sec
+        maxDelay: Long = 10000,    // 10 secs
+        factor: Double = 2.0,
+        block: suspend () -> T): T
+    {
+        var currentDelay = initialDelay
+        repeat(times - 1) {
+            try {
+                return block()
+            } catch (t: Throwable) {
+                crashReportsProvider.logException(t)
+            }
+            delay(currentDelay)
+            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+        }
+        return block() // last attempt
     }
 
     companion object { const val TAG = "VisitsRepository"}

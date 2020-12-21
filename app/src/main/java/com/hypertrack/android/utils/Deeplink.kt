@@ -22,7 +22,9 @@ interface DeeplinkResultListener {
     fun onDeeplinkResult(parameters: Map<String, Any>)
 }
 
-public class BranchIoDeepLinkProcessor : DeeplinkProcessor {
+public class BranchIoDeepLinkProcessor(
+    private val crashReportsProvider: CrashReportsProvider
+) : DeeplinkProcessor {
 
     override fun appOnCreate(application: Application) {
         //        Branch.enableLogging()
@@ -41,6 +43,7 @@ public class BranchIoDeepLinkProcessor : DeeplinkProcessor {
                     .withData(intent.data)
                     .init()
             } catch (e: Throwable) {
+                crashReportsProvider.logException(e)
                 resultListener.onDeeplinkResult(mapOf("error" to e))
             }
         } ?: resultListener.onDeeplinkResult(emptyMap())
@@ -60,6 +63,7 @@ public class BranchIoDeepLinkProcessor : DeeplinkProcessor {
                     .withData(intent.data)
                     .reInit()
             } catch (e: Throwable) {
+                crashReportsProvider.logException(e)
                 resultListener.onDeeplinkResult(mapOf("error" to e))
             }
         } ?: resultListener.onDeeplinkResult(emptyMap())

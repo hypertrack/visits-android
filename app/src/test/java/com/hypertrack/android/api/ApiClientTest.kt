@@ -3,6 +3,7 @@
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.hypertrack.android.models.decodeBase64Bitmap
 import okhttp3.mockwebserver.MockWebServer
 import com.hypertrack.android.repository.AccessTokenRepository
 import kotlinx.coroutines.Dispatchers
@@ -355,6 +356,7 @@ class ApiClientTest {
                 }
             }
             """
+        const val IMAGE_ID = """{"name": "f4fd5e8b-65a9-41f4-82fa-ad862a42f689"}"""
     }
     private val mockWebServer = MockWebServer()
     private lateinit var apiClient : ApiClient

@@ -46,7 +46,9 @@ object Injector {
 
     private var visitsRepository: VisitsRepository? = null
 
-    val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor()
+    private val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
+
+    val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
     fun getGson() : Gson = GsonBuilder()
         .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
@@ -60,7 +62,11 @@ object Injector {
 
     private fun getDriver(context: Context): Driver = getMyPreferences(context).getDriverValue()
 
-    private fun getDriverRepo(context: Context) = DriverRepo(getDriver(context),getMyPreferences(context))
+    private fun getDriverRepo(context: Context) = DriverRepo(
+        getDriver(context),
+        getMyPreferences(context),
+        crashReportsProvider
+    )
 
     private fun getVisitsApiClient(context: Context): ApiClient {
         val accessTokenRepository = accessTokenRepository(context)
@@ -78,7 +84,7 @@ object Injector {
     private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()
 
     private fun getOsUtilsProvider(context: Context) : OsUtilsProvider {
-        return OsUtilsProvider(context)
+        return OsUtilsProvider(context, crashReportsProvider)
 
     }
 
@@ -99,12 +105,16 @@ object Injector {
             getVisitsApiClient(context),
             getMyPreferences(context),
             getHyperTrackService(context),
-            getAccountRepo(context)
+            getAccountRepo(context),
+            getImageDecoder(context),
+            crashReportsProvider
         )
         visitsRepository = result
 
         return result
     }
+
+    private fun getImageDecoder(ctx: Context): ImageDecoder = SimpleImageDecoder()
 
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
@@ -112,7 +122,12 @@ object Injector {
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
         val accountRepository = getAccountRepo(context)
-        return VisitsManagementViewModelFactory(repository, accountRepository, accessTokenRepository(context))
+        return VisitsManagementViewModelFactory(
+            repository,
+            accountRepository,
+            accessTokenRepository(context),
+            crashReportsProvider
+        )
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId:String): VisitDetailsViewModel {
@@ -137,7 +152,8 @@ object Injector {
 class VisitsManagementViewModelFactory(
     private val visitsRepository: VisitsRepository,
     val accountRepository: AccountRepository,
-    val accessTokenRepository: AccessTokenRepository
+    val accessTokenRepository: AccessTokenRepository,
+    val crashReportsProvider: CrashReportsProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -146,7 +162,8 @@ class VisitsManagementViewModelFactory(
             VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(
                 visitsRepository,
                 accountRepository,
-                accessTokenRepository
+                accessTokenRepository,
+                crashReportsProvider
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
@@ -206,3 +223,4 @@ interface AccountPreferencesProvider {
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
 const val LIVE_API_URL_BASE  = "https://live-api.htprod.hypertrack.com/"
 const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"
+const val MAX_IMAGE_SIDE_LENGTH_PX = 1024
