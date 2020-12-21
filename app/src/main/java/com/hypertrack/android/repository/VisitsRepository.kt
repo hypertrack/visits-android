@@ -2,7 +2,6 @@ package com.hypertrack.android.repository
 
 import android.content.res.Resources
 import android.util.Log
-import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,7 +9,9 @@ import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
@@ -226,38 +227,35 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    suspend fun addPreviewIcon(id: String, imagePath: String) = coroutineScope {
-        Log.d(TAG, "Update photo for visit $id")
+    suspend fun setImage(id: String, imagePath: String) = coroutineScope {
+        Log.d(TAG, "Update image for visit $id")
 
-        val target = _visitsMap[id]
-
+        val target = _visitsMap[id] ?: return@coroutineScope
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
         launch {
-            target?.icon = imageDecoder.fetchIcon(imagePath, previewMaxSideLength)
+            target.icon = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
             Log.v(TAG, "Updated icon in target $target")
-            target?.let {  updateItem(id, target)}
+            updateItem(id, target)
         }
 
         Log.d(TAG, "Launched preview update task")
-
-        launch {
-            val uploadedImage = imageDecoder.fetchIcon(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
-            try {
-                val imageKey = apiClient.uploadImage(uploadedImage)
-                target?.let {
-                    target.visitPicture = imageKey
-                    updateItem(id, target)
-                    Log.v(TAG, "Updated visit pic in target $target")
-                }
-                File(imagePath).apply { if (exists()) delete() }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error on uploading image ", e)
-                // TODO Denys: Schedule retry
-            }
-
-        }
+        retryWithBackoff(times = 5) { uploadImage(imagePath, target, id) }
 
     }
+
+    private fun CoroutineScope.uploadImage(
+        imagePath: String,
+        target: Visit,
+        id: String
+    ) = launch {
+        val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
+        val imageKey = apiClient.uploadImage(uploadedImage)
+        target.visitPicture = imageKey
+        updateItem(id, target)
+        Log.v(TAG, "Updated visit pic in target $target")
+        File(imagePath).apply { if (exists()) delete() }
+    }
+
 
     companion object { const val TAG = "VisitsRepository"}
 
@@ -292,6 +290,26 @@ private fun Map<String, Visit>.getLocalVisit(): Visit? {
     return ongoingLocal.first()
 }
 
+suspend fun <T> retryWithBackoff(
+    times: Int = Int.MAX_VALUE,
+    initialDelay: Long = 1000, //  1 sec
+    maxDelay: Long = 10000,    // 10 secs
+    factor: Double = 2.0,
+    block: suspend () -> T): T
+{
+    var currentDelay = initialDelay
+    repeat(times - 1) {
+        try {
+            return block()
+        } catch (t: Throwable) {
+            // you can log an error here and/or make a more finer-grained
+            // analysis of the cause to see if retry is needed
+        }
+        delay(currentDelay)
+        currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+    }
+    return block() // last attempt
+}
 
 
 

@@ -107,7 +107,7 @@ class VisitDetailsViewModel(
     fun onPictureResult(path: String) {
         Log.d(TAG, "onPicResult $path")
         viewModelScope.launch {
-            visitsRepository.addPreviewIcon(id, path)
+            visitsRepository.setImage(id, path)
         }
         updateVisit()
 
