@@ -42,7 +42,7 @@ class DriverLoginViewModel(
             _checkInButtonEnabled.postValue(false)
             _showProgress.postValue(true)
             val driverId = it.toString()
-            // Log.d(TAG, "Proceeding with Driver Id $driverId")
+            Log.d(TAG, "Proceeding with Driver Id $driverId")
             hyperTrackService.driverId = driverId
             driverRepo.driverId = driverId
             viewModelScope.launch {
@@ -55,7 +55,7 @@ class DriverLoginViewModel(
     }
 
     fun checkAutoLogin() {
-        // Log.v(TAG, "checkAutoLogin")
+        Log.v(TAG, "checkAutoLogin")
         if (driverRepo.hasDriverId) {
             onLoginClick(driverRepo.driverId)
         }

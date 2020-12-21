@@ -62,30 +62,30 @@ class VisitDetailsViewModel(
         get() = _cancelButton
 
     fun onVisitNoteChanged(newNote : String) {
-        // Log.d(TAG, "onVisitNoteChanged $newNote")
+        Log.d(TAG, "onVisitNoteChanged $newNote")
         updatedNote = newNote
     }
 
     fun onPickUpClicked() {
-        // Log.v(TAG, "PickUp click handler")
+        Log.v(TAG, "PickUp click handler")
         visitsRepository.setPickedUp(id)
         updateVisit()
     }
 
     fun onCheckInClicked() {
-        // Log.v(TAG, "Lower button click handler")
+        Log.v(TAG, "Lower button click handler")
         visitsRepository.setVisited(id)
         updateVisit()
     }
 
     fun onCheckOutClicked() {
-        // Log.v(TAG, "Check Out click handler")
+        Log.v(TAG, "Check Out click handler")
         visitsRepository.setCompleted(id)
         updateVisit()
     }
 
     fun onCancelClicked() {
-        // Log.v(TAG, "Cancel click handler")
+        Log.v(TAG, "Cancel click handler")
         visitsRepository.setCancelled(id)
         updateVisit()
     }
@@ -105,7 +105,7 @@ class VisitDetailsViewModel(
     }
 
     fun onPictureResult(path: String) {
-        // Log.d(TAG, "onPicResult $path")
+        Log.d(TAG, "onPicResult $path")
         viewModelScope.launch {
             visitsRepository.setImage(id, path)
         }

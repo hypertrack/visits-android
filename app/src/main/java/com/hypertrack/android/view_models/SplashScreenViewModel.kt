@@ -44,14 +44,14 @@ class SplashScreenViewModel(
                 _destination.postValue(Destination.DRIVER_ID_INPUT)
             }
             else -> {
-                // Log.d(TAG, "No publishable key found")
+                Log.d(TAG, "No publishable key found")
                 noPkHanlder()
             }
         }
     }
 
     override fun onDeeplinkResult(parameters: Map<String, Any>) {
-        // Log.d(TAG, "Got deeplink result $parameters")
+        Log.d(TAG, "Got deeplink result $parameters")
 
         // Here we can inject obligatory input (publishable key and driver id)
         // as well as configuration parameters:
@@ -62,15 +62,15 @@ class SplashScreenViewModel(
         val driverId = parameters["driver_id"] as String?
         val showCheckIn = parameters["show_manual_visits"] as String? ?:""
         val autoCheckIn = parameters["auto_check_in"] as String? ?: ""
-        // Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn")
+        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn")
         if (key != null) {
-            // Log.d(TAG, "Got key $key")
+            Log.d(TAG, "Got key $key")
             try {
                 viewModelScope.launch {
                     val correctKey = accountRepository.onKeyReceived(key, showCheckIn, autoCheckIn)
-                    // Log.d(TAG, "onKeyReceived finished")
+                    Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
-                        // Log.d(TAG, "Key validated successfully")
+                        Log.d(TAG, "Key validated successfully")
                         _showSpinner.postValue(false)
                         driverId?.let { driverRepository.driverId = it}
                         email?.let { driverRepository.driverId = it }
@@ -79,7 +79,7 @@ class SplashScreenViewModel(
                         login()
                     }
                 }
-                // Log.d(TAG, "coroutine finished")
+                Log.d(TAG, "coroutine finished")
                 return
             } catch (e : Throwable) {
                 Log.w(TAG, "Cannot validate the key", e)

@@ -46,7 +46,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.visit.observe(this) { updateView(it) }
 
         viewModel.visitNote.observe(this) { (text, isEditable) ->
-            // Log.v(TAG, "visitNote text $text isEditable $isEditable")
+            Log.v(TAG, "visitNote text $text isEditable $isEditable")
             etVisitNote.isEnabled = isEditable
             etVisitNote.setText(text)
         }
@@ -85,7 +85,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
                 isZoomControlsEnabled = true
             }
             val latLng = viewModel.getLatLng() ?: return
-            // Log.d(TAG, "Got latlng $latLng")
+            Log.d(TAG, "Got latlng $latLng")
             val label = viewModel.getLabel()
 
             map.addMarker(MarkerOptions().position(latLng).title(label))
@@ -94,14 +94,14 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateView(newValue: Visit) {
-        // Log.v(TAG, "updated view with value $newValue")
+        Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newValue.customerNote
         customerNoteGroup.visibility = if (newValue.customerNote.isEmpty()) View.GONE else View.VISIBLE
         val takePictureButtonDisabled = tvTakePicture.visibility == View.GONE
         val hasNoPreview = newValue.icon == null
         val pictureGroupVisitility =
             if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
-        // Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
+        Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
         visitPreviewGroup.visibility = pictureGroupVisitility
         ivVisitPic.visibility = if (newValue.icon == null) View.GONE else View.VISIBLE
         ivVisitPic.setImageBitmap(newValue.icon)
@@ -144,14 +144,14 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // Log.v(TAG, "Got image capture result $resultCode")
+        Log.v(TAG, "Got image capture result $resultCode")
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             viewModel.onPictureResult(currentPhotoPath)
         }
     }
 
     private fun dispatchTakePictureIntent() {
-        // Log.d(TAG, "dispatchTakePictureIntent")
+        Log.d(TAG, "dispatchTakePictureIntent")
         Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             .also { takePictureIntent ->
                 val photoFile: File? = try {

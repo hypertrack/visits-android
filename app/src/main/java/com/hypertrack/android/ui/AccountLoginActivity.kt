@@ -47,7 +47,7 @@ class AccountLoginActivity : ProgressDialogActivity() {
 
         accountLoginViewModel.destination.observe(this) { navigateTo(it) }
         accountLoginViewModel.showLoginFailureToast.observe(this) { show ->
-            // Log.d(TAG, "show toast $show")
+            Log.d(TAG, "show toast $show")
             if (show) {
                 Toast.makeText(
                     this,
@@ -61,12 +61,12 @@ class AccountLoginActivity : ProgressDialogActivity() {
         btnLogIn.setOnClickListener { accountLoginViewModel.onLoginClick() }
 
         accountLoginViewModel.showProgress.observe(this) { show ->
-            // Log.d(TAG, "show progress $show")
+            Log.d(TAG, "show progress $show")
             if (show) showProgress() else dismissProgress()
         }
 
         accountLoginViewModel.isLoginButtonClickable.observe(this,) { isClickable ->
-            // Log.d(TAG, "Setting login button clickability $isClickable")
+            Log.d(TAG, "Setting login button clickability $isClickable")
             btnLogIn.isEnabled = isClickable
             btnLogIn.setBackgroundColor(
                 if (isClickable)

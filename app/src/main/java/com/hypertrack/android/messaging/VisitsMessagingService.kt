@@ -15,7 +15,7 @@ class VisitsMessagingService: HyperTrackMessagingService() {
         if (!super.onMessageReceived(remoteMessage?.data)) {
             // Message wasn't processed by SDK, so check for commands there
             if (remoteMessage?.data?.get("visits") != null) {
-                // Log.d(TAG, "Got remote message with payload ${remoteMessage.data}")
+                Log.d(TAG, "Got remote message with payload ${remoteMessage.data}")
                 val intent = Intent(this as Context, VisitsManagementActivity::class.java)
                 intent.action = Intent.ACTION_SYNC
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

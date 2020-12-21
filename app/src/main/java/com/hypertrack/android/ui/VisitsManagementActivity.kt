@@ -27,12 +27,12 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Log.d(TAG, "onCreate")
+        Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_visits_management)
 
         viewAdapter = VisitListAdapter(visitsManagementViewModel.visits, object: VisitListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int) {
-                // Log.d(TAG, "Clicked visit at position $position")
+                Log.d(TAG, "Clicked visit at position $position")
                 val visit = visitsManagementViewModel.visits.value?.get(position)
                 visit?.let { if (it is Visit) showVisitDetails(it, position) }
             }
@@ -42,7 +42,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
         visitsManagementViewModel.visits
             .observe(this, {
-                visits -> // Log.d(TAG, "Got visits $visits")
+                visits -> Log.d(TAG, "Got visits $visits")
                 viewAdapter.notifyDataSetChanged()
             })
 
@@ -103,7 +103,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        // Log.d(TAG, "onNewIntent with extras ${intent?.extras}")
+        Log.d(TAG, "onNewIntent with extras ${intent?.extras}")
         if (intent?.action == Intent.ACTION_SYNC) {
             visitsManagementViewModel.refreshVisits()
         }
@@ -111,9 +111,9 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // Log.d(TAG, "onActivityResult")
+        Log.d(TAG, "onActivityResult")
         data?.dataString?.toIntOrNull()?.let { position ->
-            // Log.d(TAG, "Item in pos $position was changed")
+            Log.d(TAG, "Item in pos $position was changed")
             viewAdapter.notifyItemChanged(position)
             visitsManagementViewModel.possibleLocalVisitCompletion()
         }
