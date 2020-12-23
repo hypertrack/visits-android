@@ -202,7 +202,8 @@ class VisitsRepository(
             visit_id = osUtilsProvider.getStringResourceForId(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
             createdAt = createdAt,
             visitedAt = createdAt,
-            visitType = VisitType.LOCAL
+            visitType = VisitType.LOCAL,
+            _state = VisitStatus.VISITED
         )
         val id = newLocalVisit._id
         _visitsMap[id] = newLocalVisit

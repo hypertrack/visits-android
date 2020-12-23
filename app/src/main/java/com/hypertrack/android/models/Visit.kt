@@ -23,13 +23,15 @@ data class Visit(val _id: String,
         ""
     ),
                  val visitNote: String = "", var visitPicture: String? = null,
-                 var visitedAt:String = "",
+                 var visitedAt:String? = null,
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
                  val visitType: VisitType,
-                 val state: VisitStatus = if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING,
+                 val _state: VisitStatus?,
                  private var _icon: String? = null
  ): VisitListItem() {
+    val state: VisitStatus
+        get() = _state ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
     val isEditable = state < VisitStatus.COMPLETED
     val isCompleted: Boolean
         get() = status == COMPLETED
@@ -37,7 +39,7 @@ data class Visit(val _id: String,
     val status: String
         get() = when {
             completedAt.isNotEmpty() -> COMPLETED
-            visitedAt.isNotEmpty() -> VISITED
+            visitedAt?.isNotEmpty() == true -> VISITED
             else -> PENDING
         }
 
@@ -94,19 +96,16 @@ data class Visit(val _id: String,
             latitude,
             longitude,
             visitType,
-            state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state,
+            _state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state,
             _icon = _icon
         )
 
     }
 
-    private fun adjustState(state: VisitStatus, visitedAt: String?): VisitStatus {
-        val visitStatus = when (state) {
+    private fun adjustState(state: VisitStatus, visitedAt: String?) = when (state) {
             VisitStatus.PICKED_UP, VisitStatus.PENDING -> if (visitedAt != null) VisitStatus.VISITED else state
             else -> state
         }
-        return visitStatus
-    }
 
     fun updateNote(newNote: String): Visit {
         return Visit(
@@ -130,7 +129,7 @@ data class Visit(val _id: String,
             _id, visit_id, customerNote,
             createdAt, address, visitNote, visitPicture, visitedAt,
             transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType,
-            state = newState, _icon = _icon
+            _state = newState, _icon = _icon
         )
     }
 
@@ -147,7 +146,7 @@ data class Visit(val _id: String,
         visitedAt = visitDataSource.visitedAt,
         latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
         visitType = visitDataSource.visitType,
-        state = if (visitDataSource.visitedAt?.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
+        _state = if (visitDataSource.visitedAt.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
     )
 
 }
