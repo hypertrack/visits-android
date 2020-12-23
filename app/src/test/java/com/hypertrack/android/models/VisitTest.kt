@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit
 class VisitTest {
     @Test
     fun `it should not delete local Visits`() {
-        val localVisit = Visit("42", "42", visitType = VisitType.LOCAL)
+        val localVisit = Visit("42", "42", visitType = VisitType.LOCAL, _state = VisitStatus.VISITED)
         assertFalse(localVisit.isDeletable)
     }
 
@@ -17,7 +17,7 @@ class VisitTest {
     fun `it should not delete trips completed during the last day`() {
         val completedAt = Instant.now().minusSeconds(3600).toString()
 //        println("Completed at $completedAt")
-        val recentTrip = Visit("42", "42", completedAt = completedAt, visitType = VisitType.TRIP)
+        val recentTrip = Visit("42", "42", completedAt = completedAt, visitType = VisitType.TRIP, _state = VisitStatus.COMPLETED)
         assertFalse(recentTrip.isDeletable)
     }
 
@@ -26,7 +26,7 @@ class VisitTest {
         val completedAt = Instant.now().minus(2, ChronoUnit.DAYS).toString()
 //        println("Completed at $completedAt")
 
-        val recentTrip = Visit("42", "42", completedAt = completedAt, visitType = VisitType.TRIP)
+        val recentTrip = Visit("42", "42", completedAt = completedAt, visitType = VisitType.TRIP, _state = VisitStatus.COMPLETED)
         assertTrue(recentTrip.isDeletable)
     }
 
@@ -34,7 +34,7 @@ class VisitTest {
     fun `it should automatically check in pending if arrival time is present in prototype`() {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP)
+        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val prototype: VisitDataSource = Trip(
             _views = Views(null, null), tripId, _createdAt = createdAt,
             _metadata = null, destination = TripDestination(
@@ -51,7 +51,7 @@ class VisitTest {
     fun `it should automatically check in picked up if arrival time is present in prototype`() {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, state = VisitStatus.PICKED_UP)
+        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val prototype: VisitDataSource = Trip(
             _views = Views(null, null), tripId, _createdAt = createdAt,
             _metadata = null, destination = TripDestination(
@@ -69,7 +69,7 @@ class VisitTest {
     fun `it should not automatically check in pending if arrival time is present in prototype if auto check in is not allowed`() {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP)
+        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val prototype: VisitDataSource = Trip(
             _views = Views(null, null), tripId, _createdAt = createdAt,
             _metadata = null, destination = TripDestination(
@@ -86,7 +86,7 @@ class VisitTest {
     fun `it should not automatically check in picked up if arrival time is present in prototype if auto check in is not allowed`() {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, state = VisitStatus.PICKED_UP)
+        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val prototype: VisitDataSource = Trip(
             _views = Views(null, null), tripId, _createdAt = createdAt,
             _metadata = null, destination = TripDestination(
@@ -103,7 +103,7 @@ class VisitTest {
     fun `it should update arrival in pending if arrival time is present in prototype`() {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, state = VisitStatus.PENDING)
+        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
             _views = Views(null, null), tripId, _createdAt = createdAt,
@@ -121,7 +121,7 @@ class VisitTest {
     fun `it should update arrival in picked up if arrival time is present in prototype`() {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, state = VisitStatus.PICKED_UP)
+        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
             _views = Views(null, null), tripId, _createdAt = createdAt,
@@ -140,7 +140,7 @@ class VisitTest {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP,
-            visitNote = "important Note", state = VisitStatus.PENDING
+            visitNote = "important Note", _state = VisitStatus.PENDING
         )
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
@@ -161,7 +161,7 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(
             tripId, createdAt = createdAt, visitType = VisitType.TRIP, visitNote = "important Note",
-            state = VisitStatus.PICKED_UP
+            _state = VisitStatus.PICKED_UP
         )
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
