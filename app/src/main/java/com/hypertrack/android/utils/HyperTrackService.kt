@@ -77,12 +77,28 @@ class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
 
     override fun onTrackingStart() = state.postValue(TrackingStateValue.TRACKING)
 
-    override fun onError(p0: TrackingError?) = state.postValue(TrackingStateValue.ERROR)
+    override fun onError(p0: TrackingError?) {
+        Log.d(TAG, "onError $p0")
+        when {
+            p0?.code == TrackingError.AUTHORIZATION_ERROR && p0.message.contains("trial ended") -> state.postValue(TrackingStateValue.DEVICE_DELETED)
+            else -> state.postValue(TrackingStateValue.ERROR)
+        }
+
+    }
 
     override fun onTrackingStop() = state.postValue(TrackingStateValue.STOP)
 
+    companion object {const val TAG = "HyperTrackService"}
 }
 
 enum class TrackingStateValue {
-    TRACKING, ERROR, STOP, UNKNOWN
+    TRACKING       { override val message: String? = null },
+    ERROR          { override val message: String? = null },
+    STOP           { override val message: String? = null },
+    UNKNOWN        { override val message: String? = null },
+    DEVICE_DELETED { override val message: String? = "Device Deleted" };
+
+    abstract val message: String?
 }
+
+

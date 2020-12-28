@@ -53,11 +53,11 @@ class VisitsRepository(
     init{
         _status.addSource(hyperTrackService.state) { state ->
             val label = _status.value?.second?:""
-            _status.postValue(state to label)
+            _status.postValue(state to (state.message ?: label))
         }
         _status.addSource(visitListItems) { items ->
             val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
-            val label = items.toStatusLabel()
+            val label = trackingState.message ?: items.toStatusLabel()
             val fineLabel = if (label.isNotEmpty()) label else osUtilsProvider.getStringResourceForId(R.string.no_planned_visits)
             _status.postValue(trackingState to fineLabel)
         }
