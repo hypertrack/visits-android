@@ -179,13 +179,34 @@ data class Address (val street : String, val postalCode : String, val city : Str
  */
 
 enum class VisitStatus {
-    PENDING   { override fun canTransitionTo(other: VisitStatus) = other > this },
-    PICKED_UP { override fun canTransitionTo(other: VisitStatus) = other > this },
-    VISITED   { override fun canTransitionTo(other: VisitStatus) = other > this },
-    COMPLETED { override fun canTransitionTo(other: VisitStatus) = false },
-    CANCELLED { override fun canTransitionTo(other: VisitStatus) = false };
+    PENDING   {
+        override fun canTransitionTo(other: VisitStatus) = other > this
+        override val group = VisitStatusGroup.PENDING_GROUP
+    },
+    PICKED_UP {
+        override fun canTransitionTo(other: VisitStatus) = other > this
+        override val group = VisitStatusGroup.PENDING_GROUP
+    },
+    VISITED   {
+        override fun canTransitionTo(other: VisitStatus) = other > this
+        override val group = VisitStatusGroup.VISITED_GROUP
+    },
+    COMPLETED {
+        override fun canTransitionTo(other: VisitStatus) = false
+        override val group = VisitStatusGroup.COMPLETED_GROUP
+    },
+    CANCELLED {
+        override fun canTransitionTo(other: VisitStatus) = false
+        override val group = VisitStatusGroup.COMPLETED_GROUP
+    };
 
     abstract fun canTransitionTo(other: VisitStatus): Boolean
+    abstract val group: VisitStatusGroup
+}
+/** Group is coarse-grained status where some statuses and merged into one group */
+enum class VisitStatusGroup {
+    // Keep the order consistent with R.array.visit_state_group_names
+    PENDING_GROUP, VISITED_GROUP, COMPLETED_GROUP
 }
 
 fun Bitmap.toBase64(): String {

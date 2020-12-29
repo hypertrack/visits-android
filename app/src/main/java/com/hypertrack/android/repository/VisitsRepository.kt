@@ -300,7 +300,3 @@ private fun Map<String, Visit>.getLocalVisit(): Visit? {
     if (ongoingLocal.isEmpty()) return null
     return ongoingLocal.first()
 }
-
-
-
-

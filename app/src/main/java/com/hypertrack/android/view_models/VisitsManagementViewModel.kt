@@ -4,14 +4,17 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitListItem
+import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.TrackingStateValue
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import com.hypertrack.logistics.android.github.R
 
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
@@ -49,15 +52,6 @@ class VisitsManagementViewModel(
         get() = _showToast
 
     private val _enableCheckIn = MediatorLiveData<Boolean>()
-
-    val visits = visitsRepository.visitListItems
-
-    val statusLabel = visitsRepository.statusLabel
-    // Color id and
-    val _statusBar = MutableLiveData(0 to 0)
-
-
-
     init {
         if (accountRepository.isManualCheckInAllowed) {
             _enableCheckIn.addSource(visitsRepository.isTracking) { _enableCheckIn.postValue(it) }
@@ -67,6 +61,38 @@ class VisitsManagementViewModel(
     }
     val enableCheckIn: LiveData<Boolean>
         get() = _enableCheckIn
+
+    val visits = visitsRepository.visitListItems
+
+    private val _statusBarColor = MediatorLiveData<Int?>()
+    init {
+        _statusBarColor.addSource(visitsRepository.statusLabel) {
+            when(it.first) {
+                TrackingStateValue.TRACKING -> _statusBarColor.postValue(R.color.colorTrackingActive)
+                TrackingStateValue.STOP -> _statusBarColor.postValue(R.color.colorTrackingStopped)
+                TrackingStateValue.DEVICE_DELETED, TrackingStateValue.ERROR -> _statusBarColor.postValue(R.color.colorTrackingError)
+                else -> _statusBarColor.postValue(null)
+            }
+        }
+    }
+    val statusBarColor: LiveData<Int?>
+        get() = _statusBarColor
+
+    private val _statusBarMessage = MediatorLiveData<StatusMessage>()
+    init {
+        _statusBarMessage.addSource(visitsRepository.statusLabel) {
+            _statusBarMessage.postValue(
+                when (it.first) {
+                    TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
+                    TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
+                    else -> visitsRepository.visitListItems.value.asStats()
+                }
+            )
+        }
+        // TODO update on visitsRepository.visitListItems change
+    }
+    val statusBarMessage: LiveData<StatusMessage>
+        get() = _statusBarMessage
 
     val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
 
@@ -118,3 +144,13 @@ fun List<VisitListItem>.toStatusLabel(): String {
         fold("")
         {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
 }
+
+fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
+        VisitsStats(filterIsInstance<Visit>()
+            .groupBy { it.state.group }
+            .mapValues { (_, items) -> items.size })
+    }?: VisitsStats(emptyMap())
+
+sealed class StatusMessage
+class StatusString(val stringId: Int) : StatusMessage()
+class VisitsStats(val stats: Map<VisitStatusGroup, Int>) : StatusMessage()

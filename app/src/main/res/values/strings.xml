@@ -2,7 +2,6 @@
     <string name="app_name">Visits</string>
     <string name="enter_driver_id">enter driver id</string>
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
-
     <string name="channel_name">Hypertrack Notifications</string>
     <string name="channel_id">hyper_track</string>
     <string name="channel_description">Hyper track show your Nearby,completed notification</string>
@@ -41,6 +40,8 @@
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
     <string name="no_planned_visits">"No planned visits"</string>
+    <string name="device_deleted">"Device Deleted"</string>
+    <string name="generic_tracking_error">"Tracking Failure"</string>
     <string name="splashscreenlogo">splashScreenLogo</string>
     <string name="account_login_header_text">Sign into your account</string>
     <string name="login_hint">Cannot get login from the deeplink. Sign in or contact your manager to get the link.</string>
@@ -49,6 +50,7 @@
     <string name="password">Password</string>
     <string name="account_login_error_message">Can\'t login with provided credentials</string>
     <string name="check_login_credentials_hint" />
+    <string name="empty_string" />
     <string name="vist_note_updated">Visit note was updated</string>
     <string name="cannot_create_file_msg">Can\'t create a file for a picture. Check if there\'s enough space</string>
     <string-array
@@ -56,4 +58,14 @@
         <item>Visits List</item>
         <item>Daily History</item>
     </string-array>
+    <string-array
+        name="visit_state_group_names">
+        <item>@string/pending</item>
+        <item>@string/visited</item>
+        <item>@string/completed</item>
+    </string-array>
+    <plurals name="item_plurals">
+        <item quantity="one">Item</item>
+        <item quantity="other">Items</item>
+    </plurals>
 </resources>

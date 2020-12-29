@@ -1,6 +1,7 @@
 package com.hypertrack.android.ui
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,9 +11,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.adapters.VisitListAdapter
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
+import com.hypertrack.android.view_models.StatusString
 import com.hypertrack.android.view_models.VisitsManagementViewModel
+import com.hypertrack.android.view_models.VisitsStats
+import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visits_management.*
 
@@ -29,6 +34,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_visits_management)
+        checkInvariants()
 
         viewAdapter = VisitListAdapter(visitsManagementViewModel.visits, object: VisitListAdapter.OnListAdapterClick{
             override fun onJobItemClick(position: Int) {
@@ -53,26 +59,51 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
         sliding_tabs.setupWithViewPager(viewpager)
 
-        visitsManagementViewModel.statusLabel.observe(this) { stateAndLabel ->
-            val invisible = -1
-            val colorId =  when (stateAndLabel.first) {
-                TrackingStateValue.ERROR, TrackingStateValue.DEVICE_DELETED -> R.color.colorTrackingError
-                TrackingStateValue.STOP -> R.color.colorTrackingStopped
-                TrackingStateValue.TRACKING -> {R.color.colorTrackingActive}
-                else -> invisible
+        visitsManagementViewModel.statusBarColor.observe(this) { color ->
+            tvTrackerStatus.visibility = if (color == null) View.GONE else View.VISIBLE
+            color?.let { tvTrackerStatus.setBackgroundColor(getColor(it)) }
+        }
+
+        visitsManagementViewModel.statusBarMessage.observe(this) { msg ->
+            when (msg) {
+                is StatusString -> tvTrackerStatus.setText(msg.stringId)
+                is VisitsStats -> {
+                    if (msg.stats.isEmpty())
+                        tvTrackerStatus.setText(R.string.no_planned_visits)
+                    else {
+                        val groupNames = resources.getStringArray(R.array.visit_state_group_names)
+                        val messageText = msg.stats.entries.filter { it.value > 0 }
+                            .fold(getString(R.string.empty_string)) { acc, entry ->
+                                acc + "${entry.value} ${groupNames[entry.key.ordinal]} ${resources.getQuantityString(R.plurals.item_plurals, entry.value)} "
+                            }
+                        Log.v(TAG, "Created message text $messageText")
+                        tvTrackerStatus.text = messageText
+                    }
+
+                }
             }
-
-            if (colorId == invisible) {
-                tvTrackerStatus.visibility = View.GONE
-            } else {
-                tvTrackerStatus.visibility = View.VISIBLE
-                tvTrackerStatus.setBackgroundColor(getColor(colorId))
-            }
-
-            tvTrackerStatus.text = stateAndLabel.second
-
 
         }
+//
+//        visitsManagementViewModel.statusLabel.observe(this) { stateAndLabel ->
+//            val invisible = -1
+//            val colorId =  when (stateAndLabel.first) {
+//                TrackingStateValue.ERROR, TrackingStateValue.DEVICE_DELETED -> R.color.colorTrackingError
+//                TrackingStateValue.STOP -> R.color.colorTrackingStopped
+//                TrackingStateValue.TRACKING -> {R.color.colorTrackingActive}
+//                else -> invisible
+//            }
+//
+//            if (colorId == invisible) {
+//                tvTrackerStatus.visibility = View.GONE
+//            } else {
+//                tvTrackerStatus.visibility = View.VISIBLE
+//                tvTrackerStatus.setBackgroundColor(getColor(colorId))
+//            }
+//
+//            tvTrackerStatus.text = stateAndLabel.second
+//        }
+
         visitsManagementViewModel.showSpinner.observe(this) { show ->
             if(show) showProgress() else dismissProgress()
         }
@@ -125,6 +156,15 @@ class VisitsManagementActivity : ProgressDialogActivity() {
             .putExtra(KEY_EXTRA_VISIT_POS, position.toString()),
         42
     )
+
+    private fun checkInvariants() {
+        if (BuildConfig.DEBUG) {
+            if (resources.getStringArray(R.array.visit_state_group_names).size != VisitStatusGroup.values().size) {
+                error("visit_state_group_names array doesn't contain enough members to represent " +
+                        "all the VisitStatusGroup values")
+            }
+        }
+    }
 
     companion object { const val TAG = "VisitsManagementAct" }
 
