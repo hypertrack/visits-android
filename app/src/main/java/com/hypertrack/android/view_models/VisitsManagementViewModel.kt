@@ -66,8 +66,8 @@ class VisitsManagementViewModel(
 
     private val _statusBarColor = MediatorLiveData<Int?>()
     init {
-        _statusBarColor.addSource(visitsRepository.statusLabel) {
-            when(it.first) {
+        _statusBarColor.addSource(visitsRepository.trackingState) {
+            when(it) {
                 TrackingStateValue.TRACKING -> _statusBarColor.postValue(R.color.colorTrackingActive)
                 TrackingStateValue.STOP -> _statusBarColor.postValue(R.color.colorTrackingStopped)
                 TrackingStateValue.DEVICE_DELETED, TrackingStateValue.ERROR -> _statusBarColor.postValue(R.color.colorTrackingError)
@@ -80,9 +80,9 @@ class VisitsManagementViewModel(
 
     private val _statusBarMessage = MediatorLiveData<StatusMessage>()
     init {
-        _statusBarMessage.addSource(visitsRepository.statusLabel) {
+        _statusBarMessage.addSource(visitsRepository.trackingState) {
             _statusBarMessage.postValue(
-                when (it.first) {
+                when (it) {
                     TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
                     TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
                     else -> visitsRepository.visitListItems.value.asStats()                }
@@ -140,14 +140,6 @@ class VisitsManagementViewModel(
 
     companion object { const val TAG = "VisitsManagementVM" }
 
-}
-
-fun List<VisitListItem>.toStatusLabel(): String {
-    return filterIsInstance<Visit>()
-        .groupBy { it.state }
-        .entries.
-        fold("")
-        {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
 }
 
 fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {

@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.*
-import com.hypertrack.android.view_models.toStatusLabel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -44,24 +43,8 @@ class VisitsRepository(
     val hasOngoingLocalVisit: LiveData<Boolean>
         get() = _hasOngoingLocalVisit
 
-    private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
-    init{
-        // TODO Denys: move status message generation out from HTService and Visits repo, as it
-        // messes up representation and model and makes localization harder
-        _status.addSource(hyperTrackService.state) { state ->
-            val label = _status.value?.second?:""
-            _status.postValue(state to (state.message ?: label))
-        }
-        _status.addSource(visitListItems) { items ->
-            val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
-            val label = trackingState.message ?: items.toStatusLabel()
-            val fineLabel = if (label.isNotEmpty()) label else osUtilsProvider.getStringResourceForId(R.string.no_planned_visits)
-            _status.postValue(trackingState to fineLabel)
-        }
-    }
-
-    val statusLabel: LiveData<Pair<TrackingStateValue, String>>
-        get() = _status
+    val trackingState: LiveData<TrackingStateValue>
+        get() = hyperTrackService.state
 
     private val _isTracking = MediatorLiveData<Boolean>()
     init {
