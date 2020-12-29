@@ -85,11 +85,16 @@ class VisitsManagementViewModel(
                 when (it.first) {
                     TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
                     TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
-                    else -> visitsRepository.visitListItems.value.asStats()
-                }
+                    else -> visitsRepository.visitListItems.value.asStats()                }
             )
         }
-        // TODO update on visitsRepository.visitListItems change
+        _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
+            when (_statusBarMessage.value) {
+                is StatusString -> Log.v(TAG, "Not updating message as it shows tracking info")
+                else -> _statusBarMessage.postValue(visits.asStats())
+            }
+
+        }
     }
     val statusBarMessage: LiveData<StatusMessage>
         get() = _statusBarMessage
