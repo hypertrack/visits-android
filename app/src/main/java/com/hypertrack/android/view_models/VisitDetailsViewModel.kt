@@ -68,26 +68,26 @@ class VisitDetailsViewModel(
 
     fun onPickUpClicked() {
         Log.v(TAG, "PickUp click handler")
+        updateNote()
         visitsRepository.setPickedUp(id)
-        updateVisit()
     }
 
     fun onCheckInClicked() {
         Log.v(TAG, "Lower button click handler")
+        updateNote()
         visitsRepository.setVisited(id)
-        updateVisit()
     }
 
     fun onCheckOutClicked() {
         Log.v(TAG, "Check Out click handler")
+        updateNote()
         visitsRepository.setCompleted(id)
-        updateVisit()
     }
 
     fun onCancelClicked() {
         Log.v(TAG, "Cancel click handler")
+        updateNote()
         visitsRepository.setCancelled(id)
-        updateVisit()
     }
 
     fun getLatLng(): LatLng?  {
@@ -97,9 +97,9 @@ class VisitDetailsViewModel(
 
     fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
 
-    fun onBackPressed() = updateVisit()
+    fun onBackPressed() = updateNote()
 
-    private fun updateVisit() {
+    private fun updateNote() {
         val isNoteChanged = visitsRepository.updateVisitNote(id, updatedNote)
         if (isNoteChanged) _showToast.postValue(true)
     }
@@ -109,7 +109,7 @@ class VisitDetailsViewModel(
         viewModelScope.launch {
             visitsRepository.setImage(id, path)
         }
-        updateVisit()
+        updateNote()
 
     }
 
