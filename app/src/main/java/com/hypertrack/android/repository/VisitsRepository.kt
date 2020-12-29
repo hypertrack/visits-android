@@ -247,9 +247,9 @@ class VisitsRepository(
 }
 
 private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
-    val grouped = this.groupBy { it.state }
+    val grouped = this.groupBy { it.state.group }
     val result = ArrayList<VisitListItem>(this.size + grouped.keys.size)
-    grouped.keys.forEach { visitStatus ->
+    grouped.keys.sortedBy { it.ordinal }.forEach { visitStatus ->
         result.add(HeaderVisitItem(visitStatus))
         result.addAll(
             grouped[visitStatus]

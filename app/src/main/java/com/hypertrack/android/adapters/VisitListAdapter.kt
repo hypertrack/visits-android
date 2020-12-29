@@ -48,13 +48,8 @@ class VisitListAdapter(
         when (val item = visits.value?.get(holder.adapterPosition)) {
             is HeaderVisitItem -> {
                 val headerView = holder as HeaderViewHolder
-                headerView.tvHeaderText.setText(
-                    when (item.status.group) {
-                        VisitStatusGroup.PENDING_GROUP -> R.string.pending
-                        VisitStatusGroup.VISITED_GROUP -> R.string.visited
-                        VisitStatusGroup.COMPLETED_GROUP -> R.string.completed
-                    }
-                )
+                headerView.tvHeaderText.text = holder.itemView.context.resources
+                    .getStringArray(R.array.visit_state_group_names)[item.status.ordinal]
             }
             is Visit -> {
                 val visitView = holder as VisitViewHolder

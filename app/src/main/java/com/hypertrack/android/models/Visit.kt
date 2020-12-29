@@ -173,7 +173,7 @@ interface VisitDataSource {
 enum class VisitType { TRIP, GEOFENCE, LOCAL }
 
 sealed class VisitListItem
-data class HeaderVisitItem(val status: VisitStatus) : VisitListItem()
+data class HeaderVisitItem(val status: VisitStatusGroup) : VisitListItem()
 
 data class Address (val street : String, val postalCode : String, val city : String, val country : String)
 
