@@ -21,8 +21,7 @@ class VisitDetailsViewModel(
     private val _cancelButton =  MediatorLiveData<Boolean>()
     private var _visitNote = MediatorLiveData<Pair<String, Boolean>>() //
     private var _showToast = MutableLiveData(false)
-    private var updatedNote: String = visit.value?.visitNote?:""
-    private var visitPhoto: String? = null
+    private var updatedNote: String? = null
 
     init {
         _visitNote.addSource(visitsRepository.visitForId(id)) {
@@ -66,29 +65,13 @@ class VisitDetailsViewModel(
         updatedNote = newNote
     }
 
-    fun onPickUpClicked() {
-        Log.v(TAG, "PickUp click handler")
-        updateNote()
-        visitsRepository.setPickedUp(id)
-    }
+    fun onPickUpClicked() = visitsRepository.setPickedUp(id, updatedNote)
 
-    fun onCheckInClicked() {
-        Log.v(TAG, "Lower button click handler")
-        updateNote()
-        visitsRepository.setVisited(id)
-    }
+    fun onCheckInClicked() = visitsRepository.setVisited(id, updatedNote)
 
-    fun onCheckOutClicked() {
-        Log.v(TAG, "Check Out click handler")
-        updateNote()
-        visitsRepository.setCompleted(id)
-    }
+    fun onCheckOutClicked() = visitsRepository.setCompleted(id, updatedNote)
 
-    fun onCancelClicked() {
-        Log.v(TAG, "Cancel click handler")
-        updateNote()
-        visitsRepository.setCancelled(id)
-    }
+    fun onCancelClicked() = visitsRepository.setCancelled(id, updatedNote)
 
     fun getLatLng(): LatLng?  {
         visit.value?.latitude?.let { lat -> visit.value?.longitude?.let { lng -> return LatLng(lat, lng) } }
@@ -100,8 +83,11 @@ class VisitDetailsViewModel(
     fun onBackPressed() = updateNote()
 
     private fun updateNote() {
-        val isNoteChanged = visitsRepository.updateVisitNote(id, updatedNote)
-        if (isNoteChanged) _showToast.postValue(true)
+        Log.v(TAG, "updateNote")
+        updatedNote?.let {
+            if (visitsRepository.updateVisitNote(id, it))
+                _showToast.postValue(true)
+        }
     }
 
     fun onPictureResult(path: String) {
@@ -109,8 +95,6 @@ class VisitDetailsViewModel(
         viewModelScope.launch {
             visitsRepository.setImage(id, path)
         }
-        updateNote()
-
     }
 
     companion object {const val TAG = "VisitDetailsVM"}

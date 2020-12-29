@@ -102,22 +102,38 @@ data class Visit(val _id: String,
         )
     }
 
-    fun complete(completedAt: String) = moveToState(VisitStatus.COMPLETED, completedAt)
+    fun pickUp(newNote: String?) = moveToState(
+        newState = VisitStatus.PICKED_UP,
+        newNote = newNote
+    )
 
-    fun pickUp() = moveToState(VisitStatus.PICKED_UP)
+    fun markVisited(newNote: String?) = moveToState(
+        newState = VisitStatus.VISITED,
+        newNote = newNote
+    )
 
-    fun cancel(cancelledAt: String) = moveToState(VisitStatus.CANCELLED, cancelledAt)
+    fun complete(completedAt: String, newNote: String?) = moveToState(
+        newState = VisitStatus.COMPLETED,
+        transitionedAt = completedAt,
+        newNote = newNote
+    )
 
-    fun markVisited() = moveToState(VisitStatus.VISITED)
+    fun cancel(cancelledAt: String, newNote: String?) = moveToState(
+        newState = VisitStatus.CANCELLED,
+        transitionedAt = cancelledAt,
+        newNote = newNote
+    )
 
-    private fun moveToState(newState: VisitStatus, transitionedAt: String? = null): Visit {
-        return Visit(
-            _id, visit_id, customerNote,
-            createdAt, address, visitNote, visitPicture, visitedAt,
-            transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType,
-            _state = newState, _icon = _icon
-        )
-    }
+    private fun moveToState(
+        newState: VisitStatus,
+        transitionedAt: String? = null,
+        newNote: String?
+    ) = Visit(
+        _id, visit_id, customerNote,
+        createdAt, address, newNote?:visitNote, visitPicture, visitedAt,
+        transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType,
+        _state = newState, _icon = _icon
+    )
 
     constructor(
         visitDataSource: VisitDataSource,

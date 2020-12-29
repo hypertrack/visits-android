@@ -119,38 +119,40 @@ class VisitsRepository(
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
     }
 
-    fun setPickedUp(id: String) {
-        Log.d(TAG, "Set picked UP $id")
+    fun setPickedUp(id: String, newNote: String? = null) {
+        Log.v(TAG, "Set picked UP $id")
         val target = _visitsMap[id] ?: return
         if (target.tripVisitPickedUp) return
-        val updatedVisit = target.pickUp()
+        val updatedVisit = target.pickUp(newNote)
         Log.v(TAG, "Marked order $target as picked up")
         hyperTrackService.sendPickedUp(id, target.typeKey)
         updateItem(id, updatedVisit)
     }
 
-    fun setVisited(id: String) {
-        Log.d(TAG, "Set checked in $id")
+    fun setVisited(id: String, newNote: String? = null) {
+        Log.v(TAG, "Set checked in $id")
         val target = _visitsMap[id] ?: return
-        val updatedVisit = target.markVisited()
+        val updatedVisit = target.markVisited(newNote)
         Log.v(TAG, "Marked order $target as checked in")
         hyperTrackService.createVisitStartEvent(id, target.typeKey)
         updateItem(id, updatedVisit)
     }
 
-    fun setCompleted(id: String) {
+    fun setCompleted(id: String, newNote: String? = null) {
+        Log.v(TAG, "setCompleted $id $newNote")
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
-        val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp())
+        val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp(), newNote)
         Log.d(TAG, "Completed visit $completedVisit ")
         hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true, completedVisit.visitPicture)
         updateItem(id, completedVisit)
     }
 
-    fun setCancelled(id: String) {
+    fun setCancelled(id: String, newNote: String? = null) {
+        Log.v(TAG, "setCancelled $id $newNote")
         val target = _visitsMap[id] ?: return
         if (target.isCompleted) return
-        val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp())
+        val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp(), newNote)
         Log.d(TAG, "Cancelled visit $completedVisit")
         hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false, completedVisit.visitPicture)
         updateItem(id, completedVisit)
