@@ -2,12 +2,9 @@ package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
-import android.util.Log
-import com.hypertrack.android.ui.VisitDetailsActivity
+import com.hypertrack.android.decodeBase64Bitmap
+import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.OsUtilsProvider
-import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -157,9 +154,7 @@ interface VisitDataSource {
     val visitNameSuffix: String
 }
 
-enum class VisitType {
-    TRIP, GEOFENCE, LOCAL
-}
+enum class VisitType { TRIP, GEOFENCE, LOCAL }
 
 sealed class VisitListItem
 data class HeaderVisitItem(val status: VisitStatus) : VisitListItem()
@@ -177,7 +172,6 @@ data class Address (val street : String, val postalCode : String, val city : Str
  * ("CHECK_OUT" action).
  *
  */
-
 enum class VisitStatus {
     PENDING   {
         override fun canTransitionTo(other: VisitStatus) = other > this
@@ -207,18 +201,4 @@ enum class VisitStatus {
 enum class VisitStatusGroup {
     // Keep the order consistent with R.array.visit_state_group_names
     PENDING_GROUP, VISITED_GROUP, COMPLETED_GROUP
-}
-
-fun Bitmap.toBase64(): String {
-    val outputStream = ByteArrayOutputStream()
-    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-    val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
-    Log.d(VisitDetailsActivity.TAG, "Encoded image $result")
-    return result
-}
-
-fun String.decodeBase64Bitmap(): Bitmap {
-    Log.d(VisitDetailsActivity.TAG, "decoding image $this")
-    val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
-    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }

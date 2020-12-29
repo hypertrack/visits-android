@@ -7,11 +7,11 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
+import com.hypertrack.android.retryWithBackoff
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
@@ -192,7 +192,6 @@ class VisitsRepository(
         _visitItemsById[id] = MutableLiveData(newLocalVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
         _hasOngoingLocalVisit.postValue(true)
-
     }
 
     fun checkLocalVisitCompleted() = _hasOngoingLocalVisit.postValue(
@@ -221,8 +220,11 @@ class VisitsRepository(
         }
 
         Log.d(TAG, "Launched preview update task")
-        retryWithBackoff(times = 5) { uploadImage(imagePath, target, id) }
-
+        retryWithBackoff(
+            times = 5,
+            block = { uploadImage(imagePath, target, id) },
+            crashReportsProvider = crashReportsProvider
+        )
     }
 
     private fun CoroutineScope.uploadImage(
@@ -236,27 +238,6 @@ class VisitsRepository(
         updateItem(id, target)
         Log.v(TAG, "Updated visit pic in target $target")
         File(imagePath).apply { if (exists()) delete() }
-    }
-
-
-    suspend fun <T> retryWithBackoff(
-        times: Int = Int.MAX_VALUE,
-        initialDelay: Long = 1000, //  1 sec
-        maxDelay: Long = 10000,    // 10 secs
-        factor: Double = 2.0,
-        block: suspend () -> T): T
-    {
-        var currentDelay = initialDelay
-        repeat(times - 1) {
-            try {
-                return block()
-            } catch (t: Throwable) {
-                crashReportsProvider.logException(t)
-            }
-            delay(currentDelay)
-            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
-        }
-        return block() // last attempt
     }
 
     companion object { const val TAG = "VisitsRepository"}
@@ -278,8 +259,5 @@ private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
     return result
 }
 
-private fun Map<String, Visit>.getLocalVisit(): Visit? {
-    val ongoingLocal = values.filter { it.isLocal }.filter { !it.isCompleted }
-    if (ongoingLocal.isEmpty()) return null
-    return ongoingLocal.first()
-}
+private fun Map<String, Visit>.getLocalVisit(): Visit? =
+    values.firstOrNull { it.isLocal && !it.isCompleted }
