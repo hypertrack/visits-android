@@ -9,16 +9,23 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.net.HttpURLConnection
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 interface AccessTokenRepository {
     fun refreshToken(): String
     fun getAccessToken(): String
-    suspend fun refreshTokenAsync() : String
+    suspend fun refreshTokenAsync() : AccountState
     fun  getConfig() : Any
     val deviceHistoryWebViewUrl: String
 }
+
+sealed class AccountState
+data class Active(val token: String) : AccountState()
+object Suspended : AccountState()
+object InvalidCredentials : AccountState()
+object Unknown : AccountState()
 
 class BasicAuthAccessTokenRepository(
     private val authUrl: String,
@@ -45,26 +52,27 @@ class BasicAuthAccessTokenRepository(
     override fun refreshToken(): String {
         Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
 
-        okHttpClient
+        val result = okHttpClient
             .newCall(request)
             .execute()
-            .use { response -> token = getTokenFromResponse(response)}
-//        try {
-//        } catch (e: Exception) {
-//            Log.e(TAG, "Failed to refresh the token")
-//            token = null
-//        }
+            .use { response -> getTokenFromResponse(response)}
 
-        Log.v(TAG, "Updated bearer token $token" )
-        return token ?: ""
+        return when (result) {
+            is Active -> {
+                Log.v(TAG, "Updated bearer token $result.token" )
+                token = result.token
+                result.token
+            }
+            else -> ""
+        }
     }
 
-    override suspend fun refreshTokenAsync(): String =
+    override suspend fun refreshTokenAsync(): AccountState =
         suspendCoroutine { cont ->
             okHttpClient.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     Log.e(TAG, "Failed to get ")
-                    cont.resume("")
+                    cont.resume(Unknown)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -73,26 +81,37 @@ class BasicAuthAccessTokenRepository(
             })
         }
 
-    private fun getTokenFromResponse(response: Response) : String {
+    private fun getTokenFromResponse(response: Response) : AccountState {
         Log.d(TAG, "Getting token from response $response")
-        if (response.isSuccessful) {
-            response.body?.let {
-                try {
-                    val responseObject = Gson().fromJson(it.string(), AuthCallResponse::class.java)
-                    return responseObject.accessToken
-                } catch (ignored: JsonSyntaxException) {
-                    Log.w(TAG, "Can't deserialize auth response ${it.string()}")
-                }
+        return when {
+            response.isSuccessful -> {
+                response.body?.let {
+                    try {
+                        val responseObject = Gson().fromJson(it.string(), AuthCallResponse::class.java)
+                        Active(responseObject.accessToken)
+                    } catch (ignored: JsonSyntaxException) {
+                        Log.w(TAG, "Can't deserialize auth response ${it.string()}")
+                        Unknown
+                    }
+                } ?: Unknown
             }
-        } else {
-            Log.w(TAG, "Failed to refresh token $response")
+            response.code == HttpURLConnection.HTTP_FORBIDDEN && response.body?.string()?.contains("trial ended") == true -> {
+                Log.w(TAG, "Failed to refresh token $response")
+                Suspended
+            }
+            response.code == HttpURLConnection.HTTP_UNAUTHORIZED -> {
+                Log.w(TAG, "Wrong publishable key")
+                InvalidCredentials
+            }
+            else -> {
+                Log.w(TAG, "Can't get token from response $response")
+                Unknown
+            }
         }
-        return ""
     }
 
-    override fun getConfig() : BasicAuthAccessTokenConfig {
-        return BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
-    }
+    override fun getConfig() : BasicAuthAccessTokenConfig =
+        BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
 
     override val deviceHistoryWebViewUrl: String
         get() = "https://embed.hypertrack.com/devices/$deviceId?publishable_key=$userName&map_only=true&back=false"

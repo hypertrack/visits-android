@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
-import com.hypertrack.android.models.toBase64
+import com.hypertrack.android.toBase64
 import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
 import retrofit2.Response

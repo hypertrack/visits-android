@@ -3,7 +3,7 @@
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.hypertrack.android.models.decodeBase64Bitmap
+import com.hypertrack.android.decodeBase64Bitmap
 import okhttp3.mockwebserver.MockWebServer
 import com.hypertrack.android.repository.AccessTokenRepository
 import kotlinx.coroutines.Dispatchers

@@ -2,19 +2,24 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitListItem
+import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.TrackingStateValue
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import com.hypertrack.logistics.android.github.R
 
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
     accountRepository: AccountRepository,
-    private val accessTokenRepository: AccessTokenRepository,
+    accessTokenRepository: AccessTokenRepository,
     private val crashReportsProvider: CrashReportsProvider
 ) : ViewModel() {
 
@@ -57,6 +62,43 @@ class VisitsManagementViewModel(
     val enableCheckIn: LiveData<Boolean>
         get() = _enableCheckIn
 
+    val visits = visitsRepository.visitListItems
+
+    private val _statusBarColor = MediatorLiveData<Int?>()
+    init {
+        _statusBarColor.addSource(visitsRepository.trackingState) {
+            when(it) {
+                TrackingStateValue.TRACKING -> _statusBarColor.postValue(R.color.colorTrackingActive)
+                TrackingStateValue.STOP -> _statusBarColor.postValue(R.color.colorTrackingStopped)
+                TrackingStateValue.DEVICE_DELETED, TrackingStateValue.ERROR -> _statusBarColor.postValue(R.color.colorTrackingError)
+                else -> _statusBarColor.postValue(null)
+            }
+        }
+    }
+    val statusBarColor: LiveData<Int?>
+        get() = _statusBarColor
+
+    private val _statusBarMessage = MediatorLiveData<StatusMessage>()
+    init {
+        _statusBarMessage.addSource(visitsRepository.trackingState) {
+            _statusBarMessage.postValue(
+                when (it) {
+                    TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
+                    TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
+                    else -> visitsRepository.visitListItems.value.asStats()                }
+            )
+        }
+        _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
+            when (_statusBarMessage.value) {
+                is StatusString -> Log.v(TAG, "Not updating message as it shows tracking info")
+                else -> _statusBarMessage.postValue(visits.asStats())
+            }
+
+        }
+    }
+    val statusBarMessage: LiveData<StatusMessage>
+        get() = _statusBarMessage
+
     val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
 
     val deviceHistoryWebViewUrl = accessTokenRepository.deviceHistoryWebViewUrl
@@ -92,22 +134,20 @@ class VisitsManagementViewModel(
         }
     }
 
-    fun checkIn() {
-        Log.v(TAG, "checkin")
-        visitsRepository.processLocalVisit()
-    }
+    fun checkIn() = visitsRepository.processLocalVisit()
 
-    fun possibleLocalVisitCompletion() {
-        // Local visit change affects Check In/ Check Out state
-        visitsRepository.checkLocalVisitCompleted()
-    }
+    fun possibleLocalVisitCompletion() = visitsRepository.checkLocalVisitCompleted()
 
-    val visits = visitsRepository.visitListItems
-    val statusLabel = visitsRepository.statusLabel
-
-    companion object {
-        const val TAG = "VisitsManagementVM"
-    }
+    companion object { const val TAG = "VisitsManagementVM" }
 
 }
 
+fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
+        VisitsStats(filterIsInstance<Visit>()
+            .groupBy { it.state.group }
+            .mapValues { (_, items) -> items.size })
+    }?: VisitsStats(emptyMap())
+
+sealed class StatusMessage
+class StatusString(val stringId: Int) : StatusMessage()
+class VisitsStats(val stats: Map<VisitStatusGroup, Int>) : StatusMessage()

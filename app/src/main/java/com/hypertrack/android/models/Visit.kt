@@ -2,15 +2,9 @@ package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
-import android.util.Log
-import com.hypertrack.android.repository.COMPLETED
-import com.hypertrack.android.repository.PENDING
-import com.hypertrack.android.repository.VISITED
-import com.hypertrack.android.ui.VisitDetailsActivity
+import com.hypertrack.android.decodeBase64Bitmap
+import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.OsUtilsProvider
-import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -30,19 +24,11 @@ data class Visit(val _id: String,
                  val _state: VisitStatus?,
                  private var _icon: String? = null
  ): VisitListItem() {
+
     val state: VisitStatus
         get() = _state ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
     val isEditable = state < VisitStatus.COMPLETED
-    val isCompleted: Boolean
-        get() = status == COMPLETED
-
-    val status: String
-        get() = when {
-            completedAt.isNotEmpty() -> COMPLETED
-            visitedAt?.isNotEmpty() == true -> VISITED
-            else -> PENDING
-        }
-
+    val isCompleted = state in listOf(VisitStatus.CANCELLED, VisitStatus.COMPLETED)
     val isLocal = visitType == VisitType.LOCAL
 
     val isDeletable: Boolean
@@ -168,12 +154,10 @@ interface VisitDataSource {
     val visitNameSuffix: String
 }
 
-enum class VisitType {
-    TRIP, GEOFENCE, LOCAL
-}
+enum class VisitType { TRIP, GEOFENCE, LOCAL }
 
 sealed class VisitListItem
-data class HeaderVisitItem(val text: String) : VisitListItem()
+data class HeaderVisitItem(val status: VisitStatus) : VisitListItem()
 
 data class Address (val street : String, val postalCode : String, val city : String, val country : String)
 
@@ -188,27 +172,33 @@ data class Address (val street : String, val postalCode : String, val city : Str
  * ("CHECK_OUT" action).
  *
  */
-
 enum class VisitStatus {
-    PENDING   { override fun canTransitionTo(other: VisitStatus) = other > this },
-    PICKED_UP { override fun canTransitionTo(other: VisitStatus) = other > this },
-    VISITED   { override fun canTransitionTo(other: VisitStatus) = other > this },
-    COMPLETED { override fun canTransitionTo(other: VisitStatus) = false },
-    CANCELLED { override fun canTransitionTo(other: VisitStatus) = false };
+    PENDING   {
+        override fun canTransitionTo(other: VisitStatus) = other > this
+        override val group = VisitStatusGroup.PENDING_GROUP
+    },
+    PICKED_UP {
+        override fun canTransitionTo(other: VisitStatus) = other > this
+        override val group = VisitStatusGroup.PENDING_GROUP
+    },
+    VISITED   {
+        override fun canTransitionTo(other: VisitStatus) = other > this
+        override val group = VisitStatusGroup.VISITED_GROUP
+    },
+    COMPLETED {
+        override fun canTransitionTo(other: VisitStatus) = false
+        override val group = VisitStatusGroup.COMPLETED_GROUP
+    },
+    CANCELLED {
+        override fun canTransitionTo(other: VisitStatus) = false
+        override val group = VisitStatusGroup.COMPLETED_GROUP
+    };
 
     abstract fun canTransitionTo(other: VisitStatus): Boolean
+    abstract val group: VisitStatusGroup
 }
-
-fun Bitmap.toBase64(): String {
-    val outputStream = ByteArrayOutputStream()
-    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-    val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
-    Log.d(VisitDetailsActivity.TAG, "Encoded image $result")
-    return result
-}
-
-fun String.decodeBase64Bitmap(): Bitmap {
-    Log.d(VisitDetailsActivity.TAG, "decoding image $this")
-    val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
-    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+/** Group is coarse-grained status where some statuses and merged into one group */
+enum class VisitStatusGroup {
+    // Keep the order consistent with R.array.visit_state_group_names
+    PENDING_GROUP, VISITED_GROUP, COMPLETED_GROUP
 }

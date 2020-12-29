@@ -7,19 +7,15 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
+import com.hypertrack.android.retryWithBackoff
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
-
-const val COMPLETED = "Completed"
-const val VISITED = "Visited"
-const val PENDING = "Pending"
 
 class VisitsRepository(
     private val osUtilsProvider: OsUtilsProvider,
@@ -43,28 +39,12 @@ class VisitsRepository(
     val visitListItems: LiveData<List<VisitListItem>>
         get() = _visitListItems
 
-    private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
-
     private val _hasOngoingLocalVisit = MutableLiveData(_visitsMap.getLocalVisit() != null)
-
     val hasOngoingLocalVisit: LiveData<Boolean>
         get() = _hasOngoingLocalVisit
 
-    init{
-        _status.addSource(hyperTrackService.state) { state ->
-            val label = _status.value?.second?:""
-            _status.postValue(state to label)
-        }
-        _status.addSource(visitListItems) { items ->
-            val trackingState = _status.value?.first?:TrackingStateValue.UNKNOWN
-            val label = items.toStatusLabel()
-            val fineLabel = if (label.isNotEmpty()) label else osUtilsProvider.getStringResourceForId(R.string.no_planned_visits)
-            _status.postValue(trackingState to fineLabel)
-        }
-    }
-
-    val statusLabel: LiveData<Pair<TrackingStateValue, String>>
-        get() = _status
+    val trackingState: LiveData<TrackingStateValue>
+        get() = hyperTrackService.state
 
     private val _isTracking = MediatorLiveData<Boolean>()
     init {
@@ -212,7 +192,6 @@ class VisitsRepository(
         _visitItemsById[id] = MutableLiveData(newLocalVisit)
         _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
         _hasOngoingLocalVisit.postValue(true)
-
     }
 
     fun checkLocalVisitCompleted() = _hasOngoingLocalVisit.postValue(
@@ -241,8 +220,11 @@ class VisitsRepository(
         }
 
         Log.d(TAG, "Launched preview update task")
-        retryWithBackoff(times = 5) { uploadImage(imagePath, target, id) }
-
+        retryWithBackoff(
+            times = 5,
+            block = { uploadImage(imagePath, target, id) },
+            crashReportsProvider = crashReportsProvider
+        )
     }
 
     private fun CoroutineScope.uploadImage(
@@ -258,33 +240,12 @@ class VisitsRepository(
         File(imagePath).apply { if (exists()) delete() }
     }
 
-
-    suspend fun <T> retryWithBackoff(
-        times: Int = Int.MAX_VALUE,
-        initialDelay: Long = 1000, //  1 sec
-        maxDelay: Long = 10000,    // 10 secs
-        factor: Double = 2.0,
-        block: suspend () -> T): T
-    {
-        var currentDelay = initialDelay
-        repeat(times - 1) {
-            try {
-                return block()
-            } catch (t: Throwable) {
-                crashReportsProvider.logException(t)
-            }
-            delay(currentDelay)
-            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
-        }
-        return block() // last attempt
-    }
-
     companion object { const val TAG = "VisitsRepository"}
 
 }
 
 private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
-    val grouped = this.groupBy { it.status }
+    val grouped = this.groupBy { it.state }
     val result = ArrayList<VisitListItem>(this.size + grouped.keys.size)
     grouped.keys.forEach { visitStatus ->
         result.add(HeaderVisitItem(visitStatus))
@@ -298,20 +259,5 @@ private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
     return result
 }
 
-private fun List<VisitListItem>.toStatusLabel(): String {
-    return filterIsInstance<Visit>()
-        .groupBy { it.status }
-        .entries.
-        fold("")
-        {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
-}
-
-private fun Map<String, Visit>.getLocalVisit(): Visit? {
-    val ongoingLocal = values.filter { it.isLocal }.filter { !it.isCompleted }
-    if (ongoingLocal.isEmpty()) return null
-    return ongoingLocal.first()
-}
-
-
-
-
+private fun Map<String, Visit>.getLocalVisit(): Visit? =
+    values.firstOrNull { it.isLocal && !it.isCompleted }

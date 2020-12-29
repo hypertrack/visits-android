@@ -8,11 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.models.Address
-import com.hypertrack.android.models.HeaderVisitItem
-import com.hypertrack.android.models.Visit
-import com.hypertrack.android.models.VisitListItem
-import com.hypertrack.android.repository.*
+import com.hypertrack.android.models.*
 import com.hypertrack.logistics.android.github.R
 
 // Job adapter (Multiple type jobs Pending,Completed,Visited)
@@ -52,14 +48,20 @@ class VisitListAdapter(
         when (val item = visits.value?.get(holder.adapterPosition)) {
             is HeaderVisitItem -> {
                 val headerView = holder as HeaderViewHolder
-                headerView.tvHeaderText.text = item.text
+                headerView.tvHeaderText.setText(
+                    when (item.status.group) {
+                        VisitStatusGroup.PENDING_GROUP -> R.string.pending
+                        VisitStatusGroup.VISITED_GROUP -> R.string.visited
+                        VisitStatusGroup.COMPLETED_GROUP -> R.string.completed
+                    }
+                )
             }
             is Visit -> {
                 val visitView = holder as VisitViewHolder
                 visitView.tvDescription.text = "" // createAddress(item.address)
                 visitView.tvTitle.text = item.visit_id
                 visitView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
-                visitView.ivCompass.visibility = if (item.status == VISITED) View.VISIBLE else View.INVISIBLE
+                visitView.ivCompass.visibility = if (item.state == VisitStatus.VISITED) View.VISIBLE else View.INVISIBLE
                 visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.INVISIBLE
 
             }
@@ -85,7 +87,7 @@ class VisitListAdapter(
 
     private inner class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        internal var tvHeaderText: TextView = view.findViewById(R.id.tvHeader) as TextView
+        var tvHeaderText: TextView = view.findViewById(R.id.tvHeader) as TextView
 
     }
 
