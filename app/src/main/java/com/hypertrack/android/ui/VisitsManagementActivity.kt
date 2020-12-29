@@ -84,25 +84,6 @@ class VisitsManagementActivity : ProgressDialogActivity() {
             }
 
         }
-//
-//        visitsManagementViewModel.statusLabel.observe(this) { stateAndLabel ->
-//            val invisible = -1
-//            val colorId =  when (stateAndLabel.first) {
-//                TrackingStateValue.ERROR, TrackingStateValue.DEVICE_DELETED -> R.color.colorTrackingError
-//                TrackingStateValue.STOP -> R.color.colorTrackingStopped
-//                TrackingStateValue.TRACKING -> {R.color.colorTrackingActive}
-//                else -> invisible
-//            }
-//
-//            if (colorId == invisible) {
-//                tvTrackerStatus.visibility = View.GONE
-//            } else {
-//                tvTrackerStatus.visibility = View.VISIBLE
-//                tvTrackerStatus.setBackgroundColor(getColor(colorId))
-//            }
-//
-//            tvTrackerStatus.text = stateAndLabel.second
-//        }
 
         visitsManagementViewModel.showSpinner.observe(this) { show ->
             if(show) showProgress() else dismissProgress()
