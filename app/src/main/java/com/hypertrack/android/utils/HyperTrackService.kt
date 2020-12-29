@@ -91,14 +91,6 @@ class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
     companion object {const val TAG = "HyperTrackService"}
 }
 
-enum class TrackingStateValue {
-    TRACKING       { override val message: String? = null },
-    ERROR          { override val message: String? = null },
-    STOP           { override val message: String? = null },
-    UNKNOWN        { override val message: String? = null },
-    DEVICE_DELETED { override val message: String? = "Device Deleted" };
-
-    abstract val message: String?
-}
+enum class TrackingStateValue { TRACKING, ERROR, STOP, UNKNOWN, DEVICE_DELETED }
 
 
