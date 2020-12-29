@@ -2,6 +2,8 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
@@ -14,7 +16,7 @@ import kotlinx.coroutines.launch
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
     accountRepository: AccountRepository,
-    private val accessTokenRepository: AccessTokenRepository,
+    accessTokenRepository: AccessTokenRepository,
     private val crashReportsProvider: CrashReportsProvider
 ) : ViewModel() {
 
@@ -47,6 +49,15 @@ class VisitsManagementViewModel(
         get() = _showToast
 
     private val _enableCheckIn = MediatorLiveData<Boolean>()
+
+    val visits = visitsRepository.visitListItems
+
+    val statusLabel = visitsRepository.statusLabel
+    // Color id and
+    val _statusBar = MutableLiveData(0 to 0)
+
+
+
     init {
         if (accountRepository.isManualCheckInAllowed) {
             _enableCheckIn.addSource(visitsRepository.isTracking) { _enableCheckIn.postValue(it) }
@@ -92,22 +103,18 @@ class VisitsManagementViewModel(
         }
     }
 
-    fun checkIn() {
-        Log.v(TAG, "checkin")
-        visitsRepository.processLocalVisit()
-    }
+    fun checkIn() = visitsRepository.processLocalVisit()
 
-    fun possibleLocalVisitCompletion() {
-        // Local visit change affects Check In/ Check Out state
-        visitsRepository.checkLocalVisitCompleted()
-    }
+    fun possibleLocalVisitCompletion() = visitsRepository.checkLocalVisitCompleted()
 
-    val visits = visitsRepository.visitListItems
-    val statusLabel = visitsRepository.statusLabel
-
-    companion object {
-        const val TAG = "VisitsManagementVM"
-    }
+    companion object { const val TAG = "VisitsManagementVM" }
 
 }
 
+fun List<VisitListItem>.toStatusLabel(): String {
+    return filterIsInstance<Visit>()
+        .groupBy { it.state }
+        .entries.
+        fold("")
+        {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
+}

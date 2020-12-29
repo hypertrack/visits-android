@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
 import com.hypertrack.android.utils.*
+import com.hypertrack.android.view_models.toStatusLabel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -16,10 +17,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
-
-const val COMPLETED = "Completed"
-const val VISITED = "Visited"
-const val PENDING = "Pending"
 
 class VisitsRepository(
     private val osUtilsProvider: OsUtilsProvider,
@@ -43,14 +40,14 @@ class VisitsRepository(
     val visitListItems: LiveData<List<VisitListItem>>
         get() = _visitListItems
 
-    private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
-
     private val _hasOngoingLocalVisit = MutableLiveData(_visitsMap.getLocalVisit() != null)
-
     val hasOngoingLocalVisit: LiveData<Boolean>
         get() = _hasOngoingLocalVisit
 
+    private val _status = MediatorLiveData<Pair<TrackingStateValue, String>>()
     init{
+        // TODO Denys: move status message generation out from HTService and Visits repo, as it
+        // messes up representation and model and makes localization harder
         _status.addSource(hyperTrackService.state) { state ->
             val label = _status.value?.second?:""
             _status.postValue(state to (state.message ?: label))
@@ -284,7 +281,7 @@ class VisitsRepository(
 }
 
 private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
-    val grouped = this.groupBy { it.status }
+    val grouped = this.groupBy { it.state }
     val result = ArrayList<VisitListItem>(this.size + grouped.keys.size)
     grouped.keys.forEach { visitStatus ->
         result.add(HeaderVisitItem(visitStatus))
@@ -296,14 +293,6 @@ private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
         )
     }
     return result
-}
-
-private fun List<VisitListItem>.toStatusLabel(): String {
-    return filterIsInstance<Visit>()
-        .groupBy { it.status }
-        .entries.
-        fold("")
-        {acc, entry -> acc + "${entry.value.size} ${entry.key} Item${if (entry.value.size == 1) " " else "s "}"}
 }
 
 private fun Map<String, Visit>.getLocalVisit(): Visit? {

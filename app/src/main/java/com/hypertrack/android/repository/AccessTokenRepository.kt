@@ -110,9 +110,8 @@ class BasicAuthAccessTokenRepository(
         }
     }
 
-    override fun getConfig() : BasicAuthAccessTokenConfig {
-        return BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
-    }
+    override fun getConfig() : BasicAuthAccessTokenConfig =
+        BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
 
     override val deviceHistoryWebViewUrl: String
         get() = "https://embed.hypertrack.com/devices/$deviceId?publishable_key=$userName&map_only=true&back=false"

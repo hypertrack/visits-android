@@ -5,9 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
-import com.hypertrack.android.repository.COMPLETED
-import com.hypertrack.android.repository.PENDING
-import com.hypertrack.android.repository.VISITED
 import com.hypertrack.android.ui.VisitDetailsActivity
 import com.hypertrack.android.utils.OsUtilsProvider
 import java.io.ByteArrayOutputStream
@@ -30,19 +27,11 @@ data class Visit(val _id: String,
                  val _state: VisitStatus?,
                  private var _icon: String? = null
  ): VisitListItem() {
+
     val state: VisitStatus
         get() = _state ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
     val isEditable = state < VisitStatus.COMPLETED
-    val isCompleted: Boolean
-        get() = status == COMPLETED
-
-    val status: String
-        get() = when {
-            completedAt.isNotEmpty() -> COMPLETED
-            visitedAt?.isNotEmpty() == true -> VISITED
-            else -> PENDING
-        }
-
+    val isCompleted = state in listOf(VisitStatus.CANCELLED, VisitStatus.COMPLETED)
     val isLocal = visitType == VisitType.LOCAL
 
     val isDeletable: Boolean
@@ -173,7 +162,7 @@ enum class VisitType {
 }
 
 sealed class VisitListItem
-data class HeaderVisitItem(val text: String) : VisitListItem()
+data class HeaderVisitItem(val status: VisitStatus) : VisitListItem()
 
 data class Address (val street : String, val postalCode : String, val city : String, val country : String)
 
