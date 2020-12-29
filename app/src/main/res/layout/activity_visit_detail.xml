@@ -198,7 +198,7 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
+                app:layout_constraintStart_toStartOf="@+id/tvTitleLocation"
                 app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
 
             <androidx.appcompat.widget.AppCompatEditText
@@ -211,7 +211,7 @@
                 android:lines="5"
                 android:padding="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/tvCustomerNote"
+                app:layout_constraintStart_toStartOf="@+id/tvTitleVisitNote"
                 app:layout_constraintTop_toBottomOf="@id/ivVisitNote" />
 
             <androidx.appcompat.widget.AppCompatImageView
