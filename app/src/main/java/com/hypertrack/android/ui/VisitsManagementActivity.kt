@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_visits_management.*
 
 class VisitsManagementActivity : ProgressDialogActivity() {
 
-    private val visitsManagementViewModel : VisitsManagementViewModel by viewModels {
+    val visitsManagementViewModel : VisitsManagementViewModel by viewModels {
         (application as MyApplication).injector.provideVisitsManagementViewModelFactory(applicationContext)
     }
     lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -96,7 +96,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         visitsManagementViewModel.clockInButtonText.observe(this) { clockIn.text = it }
         visitsManagementViewModel.checkInButtonText.observe(this) { checkIn.text = it }
 
-        ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits() }
+        ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits {} }
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(this) { msg ->
@@ -108,14 +108,14 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
     override fun onResume() {
         super.onResume()
-        visitsManagementViewModel.refreshVisits()
+        visitsManagementViewModel.refreshVisits {}
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent with extras ${intent?.extras}")
         if (intent?.action == Intent.ACTION_SYNC) {
-            visitsManagementViewModel.refreshVisits()
+            visitsManagementViewModel.refreshVisits {}
         }
     }
 

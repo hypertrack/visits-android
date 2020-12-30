@@ -103,10 +103,11 @@ class VisitsManagementViewModel(
 
     val deviceHistoryWebViewUrl = accessTokenRepository.deviceHistoryWebViewUrl
 
-    fun refreshVisits() {
+    fun refreshVisits(block: () -> Unit) {
+        Log.v(TAG, "Refresh visits")
         if (_showSpinner.value == true) return
 
-        _showSpinner.postValue(true)
+//        _showSpinner.postValue(true)
 
          val coroutineExceptionHandler = CoroutineExceptionHandler{_ , throwable ->
             Log.e(TAG, "Got error $throwable in coroutine")
@@ -119,7 +120,7 @@ class VisitsManagementViewModel(
                 crashReportsProvider.logException(e)
                 _showToast.postValue("Can't refresh visits")
             } finally {
-                _showSpinner.postValue(false)
+                block()
             }
         }
     }

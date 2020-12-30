@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.hypertrack.logistics.android.github.R
 
 
@@ -45,13 +46,23 @@ class PageFragment : Fragment() {
             rootView
         }
         else -> {
-            val rootView = inflater.inflate(R.layout.visits_list_fragment, container, false)
+            val rootView = inflater.inflate(R.layout.visits_list_fragment, container, false) as SwipeRefreshLayout
             val view = rootView.findViewById<RecyclerView>(R.id.recyclerView)
             if (view is RecyclerView) {
                 val activity = activity as VisitsManagementActivity
                 view.apply {
                     layoutManager = activity.viewManager
                     adapter = activity.viewAdapter
+                }
+            }
+            rootView.setOnRefreshListener {
+                this.activity?.let {
+                    val hostActivity = it as VisitsManagementActivity
+                    hostActivity.visitsManagementViewModel.refreshVisits {
+                        Log.v(TAG, "refresh visits finished callback")
+                        if (rootView.isRefreshing) rootView.isRefreshing = false
+                    }
+
                 }
             }
             rootView
