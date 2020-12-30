@@ -35,16 +35,18 @@ class PageFragment : Fragment() {
     ): View? = when (page) {
         Page.VIEW -> {
 
-            val view = inflater.inflate(R.layout.webview_fragment, container, false)
+            val rootView = inflater.inflate(R.layout.webview_fragment, container, false)
+            val view = rootView.findViewById<WebView>(R.id.webView)
             if (view is WebView) {
                 view.settings.javaScriptEnabled = true
                 val historyUrl = arguments?.getString(WEBVIEW_URL)
                 view.loadUrl(historyUrl?:"")
             }
-            view
+            rootView
         }
         else -> {
-            val view = inflater.inflate(R.layout.visits_list_fragment, container, false)
+            val rootView = inflater.inflate(R.layout.visits_list_fragment, container, false)
+            val view = rootView.findViewById<RecyclerView>(R.id.recyclerView)
             if (view is RecyclerView) {
                 val activity = activity as VisitsManagementActivity
                 view.apply {
@@ -52,7 +54,7 @@ class PageFragment : Fragment() {
                     adapter = activity.viewAdapter
                 }
             }
-            view
+            rootView
         }
     }
 
