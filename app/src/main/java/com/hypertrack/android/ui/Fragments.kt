@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -36,13 +37,20 @@ class PageFragment : Fragment() {
     ): View? = when (page) {
         Page.VIEW -> {
 
-            val rootView = inflater.inflate(R.layout.webview_fragment, container, false)
+            val rootView = inflater.inflate(R.layout.webview_fragment, container, false) as SwipeRefreshLayout
             val view = rootView.findViewById<WebView>(R.id.webView)
             if (view is WebView) {
                 view.settings.javaScriptEnabled = true
                 val historyUrl = arguments?.getString(WEBVIEW_URL)
                 view.loadUrl(historyUrl?:"")
+                view.webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        if (rootView.isRefreshing) rootView.isRefreshing = false
+                    }
+                }
             }
+            rootView.setOnRefreshListener { view.reload() }
             rootView
         }
         else -> {
