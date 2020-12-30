@@ -2,9 +2,9 @@
     <string name="app_name">Visits</string>
     <string name="enter_driver_id">enter driver id</string>
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
-    <string name="channel_name">Hypertrack Notifications</string>
-    <string name="channel_id">hyper_track</string>
-    <string name="channel_description">Hyper track show your Nearby,completed notification</string>
+    <string name="channel_name">HyperTrack Notifications</string>
+    <string name="channel_id">HyperTrack</string>
+    <string name="channel_description">All HyperTrack Visits app notifications</string>
     <string name="file_provider_authority" translatable="false">com.hypertrack.logistics.android.github.fileprovider</string>
     <string name="replace_picture">Replace Picture</string>
     <string name="location">Location</string>
