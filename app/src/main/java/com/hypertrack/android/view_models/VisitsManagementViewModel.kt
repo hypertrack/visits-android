@@ -47,6 +47,10 @@ class VisitsManagementViewModel(
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
+    private val _showSync = MutableLiveData(false)
+    val showSync: LiveData<Boolean>
+        get() = _showSync
+
     private val _showToast = MutableLiveData("")
     val showToast: LiveData<String>
         get() = _showToast
@@ -103,10 +107,11 @@ class VisitsManagementViewModel(
 
     val deviceHistoryWebViewUrl = accessTokenRepository.deviceHistoryWebViewUrl
 
-    fun refreshVisits() {
-        if (_showSpinner.value == true) return
+    fun refreshVisits(block: () -> Unit) {
+        Log.v(TAG, "Refresh visits")
 
-        _showSpinner.postValue(true)
+        if (_showSync.value == true) return
+        _showSync.postValue(true)
 
          val coroutineExceptionHandler = CoroutineExceptionHandler{_ , throwable ->
             Log.e(TAG, "Got error $throwable in coroutine")
@@ -119,7 +124,8 @@ class VisitsManagementViewModel(
                 crashReportsProvider.logException(e)
                 _showToast.postValue("Can't refresh visits")
             } finally {
-                _showSpinner.postValue(false)
+                _showSync.postValue(false)
+                block()
             }
         }
     }
