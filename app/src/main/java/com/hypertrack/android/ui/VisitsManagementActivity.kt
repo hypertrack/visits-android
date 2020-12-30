@@ -84,6 +84,9 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         }
 
         visitsManagementViewModel.showSpinner.observe(this) { show ->
+            if(show) showProgress() else dismissProgress()
+        }
+        visitsManagementViewModel.showSync.observe(this) { show ->
             if(show) showSyncNotification() else dismissSyncNotification()
         }
         visitsManagementViewModel.enableCheckIn.observe(this) { enabled ->
@@ -96,7 +99,6 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         visitsManagementViewModel.clockInButtonText.observe(this) { clockIn.text = it }
         visitsManagementViewModel.checkInButtonText.observe(this) { checkIn.text = it }
 
-        ivRefresh.setOnClickListener { visitsManagementViewModel.refreshVisits {} }
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(this) { msg ->
@@ -108,14 +110,14 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
     override fun onResume() {
         super.onResume()
-        visitsManagementViewModel.refreshVisits {}
+        visitsManagementViewModel.refreshVisits { }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent with extras ${intent?.extras}")
         if (intent?.action == Intent.ACTION_SYNC) {
-            visitsManagementViewModel.refreshVisits {}
+            visitsManagementViewModel.refreshVisits { }
         }
     }
 

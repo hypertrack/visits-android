@@ -25,6 +25,7 @@
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_refresh" />
 
         <androidx.appcompat.widget.AppCompatTextView
