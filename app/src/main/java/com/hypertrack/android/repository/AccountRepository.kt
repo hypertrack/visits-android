@@ -17,16 +17,20 @@ class AccountRepository(
 
     override var isManualCheckInAllowed: Boolean
         get() = accountData.isManualVisitEnabled
-        set(value) {
-            accountData.isManualVisitEnabled = value
-        }
+        set(value) { accountData.isManualVisitEnabled = value }
     override var isAutoCheckInEnabled: Boolean
         get() = accountData.autoCheckIn
-    set(value)  {
-        accountData.autoCheckIn = value
-    }
+        set(value)  { accountData.autoCheckIn = value }
+    override var isPickUpAllowed: Boolean
+        get() = accountData.pickUpAllowed
+        set(value) { accountData.pickUpAllowed = value }
 
-    suspend fun onKeyReceived(key: String, checkInEnabled: String = "false", autoCheckIn: String = "true") : Boolean {
+    suspend fun onKeyReceived(
+        key: String,
+        checkInEnabled: String = "false",
+        autoCheckIn: String = "true",
+        pickUpAllowed: String = "true"
+    ) : Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
         Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
@@ -51,13 +55,17 @@ class AccountRepository(
         if (autoCheckIn in listOf("false", "False")) {
             isAutoCheckInEnabled = false
         }
+        if (pickUpAllowed in listOf("false", "False")) {
+            isPickUpAllowed = false
+        }
 
         accountDataStorage.saveAccountData(
             AccountData(
                 publishableKey = key,
                 lastToken = token,
                 isManualVisitEnabled = isManualCheckInAllowed,
-                autoCheckIn = isAutoCheckInEnabled
+                autoCheckIn = isAutoCheckInEnabled,
+                _pickUpAllowed = isPickUpAllowed
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)

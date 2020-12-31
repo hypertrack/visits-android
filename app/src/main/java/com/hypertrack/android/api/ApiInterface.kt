@@ -168,14 +168,14 @@ class Point (
 }
 
 class Polygon (
-    @SerializedName("coordinates") override val coordinates : List<List<Double>>
+    @SerializedName("coordinates") override val coordinates : List<List<List<Double>>>
 ) : Geometry() {
     override val type: String
             get() = "Polygon"
     override val latitude: Double
-        get() = coordinates.map { it[1] }.average()
+        get() = coordinates[0].map { it[1] }.average()
     override val longitude: Double
-        get() = coordinates.map { it[0] }.average()
+        get() = coordinates[0].map { it[0] }.average()
 }
 
 abstract class Geometry {

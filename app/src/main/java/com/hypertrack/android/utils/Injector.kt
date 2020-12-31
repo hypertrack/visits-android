@@ -218,6 +218,7 @@ class SplashScreenViewModelFactory(
 interface AccountPreferencesProvider {
     val isManualCheckInAllowed: Boolean
     val isAutoCheckInEnabled: Boolean
+    val isPickUpAllowed: Boolean
 }
 
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"

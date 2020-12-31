@@ -62,12 +62,14 @@ class SplashScreenViewModel(
         val driverId = parameters["driver_id"] as String?
         val showCheckIn = parameters["show_manual_visits"] as String? ?:""
         val autoCheckIn = parameters["auto_check_in"] as String? ?: ""
-        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn")
+        val pickUpAllowed = parameters["pick_up_allowed"] as String? ?: ""
+        Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, " +
+                "auto checking $autoCheckIn pickUp allowed $pickUpAllowed")
         if (key != null) {
             Log.d(TAG, "Got key $key")
             try {
                 viewModelScope.launch {
-                    val correctKey = accountRepository.onKeyReceived(key, showCheckIn, autoCheckIn)
+                    val correctKey = accountRepository.onKeyReceived(key, showCheckIn, autoCheckIn, pickUpAllowed)
                     Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
                         Log.d(TAG, "Key validated successfully")

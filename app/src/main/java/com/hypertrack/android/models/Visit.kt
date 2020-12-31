@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.toBase64
+import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -136,22 +137,31 @@ data class Visit(val _id: String,
     )
 
     constructor(
-        visitDataSource: VisitDataSource,
-        osUtilsProvider: OsUtilsProvider,
-        autoCheckInOnVisit: Boolean
+        source: VisitDataSource,
+        utils: OsUtilsProvider,
+        preferences: AccountPreferencesProvider
     ) : this(
-        _id = visitDataSource._id,
-        visit_id = "${osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId)} ${visitDataSource.visitNameSuffix}",
-        customerNote = visitDataSource.customerNote,
-        address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
-        createdAt = visitDataSource.createdAt,
-        visitedAt = visitDataSource.visitedAt,
-        latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
-        visitType = visitDataSource.visitType,
-        _state = if (visitDataSource.visitedAt.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
+        _id = source._id,
+        address = source.address ?: utils.getAddressFromCoordinates(source.latitude, source.longitude),
+        visit_id = "${utils.getString(source.visitNamePrefixId)} ${createSuffix(source, utils.getAddressFromCoordinates(source.latitude, source.longitude))}",
+        customerNote = source.customerNote,
+        createdAt = source.createdAt,
+        visitedAt = source.visitedAt,
+        latitude = source.latitude, longitude = source.longitude,
+        visitType = source.visitType,
+        _state =
+            when {
+                source.visitedAt.isNotEmpty() && preferences.isAutoCheckInEnabled -> VisitStatus.VISITED
+                preferences.isPickUpAllowed -> VisitStatus.PENDING
+                else -> VisitStatus.PICKED_UP
+            }
     )
 
+
 }
+private fun createSuffix(visitDataSource: VisitDataSource, address: Address)
+    = if (visitDataSource.address != null) visitDataSource.visitNameSuffix else address.street
+
 
 @SuppressLint("NewApi")
 private fun String.isLaterThanADayAgo(): Boolean =
@@ -175,7 +185,7 @@ enum class VisitType { TRIP, GEOFENCE, LOCAL }
 sealed class VisitListItem
 data class HeaderVisitItem(val status: VisitStatusGroup) : VisitListItem()
 
-data class Address (val street : String, val postalCode : String, val city : String, val country : String)
+data class Address (val street : String, val postalCode : String?, val city : String?, val country : String?)
 
 /**
  *

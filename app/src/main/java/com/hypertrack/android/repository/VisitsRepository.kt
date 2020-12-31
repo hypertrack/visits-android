@@ -72,7 +72,7 @@ class VisitsRepository(
                 val visit = Visit(
                     prototype,
                     osUtilsProvider,
-                    accountPreferences.isAutoCheckInEnabled
+                    accountPreferences
                 )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
@@ -181,7 +181,7 @@ class VisitsRepository(
         val createdAt = osUtilsProvider.getCurrentTimestamp()
         val newLocalVisit = Visit(
             _id = UUID.randomUUID().toString(),
-            visit_id = osUtilsProvider.getStringResourceForId(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
+            visit_id = osUtilsProvider.getString(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
             createdAt = createdAt,
             visitedAt = createdAt,
             visitType = VisitType.LOCAL,
