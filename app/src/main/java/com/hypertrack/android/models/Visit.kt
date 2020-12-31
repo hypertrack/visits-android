@@ -137,27 +137,31 @@ data class Visit(val _id: String,
     )
 
     constructor(
-        visitDataSource: VisitDataSource,
-        osUtilsProvider: OsUtilsProvider,
+        source: VisitDataSource,
+        utils: OsUtilsProvider,
         preferences: AccountPreferencesProvider
     ) : this(
-        _id = visitDataSource._id,
-        visit_id = "${osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId)} ${visitDataSource.visitNameSuffix}",
-        customerNote = visitDataSource.customerNote,
-        address = visitDataSource.address ?: osUtilsProvider.getAddressFromCoordinates(visitDataSource.latitude, visitDataSource.longitude),
-        createdAt = visitDataSource.createdAt,
-        visitedAt = visitDataSource.visitedAt,
-        latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
-        visitType = visitDataSource.visitType,
+        _id = source._id,
+        address = source.address ?: utils.getAddressFromCoordinates(source.latitude, source.longitude),
+        visit_id = "${utils.getString(source.visitNamePrefixId)} ${createSuffix(source, utils.getAddressFromCoordinates(source.latitude, source.longitude))}",
+        customerNote = source.customerNote,
+        createdAt = source.createdAt,
+        visitedAt = source.visitedAt,
+        latitude = source.latitude, longitude = source.longitude,
+        visitType = source.visitType,
         _state =
             when {
-                visitDataSource.visitedAt.isNotEmpty() && preferences.isAutoCheckInEnabled -> VisitStatus.VISITED
+                source.visitedAt.isNotEmpty() && preferences.isAutoCheckInEnabled -> VisitStatus.VISITED
                 preferences.isPickUpAllowed -> VisitStatus.PENDING
                 else -> VisitStatus.PICKED_UP
             }
     )
 
+
 }
+private fun createSuffix(visitDataSource: VisitDataSource, address: Address)
+    = if (visitDataSource.address != null) visitDataSource.visitNameSuffix else address.street
+
 
 @SuppressLint("NewApi")
 private fun String.isLaterThanADayAgo(): Boolean =
@@ -181,7 +185,7 @@ enum class VisitType { TRIP, GEOFENCE, LOCAL }
 sealed class VisitListItem
 data class HeaderVisitItem(val status: VisitStatusGroup) : VisitListItem()
 
-data class Address (val street : String, val postalCode : String, val city : String, val country : String)
+data class Address (val street : String, val postalCode : String?, val city : String?, val country : String?)
 
 /**
  *

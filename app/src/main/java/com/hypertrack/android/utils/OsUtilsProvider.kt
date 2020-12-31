@@ -31,22 +31,25 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
             val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
             address?.let {
                 return Address(
-                    address.thoroughfare ?: context.getString(R.string.unnamed_street),
-                    address.postalCode ?: "",
-                    address.locality ?: context.getString(R.string.unknown_city),
-                    address.countryName ?: context.getString(R.string.unknown_country)
+                    street = address.thoroughfare ?: stubStreet(latitude, longitude),
+                    postalCode = address.postalCode,
+                    city = address.locality,
+                    country = address.countryName
                 )
             }
         } catch (t: Throwable) {
             crashReportsProvider.logException(t)
         }
         return Address(
-            context.getString(R.string.unknown_location_at)+ "($latitude, $longitude)",
-            "",
-            "",
-            ""
+            street = stubStreet(latitude, longitude),
+            postalCode = null,
+            city = null,
+            country = null
         )
     }
 
-    fun getStringResourceForId(resId: Int): String = context.getString(resId)
+    private fun stubStreet(latitude: Double, longitude: Double) =
+        context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"
+
+    fun getString(resId: Int): String = context.getString(resId)
 }
