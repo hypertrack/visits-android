@@ -7,7 +7,7 @@ import org.junit.Test
 class GeometryTest {
     @Test
     fun itShouldDeserializePolygonsCorrectly() {
-        val polygonString = """{"type": "Polygon", "coordinates": [[0.0, 0.0], [0.0, 0.1], [0.1, 0.0], [0.0, 0.0]]}"""
+        val polygonString = """{"type": "Polygon", "coordinates": [[[0.0, 0.0], [0.0, 0.1], [0.1, 0.0], [0.0, 0.0]]]}"""
         val gson = Injector.getGson()
         val geometry = gson.fromJson(polygonString, Geometry::class.java)
         assertNotNull(geometry)
@@ -44,13 +44,13 @@ class GeometryTest {
             "geofence_metadata": { "station": "B" },
             "geometry": {
                 "type": "Polygon",
-                "coordinates": [
+                "coordinates": [[
                     [-122.395237, 37.7947693], 
                     [-122.402321, 37.794374],
                     [-122.401371, 37.790205], 
                     [-122.389450, 37.791271], 
                     [-122.395237, 37.7947693]
-                ]
+                ]]
             }
         }"""
         val gson = Injector.getGson()
