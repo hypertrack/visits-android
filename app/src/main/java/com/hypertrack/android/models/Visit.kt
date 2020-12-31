@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.toBase64
+import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -138,7 +139,7 @@ data class Visit(val _id: String,
     constructor(
         visitDataSource: VisitDataSource,
         osUtilsProvider: OsUtilsProvider,
-        autoCheckInOnVisit: Boolean
+        preferences: AccountPreferencesProvider
     ) : this(
         _id = visitDataSource._id,
         visit_id = "${osUtilsProvider.getStringResourceForId(visitDataSource.visitNamePrefixId)} ${visitDataSource.visitNameSuffix}",
@@ -148,7 +149,12 @@ data class Visit(val _id: String,
         visitedAt = visitDataSource.visitedAt,
         latitude = visitDataSource.latitude, longitude = visitDataSource.longitude,
         visitType = visitDataSource.visitType,
-        _state = if (visitDataSource.visitedAt.isNotEmpty() && autoCheckInOnVisit) VisitStatus.VISITED else VisitStatus.PENDING
+        _state =
+            when {
+                visitDataSource.visitedAt.isNotEmpty() && preferences.isAutoCheckInEnabled -> VisitStatus.VISITED
+                preferences.isPickUpAllowed -> VisitStatus.PENDING
+                else -> VisitStatus.PICKED_UP
+            }
     )
 
 }

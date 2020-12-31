@@ -22,7 +22,7 @@ interface DeeplinkResultListener {
     fun onDeeplinkResult(parameters: Map<String, Any>)
 }
 
-public class BranchIoDeepLinkProcessor(
+class BranchIoDeepLinkProcessor(
     private val crashReportsProvider: CrashReportsProvider
 ) : DeeplinkProcessor {
 

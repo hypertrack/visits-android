@@ -72,7 +72,7 @@ class VisitsRepository(
                 val visit = Visit(
                     prototype,
                     osUtilsProvider,
-                    accountPreferences.isAutoCheckInEnabled
+                    accountPreferences
                 )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
