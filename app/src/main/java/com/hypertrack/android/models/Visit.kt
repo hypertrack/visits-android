@@ -31,7 +31,8 @@ data class Visit(val _id: String,
     val isEditable = state < VisitStatus.COMPLETED
     val isCompleted = state in listOf(VisitStatus.CANCELLED, VisitStatus.COMPLETED)
     val isLocal = visitType == VisitType.LOCAL
-
+    val isVisited: Boolean
+        get() = visitedAt?.isNotEmpty() == true
     val isDeletable: Boolean
         get() {
             return !isLocal &&
