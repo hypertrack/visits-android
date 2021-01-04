@@ -146,7 +146,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         Log.v(TAG, "Got image capture result $resultCode")
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            viewModel.onPictureResult(currentPhotoPath)
+            currentPhotoPath?.let { viewModel.onPictureResult(it) }
         }
     }
 
@@ -193,7 +193,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         finish()
     }
 
-    lateinit var currentPhotoPath: String
+    var currentPhotoPath: String? = null
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
