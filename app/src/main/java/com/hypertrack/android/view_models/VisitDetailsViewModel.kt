@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class VisitDetailsViewModel(
