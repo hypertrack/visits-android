@@ -31,7 +31,7 @@ class ServiceLocator {
             .addTrackingListener(listener)
             .setTrackingNotificationConfig(
                 ServiceNotificationConfig.Builder()
-                    .setSmallIcon(R.drawable.ic_logo_small)
+                    .setSmallIcon(R.drawable.ic_notif_logo_small)
                     .build()
             )
             .allowMockLocations()
@@ -106,7 +106,7 @@ object Injector {
             getMyPreferences(context),
             getHyperTrackService(context),
             getAccountRepo(context),
-            getImageDecoder(context),
+            getImageDecoder(),
             crashReportsProvider
         )
         visitsRepository = result
@@ -114,7 +114,7 @@ object Injector {
         return result
     }
 
-    private fun getImageDecoder(ctx: Context): ImageDecoder = SimpleImageDecoder()
+    private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
