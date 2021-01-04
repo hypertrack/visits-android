@@ -23,11 +23,11 @@ class PageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate with page $page")
+        // Log.d(TAG, "onCreate with page $page")
         arguments?.let {
             page = Page.values()[it.getInt(ARG_PAGE)]
         }
-        Log.d(TAG, "Restored page $page")
+        // Log.d(TAG, "Restored page $page")
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -67,7 +67,7 @@ class PageFragment : Fragment() {
                 this.activity?.let {
                     val hostActivity = it as VisitsManagementActivity
                     hostActivity.visitsManagementViewModel.refreshVisits {
-                        Log.v(TAG, "refresh visits finished callback")
+                        // Log.v(TAG, "refresh visits finished callback")
                         if (rootView.isRefreshing) rootView.isRefreshing = false
                     }
 

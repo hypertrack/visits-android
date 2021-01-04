@@ -80,7 +80,7 @@ class ApiClient(
         try {
             val response = api.getTrips(deviceId, page)
             if (response.isSuccessful) {
-                Log.v(TAG, "Got response ${response.body()}")
+                // Log.v(TAG, "Got response ${response.body()}")
                 return response.body()?.trips?.filterNot {
                     it.destination == null || it.tripId.isNullOrEmpty()
                 }
@@ -100,7 +100,7 @@ class ApiClient(
         try {
             val response = api.persistImage(deviceId, EncodedImage(image))
             if (response.isSuccessful) {
-                Log.v(TAG, "Got post image response ${response.body()}")
+                // Log.v(TAG, "Got post image response ${response.body()}")
                 return response.body()?.name ?: ""
             }
         } catch (e: Throwable) {

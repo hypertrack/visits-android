@@ -50,7 +50,7 @@ class BasicAuthAccessTokenRepository(
     override fun getAccessToken(): String = token?:refreshToken()
 
     override fun refreshToken(): String {
-        Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
+        // Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
 
         val result = okHttpClient
             .newCall(request)
@@ -59,7 +59,7 @@ class BasicAuthAccessTokenRepository(
 
         return when (result) {
             is Active -> {
-                Log.v(TAG, "Updated bearer token $result.token" )
+                // Log.v(TAG, "Updated bearer token $result.token" )
                 token = result.token
                 result.token
             }
@@ -82,7 +82,7 @@ class BasicAuthAccessTokenRepository(
         }
 
     private fun getTokenFromResponse(response: Response) : AccountState {
-        Log.d(TAG, "Getting token from response $response")
+        // Log.d(TAG, "Getting token from response $response")
         return when {
             response.isSuccessful -> {
                 response.body?.let {

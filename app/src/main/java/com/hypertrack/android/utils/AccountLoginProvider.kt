@@ -22,19 +22,20 @@ interface AccountLoginProvider {
 }
 
 class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiUrl: String) : AccountLoginProvider {
+    @Suppress("UNUSED_VARIABLE")
     @ExperimentalCoroutinesApi
     override suspend fun getPublishableKey(login: String, password: String): String {
 
         // get Cognito token
         val userStateDetails = awsInitCallWrapper() ?: return ""
-        Log.v(TAG, "Initialized with user State $userStateDetails")
+        // Log.v(TAG, "Initialized with user State $userStateDetails")
         val signInResult = awsLoginCallWrapper(login, password) ?: return ""
-        Log.v(TAG, "Sign in result $signInResult")
+        // Log.v(TAG, "Sign in result $signInResult")
         val idToken = awsTokenCallWrapper() ?: return ""
-        Log.v(TAG, "Got id token $idToken")
+        // Log.v(TAG, "Got id token $idToken")
         val pk = getPublishableKeyFromToken(idToken)
         AWSMobileClient.getInstance().signOut()
-        Log.d(TAG, "Got pk $pk")
+        // Log.d(TAG, "Got pk $pk")
         return pk
     }
 

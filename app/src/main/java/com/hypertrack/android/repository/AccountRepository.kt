@@ -33,7 +33,7 @@ class AccountRepository(
     ) : Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
-        Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
+        // Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
 
         val accessTokenRepository = serviceLocator.getAccessTokenRepository(sdk.deviceId, key)
         val accountState = try {
@@ -47,7 +47,7 @@ class AccountRepository(
         when (accountState) {
             Unknown, InvalidCredentials -> return false
             is Active -> token = accountState.token
-            Suspended -> Log.d(TAG, "Account is suspended or device was deleted")
+            Suspended -> {} // Log.d(TAG, "Account is suspended or device was deleted")
         }
         if (checkInEnabled in listOf("true", "True")) {
             isManualCheckInAllowed = true

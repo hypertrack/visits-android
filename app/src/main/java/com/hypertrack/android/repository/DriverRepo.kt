@@ -13,7 +13,7 @@ class DriverRepo(
     var driverId: String
         get() = _driver.driverId
         set(value) {
-            Log.d(TAG, "New driverId value $value")
+            // Log.d(TAG, "New driverId value $value")
             _driver = Driver(value)
             accountDataStorage.saveDriver(_driver)
             crashReportsProvider.setUserIdentifier(value)

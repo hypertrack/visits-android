@@ -13,7 +13,7 @@ class VisitsMessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         if (remoteMessage?.data?.get("visits") != null) {
-            Log.d(TAG, "Got remote message with payload ${remoteMessage.data}")
+            // Log.d(TAG, "Got remote message with payload ${remoteMessage.data}")
             val intent = Intent(this as Context, VisitsManagementActivity::class.java)
             intent.action = Intent.ACTION_SYNC
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

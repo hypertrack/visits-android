@@ -43,7 +43,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
             "visit_note" to visitNote,
             "_visit_photo" to visitPicId
         )
-        Log.d(TAG, "Completion event payload $payload")
+        // Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload)
     }
 
@@ -78,7 +78,7 @@ class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
     override fun onTrackingStart() = state.postValue(TrackingStateValue.TRACKING)
 
     override fun onError(p0: TrackingError?) {
-        Log.d(TAG, "onError $p0")
+        // Log.d(TAG, "onError $p0")
         when {
             p0?.code == TrackingError.AUTHORIZATION_ERROR && p0.message.contains("trial ended") -> state.postValue(TrackingStateValue.DEVICE_DELETED)
             else -> state.postValue(TrackingStateValue.ERROR)

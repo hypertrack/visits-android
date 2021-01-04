@@ -62,7 +62,7 @@ class VisitDetailsViewModel(
         get() = _cancelButton
 
     fun onVisitNoteChanged(newNote : String) {
-        Log.d(TAG, "onVisitNoteChanged $newNote")
+        // Log.d(TAG, "onVisitNoteChanged $newNote")
         updatedNote = newNote
     }
 
@@ -84,7 +84,7 @@ class VisitDetailsViewModel(
     fun onBackPressed() = updateNote()
 
     private fun updateNote() {
-        Log.v(TAG, "updateNote")
+        // Log.v(TAG, "updateNote")
         updatedNote?.let {
             if (visitsRepository.updateVisitNote(id, it))
                 _showToast.postValue(true)
@@ -92,7 +92,7 @@ class VisitDetailsViewModel(
     }
 
     fun onPictureResult(path: String) {
-        Log.d(TAG, "onPicResult $path")
+        // Log.d(TAG, "onPicResult $path")
         MainScope().launch { visitsRepository.setImage(id, path) }
     }
 

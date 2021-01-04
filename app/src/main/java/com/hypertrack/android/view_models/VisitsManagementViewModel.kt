@@ -94,7 +94,7 @@ class VisitsManagementViewModel(
         }
         _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
             when (_statusBarMessage.value) {
-                is StatusString -> Log.v(TAG, "Not updating message as it shows tracking info")
+                is StatusString -> {} // Log.v(TAG, "Not updating message as it shows tracking info")
                 else -> _statusBarMessage.postValue(visits.asStats())
             }
 
@@ -108,7 +108,7 @@ class VisitsManagementViewModel(
     val deviceHistoryWebViewUrl = accessTokenRepository.deviceHistoryWebViewUrl
 
     fun refreshVisits(block: () -> Unit) {
-        Log.v(TAG, "Refresh visits")
+        // Log.v(TAG, "Refresh visits")
 
         if (_showSync.value == true) return block()
         _showSync.postValue(true)
@@ -138,7 +138,7 @@ class VisitsManagementViewModel(
     }
 
     fun switchTracking() {
-        Log.v(TAG, "switchTracking")
+        // Log.v(TAG, "switchTracking")
         _showSpinner.postValue(true)
         viewModelScope.launch {
             visitsRepository.switchTracking()

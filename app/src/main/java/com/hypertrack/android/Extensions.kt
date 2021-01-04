@@ -19,7 +19,7 @@ private const val TAG = "Extensions"
 
 fun AppCompatActivity.navigateTo(destination: Destination) {
 
-    Log.d(TAG, "Navigating to $destination")
+    // Log.d(TAG, "Navigating to $destination")
 
     val targetActivity = when (destination) {
         Destination.SPLASH_SCREEN -> SplashScreen::class.java
@@ -31,7 +31,7 @@ fun AppCompatActivity.navigateTo(destination: Destination) {
     }
 
     if (javaClass == targetActivity) {
-        Log.d(TAG, "Destination $destination is current activity")
+        // Log.d(TAG, "Destination $destination is current activity")
         return
     }
 
@@ -54,12 +54,12 @@ fun Bitmap.toBase64(): String {
     val outputStream = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
     val result = Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
-    Log.v(TAG, "Encoded image $result")
+    // Log.v(TAG, "Encoded image $result")
     return result
 }
 
 fun String.decodeBase64Bitmap(): Bitmap {
-    Log.v(TAG, "decoding image $this")
+    // Log.v(TAG, "decoding image $this")
     val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
     return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
