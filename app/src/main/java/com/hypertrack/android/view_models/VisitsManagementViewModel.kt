@@ -122,7 +122,11 @@ class VisitsManagementViewModel(
             } catch (e: Throwable) {
                 Log.e(TAG, "Got error $e refreshing visits")
                 when (e) {
-                    is java.net.UnknownHostException, is java.net.ConnectException -> Log.i(TAG, "Failed to refresh visits", e)
+                    is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException -> Log.i(
+                        TAG,
+                        "Failed to refresh visits",
+                        e
+                    )
                     else -> crashReportsProvider.logException(e)
                 }
                 _showToast.postValue("Can't refresh visits")
