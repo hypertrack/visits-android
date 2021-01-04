@@ -10,9 +10,7 @@ import com.hypertrack.android.models.*
 import com.hypertrack.android.retryWithBackoff
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -222,18 +220,21 @@ class VisitsRepository(
         }
 
         Log.d(TAG, "Launched preview update task")
-        retryWithBackoff(
-            times = 5,
-            block = { uploadImage(imagePath, target, id) },
-            crashReportsProvider = crashReportsProvider
-        )
+        try {
+            retryWithBackoff(
+                times = 5, factor = 10.0,
+                block = { uploadImage(imagePath, target, id) }
+            )
+        } catch (t: Throwable) {
+            crashReportsProvider.logException(t)
+        }
     }
 
-    private fun CoroutineScope.uploadImage(
+    private suspend fun uploadImage(
         imagePath: String,
         target: Visit,
         id: String
-    ) = launch {
+    )  {
         val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
         val imageKey = apiClient.uploadImage(uploadedImage)
         target.visitPicture = imageKey

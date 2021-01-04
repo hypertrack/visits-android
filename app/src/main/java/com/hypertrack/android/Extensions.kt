@@ -68,17 +68,16 @@ fun String.decodeBase64Bitmap(): Bitmap {
 suspend fun <T> retryWithBackoff(
     times: Int = Int.MAX_VALUE,
     initialDelay: Long = 1000, //  1 sec
-    maxDelay: Long = 10000,    // 10 secs
+    maxDelay: Long = 100000,    // 100 secs
     factor: Double = 2.0,
-    block: suspend () -> T,
-    crashReportsProvider: CrashReportsProvider
+    block: suspend () -> T
 ): T {
     var currentDelay = initialDelay
     repeat(times - 1) {
         try {
             return block()
-        } catch (t: Throwable) {
-            crashReportsProvider.logException(t)
+        } catch (_: Throwable) {
+            // NOOP
         }
         delay(currentDelay)
         currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)

@@ -92,9 +92,7 @@ class VisitDetailsViewModel(
 
     fun onPictureResult(path: String) {
         Log.d(TAG, "onPicResult $path")
-        viewModelScope.launch {
-            visitsRepository.setImage(id, path)
-        }
+        MainScope().launch { visitsRepository.setImage(id, path) }
     }
 
     companion object {const val TAG = "VisitDetailsVM"}
