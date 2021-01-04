@@ -110,11 +110,11 @@ class VisitsManagementViewModel(
     fun refreshVisits(block: () -> Unit) {
         Log.v(TAG, "Refresh visits")
 
-        if (_showSync.value == true) return
+        if (_showSync.value == true) return block()
         _showSync.postValue(true)
 
          val coroutineExceptionHandler = CoroutineExceptionHandler{_ , throwable ->
-            Log.e(TAG, "Got error $throwable in coroutine")
+            crashReportsProvider.logException(throwable)
         }
         MainScope().launch(Dispatchers.IO + coroutineExceptionHandler) {
             try {
