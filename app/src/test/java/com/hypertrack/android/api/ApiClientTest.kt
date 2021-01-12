@@ -61,6 +61,43 @@ class ApiClientTest {
                             "type": "Point",
                             "coordinates": [ 35.1046979427338, 47.8588572595771 ]
                         },
+                        "markers" : {
+                            "links" : { "next" : null },
+                            "data" : [
+                               {
+                                  "created_at" : "2021-01-04T09:22:51.950Z",
+                                  "geofence_type" : "device",
+                                  "geofence_id" : "41085c46-191d-44cd-8366-130be17d8796",
+                                  "marker_id" : "7aeb9656-510a-4d91-85b0-6865ea6f39ed",
+                                  "trip_id" : null,
+                                  "account_id" : "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
+                                  "metadata": { "destination": true },
+                                  "geometry": {
+                                      "type": "Point",
+                                      "coordinates": [ 35.1046979427338, 47.8588572595771 ]
+                                  },
+                                  "duration" : 334,
+                                  "route_to" : null,
+                                  "device_id" : "DC3383D1-0EB2-38B2-B80F-3926C580DD35",
+                                  "geofence_metadata" : {
+                                     "device_geofence" : true,
+                                     "destination": true
+                                  },
+                                  "arrival" : {
+                                     "recorded_at" : "2021-01-04T09:22:48.692Z",
+                                     "location" : {
+                                        "type" : "Point",
+                                        "coordinates" : [ -122.393237, 37.794587 ]
+                                     }
+                                  },
+                                  "exit" : {
+                                     "location" : null,
+                                     "recorded_at" : "2021-01-04T09:28:22.902Z"
+                                  }
+                               }
+                            ],
+                            "pagination_token" : null
+                         },
                         "archived": false,
                         "geofence_type": "device",
                         "radius": 30
@@ -392,9 +429,7 @@ class ApiClientTest {
     fun itShouldSendPostRequestToStopUrlOnCheckout() = runBlockingTest {
 
         mockWebServer.enqueue(MockResponse())
-        runBlocking {
-            apiClient.clockOut()
-        }
+        runBlocking { apiClient.clockOut() }
 
         val request = mockWebServer.takeRequest()
         val path = request.path
@@ -407,26 +442,22 @@ class ApiClientTest {
 
         mockWebServer.enqueue(MockResponse().setBody(GEOFENCES))
         mockWebServer.enqueue(MockResponse().setBody(MARKERS))
-        val geofences = runBlocking {
-            apiClient.getGeofences()
-        }
-
+        val geofences = runBlocking { apiClient.getGeofences() }
 
         val request = mockWebServer.takeRequest()
         val path = request.path
-        assertEquals("/client/geofences?device_id=$DEVICE_ID&pagination_token=", path)
+        assertEquals("/client/geofences?include_archived=false&include_markers=true&device_id=$DEVICE_ID&pagination_token=", path)
         assertEquals("GET", request.method)
 
         assertEquals(4, geofences.size)
+        assertTrue(geofences.any { it.marker?.markers?.first()?.arrival?.recordedAt != null })
     }
 
     @Test
     fun itShouldSendGetRequestToGetListOfTrips() = runBlockingTest {
 
         mockWebServer.enqueue(MockResponse().setBody(TRIPS))
-        val trips = runBlocking {
-            apiClient.getTrips()
-        }
+        val trips = runBlocking { apiClient.getTrips() }
 
         val request = mockWebServer.takeRequest()
         val path = request.path
