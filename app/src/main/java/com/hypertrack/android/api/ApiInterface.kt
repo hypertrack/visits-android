@@ -129,7 +129,6 @@ data class Geofence(
     @SerializedName("markers") val marker: GeofenceMarkersResponse?,
     @SerializedName("radius") val radius : Int
 ): VisitDataSource {
-    private var _visitedAt:String? = null
     override val latitude: Double
         get() = geometry.latitude
     override val longitude: Double
@@ -142,9 +141,8 @@ data class Geofence(
         get() = null
     override val createdAt: String
         get() = created_at
-    override var visitedAt: String
-        get() = _visitedAt ?: ""
-        set(value) { _visitedAt = value }
+    override val visitedAt: String
+        get() = marker?.markers?.first()?.arrival?.recordedAt ?: ""
     override val visitType
         get() = VisitType.GEOFENCE
     override val visitNamePrefixId: Int
