@@ -3,6 +3,7 @@ package com.hypertrack.android.utils
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
@@ -71,12 +72,14 @@ class MyPreferencesTest {
         val visitsExpected = listOf(
             Visit(
                 _id="42",
-                visitType = VisitType.LOCAL
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.VISITED
             ),
             Visit(
                 _id = "24",
                 completedAt = "2020-02-02T20:20:02.020Z",
-                visitType = VisitType.TRIP
+                visitType = VisitType.TRIP,
+                _state = VisitStatus.COMPLETED
             )
         )
         myPreferences.saveVisits(visitsExpected)

@@ -38,42 +38,13 @@ class ApiClient(
     suspend fun getGeofences(page:  String = "") : List<Geofence> {
         try {
             val response = api.getGeofences(deviceId, page)
-            if (response.isSuccessful) {
-                val geofences: Collection<Geofence> = response.body()?.geofences ?: return emptyList()
-                if (geofences.isEmpty()) return emptyList()
-                val idsToCheck  = geofences.map { it.geofence_id }.toMutableList()
-                val arrivals = mutableMapOf<String, String>()
-                var nextPageOfMarkers:String? = null
-                do {
-                    val markersResponse =  api.getGeofenceMarkers(deviceId, nextPageOfMarkers?:"")
-                    if (markersResponse.isSuccessful) {
-                        markersResponse.body()?.markers?.let { it.forEach {marker ->
-                                if (!arrivals.keys.contains(marker.geofenceId)) {
-                                    val recordedAt = marker.arrival?.recordedAt
-                                    recordedAt?.let {
-                                        arrivals[marker.geofenceId] = recordedAt
-                                        idsToCheck.remove(marker.geofenceId)
-                                    }
-                                }
-                            }
-                        }
-                        nextPageOfMarkers = markersResponse.body()?.next
-                    }
-
-                } while (idsToCheck.isNotEmpty() && nextPageOfMarkers != null)
-
-                return geofences.map {
-                    if (arrivals.keys.contains(it.geofence_id)) {
-                        it.visitedAt = arrivals[it.geofence_id]?:""
-                    }
-                    it
-                }
-            }
+            return if (response.isSuccessful) {
+                 response.body()?.geofences?.toList() ?: emptyList()
+            } else return emptyList()
         } catch (e: Exception) {
             Log.e(TAG, "Got exception while fetching geofences $e")
             throw Exception(e)
         }
-        return emptyList()
     }
 
     suspend fun getTrips(page:  String = ""): List<Trip> {
