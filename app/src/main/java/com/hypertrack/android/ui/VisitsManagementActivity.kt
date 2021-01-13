@@ -147,6 +147,12 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        // Log.d(TAG, "onPause")
+        visitsManagementViewModel.showSync.value?.let { if (it) dismissSyncNotification() }
+    }
+
     companion object { const val TAG = "VisitsManagementAct" }
 
 }
