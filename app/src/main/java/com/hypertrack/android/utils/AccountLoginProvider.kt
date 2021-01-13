@@ -88,4 +88,4 @@ interface TokenForPublishableKeyExchangeService {
     suspend fun getPublishableKey(@Header("Authorization") token: String) : Response<PublishableKeyContainer>
 }
 
-data class PublishableKeyContainer(@Json(name = "key")val publishableKey: String?)
+data class PublishableKeyContainer(@field:Json(name = "key")val publishableKey: String?)

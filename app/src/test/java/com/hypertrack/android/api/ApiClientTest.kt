@@ -3,16 +3,16 @@
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.hypertrack.android.decodeBase64Bitmap
-import okhttp3.mockwebserver.MockWebServer
 import com.hypertrack.android.repository.AccessTokenRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -137,7 +137,7 @@ class ApiClientTest {
                 "links": { "next": null }
             }
             """
-        const val TRIPS = 
+        const val TRIPS =
             """
             {
                "pagination_token" : null,
@@ -354,45 +354,6 @@ class ApiClientTest {
                ]
             }
             """
-        const val MARKERS =
-            """
-            {
-                "data": [
-                    {
-                        "marker_id": "d7fdf8e2-9bb2-427c-8a6f-39be15874cbf",
-                        "device_id": "86BB603D-B905-367D-AE3B-3ECFA4428D96",
-                        "account_id": "1f68e190-af6e-446a-b3f9-d0b1502e63fa",
-                        "trip_id": null,
-                        "created_at": "2020-12-09T09:11:48.423Z",
-                        "arrival": {
-                            "recorded_at": "2020-12-09T09:11:45.980Z",
-                            "location": {
-                                "coordinates": [ -122.393962, 37.795357 ],
-                                "type": "Point"
-                            }
-                        },
-                        "exit": null,
-                        "geofence_id": "010b7861-59fc-4157-9fcd-6d2e0c5072d9",
-                        "metadata": { "location": "Ferry Building" },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [ -122.394, 37.7957 ]
-                        },
-                        "route_to": {},
-                        "geofence_type": "device",
-                        "geofence_metadata": {
-                            "device_geofence": true,
-                            "location": "Ferry Building"
-                        },
-                        "radius": 50
-                    }
-                ],
-                "pagination_token": null,
-                "links": {
-                    "next": null
-                }
-            }
-            """
         const val IMAGE_ID = """{"name": "f4fd5e8b-65a9-41f4-82fa-ad862a42f689"}"""
     }
     private val mockWebServer = MockWebServer()
@@ -440,7 +401,11 @@ class ApiClientTest {
     @Test
     fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
 
-        mockWebServer.enqueue(MockResponse().setBody(GEOFENCES))
+        mockWebServer.enqueue(
+            MockResponse()
+                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .setBody(GEOFENCES)
+        )
         val geofences = runBlocking { apiClient.getGeofences() }
 
         val request = mockWebServer.takeRequest()
