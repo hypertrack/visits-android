@@ -1,8 +1,8 @@
 package com.hypertrack.android.api
 
 import com.hypertrack.android.utils.Injector
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNotNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class ApiEntitiesDeserializationTest {
