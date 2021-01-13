@@ -5,8 +5,9 @@ import android.util.Log
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
@@ -16,14 +17,20 @@ class ApiClient(
     private val deviceId: String
 ) {
 
+    @Suppress("unused")
+    private val loggingInterceptor by lazy {
+        HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+    }
+
     val api: ApiInterface = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create(Injector.getGson()))
+        .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
         .addConverterFactory(ScalarsConverterFactory.create())
         .client(
             OkHttpClient.Builder()
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
+//                .addInterceptor(loggingInterceptor)
                 .addInterceptor(UserAgentInterceptor())
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)

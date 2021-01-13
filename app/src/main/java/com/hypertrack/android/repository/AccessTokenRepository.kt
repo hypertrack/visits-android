@@ -1,10 +1,9 @@
 package com.hypertrack.android.repository
 
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.api.UserAgentInterceptor
+import com.hypertrack.android.utils.Injector
+import com.squareup.moshi.Json
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -87,9 +86,9 @@ class BasicAuthAccessTokenRepository(
             response.isSuccessful -> {
                 response.body?.let {
                     try {
-                        val responseObject = Gson().fromJson(it.string(), AuthCallResponse::class.java)
+                        val responseObject = Injector.getMoshi().adapter(AuthCallResponse::class.java).fromJson(it.string()) ?: return@let Unknown
                         Active(responseObject.accessToken)
-                    } catch (ignored: JsonSyntaxException) {
+                    } catch (_: Throwable) {
                         Log.w(TAG, "Can't deserialize auth response ${it.string()}")
                         Unknown
                     }
@@ -129,8 +128,8 @@ class BasicAuthAccessTokenRepository(
 }
 
 private data class AuthCallResponse(
-    @SerializedName("access_token") val accessToken:String,
-    @SerializedName("expires_in") val expiresIn: Int
+    @field:Json(name = "access_token") val accessToken:String,
+    @field:Json(name = "expires_in") val expiresIn: Int
 )
 
 data class BasicAuthAccessTokenConfig(

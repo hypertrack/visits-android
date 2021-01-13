@@ -1,13 +1,13 @@
 package com.hypertrack.android.response
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 data class AccountData(
-    @SerializedName("pub_key") val publishableKey : String? = null,
-    @SerializedName("last_token") val lastToken : String? = null,
-    @SerializedName("show_manual_visits") var isManualVisitEnabled: Boolean = false,
-    @SerializedName("auto_check_in") var autoCheckIn: Boolean = true,
-    @SerializedName("pick_up_allowed") private var _pickUpAllowed: Boolean? = true
+    @field:Json(name = "pub_key") val publishableKey : String? = null,
+    @field:Json(name = "last_token") val lastToken : String? = null,
+    @field:Json(name = "show_manual_visits") var isManualVisitEnabled: Boolean = false,
+    @field:Json(name = "auto_check_in") var autoCheckIn: Boolean = true,
+    @field:Json(name = "pick_up_allowed") private var _pickUpAllowed: Boolean? = true
 ) {
     var pickUpAllowed: Boolean
         get() = _pickUpAllowed ?: true

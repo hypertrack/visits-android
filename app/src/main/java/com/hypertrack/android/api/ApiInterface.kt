@@ -1,13 +1,13 @@
 package com.hypertrack.android.api
 
 import android.graphics.Bitmap
-import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
+import com.squareup.moshi.Json
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -45,13 +45,13 @@ interface ApiInterface {
 
 }
 
-data class EncodedImage(@SerializedName("data") val data: String) {
+data class EncodedImage(@field:Json(name = "data") val data: String) {
     constructor(bitmap: Bitmap) : this(bitmap.toBase64())
 }
 
 data class TripResponse(
-    @SerializedName("data") private val _trips: List<Trip>?,
-    @SerializedName("pagination_token") private val _next: String?
+    @field:Json(name = "data") private val _trips: List<Trip>?,
+    @field:Json(name = "pagination_token") private val _next: String?
 ) {
     val trips: List<Trip>
         get() = _trips ?: emptyList()
@@ -60,16 +60,16 @@ data class TripResponse(
 }
 
 data class GeofenceMarkersResponse(
-    @SerializedName("data") private val _markers: List<GeofenceMarker>?,
-    @SerializedName("pagination_token") val next: String?
+    @field:Json(name = "data") private val _markers: List<GeofenceMarker>?,
+    @field:Json(name = "pagination_token") val next: String?
 ) {
     val markers: List<GeofenceMarker>
         get() = _markers ?: emptyList()
 }
 
 data class GeofenceResponse(
-    @SerializedName("data") private val _geofences: List<Geofence>?,
-    @SerializedName("pagination_token") private val _next: String?
+    @field:Json(name = "data") private val _geofences: List<Geofence>?,
+    @field:Json(name = "pagination_token") private val _next: String?
 ) {
     val geofences: List<Geofence>
         get() = _geofences ?: emptyList()
@@ -78,15 +78,15 @@ data class GeofenceResponse(
 }
 
 data class ImageResponse(
-    @SerializedName("name") val name: String
+    @field:Json(name = "name") val name: String
 )
 
 data class Trip(
-    @SerializedName("views") private val _views: Views?,
-    @SerializedName("trip_id") val tripId: String?,
-    @SerializedName("started_at") private val _createdAt: String?,
-    @SerializedName("metadata") private val _metadata : Map<String, Any>?,
-    @SerializedName("destination") val destination: TripDestination?
+    @field:Json(name = "views") private val _views: Views?,
+    @field:Json(name = "trip_id") val tripId: String?,
+    @field:Json(name = "started_at") private val _createdAt: String?,
+    @field:Json(name = "metadata") private val _metadata : Map<String, Any>?,
+    @field:Json(name = "destination") val destination: TripDestination?
 ): VisitDataSource {
     override val visitedAt: String
         get() = destination?.arrivedAt?:""
@@ -111,23 +111,23 @@ data class Trip(
 }
 
 data class TripDestination(
-    @SerializedName("address") val address: String?,
-    @SerializedName("geometry") val geometry: Geometry,
-    @SerializedName("arrived_at") val arrivedAt: String?
+    @field:Json(name = "address") val address: String?,
+    @field:Json(name = "geometry") val geometry: Geometry,
+    @field:Json(name = "arrived_at") val arrivedAt: String?
 )
 
 data class Views(
-    @SerializedName("share_url") val shareUrl: String?,
-    @SerializedName("embed_url") val embedUrl: String?
+    @field:Json(name = "share_url") val shareUrl: String?,
+    @field:Json(name = "embed_url") val embedUrl: String?
 )
 
 data class Geofence(
-    @SerializedName("geofence_id") val geofence_id : String,
-    @SerializedName("created_at") val created_at : String,
-    @SerializedName("metadata") val metadata : Map<String, Any>?,
-    @SerializedName("geometry") val geometry : Geometry,
-    @SerializedName("markers") val marker: GeofenceMarkersResponse?,
-    @SerializedName("radius") val radius : Int
+    @field:Json(name = "geofence_id") val geofence_id : String,
+    @field:Json(name = "created_at") val created_at : String,
+    @field:Json(name = "metadata") val metadata : Map<String, Any>?,
+    @field:Json(name = "geometry") val geometry : Geometry,
+    @field:Json(name = "markers") val marker: GeofenceMarkersResponse?,
+    @field:Json(name = "radius") val radius : Int
 ): VisitDataSource {
     override val latitude: Double
         get() = geometry.latitude
@@ -154,7 +154,7 @@ data class Geofence(
 }
 
 class Point (
-    @SerializedName("coordinates") override val coordinates : List<Double>
+    @field:Json(name = "coordinates") override val coordinates : List<Double>
 ) : Geometry() {
     override val type: String
         get() = "Point"
@@ -167,7 +167,7 @@ class Point (
 }
 
 class Polygon (
-    @SerializedName("coordinates") override val coordinates : List<List<List<Double>>>
+    @field:Json(name = "coordinates") override val coordinates : List<List<List<Double>>>
 ) : Geometry() {
     override val type: String
             get() = "Polygon"
@@ -185,7 +185,7 @@ abstract class Geometry {
 }
 
 data class GeofenceMarker(
-    @SerializedName("geofence_id") val geofenceId: String,
-    @SerializedName("arrival") val arrival: Arrival?
+    @field:Json(name = "geofence_id") val geofenceId: String,
+    @field:Json(name = "arrival") val arrival: Arrival?
 )
-data class Arrival(@SerializedName("recorded_at") val recordedAt: String = "")
+data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = "")

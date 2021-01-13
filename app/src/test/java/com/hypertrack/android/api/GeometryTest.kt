@@ -8,8 +8,8 @@ class GeometryTest {
     @Test
     fun itShouldDeserializePolygonsCorrectly() {
         val polygonString = """{"type": "Polygon", "coordinates": [[[0.0, 0.0], [0.0, 0.1], [0.1, 0.0], [0.0, 0.0]]]}"""
-        val gson = Injector.getGson()
-        val geometry = gson.fromJson(polygonString, Geometry::class.java)
+        val moshi = Injector.getMoshi()
+        val geometry = moshi.adapter(Geometry::class.java).fromJson(polygonString)
         assertNotNull(geometry)
         assertTrue(geometry is Polygon)
 
@@ -28,9 +28,8 @@ class GeometryTest {
                 "coordinates": [122.395223, 37.794763]
             }
         }"""
-        val gson = Injector.getGson()
-        val geofence = gson.fromJson(geofenceString, Geofence::class.java)
-        assertNotNull(geofence)
+        val moshi = Injector.getMoshi()
+        val geofence = moshi.adapter(Geofence::class.java).fromJson(geofenceString) ?: throw NullPointerException("Geofence should not be null")
         assertEquals("Point", geofence.type)
 
     }
@@ -53,9 +52,8 @@ class GeometryTest {
                 ]]
             }
         }"""
-        val gson = Injector.getGson()
-        val geofence = gson.fromJson(geofenceString, Geofence::class.java)
-        assertNotNull(geofence)
+        val moshi = Injector.getMoshi()
+        val geofence = moshi.adapter(Geofence::class.java).fromJson(geofenceString) ?: throw NullPointerException("Geofence should not be null")
         assertEquals("Polygon", geofence.type)
     }
 }
