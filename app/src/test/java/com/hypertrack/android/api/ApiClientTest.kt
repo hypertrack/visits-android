@@ -43,7 +43,7 @@ class ApiClientTest {
         apiClient = ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID)
     }
     @Test
-    fun itShouldSendPostRequestToStartUrlOnCheckin() = coroutineScope.runBlockingTest {
+    fun `it should send post request to start Url on checkin`() = coroutineScope.runBlockingTest {
 
         mockWebServer.enqueue(MockResponse())
         // FIXME Denys
@@ -60,7 +60,7 @@ class ApiClientTest {
     }
 
     @Test
-    fun itShouldSendPostRequestToStopUrlOnCheckout() = runBlockingTest {
+    fun `it should send post request to stop url on checkout`() = runBlockingTest {
 
         mockWebServer.enqueue(MockResponse())
         runBlocking { apiClient.clockOut() }
@@ -72,7 +72,7 @@ class ApiClientTest {
     }
 
     @Test
-    fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
+    fun `it should send get request to get list of geofences`() = runBlockingTest {
         val responseBody =
             """
             {
@@ -196,7 +196,7 @@ class ApiClientTest {
     }
 
     @Test
-    fun itShouldSendGetRequestToGetListOfTrips() = runBlockingTest {
+    fun `it should send get request to get list of trips`() = runBlockingTest {
         val responseBody =
             """
             {
