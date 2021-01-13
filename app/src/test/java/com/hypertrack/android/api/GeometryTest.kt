@@ -6,7 +6,7 @@ import org.junit.Test
 
 class GeometryTest {
     @Test
-    fun itShouldDeserializePolygonsCorrectly() {
+    fun `it should deserialize polygons correctly`() {
         val polygonString = """{"type": "Polygon", "coordinates": [[[0.0, 0.0], [0.0, 0.1], [0.1, 0.0], [0.0, 0.0]]]}"""
         val moshi = Injector.getMoshi()
         val geometry = moshi.adapter(Geometry::class.java).fromJson(polygonString)
@@ -16,7 +16,7 @@ class GeometryTest {
     }
 
     @Test
-    fun itShouldDeserializeCircularGeofenceCorrectly() {
+    fun `it should deserialize circular geofence correctly`() {
 
         val geofenceString = """{
             "geofence_id": "00001111-4047-4b28-a6ec-f934e870c425",
@@ -35,7 +35,7 @@ class GeometryTest {
     }
 
     @Test
-    fun itShouldDeserializePolygonGeofenceCorrectly() {
+    fun `it should deserialize polygon geofence correctly`() {
 
         val geofenceString = """{
             "geofence_id": "00001111-4047-4b28-a6ec-f934e870c425",

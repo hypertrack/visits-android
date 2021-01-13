@@ -23,12 +23,10 @@ class AccessTokenTest {
     private val mockWebServer = MockWebServer()
 
     @Before
-    fun setUp() {
-        mockWebServer.start()
-    }
+    fun setUp() = mockWebServer.start()
 
     @Test
-    fun itShouldRequestNewTokenIfLastSavedIsNull() {
+    fun `it should request new token if last saved is null`() {
         val accessTokenRepository =
             BasicAuthAccessTokenRepository(
                 mockWebServer.authUrl(),
@@ -41,16 +39,8 @@ class AccessTokenTest {
         Assert.assertTrue(token.isNotEmpty())
     }
 
-    private fun enqueueAuthResponse() {
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(HttpURLConnection.HTTP_OK)
-                .setBody("""{"access_token":"$NEW_JWT_TOKEN","expires_in":42}""")
-        )
-    }
-
     @Test
-    fun itShouldUseLastTokenIfPresent() {
+    fun `it should use last token if present`() {
 
         val oldToken = "old.JWT.token"
         val accessTokenRepository =
@@ -68,7 +58,7 @@ class AccessTokenTest {
     }
 
     @Test
-    fun itShouldUseRefreshLastTokenIfRequested() {
+    fun `it should use refresh last token if requested`() {
 
         val oldToken = "old.JWT.token"
         val accessTokenRepository =
@@ -86,7 +76,7 @@ class AccessTokenTest {
     }
 
     @Test
-    fun itShouldAddRequestTokenHeaderToRequests() {
+    fun `it should add request token header to requests`() {
 
         val lastToken = "last.JWT.token"
         val client = OkHttpClient.Builder()
@@ -118,7 +108,7 @@ class AccessTokenTest {
     }
 
     @Test
-    fun itShouldAddRefreshTokenIfGotHttpUnauthorizedResponseCode() {
+    fun `it should add refresh token if got http unauthorized response code`() {
 
         val lastToken = "last.JWT.token"
         val accessTokenRepository =
@@ -145,13 +135,16 @@ class AccessTokenTest {
     }
 
     @After
-    fun tearDown() {
-        try {
+    fun tearDown() = try {
             mockWebServer.shutdown()
-        } catch (ignored: Throwable) {
+        } catch (_: Throwable) { }
 
-        }
-    }
+    private fun enqueueAuthResponse() =
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_OK)
+                .setBody("""{"access_token":"$NEW_JWT_TOKEN","expires_in":42}""")
+        )
 
     private fun MockWebServer.authUrl() = this.url("/authenticate").toString()
 }

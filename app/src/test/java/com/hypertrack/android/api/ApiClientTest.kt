@@ -4,6 +4,8 @@ package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.hypertrack.android.repository.AccessTokenRepository
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -18,8 +20,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 
 @ExperimentalCoroutinesApi
 class ApiClientTest {
@@ -29,9 +29,51 @@ class ApiClientTest {
     @get:Rule
     val coroutineScope = MainCoroutineScopeRule()
 
-    companion object {
-        const val DEVICE_ID = "42"
-        const val GEOFENCES =
+    companion object { const val DEVICE_ID = "42" }
+
+    private val mockWebServer = MockWebServer()
+    private lateinit var apiClient : ApiClient
+
+    @Before
+    fun setUp() {
+        mockWebServer.start()
+        val accessTokenRepo = mockk<AccessTokenRepository>()
+        every { accessTokenRepo.getAccessToken() } returns "fake.jwt.token"
+        every {  accessTokenRepo.refreshToken() } returns "new.jwt.token"
+        apiClient = ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID)
+    }
+    @Test
+    fun `it should send post request to start Url on checkin`() = coroutineScope.runBlockingTest {
+
+        mockWebServer.enqueue(MockResponse())
+        // FIXME Denys
+        // runBlockingTest in Experimental mode doesn't block for okhttp dispatchers
+        runBlocking {
+            @Suppress("UNUSED_VARIABLE") val ignored = apiClient.clockIn()
+        }
+
+        val request = mockWebServer.takeRequest()
+        val path = request.path
+        assertEquals("/client/devices/$DEVICE_ID/start", path)
+        assertEquals("POST", request.method)
+
+    }
+
+    @Test
+    fun `it should send post request to stop url on checkout`() = runBlockingTest {
+
+        mockWebServer.enqueue(MockResponse())
+        runBlocking { apiClient.clockOut() }
+
+        val request = mockWebServer.takeRequest()
+        val path = request.path
+        assertEquals("/client/devices/$DEVICE_ID/stop", path)
+        assertEquals("POST", request.method)
+    }
+
+    @Test
+    fun `it should send get request to get list of geofences`() = runBlockingTest {
+        val responseBody =
             """
             {
                 "data": [
@@ -136,8 +178,26 @@ class ApiClientTest {
                 "pagination_token": null,
                 "links": { "next": null }
             }
-            """
-        const val TRIPS =
+            """.trimIndent()
+        mockWebServer.enqueue(
+            MockResponse()
+                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .setBody(responseBody)
+        )
+        val geofences = runBlocking { apiClient.getGeofences() }
+
+        val request = mockWebServer.takeRequest()
+        val path = request.path
+        assertEquals("/client/geofences?include_archived=false&include_markers=true&device_id=$DEVICE_ID&pagination_token=", path)
+        assertEquals("GET", request.method)
+
+        assertEquals(4, geofences.size)
+        assertTrue(geofences.any { it.marker?.markers?.first()?.arrival?.recordedAt != null })
+    }
+
+    @Test
+    fun `it should send get request to get list of trips`() = runBlockingTest {
+        val responseBody =
             """
             {
                "pagination_token" : null,
@@ -353,74 +413,8 @@ class ApiClientTest {
                   }
                ]
             }
-            """
-        const val IMAGE_ID = """{"name": "f4fd5e8b-65a9-41f4-82fa-ad862a42f689"}"""
-    }
-    private val mockWebServer = MockWebServer()
-    private lateinit var apiClient : ApiClient
-
-    @Before
-    fun setUp() {
-        mockWebServer.start()
-        val accessTokenRepo = mock(AccessTokenRepository::class.java)
-        `when`(accessTokenRepo.getAccessToken())
-            .thenReturn("fake.jwt.token")
-        `when`(accessTokenRepo.refreshToken())
-            .thenReturn("new.jwt.token")
-        apiClient = ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID)
-    }
-    @Test
-    fun itShouldSendPostRequestToStartUrlOnCheckin() = coroutineScope.runBlockingTest {
-
-        mockWebServer.enqueue(MockResponse())
-        // FIXME Denys
-        // runBlockingTest in Experimental mode doesn't block for okhttp dispatchers
-        runBlocking {
-            @Suppress("UNUSED_VARIABLE") val ignored = apiClient.clockIn()
-        }
-
-        val request = mockWebServer.takeRequest()
-        val path = request.path
-        assertEquals("/client/devices/$DEVICE_ID/start", path)
-        assertEquals("POST", request.method)
-
-    }
-
-    @Test
-    fun itShouldSendPostRequestToStopUrlOnCheckout() = runBlockingTest {
-
-        mockWebServer.enqueue(MockResponse())
-        runBlocking { apiClient.clockOut() }
-
-        val request = mockWebServer.takeRequest()
-        val path = request.path
-        assertEquals("/client/devices/$DEVICE_ID/stop", path)
-        assertEquals("POST", request.method)
-    }
-
-    @Test
-    fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
-
-        mockWebServer.enqueue(
-            MockResponse()
-                .addHeader("Content-Type", "application/json; charset=utf-8")
-                .setBody(GEOFENCES)
-        )
-        val geofences = runBlocking { apiClient.getGeofences() }
-
-        val request = mockWebServer.takeRequest()
-        val path = request.path
-        assertEquals("/client/geofences?include_archived=false&include_markers=true&device_id=$DEVICE_ID&pagination_token=", path)
-        assertEquals("GET", request.method)
-
-        assertEquals(4, geofences.size)
-        assertTrue(geofences.any { it.marker?.markers?.first()?.arrival?.recordedAt != null })
-    }
-
-    @Test
-    fun itShouldSendGetRequestToGetListOfTrips() = runBlockingTest {
-
-        mockWebServer.enqueue(MockResponse().setBody(TRIPS))
+            """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val trips = runBlocking { apiClient.getTrips() }
 
         val request = mockWebServer.takeRequest()
