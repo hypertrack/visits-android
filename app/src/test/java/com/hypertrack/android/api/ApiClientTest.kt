@@ -441,7 +441,6 @@ class ApiClientTest {
     fun itShouldSendGetRequestToGetListOfGeofences() = runBlockingTest {
 
         mockWebServer.enqueue(MockResponse().setBody(GEOFENCES))
-        mockWebServer.enqueue(MockResponse().setBody(MARKERS))
         val geofences = runBlocking { apiClient.getGeofences() }
 
         val request = mockWebServer.takeRequest()

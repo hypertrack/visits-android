@@ -1,18 +1,17 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
-import android.util.Log
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserStateDetails
 import com.amazonaws.mobile.client.results.SignInResult
 import com.amazonaws.mobile.client.results.Tokens
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 
@@ -72,7 +71,7 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
     private suspend fun getPublishableKeyFromToken(token: String) : String {
         val retrofit = Retrofit.Builder()
             .baseUrl(baseApiUrl)
-            .addConverterFactory(GsonConverterFactory.create(Injector.getGson()))
+            .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
             .build()
         val service = retrofit.create(TokenForPublishableKeyExchangeService::class.java)
         val response = service.getPublishableKey(token)
@@ -89,4 +88,4 @@ interface TokenForPublishableKeyExchangeService {
     suspend fun getPublishableKey(@Header("Authorization") token: String) : Response<PublishableKeyContainer>
 }
 
-data class PublishableKeyContainer(@SerializedName("key") val publishableKey: String?)
+data class PublishableKeyContainer(@Json(name = "key")val publishableKey: String?)

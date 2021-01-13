@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 apply plugin: 'com.google.firebase.crashlytics'
@@ -84,14 +86,15 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-rc01'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'com.google.android.material:material:1.3.0-beta01'
-    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.2'
     implementation 'com.squareup.retrofit2:retrofit:2.6.3'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.3'
+    implementation "com.squareup.retrofit2:converter-moshi:2.4.0"
     implementation 'com.squareup.retrofit2:converter-scalars:2.6.3'
     implementation 'androidx.viewpager:viewpager:1.0.0'
+
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
 

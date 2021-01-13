@@ -1,7 +1,6 @@
 package com.hypertrack.android.utils
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.gson.Gson
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.models.VisitType
@@ -19,7 +18,7 @@ class MyPreferencesTest {
     @Before
     fun setUp() {
         myPreferences =
-            MyPreferences(InstrumentationRegistry.getInstrumentation().targetContext, Gson())
+            MyPreferences(InstrumentationRegistry.getInstrumentation().targetContext, Injector.getMoshi())
         myPreferences.clearPreferences()
     }
 

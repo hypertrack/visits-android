@@ -3,9 +3,6 @@ package com.hypertrack.android.utils
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geometry
 import com.hypertrack.android.api.Point
@@ -16,6 +13,8 @@ import com.hypertrack.android.view_models.*
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 
 
 class ServiceLocator {
@@ -50,15 +49,16 @@ object Injector {
 
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
-    fun getGson() : Gson = GsonBuilder()
-        .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
-            .of(Geometry::class.java)
-            .registerSubtype(Point::class.java, "Point")
-            .registerSubtype(Polygon::class.java, "Polygon"))
-        .create()
+    fun getMoshi() : Moshi = Moshi.Builder()
+        .add(
+            RuntimeJsonAdapterFactory(Geometry::class.java, "type")
+                .registerSubtype(Point::class.java, "Point")
+                .registerSubtype(Polygon::class.java, "Polygon")
+        )
+        .build()
 
     private fun getMyPreferences(context: Context): MyPreferences =
-        MyPreferences(context, getGson())
+        MyPreferences(context, getMoshi())
 
     private fun getDriver(context: Context): Driver = getMyPreferences(context).getDriverValue()
 
