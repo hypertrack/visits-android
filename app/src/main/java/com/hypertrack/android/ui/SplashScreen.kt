@@ -24,10 +24,6 @@ class SplashScreen : ProgressDialogActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen_layout)
 
-        splashScreenViewModel
-            .noAccountFragment.observe(this, { show ->
-                    // Log.d(TAG,"No pk fragment $show")
-            })
         splashScreenViewModel.destination
             .observe(this, { destination -> navigateTo(destination) })
 

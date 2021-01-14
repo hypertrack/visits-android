@@ -17,16 +17,11 @@ class SplashScreenViewModel(
 ) : ViewModel(), DeeplinkResultListener  {
 
     private val _showSpinner = MutableLiveData(true)
-    private val _noAccountFragment = MutableLiveData(false)
     private val _destination = MutableLiveData(Destination.SPLASH_SCREEN)
 
     /** Show a loading spinner if true */
     val spinner: LiveData<Boolean>
         get() = _showSpinner
-
-    /** Show no-account error fragment if true */
-    val noAccountFragment: LiveData<Boolean>
-        get() = _noAccountFragment
 
     val destination: LiveData<Destination>
         get() = _destination
