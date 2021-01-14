@@ -7,26 +7,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepo
+import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.DeeplinkResultListener
 import com.hypertrack.android.utils.Destination
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
     private val driverRepository: DriverRepo,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    val crashReportsProvider: CrashReportsProvider
 ) : ViewModel(), DeeplinkResultListener  {
 
     private val _showSpinner = MutableLiveData(true)
-    private val _noAccountFragment = MutableLiveData(false)
     private val _destination = MutableLiveData(Destination.SPLASH_SCREEN)
 
     /** Show a loading spinner if true */
     val spinner: LiveData<Boolean>
         get() = _showSpinner
-
-    /** Show no-account error fragment if true */
-    val noAccountFragment: LiveData<Boolean>
-        get() = _noAccountFragment
 
     val destination: LiveData<Destination>
         get() = _destination
@@ -37,6 +34,7 @@ class SplashScreenViewModel(
                 // already logged in
                 _showSpinner.postValue(false)
                 _destination.postValue(Destination.PERMISSION_REQUEST)
+                crashReportsProvider.setUserIdentifier(driverRepository.driverId)
             }
             accountRepository.isVerifiedAccount -> {
                 // publishable key already verified

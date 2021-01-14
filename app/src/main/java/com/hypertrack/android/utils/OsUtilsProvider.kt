@@ -2,6 +2,7 @@ package com.hypertrack.android.utils
 
 import android.content.Context
 import android.location.Geocoder
+import android.util.Log
 import com.hypertrack.android.models.Address
 import com.hypertrack.logistics.android.github.R
 import java.text.SimpleDateFormat
@@ -38,7 +39,10 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
                 )
             }
         } catch (t: Throwable) {
-            crashReportsProvider.logException(t)
+            when (t) {
+                is java.io.IOException -> Log.w(TAG, "Can't get the address", t)
+                else -> crashReportsProvider.logException(t)
+            }
         }
         return Address(
             street = stubStreet(latitude, longitude),
@@ -52,4 +56,6 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
         context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"
 
     fun getString(resId: Int): String = context.getString(resId)
+
+    companion object { const val TAG = "OsUtilsProvider" }
 }

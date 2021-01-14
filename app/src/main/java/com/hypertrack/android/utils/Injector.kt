@@ -144,7 +144,11 @@ object Injector {
 
 
     fun provideSplashScreenViewModelFactory(context: Context): SplashScreenViewModelFactory {
-        return SplashScreenViewModelFactory(getDriverRepo(context), getAccountRepo(context))
+        return SplashScreenViewModelFactory(
+            getDriverRepo(context),
+            getAccountRepo(context),
+            crashReportsProvider
+        )
 
     }
 }
@@ -200,7 +204,8 @@ class AccountLoginViewModelFactory(
 
 class SplashScreenViewModelFactory(
     private val driverRepo: DriverRepo,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val crashReportsProvider: CrashReportsProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -208,7 +213,8 @@ class SplashScreenViewModelFactory(
         when (modelClass) {
             SplashScreenViewModel::class.java -> return SplashScreenViewModel(
                 driverRepo,
-                accountRepository
+                accountRepository,
+                crashReportsProvider
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
