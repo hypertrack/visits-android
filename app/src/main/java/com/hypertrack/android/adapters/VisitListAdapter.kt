@@ -62,9 +62,7 @@ class VisitListAdapter(
             }
         }
 
-        holder.itemView.setOnClickListener {
-            onItemClick.onJobItemClick(holder.adapterPosition)
-        }
+        holder.itemView.setOnClickListener { onItemClick.onJobItemClick(holder.layoutPosition) }
 
 
     }
