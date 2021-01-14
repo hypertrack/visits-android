@@ -66,7 +66,7 @@ class ApiClient(
             }
         } catch (e: Exception) {
             Log.w(TAG, "Got exception while trying to refresh trips $e")
-            throw Exception(e)
+            throw e
         }
         return emptyList()
 
