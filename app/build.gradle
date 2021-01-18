@@ -114,6 +114,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
     implementation 'com.google.firebase:firebase-analytics:18.0.0'
 
+    // Whitelisting on hostile ROMs
+    implementation 'com.github.judemanutd:autostarter:1.0.8'
+
     testImplementation 'junit:junit:4.13.1'
     //noinspection GradleDependency
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.2.2'
