@@ -50,7 +50,7 @@ class ApiClient(
             } else return emptyList()
         } catch (e: Exception) {
             Log.e(TAG, "Got exception while fetching geofences $e")
-            throw Exception(e)
+            throw e
         }
     }
 
@@ -83,7 +83,7 @@ class ApiClient(
             }
         } catch (e: Throwable) {
             Log.w(TAG, "Got exception $e uploading image")
-            throw Exception(e)
+            throw e
         }
         return ""
     }

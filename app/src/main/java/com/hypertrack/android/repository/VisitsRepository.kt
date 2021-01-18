@@ -226,7 +226,12 @@ class VisitsRepository(
                 block = { uploadImage(imagePath, target, id) }
             )
         } catch (t: Throwable) {
-            crashReportsProvider.logException(t)
+            when (t) {
+                is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException ->
+                    Log.i(TAG, "Failed to upload image", t)
+                else -> crashReportsProvider.logException(t)
+            }
+
         }
     }
 
