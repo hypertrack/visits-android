@@ -7,8 +7,12 @@ data class AccountData(
     @field:Json(name = "last_token") val lastToken : String? = null,
     @field:Json(name = "show_manual_visits") var isManualVisitEnabled: Boolean = false,
     @field:Json(name = "auto_check_in") var autoCheckIn: Boolean = true,
-    @field:Json(name = "pick_up_allowed") private var _pickUpAllowed: Boolean? = true
+    @field:Json(name = "pick_up_allowed") private var _pickUpAllowed: Boolean? = true,
+    @field:Json(name = "was_whitelisted") private var _wasWhitelisted: Boolean? = false
 ) {
+    var wasWhitelisted: Boolean
+        get() = _wasWhitelisted ?: false
+        set(value) { _wasWhitelisted = value }
     var pickUpAllowed: Boolean
         get() = _pickUpAllowed ?: true
         set(value) { _pickUpAllowed = value }

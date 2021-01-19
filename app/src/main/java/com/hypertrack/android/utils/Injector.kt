@@ -134,6 +134,10 @@ object Injector {
         return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
+    fun providePermissionRequestsViewModelFactory(context: Context) : PermissionRequestsViewModelFactory {
+        return PermissionRequestsViewModelFactory(getAccountRepo(context), context)
+    }
+
     fun provideDriverLoginViewModelFactory(context: Context) : DriverLoginViewModelFactory {
         return DriverLoginViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
     }
@@ -142,7 +146,6 @@ object Injector {
         return AccountLoginViewModelFactory(getLoginProvider(context), getAccountRepo(context))
     }
 
-
     fun provideSplashScreenViewModelFactory(context: Context): SplashScreenViewModelFactory {
         return SplashScreenViewModelFactory(
             getDriverRepo(context),
@@ -150,6 +153,14 @@ object Injector {
             crashReportsProvider
         )
 
+    }
+}
+
+class PermissionRequestsViewModelFactory(private val accountRepository: AccountRepository, private val context: Context) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>) = when (modelClass) {
+        PermissionRequestViewModel::class.java -> PermissionRequestViewModel(accountRepository, context) as T
+        else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
     }
 }
 
@@ -173,6 +184,7 @@ class VisitsManagementViewModelFactory(
         }
     }
 }
+
 
 class DriverLoginViewModelFactory(
     private val driverRepo: DriverRepo,
@@ -222,6 +234,7 @@ class SplashScreenViewModelFactory(
 }
 
 interface AccountPreferencesProvider {
+    var wasWhitelisted: Boolean
     val isManualCheckInAllowed: Boolean
     val isAutoCheckInEnabled: Boolean
     val isPickUpAllowed: Boolean

@@ -15,6 +15,12 @@ class AccountRepository(
     val isVerifiedAccount : Boolean
         get() = accountData.lastToken != null
 
+    override var wasWhitelisted: Boolean
+        get() = accountData.wasWhitelisted
+        set(value) {
+            accountData.wasWhitelisted = value
+            accountDataStorage.saveAccountData(accountData)
+        }
     override var isManualCheckInAllowed: Boolean
         get() = accountData.isManualVisitEnabled
         set(value) { accountData.isManualVisitEnabled = value }
