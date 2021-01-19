@@ -28,23 +28,21 @@ class SplashScreenViewModel(
     val destination: LiveData<Destination>
         get() = _destination
 
-    fun login() {
-        when {
-            driverRepository.hasDriverId -> {
-                // already logged in
-                _showSpinner.postValue(false)
-                _destination.postValue(Destination.PERMISSION_REQUEST)
-                crashReportsProvider.setUserIdentifier(driverRepository.driverId)
-            }
-            accountRepository.isVerifiedAccount -> {
-                // publishable key already verified
-                _showSpinner.postValue(false)
-                _destination.postValue(Destination.DRIVER_ID_INPUT)
-            }
-            else -> {
-                // Log.d(TAG, "No publishable key found")
-                noPkHanlder()
-            }
+    private fun login() = when {
+        driverRepository.hasDriverId -> {
+            // already logged in
+            _showSpinner.postValue(false)
+            _destination.postValue(Destination.PERMISSION_REQUEST)
+            crashReportsProvider.setUserIdentifier(driverRepository.driverId)
+        }
+        accountRepository.isVerifiedAccount -> {
+            // publishable key already verified
+            _showSpinner.postValue(false)
+            _destination.postValue(Destination.DRIVER_ID_INPUT)
+        }
+        else -> {
+            // Log.d(TAG, "No publishable key found")
+            noPkHanlder()
         }
     }
 
