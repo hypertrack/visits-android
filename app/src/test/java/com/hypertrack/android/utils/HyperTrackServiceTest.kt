@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class HyperTrackServiceTest {
@@ -24,12 +25,28 @@ class HyperTrackServiceTest {
 
         val slot = slot<Map<String, Any>>()
         every { sdk.addGeotag(capture(slot)) } returns sdk
-        hyperTrackService.sendCompletionEvent(visit._id, visit.visitNote, visit.typeKey, true)
+        hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
         assertTrue(payload.isNotEmpty())
         assertTrue(payload.containsKey("visit_note"))
         assertTrue(payload["visit_note"] == visitNote)
     }
+
+    @Test
+    fun `it should attach expected location to check out geotag for trips`() {
+       fail("not implemented")
+    }
+
+    @Test
+    fun `it should not attach expected location to check out geotag for geofences`() {
+       fail("not implemented")
+    }
+
+    @Test
+    fun `it should not attach expected location to check out geotag for local visits`() {
+       fail("not implemented")
+    }
+
 }
 

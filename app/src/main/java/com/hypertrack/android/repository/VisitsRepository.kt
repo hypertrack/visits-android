@@ -142,7 +142,9 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp(), newNote)
         // Log.d(TAG, "Completed visit $completedVisit ")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, true, completedVisit.visitPicture)
+        hyperTrackService.sendCompletionEvent(
+            completedVisit
+        )
         updateItem(id, completedVisit)
     }
 
@@ -152,7 +154,9 @@ class VisitsRepository(
         if (target.isCompleted) return
         val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp(), newNote)
         // Log.d(TAG, "Cancelled visit $completedVisit")
-        hyperTrackService.sendCompletionEvent(id, completedVisit.visitNote, completedVisit.typeKey, false, completedVisit.visitPicture)
+        hyperTrackService.sendCompletionEvent(
+            completedVisit
+        )
         updateItem(id, completedVisit)
     }
 
