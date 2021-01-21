@@ -42,6 +42,81 @@ class HyperTrackServiceTest {
     }
 
     @Test
+    fun `it should use _geofence_id_ key for geofence visit for id value in completion geotag`() {
+
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val visitNote = "valuable customer Note"
+        val visit = Visit(
+            _id = "42",
+            visitNote = visitNote,
+            visitType = VisitType.GEOFENCE,
+            _state = VisitStatus.COMPLETED
+        )
+
+        val slot = slot<Map<String, Any>>()
+        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val payload = slot.captured
+        assertTrue(payload.isNotEmpty())
+        assertTrue(payload.containsKey("geofence_id"))
+        assertTrue(payload["geofence_id"] == "42")
+    }
+
+    @Test
+    fun `it should use _trip_id_ key for trip visit for id value in completion geotag`() {
+
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val visitNote = "valuable customer Note"
+        val visit = Visit(
+            _id = "42",
+            visitNote = visitNote,
+            visitType = VisitType.TRIP,
+            _state = VisitStatus.COMPLETED
+        )
+
+        val slot = slot<Map<String, Any>>()
+        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val payload = slot.captured
+        assertTrue(payload.isNotEmpty())
+        assertTrue(payload.containsKey("trip_id"))
+        assertTrue(payload["trip_id"] == "42")
+    }
+
+    @Test
+    fun `it should use _visit_id_ key for local visit for id value in completion geotag`() {
+
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val visitNote = "valuable customer Note"
+        val visit = Visit(
+            _id = "42",
+            visitNote = visitNote,
+            visitType = VisitType.LOCAL,
+            _state = VisitStatus.COMPLETED
+        )
+
+        val slot = slot<Map<String, Any>>()
+        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val payload = slot.captured
+        assertTrue(payload.isNotEmpty())
+        assertTrue(payload.containsKey("visit_id"))
+        assertTrue(payload["visit_id"] == "42")
+    }
+
+    @Test
     fun `it should attach expected location to check out geotag for trips`() {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
@@ -188,6 +263,7 @@ class HyperTrackServiceTest {
         val payload = slot.captured
         assertEquals("42", payload[visit.typeKey])
     }
+
 
 }
 
