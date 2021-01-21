@@ -10,7 +10,10 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class) //Location class in Android
 class HyperTrackServiceTest {
 
     @Test
@@ -29,7 +32,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot)) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns sdk
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
@@ -64,13 +67,52 @@ class HyperTrackServiceTest {
     }
 
     @Test
-    fun `it should not attach expected location to check out geotag for geofences`() {
-       fail("not implemented")
+    fun `it should attach expected location to check out geotag for geofences`() {
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val expectedLat = 2.1828
+        val expectedLong = 3.1415
+        val visit = Visit(
+            _id = "42",
+            latitude = expectedLat,
+            longitude = expectedLong,
+            visitType = VisitType.GEOFENCE,
+            _state = VisitStatus.VISITED
+        )
+
+        val slot = slot<Location>()
+        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val expectedLocation = slot.captured
+        assertEquals(expectedLat, expectedLocation.latitude, 0.00001)
+        assertEquals(expectedLong, expectedLocation.longitude, 0.00001)
     }
 
     @Test
     fun `it should not attach expected location to check out geotag for local visits`() {
-       fail("not implemented")
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val expectedLat = 2.1828
+        val expectedLong = 3.1415
+        val visit = Visit(
+            _id = "42",
+            latitude = expectedLat,
+            longitude = expectedLong,
+            visitType = VisitType.LOCAL,
+            _state = VisitStatus.VISITED
+        )
+
+        val slot = slot<Map<String, Any>>()
+        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val payload = slot.captured
+        assertEquals("42", payload[visit.typeKey])
     }
 
 }

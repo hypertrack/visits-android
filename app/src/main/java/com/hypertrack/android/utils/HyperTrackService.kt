@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
+import com.hypertrack.android.models.VisitType
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.TrackingError
 import com.hypertrack.sdk.TrackingStateObserver
@@ -38,7 +39,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
             "_visit_photo" to visit.visitPicture
         )
         // Log.d(TAG, "Completion event payload $payload")
-        sdkInstance.addGeotag(payload)
+        sdkInstance.addGeotag(payload, visit.expectedLocation)
     }
 
     fun createVisitStartEvent(id: String, typeKey: String) {
