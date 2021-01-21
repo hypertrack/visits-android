@@ -28,7 +28,7 @@ class HyperTrackServiceTest {
             _id = "42",
             visitNote = visitNote,
             visitType = VisitType.LOCAL,
-            _state = VisitStatus.VISITED
+            _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -54,7 +54,7 @@ class HyperTrackServiceTest {
             latitude = expectedLat,
             longitude = expectedLong,
             visitType = VisitType.TRIP,
-            _state = VisitStatus.VISITED
+            _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Location>()
@@ -79,7 +79,7 @@ class HyperTrackServiceTest {
             latitude = expectedLat,
             longitude = expectedLong,
             visitType = VisitType.GEOFENCE,
-            _state = VisitStatus.VISITED
+            _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Location>()
@@ -104,7 +104,81 @@ class HyperTrackServiceTest {
             latitude = expectedLat,
             longitude = expectedLong,
             visitType = VisitType.LOCAL,
-            _state = VisitStatus.VISITED
+            _state = VisitStatus.COMPLETED
+        )
+
+        val slot = slot<Map<String, Any>>()
+        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val payload = slot.captured
+        assertEquals("42", payload[visit.typeKey])
+    }
+
+    @Test
+    fun `it should attach expected location to cancel geotag for trips`() {
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val expectedLat = 42.0
+        val expectedLong = 3.14
+        val visit = Visit(
+            _id = "42",
+            latitude = expectedLat,
+            longitude = expectedLong,
+            visitType = VisitType.TRIP,
+            _state = VisitStatus.CANCELLED
+        )
+
+        val slot = slot<Location>()
+        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val expectedLocation = slot.captured
+        assertEquals(expectedLat, expectedLocation.latitude, 0.00001)
+        assertEquals(expectedLong, expectedLocation.longitude, 0.00001)
+    }
+
+    @Test
+    fun `it should attach expected location to cancel geotag for geofences`() {
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val expectedLat = 2.1828
+        val expectedLong = 3.1415
+        val visit = Visit(
+            _id = "42",
+            latitude = expectedLat,
+            longitude = expectedLong,
+            visitType = VisitType.GEOFENCE,
+            _state = VisitStatus.CANCELLED
+        )
+
+        val slot = slot<Location>()
+        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        hyperTrackService.sendCompletionEvent(visit)
+
+        val expectedLocation = slot.captured
+        assertEquals(expectedLat, expectedLocation.latitude, 0.00001)
+        assertEquals(expectedLong, expectedLocation.longitude, 0.00001)
+    }
+
+    @Test
+    fun `it should not attach expected location to cancel geotag for local visits`() {
+        val sdk = mockk<HyperTrack>(relaxed = true)
+        val listener = TrackingState()
+
+        val hyperTrackService = HyperTrackService(listener, sdk)
+        val expectedLat = 2.1828
+        val expectedLong = 3.1415
+        val visit = Visit(
+            _id = "42",
+            latitude = expectedLat,
+            longitude = expectedLong,
+            visitType = VisitType.LOCAL,
+            _state = VisitStatus.CANCELLED
         )
 
         val slot = slot<Map<String, Any>>()
