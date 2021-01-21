@@ -1,8 +1,10 @@
 package com.hypertrack.android.utils
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitStatus
+import com.hypertrack.android.models.VisitType
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.TrackingError
 import com.hypertrack.sdk.TrackingStateObserver
@@ -29,22 +31,15 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     val state: LiveData<TrackingStateValue>
         get() = listener.state
 
-    fun sendCompletionEvent(
-        id: String,
-        visitNote: String,
-        typeKey: String,
-        isCompleted: Boolean,
-        visitPicId: String? = null
-    ) {
-        val completionStatus = if (isCompleted) "CHECK_OUT" else "CANCEL"
+    fun sendCompletionEvent(visit: Visit) {
         val payload = mapOf(
-            typeKey to id,
-            "type" to completionStatus,
-            "visit_note" to visitNote,
-            "_visit_photo" to visitPicId
+            visit.typeKey to visit._id,
+            "type" to if (visit.state == VisitStatus.COMPLETED) "CHECK_OUT" else "CANCEL",
+            "visit_note" to visit.visitNote,
+            "_visit_photo" to visit.visitPicture
         )
         // Log.d(TAG, "Completion event payload $payload")
-        sdkInstance.addGeotag(payload)
+        sdkInstance.addGeotag(payload, visit.expectedLocation)
     }
 
     fun createVisitStartEvent(id: String, typeKey: String) {

@@ -2,6 +2,7 @@ package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.location.Location
 import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.AccountPreferencesProvider
@@ -26,6 +27,18 @@ data class Visit(val _id: String,
                  private var _icon: String? = null
  ): VisitListItem() {
 
+    val expectedLocation: Location?
+        get() {
+            if (visitType == VisitType.LOCAL) return null
+            latitude?.let { longitude?.let {
+                val location = Location("visit")
+                location.longitude = longitude
+                location.latitude = latitude
+                return location
+
+            } }
+            return null
+        }
     val state: VisitStatus
         get() = _state ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
     val isEditable = state < VisitStatus.COMPLETED
