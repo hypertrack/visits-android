@@ -92,19 +92,15 @@ class ApiClient(
     }
 
     suspend fun getHistory(day: LocalDate, timezone: ZoneId): HistoryResult {
-        val dateParam  = day.format(DateTimeFormatter.ISO_LOCAL_DATE)
-        val  tz  = timezone.id
         try {
-            val response = api.getHistory(deviceId, dateParam, tz)
-            if (response.isSuccessful) {
-                response.body()?.let { historyResponse ->
-                    return History(historyResponse.distance, historyResponse.insights)
-                }
+            with(api.getHistory(deviceId, day.format(DateTimeFormatter.ISO_LOCAL_DATE), timezone.id)) {
+                if (isSuccessful) return body()?: HistoryError(null)
             }
         } catch (e: Throwable) {
             Log.w(TAG, "Got exception $e fetching device history")
+            return HistoryError(e)
         }
-        return HistoryError
+        return HistoryError(null)
     }
 
     companion object { const val TAG = "ApiClient"}
