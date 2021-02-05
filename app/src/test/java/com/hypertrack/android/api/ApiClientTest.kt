@@ -20,6 +20,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import java.time.LocalDate
+import java.util.*
 
 @ExperimentalCoroutinesApi
 class ApiClientTest {
@@ -423,6 +425,61 @@ class ApiClientTest {
         assertEquals("GET", request.method)
 
         assertEquals(2, trips.size)
+    }
+
+    @Test
+    fun `it should send get request to get device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        val path = request.path
+        assertEquals("/client/devices/$DEVICE_ID/history/2020-02-05?timezone=America%2FLos_Angeles", path)
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+
     }
 
     @After

@@ -9,6 +9,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class ApiClient(
@@ -86,6 +89,22 @@ class ApiClient(
             throw e
         }
         return ""
+    }
+
+    suspend fun getHistory(day: LocalDate, timezone: ZoneId): HistoryResult {
+        val dateParam  = day.format(DateTimeFormatter.ISO_LOCAL_DATE)
+        val  tz  = timezone.id
+        try {
+            val response = api.getHistory(deviceId, dateParam, tz)
+            if (response.isSuccessful) {
+                response.body()?.let { historyResponse ->
+                    return History(historyResponse.distance, historyResponse.insights)
+                }
+            }
+        } catch (e: Throwable) {
+            Log.w(TAG, "Got exception $e fetching device history")
+        }
+        return HistoryError
     }
 
     companion object { const val TAG = "ApiClient"}

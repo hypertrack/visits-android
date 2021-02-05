@@ -43,6 +43,16 @@ interface ApiInterface {
         @Query("pagination_token")paginationToken: String
     ) : Response<TripResponse>
 
+    /**
+     * client/devices/A24BA1B4-1234-36F7-8DD7-15D97C3FD912/history/2021-02-05?timezone=Europe%2FZaporozhye
+     */
+    @GET("client/devices/{device_id}/history/{day}")
+    suspend fun getHistory(
+        @Path("device_id") deviceId: String,
+        @Path("day") day: String,
+        @Query("timezone") timezone: String
+    ) : Response<HistoryResponse>
+
 }
 
 data class EncodedImage(@field:Json(name = "data") val data: String) {
@@ -189,3 +199,92 @@ data class GeofenceMarker(
     @field:Json(name = "arrival") val arrival: Arrival?
 )
 data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = "")
+
+data class HistoryResponse(
+    /** Total distance (walks and drives) in meters */
+    val distance: Int,
+    val insights: Insights,
+//    val locations: Locations,
+//    val markers: List<Marker>,
+)
+
+data class Insights(
+    val active_duration: Int,
+    val drive_distance: Int,
+    val drive_duration: Int,
+    val estimated_distance: Int,
+    val geofences_count: Int,
+    val geofences_idle_time: Int,
+    val geofences_route_to_time: Int,
+    val geofences_time: Int,
+    val geotags_count: Int,
+    val geotags_route_to_time: Int,
+    val inactive_duration: Int,
+    val inactive_reasons: List<Any>,
+    val step_count: Int,
+    val stop_duration: Int,
+    val total_tracking_time: Int,
+    val tracking_rate: Int,
+    val trips_arrived_at_destination: Int,
+    val trips_count: Int,
+    val trips_on_time: Int,
+    val walk_duration: Int
+)
+
+
+data class Locations(
+    val coordinates: List<List<Any>>,
+    val type: String
+)
+
+data class Marker(
+    val `data`: Data,
+    val marker_id: String,
+    val type: String
+)
+
+data class Data(
+    val activity: String,
+    val address: String,
+    val duration: Int,
+    val end: End,
+    val location: LocationX,
+    val metadata: Metadata,
+    val reason: String,
+    val recorded_at: String,
+    val start: Start,
+    val steps: Int,
+    val value: String
+)
+
+data class End(
+    val location: Location,
+    val recorded_at: String
+)
+
+data class LocationX(
+    val coordinates: List<Double>,
+    val type: String
+)
+
+data class Metadata(
+    val type: String
+)
+
+data class Start(
+    val location: Location,
+    val recorded_at: String
+)
+
+data class Location(
+    val geometry: Geometry,
+    val recorded_at: String
+)
+
+data class History(
+    val totalDistance: Int,
+    val insights: Insights,
+) : HistoryResult()
+
+object HistoryError : HistoryResult()
+sealed class HistoryResult
