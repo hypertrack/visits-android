@@ -47,7 +47,7 @@ object Injector {
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
     fun getMoshi() : Moshi = Moshi.Builder()
-//        .add(LocationDataPointAdapter())
+        .add(HistoryCoordinateJsonAdapter())
         .add(
             RuntimeJsonAdapterFactory(Geometry::class.java, "type")
                 .registerSubtype(Point::class.java, "Point")

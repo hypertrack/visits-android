@@ -201,6 +201,16 @@ data class GeofenceMarker(
 )
 data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = "")
 
+data class History(
+    @field:Json(name = "distance")  val distance: Int,
+    @field:Json(name = "insights")  val insights: Insights,
+    @field:Json(name = "locations") val locations: Locations,
+) : HistoryResult()
+
+class HistoryError(val error: Throwable?) : HistoryResult()
+sealed class HistoryResult
+
+
 data class Insights(
     @field:Json(name = "active_duration") val activeDuration: Int,
     @field:Json(name = "drive_distance") val driveDistance: Int,
@@ -225,24 +235,15 @@ data class Insights(
     @field:Json(name = "walk_duration") val walkDuration: Int
 )
 
-data class History(
-    @field:Json(name = "distance")  val distance: Int,
-    @field:Json(name = "insights")  val insights: Insights,
-//    @field:Json(name = "locations") val locations: Locations,
-) : HistoryResult()
+@JsonClass(generateAdapter = true)
+data class Locations(
+    @field:Json(name = "coordinates") val coordinates: List<HistoryCoordinate>,
+    @field:Json(name = "type") val type: String
+)
 
-class HistoryError(val error: Throwable?) : HistoryResult()
-sealed class HistoryResult
-
-//data class Locations(
-//    @field:Json(name = "coordinates") val coordinates: List<LocationDataPoint>,
-//    @field:Json(name = "type") val type: String
-//)
-//
-//@JsonClass(generateAdapter = true)
-//data class LocationDataPoint(
-//    val longitude: Double,
-//    val latitude: Double,
-//    val altitude: Double,
-//    val timestamp: String,
-//)
+class HistoryCoordinate(
+    val longitude: Double,
+    val latitude: Double,
+    val altitude: Double?,
+    val timestamp: String,
+)

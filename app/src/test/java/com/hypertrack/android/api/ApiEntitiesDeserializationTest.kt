@@ -154,4 +154,30 @@ class ApiEntitiesDeserializationTest {
         }
 
     }
+
+    @Test
+    fun `it should deserialize time series object`() {
+        val serializedLocations = """
+            {
+              "type" : "LineString",
+              "coordinates" : [
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:46:31.021Z" ],
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:46:31.021Z" ],
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:46:31.021Z" ],
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:52:34.428Z" ]                      
+              ]
+            }
+      """
+
+        val locations = moshi.adapter(Locations::class.java).nullSafe().fromJson(serializedLocations)!!
+        with (locations) {
+            assertEquals("LineString", type)
+            assertEquals(4, coordinates.size)
+            assertEquals(-122.084009, coordinates[0].longitude, 0.000001)
+            assertEquals(37.421986, coordinates[1].latitude, 0.000001)
+            assertNull(coordinates[2].altitude)
+            assertEquals("2021-02-03T07:52:34.428Z", coordinates[3].timestamp)
+        }
+
+    }
 }
