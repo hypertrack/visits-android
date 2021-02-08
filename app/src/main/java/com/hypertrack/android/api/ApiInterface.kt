@@ -201,32 +201,45 @@ data class GeofenceMarker(
 data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = "")
 
 data class Insights(
-    val active_duration: Int,
-    val drive_distance: Int,
-    val drive_duration: Int,
-    val estimated_distance: Int,
-    val geofences_count: Int,
-    val geofences_idle_time: Int,
-    val geofences_route_to_time: Int,
-    val geofences_time: Int,
-    val geotags_count: Int,
-    val geotags_route_to_time: Int,
-    val inactive_duration: Int,
-    val inactive_reasons: List<Any>,
-    val step_count: Int,
-    val stop_duration: Int,
-    val total_tracking_time: Int,
-    val tracking_rate: Int,
-    val trips_arrived_at_destination: Int,
-    val trips_count: Int,
-    val trips_on_time: Int,
-    val walk_duration: Int
+    @field:Json(name = "active_duration") val activeDuration: Int,
+    @field:Json(name = "drive_distance") val driveDistance: Int,
+    @field:Json(name = "drive_duration") val driveDuration: Int,
+    @field:Json(name = "estimated_distance") val estimatedDistance: Int,
+    @field:Json(name = "geofences_count") val geofencesCount: Int,
+    @field:Json(name = "geofences_idle_time") val geofencesIdleTime: Int,
+    @field:Json(name = "geofences_route_to_time") val geofencesRouteToTime: Int,
+    @field:Json(name = "geofences_time") val geofencesTime: Int,
+    @field:Json(name = "geotags_count") val geotagsCount: Int,
+    @field:Json(name = "geotags_route_to_time") val geotagsRouteToTime: Int,
+    @field:Json(name = "inactive_duration") val inactiveDuration: Int,
+    // Skip reasons for now as constants aren't deserialized automatically but their usage is questionable
+//    @field:Json(name = "inactive_reasons") val inactiveReasons: List<Any>,
+    @field:Json(name = "step_count") val stepCount: Int,
+    @field:Json(name = "stop_duration") val stopDuration: Int,
+    @field:Json(name = "total_tracking_time") val totalTrackingTime: Int,
+    @field:Json(name = "tracking_rate") val trackingRate: Int,
+    @field:Json(name = "trips_arrived_at_destination") val tripsArrivedAtDestination: Int,
+    @field:Json(name = "trips_count") val tripsCount: Int,
+    @field:Json(name = "trips_on_time") val tripsOnTime: Int,
+    @field:Json(name = "walk_duration") val walkDuration: Int
 )
 
 data class History(
-    val totalDistance: Int,
-    val insights: Insights,
+    @field:Json(name = "distance")  val distance: Int,
+    @field:Json(name = "insights")  val insights: Insights,
+    @field:Json(name = "locations") val locations: Locations,
 ) : HistoryResult()
+
+data class Locations(
+    @field:Json(name = "coordinates") val coordinates: List<LocationDataPoint>,
+    @field:Json(name = "type") val type: String
+)
+data class LocationDataPoint(
+    val longitude: Double,
+    val latitude: Double,
+    val altitude: Double?,
+    val timestamp: String,
+)
 
 class HistoryError(val error: Throwable?) : HistoryResult()
 sealed class HistoryResult
