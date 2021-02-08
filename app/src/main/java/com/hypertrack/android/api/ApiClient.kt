@@ -33,7 +33,7 @@ class ApiClient(
             OkHttpClient.Builder()
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
-//                .addInterceptor(loggingInterceptor)
+                .addInterceptor(loggingInterceptor)
                 .addInterceptor(UserAgentInterceptor())
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)

@@ -8,6 +8,7 @@ import com.hypertrack.android.toBase64
 import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -227,19 +228,21 @@ data class Insights(
 data class History(
     @field:Json(name = "distance")  val distance: Int,
     @field:Json(name = "insights")  val insights: Insights,
-    @field:Json(name = "locations") val locations: Locations,
+//    @field:Json(name = "locations") val locations: Locations,
 ) : HistoryResult()
-
-data class Locations(
-    @field:Json(name = "coordinates") val coordinates: List<LocationDataPoint>,
-    @field:Json(name = "type") val type: String
-)
-data class LocationDataPoint(
-    val longitude: Double,
-    val latitude: Double,
-    val altitude: Double?,
-    val timestamp: String,
-)
 
 class HistoryError(val error: Throwable?) : HistoryResult()
 sealed class HistoryResult
+
+//data class Locations(
+//    @field:Json(name = "coordinates") val coordinates: List<LocationDataPoint>,
+//    @field:Json(name = "type") val type: String
+//)
+//
+//@JsonClass(generateAdapter = true)
+//data class LocationDataPoint(
+//    val longitude: Double,
+//    val latitude: Double,
+//    val altitude: Double,
+//    val timestamp: String,
+//)
