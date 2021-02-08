@@ -1,6 +1,7 @@
 package com.hypertrack.android.utils
 
 import android.location.Location
+import android.os.Build
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.models.VisitType
@@ -12,8 +13,10 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class) //Location class in Android
+@Config(sdk = [Build.VERSION_CODES.P])
 class HyperTrackServiceTest {
 
     @Test
