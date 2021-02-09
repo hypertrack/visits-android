@@ -423,7 +423,7 @@ class ApiClientTest {
         assertEquals(2, trips.size)
     }
 
-    @Test @Ignore("didn't finished deserialization for now")
+    @Test
     fun `it should send get request to get device history`() = runBlockingTest {
         val responseBody =
         """
@@ -478,7 +478,7 @@ class ApiClientTest {
 
     }
 
-    @Test @Ignore("didn't finished deserialization for now")
+    @Test
     fun `it should receive distance and insights from device history`() = runBlockingTest {
         val responseBody =
         """
@@ -536,6 +536,99 @@ class ApiClientTest {
         assertTrue(historyResult is History)
         val history = historyResult as History
         assertEquals(6347, history.distance)
+        with( historyResult.insights) {
+            assertEquals(0, geofencesCount)
+            assertEquals(0, geotagsRouteToTime)
+            assertEquals(100, trackingRate)
+            assertEquals(6347, driveDistance)
+            assertEquals(0, inactiveDuration)
+            assertEquals(0, stepCount)
+            assertEquals(0, geofencesIdleTime)
+            assertEquals(0, tripsArrivedAtDestination)
+            assertEquals(0, geofencesRouteToTime)
+            assertEquals(0, geotagsCount)
+            assertEquals(0, geofencesTime)
+            assertEquals(743, stopDuration)
+            assertEquals(0, estimatedDistance)
+            assertEquals(0, tripsOnTime)
+            assertEquals(1353, activeDuration)
+            assertEquals(0, walkDuration)
+            assertEquals(1353, totalTrackingTime)
+            assertEquals(610, driveDuration)
+            assertEquals(0, tripsCount)
+        }
+
+    }
+
+    @Test
+    fun `it should receive location data points from device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [
+                       [ -122.397368, 37.792382, 42.0,  "2021-02-05T11:53:10.544Z" ],
+                       [ -122.39737,  37.79238,  42.42, "2021-02-05T11:53:10.544Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:18.942Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:24.247Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:29.259Z" ]
+                  ],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+        val history = historyResult as History
+        assertEquals("LineString", history.locations.type)
+        with(history.locations.coordinates) {
+            assertEquals(5, size)
+            assertEquals(-122.397368, this[0].longitude, 0.000001)
+            assertEquals(37.792382, this[0].latitude, 0.000001)
+            assertEquals(42.0, this[0].altitude!!, 0.01)
+            assertEquals("2021-02-05T11:53:10.544Z", this[0].timestamp)
+            assertEquals(42.42, this[1].altitude!!, 0.01)
+            assertNull(this[2].altitude)
+            assertEquals(-122.39737, this[3].longitude, 0.000001)
+            assertEquals("2021-02-05T11:53:29.259Z", this[4].timestamp)
+        }
 
 
     }
