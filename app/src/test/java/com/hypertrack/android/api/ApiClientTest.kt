@@ -4,6 +4,7 @@ package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.hypertrack.android.repository.AccessTokenRepository
+import com.squareup.moshi.JsonDataException
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,7 @@ import org.junit.*
 import org.junit.Assert.*
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import java.net.HttpURLConnection
 import java.time.LocalDate
 import java.util.*
 
@@ -629,8 +631,34 @@ class ApiClientTest {
             assertEquals(-122.39737, this[3].longitude, 0.000001)
             assertEquals("2021-02-05T11:53:29.259Z", this[4].timestamp)
         }
+    }
 
+    @Test
+    fun `it should return history error if 500 status was received on history endpoint`() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
 
+        assertTrue(historyResult is HistoryError)
+    }
+
+    @Test
+    fun `it should return history error if invalid body history was received`() {
+        val body = """{"error": "Internal server error"}"""
+        mockWebServer.enqueue(MockResponse().setBody(body))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        assertTrue(historyResult is HistoryError)
+        assertTrue((historyResult as HistoryError).error is JsonDataException)
     }
 
     @After
