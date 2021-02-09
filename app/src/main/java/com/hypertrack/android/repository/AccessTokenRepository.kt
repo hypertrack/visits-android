@@ -4,6 +4,7 @@ import android.util.Log
 import com.hypertrack.android.api.UserAgentInterceptor
 import com.hypertrack.android.utils.Injector
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -127,7 +128,8 @@ class BasicAuthAccessTokenRepository(
     }
 }
 
-private data class AuthCallResponse(
+@JsonClass(generateAdapter = true)
+internal data class AuthCallResponse(
     @field:Json(name = "access_token") val accessToken:String,
     @field:Json(name = "expires_in") val expiresIn: Int
 )

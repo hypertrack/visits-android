@@ -48,11 +48,7 @@ object Injector {
 
     fun getMoshi() : Moshi = Moshi.Builder()
         .add(HistoryCoordinateJsonAdapter())
-        .add(
-            RuntimeJsonAdapterFactory(Geometry::class.java, "type")
-                .registerSubtype(Point::class.java, "Point")
-                .registerSubtype(Polygon::class.java, "Polygon")
-        )
+        .add(GeometryJsonAdapter())
         .build()
 
     private fun getMyPreferences(context: Context): MyPreferences =

@@ -180,4 +180,55 @@ class ApiEntitiesDeserializationTest {
         }
 
     }
+
+    @Test
+    fun `it should deserialize device history markers`() {
+        val serializedMarkers = """
+            [
+                  {
+                     "marker_id" : "d0879f89-69fd-4227-a07e-65924b323c69",
+                     "data" : {
+                        "value" : "inactive",
+                        "start" : {
+                           "recorded_at" : "2021-02-03T00:00:00+00:00",
+                           "location" : {
+                              "geometry" : {
+                                 "type" : "Point",
+                                 "coordinates" : [ -122.084009, 37.421986 ]
+                              },
+                              "recorded_at" : "2021-02-03T07:46:31.021Z"
+                           }
+                        },
+                        "duration" : 27991,
+                        "reason" : "stopped_programmatically",
+                        "end" : {
+                           "location" : {
+                              "recorded_at" : "2021-02-03T07:46:31.021Z",
+                              "geometry" : {
+                                 "coordinates" : [ -122.084009, 37.421986 ],
+                                 "type" : "Point"
+                              }
+                           },
+                           "recorded_at" : "2021-02-03T07:46:31.021Z"
+                        }
+                     },
+                     "type" : "device_status"
+                  },
+                  {
+                     "data" : {
+                        "metadata" : {
+                           "type" : "Test geotag at 1612342206755"
+                        },
+                        "location" : {
+                           "type" : "Point",
+                           "coordinates" : [ -122.084, 37.421998, 5 ]
+                        },
+                        "recorded_at" : "2021-02-03T08:50:06.757Z"
+                     },
+                     "type" : "trip_marker",
+                     "marker_id" : "b05df9e8-8f91-44eb-b01f-bacfa59b4349"
+                  },                  
+            ]
+        """.trimIndent()
+    }
 }

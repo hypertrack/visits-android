@@ -22,3 +22,19 @@ internal class HistoryCoordinateJsonAdapter {
         return HistoryCoordinate(json[0] as Double, json[1] as Double, json[2] as Double?, json[3] as String)
     }
 }
+
+internal class GeometryJsonAdapter {
+    @ToJson
+    fun geometryToJson(geometry: Geometry): Map<String, Any> =
+        mapOf("type" to geometry.type, "coordinates" to geometry.coordinates)
+
+    @Suppress("UNCHECKED_CAST")
+    @FromJson
+    fun jsonToGeometry(json: Map<String, Any>): Geometry {
+        return when (json["type"]) {
+            "Point" -> Point(json["coordinates"] as List<Double>)
+            "Polygon" -> Polygon(json["coordinates"] as List<List<List<Double>>>)
+            else -> throw JsonDataException("Unknown geometry type ${json["type"]}")
+        }
+    }
+}

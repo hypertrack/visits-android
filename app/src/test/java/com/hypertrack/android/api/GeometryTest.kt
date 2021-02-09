@@ -22,6 +22,7 @@ class GeometryTest {
             "geofence_id": "00001111-4047-4b28-a6ec-f934e870c425",
             "device_id": "F3DF6D4F-6A06-4883-8201-D767EA408030",
             "geofence_metadata": { "station": "A" },
+            "created_at": "2020-02-02T20:20:02.020Z",
             "radius": 50,
             "geometry": {
                 "type":"Point",
@@ -40,6 +41,7 @@ class GeometryTest {
         val geofenceString = """{
             "geofence_id": "00001111-4047-4b28-a6ec-f934e870c425",
             "device_id": "F3DF6D4F-6A06-4883-8201-D767EA408030",
+            "created_at": "2020-02-02T20:20:02.020Z",
             "geofence_metadata": { "station": "B" },
             "geometry": {
                 "type": "Polygon",
