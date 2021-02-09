@@ -134,6 +134,7 @@ internal data class AuthCallResponse(
     @field:Json(name = "expires_in") val expiresIn: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class BasicAuthAccessTokenConfig(
     val authUrl: String,
     val deviceId: String,

@@ -7,6 +7,7 @@ import com.amazonaws.mobile.client.UserStateDetails
 import com.amazonaws.mobile.client.results.SignInResult
 import com.amazonaws.mobile.client.results.Tokens
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import retrofit2.Response
@@ -88,4 +89,5 @@ interface TokenForPublishableKeyExchangeService {
     suspend fun getPublishableKey(@Header("Authorization") token: String) : Response<PublishableKeyContainer>
 }
 
+@JsonClass(generateAdapter = true)
 data class PublishableKeyContainer(@field:Json(name = "key")val publishableKey: String?)

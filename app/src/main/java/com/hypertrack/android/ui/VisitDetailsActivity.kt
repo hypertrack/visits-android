@@ -98,13 +98,13 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         tvCustomerNote.text = newValue.customerNote
         customerNoteGroup.visibility = if (newValue.customerNote.isEmpty()) View.GONE else View.VISIBLE
         val takePictureButtonDisabled = tvTakePicture.visibility == View.GONE
-        val hasNoPreview = newValue.icon == null
+        val hasNoPreview = newValue.getBitmap() == null
         val pictureGroupVisitility =
             if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
         // Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
         visitPreviewGroup.visibility = pictureGroupVisitility
-        ivVisitPic.visibility = if (newValue.icon == null) View.GONE else View.VISIBLE
-        ivVisitPic.setImageBitmap(newValue.icon)
+        ivVisitPic.visibility = if (newValue.getBitmap() == null) View.GONE else View.VISIBLE
+        ivVisitPic.setImageBitmap(newValue.getBitmap())
         tvAddress.text = newValue.address.street
         if (newValue.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newValue.visitNote)
