@@ -213,12 +213,14 @@ interface HistoryMarker {
 
 interface HistoryMarkerData
 
+@JsonClass(generateAdapter = true)
 data class HistoryStatusMarker(
     override val markerId: String,
     override val type: String  = "device_status",
     override val data: HistoryStatusMarkerData
 ) : HistoryMarker
 
+@JsonClass(generateAdapter = true)
 data class HistoryStatusMarkerData(
     val value: String,
     val duration: Int,
@@ -227,12 +229,14 @@ data class HistoryStatusMarkerData(
 ): HistoryMarkerData
 
 // Do not be misguided by name. It's a geotag.
+@JsonClass(generateAdapter = true)
 data class HistoryTripMarker(
     override val markerId: String,
     override val type: String,
     override val data: HistoryTripMarkerData,
 ) : HistoryMarker
 
+@JsonClass(generateAdapter = true)
 data class HistoryTripMarkerData(
     @field:Json(name = "recorded_at") val recordedAt: String,
     @field:Json(name = "metadata") val metadata: Map<String, Any>?,
@@ -240,11 +244,13 @@ data class HistoryTripMarkerData(
     @field:Json(name = "route_to") val routeTo: MarkerRoute,
 ) : HistoryMarkerData
 
+@JsonClass(generateAdapter = true)
 data class MarkerRoute(
     @field:Json(name = "distance") val distance: Int,
     @field:Json(name = "duration") val duration: Int,
 )
 
+@JsonClass(generateAdapter = true)
 data class MarkerTerminal(
     @field:Json(name = "location") val location: MarkerLocation,
     @field:Json(name = "recorded_at") val recordedAt: String,
