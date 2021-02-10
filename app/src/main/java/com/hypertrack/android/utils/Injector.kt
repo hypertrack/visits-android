@@ -11,6 +11,7 @@ import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 
 
 class ServiceLocator {
