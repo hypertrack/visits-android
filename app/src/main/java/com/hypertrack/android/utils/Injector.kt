@@ -49,6 +49,12 @@ object Injector {
     fun getMoshi() : Moshi = Moshi.Builder()
         .add(HistoryCoordinateJsonAdapter())
         .add(GeometryJsonAdapter())
+        .add(
+            RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
+                .registerSubtype(HistoryTripMarker::class.java, "device_status")
+                .registerSubtype(HistoryStatusMarker::class.java, "trip_marker")
+                .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
+        )
         .build()
 
     private fun getMyPreferences(context: Context): MyPreferences =
