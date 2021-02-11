@@ -2,18 +2,15 @@ package com.hypertrack.android.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.adapters.VisitListAdapter
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
-import com.hypertrack.android.ui.fragments.MapWebViewFragment
-import com.hypertrack.android.ui.fragments.VisitsListFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.StatusString
 import com.hypertrack.android.view_models.VisitsManagementViewModel
@@ -22,13 +19,11 @@ import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.activity_visits_management.*
 
-@Deprecated("")
+
 class VisitsManagementActivity : ProgressDialogActivity() {
 
-    val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
-        MyApplication.injector.provideVisitsManagementViewModelFactory(
-            applicationContext
-        )
+    val visitsManagementViewModel : VisitsManagementViewModel by viewModels {
+        (application as MyApplication).injector.provideVisitsManagementViewModelFactory(applicationContext)
     }
     lateinit var viewAdapter: RecyclerView.Adapter<*>
     lateinit var viewManager: RecyclerView.LayoutManager
@@ -39,43 +34,26 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         setContentView(R.layout.activity_visits_management)
         checkInvariants()
 
-        viewAdapter = VisitListAdapter(
-            visitsManagementViewModel.visits,
-            object : VisitListAdapter.OnListAdapterClick {
-                override fun onJobItemClick(position: Int) {
-                    // Log.d(TAG, "Clicked visit at position $position")
-                    val visit = visitsManagementViewModel.visits.value?.get(position)
-                    visit?.let { if (it is Visit) showVisitDetails(it, position) }
-                }
-            })
+        viewAdapter = VisitListAdapter(visitsManagementViewModel.visits, object: VisitListAdapter.OnListAdapterClick{
+            override fun onJobItemClick(position: Int) {
+                // Log.d(TAG, "Clicked visit at position $position")
+                val visit = visitsManagementViewModel.visits.value?.get(position)
+                visit?.let { if (it is Visit) showVisitDetails(it, position) }
+            }
+        })
         viewManager = LinearLayoutManager(this)
 
 
         visitsManagementViewModel.visits
-            .observe(this, { visits -> // Log.d(TAG, "Got visits $visits")
+            .observe(this, {
+                visits -> // Log.d(TAG, "Got visits $visits")
                 viewAdapter.notifyDataSetChanged()
             })
 
-        viewpager.adapter = object :
-            FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-
-            private val fragments = listOf(
-                VisitsListFragment.newInstance(),
-                MapWebViewFragment.newInstance(visitsManagementViewModel.deviceHistoryWebViewUrl)
-            )
-            private val tabTitles = resources.getStringArray(R.array.tab_names)
-
-            init {
-                check(tabTitles.size == fragments.size)
-            }
-
-            override fun getCount(): Int = fragments.size
-
-            override fun getItem(position: Int): Fragment = fragments[position]
-
-            override fun getPageTitle(position: Int): CharSequence? = tabTitles[position]
-
-        }
+        viewpager.adapter = SimpleFragmentPagerAdapter(
+            supportFragmentManager, this, viewAdapter, viewManager,
+            visitsManagementViewModel.deviceHistoryWebViewUrl
+        )
 
         sliding_tabs.setupWithViewPager(viewpager)
 
@@ -94,12 +72,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
                         val groupNames = resources.getStringArray(R.array.visit_state_group_names)
                         val messageText = msg.stats.entries.filter { it.value > 0 }
                             .fold(getString(R.string.empty_string)) { acc, entry ->
-                                acc + "${entry.value} ${groupNames[entry.key.ordinal]} ${
-                                    resources.getQuantityString(
-                                        R.plurals.item_plurals,
-                                        entry.value
-                                    )
-                                } "
+                                acc + "${entry.value} ${groupNames[entry.key.ordinal]} ${resources.getQuantityString(R.plurals.item_plurals, entry.value)} "
                             }
                         // Log.v(TAG, "Created message text $messageText")
                         tvTrackerStatus.text = messageText
@@ -111,10 +84,10 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         }
 
         visitsManagementViewModel.showSpinner.observe(this) { show ->
-            if (show) showProgress() else dismissProgress()
+            if(show) showProgress() else dismissProgress()
         }
         visitsManagementViewModel.showSync.observe(this) { show ->
-            if (show) showSyncNotification() else dismissSyncNotification()
+            if(show) showSyncNotification() else dismissSyncNotification()
         }
         visitsManagementViewModel.enableCheckIn.observe(this) { enabled ->
             checkIn.isEnabled = enabled
@@ -168,10 +141,8 @@ class VisitsManagementActivity : ProgressDialogActivity() {
     private fun checkInvariants() {
         if (BuildConfig.DEBUG) {
             if (resources.getStringArray(R.array.visit_state_group_names).size != VisitStatusGroup.values().size) {
-                error(
-                    "visit_state_group_names array doesn't contain enough members to represent " +
-                            "all the VisitStatusGroup values"
-                )
+                error("visit_state_group_names array doesn't contain enough members to represent " +
+                        "all the VisitStatusGroup values")
             }
         }
     }
@@ -182,12 +153,9 @@ class VisitsManagementActivity : ProgressDialogActivity() {
         visitsManagementViewModel.showSync.value?.let { if (it) dismissSyncNotification() }
     }
 
-    companion object {
-        const val TAG = "VisitsManagementAct"
-        const val KEY_EXTRA_VISIT_ID = "delivery_id"
-        const val KEY_EXTRA_VISIT_POS = "delivery_position"
-    }
+    companion object { const val TAG = "VisitsManagementAct" }
 
 }
 
-
+const val KEY_EXTRA_VISIT_ID = "delivery_id"
+const val KEY_EXTRA_VISIT_POS = "delivery_position"

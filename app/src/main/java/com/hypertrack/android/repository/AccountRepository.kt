@@ -1,5 +1,6 @@
 package com.hypertrack.android.repository
 
+import android.util.Log
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.AccountPreferencesProvider
@@ -30,7 +31,6 @@ class AccountRepository(
         get() = accountData.pickUpAllowed
         set(value) { accountData.pickUpAllowed = value }
 
-    //todo rename to validate key
     suspend fun onKeyReceived(
         key: String,
         checkInEnabled: String = "false",

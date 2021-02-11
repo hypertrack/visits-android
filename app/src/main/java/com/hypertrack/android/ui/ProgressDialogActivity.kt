@@ -11,7 +11,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 
-@Deprecated("")
+
 @SuppressLint("Registered")
 open class ProgressDialogActivity : AppCompatActivity() {
 
@@ -45,23 +45,22 @@ open class ProgressDialogActivity : AppCompatActivity() {
 
     companion object { const val SYNC_NOTIFICATION_ID = 4242 }
 
-    class AnimatedDialog(context: Context): Dialog(context, R.style.LoaderDialog) {
-        init {
-            setContentView(R.layout.dialog_progress_bar)
-        }
-        private val animation = findViewById<LottieAnimationView>(R.id.loader)
-
-        override fun show() {
-            super.show()
-            setCancelable(false)
-            animation.playAnimation()
-        }
-
-        override fun dismiss() {
-            animation.cancelAnimation()
-            super.dismiss()
-        }
-    }
-
 }
 
+class AnimatedDialog(context: Context): Dialog(context, R.style.LoaderDialog) {
+    init {
+        setContentView(R.layout.dialog_progress_bar)
+    }
+    private val animation = findViewById<LottieAnimationView>(R.id.loader)
+
+    override fun show() {
+        super.show()
+        setCancelable(false)
+        animation.playAnimation()
+    }
+
+    override fun dismiss() {
+        animation.cancelAnimation()
+        super.dismiss()
+    }
+}

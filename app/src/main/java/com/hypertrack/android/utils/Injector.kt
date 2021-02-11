@@ -62,7 +62,7 @@ object Injector {
 
     private fun getDriver(context: Context): Driver = getMyPreferences(context).getDriverValue()
 
-    fun getDriverRepo(context: Context) = DriverRepo(
+    private fun getDriverRepo(context: Context) = DriverRepo(
         getDriver(context),
         getMyPreferences(context),
         crashReportsProvider
@@ -78,7 +78,7 @@ object Injector {
         (getMyPreferences(context).restoreRepository()
             ?: throw IllegalStateException("No access token repository was saved"))
 
-    fun getAccountRepo(context: Context) =
+    private fun getAccountRepo(context: Context) =
         AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
 
     private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()

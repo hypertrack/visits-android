@@ -2,11 +2,13 @@ package com.hypertrack.android.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,8 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
-import com.hypertrack.android.ui.VisitsManagementActivity.Companion.KEY_EXTRA_VISIT_ID
-import com.hypertrack.android.ui.VisitsManagementActivity.Companion.KEY_EXTRA_VISIT_POS
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
@@ -27,7 +27,7 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-@Deprecated("")
+
 class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var viewModel: VisitDetailsViewModel
@@ -40,7 +40,7 @@ class VisitDetailsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_visit_detail)
 
         val visitId = intent?.getStringExtra(KEY_EXTRA_VISIT_ID)!!
-        viewModel = MyApplication.injector
+        viewModel = (application as MyApplication).injector
             .provideVisitStatusViewModel(this.applicationContext, visitId)
 
         viewModel.visit.observe(this) { updateView(it) }
