@@ -3,16 +3,18 @@ package com.hypertrack.android.utils
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import com.hypertrack.logistics.android.github.R
-import com.hypertrack.sdk.HyperTrack
 
 class MyApplication : Application() {
 
-    val injector: Injector = Injector
+
 
     override fun onCreate() {
         super.onCreate()
+
+        context = this
 
         injector.deeplinkProcessor.appOnCreate(this)
 //        HyperTrack.enableDebugLogging()
@@ -38,6 +40,10 @@ class MyApplication : Application() {
     companion object {
         const val TAG = "MyApplication"
         const val CHANNEL_ID = "default_notification_channel"
+
+        val injector: Injector = Injector
+
+        lateinit var context: Context
     }
 }
 

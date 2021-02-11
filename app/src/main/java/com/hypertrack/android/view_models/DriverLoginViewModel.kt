@@ -1,57 +1,28 @@
 package com.hypertrack.android.view_models
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.DriverRepo
-import com.hypertrack.android.utils.Destination
+import com.hypertrack.android.ui.base.BaseStateViewModel
+import com.hypertrack.android.ui.base.JustLoading
+import com.hypertrack.android.ui.base.JustSuccess
 import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
 class DriverLoginViewModel(
     private val driverRepo: DriverRepo,
     private val hyperTrackService: HyperTrackService
-) : ViewModel() {
+) : BaseStateViewModel() {
 
-    private val _checkInButtonEnabled = MutableLiveData(false)
-
-    private val _destination = MutableLiveData(Destination.DRIVER_ID_INPUT)
-
-    private val _showProgress = MutableLiveData(false)
-    val showProgresss
-        get() = _showProgress
-
-    val enableCheckIn: LiveData<Boolean>
-        get() = _checkInButtonEnabled
-
-    val destination : LiveData<Destination>
-        get() = _destination
-
-
-    fun onTextChanged(input: CharSequence) {
-        when {
-            input.isNotEmpty() -> _checkInButtonEnabled.postValue(true)
-            else -> _checkInButtonEnabled.postValue(false)
-        }
-    }
-
-    fun onLoginClick(inputText: CharSequence?) {
-        inputText?.let {
-            _checkInButtonEnabled.postValue(false)
-            _showProgress.postValue(true)
-            val driverId = it.toString()
+    fun onLoginClick(driverId: String?) {
+        driverId?.let {
+            state.postValue(JustLoading)
             // Log.d(TAG, "Proceeding with Driver Id $driverId")
             hyperTrackService.driverId = driverId
             driverRepo.driverId = driverId
             viewModelScope.launch {
-                _destination.postValue(Destination.PERMISSION_REQUEST)
-                _showProgress.postValue(false)
+                state.postValue(JustSuccess)
             }
-            return
         }
-
     }
 
     fun checkAutoLogin() {

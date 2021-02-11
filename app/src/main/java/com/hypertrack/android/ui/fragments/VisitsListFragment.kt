@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hypertrack.android.ui.VisitsManagementActivity
+import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_list.*
 
@@ -15,7 +16,7 @@ class VisitsListFragment: Fragment(R.layout.fragment_visits_list) {
         recyclerView.layoutManager
         recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = (activity as VisitsManagementActivity).viewAdapter
+            adapter = (parentFragment as VisitsManagementFragment).viewAdapter
         }
         srlVisits.setOnRefreshListener {
             this.activity?.let {
