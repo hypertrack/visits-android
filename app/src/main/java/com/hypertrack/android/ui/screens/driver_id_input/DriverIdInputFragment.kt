@@ -13,9 +13,9 @@ import com.hypertrack.android.utils.SimpleTextWatcher
 import com.hypertrack.android.utils.textString
 import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_driver_id_input.*
+import kotlinx.android.synthetic.main.fragment_driver_id_input.*
 
-class DriverIdInputFragment: ProgressDialogFragment(R.layout.activity_driver_id_input) {
+class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_input) {
 
     private val driverLoginModel: DriverLoginViewModel by viewModels {
         MyApplication.injector.provideDriverLoginViewModelFactory(MyApplication.context)

@@ -20,7 +20,7 @@ class MainActivity: NavActivity(), DeeplinkResultListener {
 
     private val deepLinkProcessor = MyApplication.injector.deeplinkProcessor
 
-    override val layoutRes: Int = R.layout.activity_main
+    override val layoutRes: Int = R.layout.fragment_main
 
     override val navHostId: Int = R.id.navHost
 
@@ -34,13 +34,13 @@ class MainActivity: NavActivity(), DeeplinkResultListener {
                 findNavController(R.id.root).navigate(NavGraphDirections.actionGlobalVisitManagementFragment())
             }
         } else {
-            deepLinkProcessor.activityOnStart(this, intent, this)
+            deepLinkProcessor.activityOnNewIntent(this, intent, this)
         }
     }
 
     override fun onStart() {
         super.onStart()
-        deepLinkProcessor.activityOnNewIntent(this, intent, this)
+        deepLinkProcessor.activityOnStart(this, intent, this)
     }
 
     override fun onDeeplinkResult(parameters: Map<String, Any>) {

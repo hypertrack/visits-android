@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.hypertrack.logistics.android.github.R
-import com.hypertrack.sdk.HyperTrack
 
 class MyApplication : Application() {
 
@@ -15,6 +14,7 @@ class MyApplication : Application() {
         super.onCreate()
 
         injector.deeplinkProcessor.appOnCreate(this)
+        //todo remove on prod
 //        HyperTrack.enableDebugLogging()
 
         buildNotificationChannel()

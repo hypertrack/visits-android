@@ -20,13 +20,12 @@ import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_visit_detail.*
+import kotlinx.android.synthetic.main.fragment_visit_detail.*
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-//todo fix back arrow
-class VisitDetailsFragment : ProgressDialogFragment(R.layout.activity_visit_detail) {
+class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_detail) {
 
     private val args: VisitDetailsFragmentArgs by navArgs()
 
@@ -113,7 +112,7 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.activity_visit_deta
     private fun setActionListeners() {
         ivBack.setOnClickListener {
             viewModel.onBackPressed()
-            onBackPressed()
+            mainActivity().onBackPressed()
         }
 
         etVisitNote.addTextChangedListener(object : TextWatcher {
@@ -140,7 +139,6 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.activity_visit_deta
 
     }
 
-    //todo
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // Log.v(TAG, "Got image capture result $resultCode")
@@ -183,14 +181,6 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.activity_visit_deta
                     tvCancel,
                     etVisitNote
             ).forEach { it.isEnabled = false }
-
-    //todo
-//    override fun onBackPressed() {
-//        val data = Intent()
-//        data.data = Uri.parse(visitPosition)
-//        setResult(Activity.RESULT_OK, data)
-//        finish()
-//    }
 
     var currentPhotoPath: String? = null
 

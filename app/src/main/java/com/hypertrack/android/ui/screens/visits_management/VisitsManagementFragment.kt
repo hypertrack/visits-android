@@ -1,6 +1,5 @@
 package com.hypertrack.android.ui.screens.visits_management
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -21,9 +20,9 @@ import com.hypertrack.android.view_models.VisitsManagementViewModel
 import com.hypertrack.android.view_models.VisitsStats
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_visits_management.*
+import kotlinx.android.synthetic.main.fragment_visits_management.*
 
-class VisitsManagementFragment : ProgressDialogFragment(R.layout.activity_visits_management) {
+class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideVisitsManagementViewModelFactory(MyApplication.context)
@@ -137,6 +136,9 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.activity_visits
                     .makeText(requireContext(), msg, Toast.LENGTH_LONG)
                     .show()
         }
+
+        //moved from onActivityResult
+        visitsManagementViewModel.possibleLocalVisitCompletion()
     }
 
     lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -148,26 +150,6 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.activity_visits
 
     fun refreshVisits() {
         visitsManagementViewModel.refreshVisits { }
-    }
-
-    //todo
-//    override fun onNewIntent(intent: Intent?) {
-//        super.onNewIntent(intent)
-//        // Log.d(TAG, "onNewIntent with extras ${intent?.extras}")
-//        if (intent?.action == Intent.ACTION_SYNC) {
-//            visitsManagementViewModel.refreshVisits { }
-//        }
-//    }
-
-    //todo
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // Log.d(TAG, "onActivityResult")
-        data?.dataString?.toIntOrNull()?.let { position ->
-            // Log.d(TAG, "Item in pos $position was changed")
-            viewAdapter.notifyItemChanged(position)
-            visitsManagementViewModel.possibleLocalVisitCompletion()
-        }
     }
 
     private fun checkInvariants() {

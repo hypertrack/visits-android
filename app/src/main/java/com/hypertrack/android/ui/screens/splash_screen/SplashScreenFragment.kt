@@ -9,7 +9,7 @@ import com.hypertrack.android.utils.PermissionsUtils
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 
-class SplashScreenFragment: ProgressDialogFragment(R.layout.splash_screen_layout) {
+class SplashScreenFragment: ProgressDialogFragment(R.layout.fragment_splash_screen) {
 
     private lateinit var splashScreenViewModel: SplashScreenViewModel
 

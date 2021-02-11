@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
 
     <TextView
         android:id="@+id/textHeader"
@@ -11,17 +12,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="@string/allow_location_access"
+        android:textAlignment="center"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/logoContainer"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:background="@color/colorWhite"
         android:gravity="center"
@@ -32,18 +33,19 @@
         app:layout_constraintTop_toBottomOf="@id/textHeader">
 
         <androidx.appcompat.widget.AppCompatImageView
-            app:layout_constraintDimensionRatio="H,1:1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_constraintDimensionRatio="H,1:1"
             app:srcCompat="@drawable/logo" />
+
         <TextView
             android:id="@+id/appName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
+            android:textAlignment="center"
             android:textSize="44sp"
             android:textStyle="bold"
-            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -52,51 +54,55 @@
 
     <TextView
         android:id="@+id/permissionRationalMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
         android:gravity="center_vertical"
         android:text="@string/permission_rational"
         android:textAlignment="center"
         android:textSize="18sp"
         android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@+id/logoContainer"
         app:layout_constraintBottom_toTopOf="@+id/btnContinue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnContinue"
+        app:layout_constraintStart_toStartOf="@+id/btnContinue"
+        app:layout_constraintTop_toBottomOf="@+id/logoContainer"
         tools:ignore="RtlCompat" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/btnContinue"
         style="@style/ButtonStyle"
+        android:layout_margin="20dp"
+        android:padding="10dp"
         android:text="@string/continue_btn_text"
         android:textAlignment="center"
-        android:padding="10dp"
-        android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@id/permissionRationalMessage"
         app:layout_constraintBottom_toTopOf="@id/whitelistingMessage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/permissionRationalMessage" />
+
     <TextView
         android:id="@+id/whitelistingMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
         android:gravity="center_vertical"
         android:text="@string/whitelisting_rational"
         android:textAlignment="center"
         android:textSize="18sp"
         android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@+id/btnContinue"
         app:layout_constraintBottom_toTopOf="@+id/btnWhitelisting"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnWhitelisting"
+        app:layout_constraintStart_toStartOf="@+id/btnWhitelisting"
+        app:layout_constraintTop_toBottomOf="@+id/btnContinue"
         tools:ignore="RtlCompat" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/btnWhitelisting"
         style="@style/ButtonStyle"
+        android:layout_margin="20dp"
+        android:padding="10dp"
         android:text="@string/whitelisting_btn_text"
         android:textAlignment="center"
-        android:padding="10dp"
-        android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

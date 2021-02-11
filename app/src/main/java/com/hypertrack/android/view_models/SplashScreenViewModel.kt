@@ -46,6 +46,7 @@ class SplashScreenViewModel(
         val email = parameters["email"] as String?
         val driverId = parameters["driver_id"] as String?
         val showCheckIn = parameters["show_manual_visits"] as String? ?:""
+        //todo useless? (always true)
         val autoCheckIn = parameters["auto_check_in"] as String? ?: ""
         val pickUpAllowed = parameters["pick_up_allowed"] as String? ?: ""
         // Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn pickUp allowed $pickUpAllowed")

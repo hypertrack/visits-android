@@ -11,17 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorWhite"
-        android:layout_marginBottom="20dp"
         android:nestedScrollingEnabled="true">
 
         <TextView
             android:id="@+id/accountLoginHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="24dp"
             android:text="@string/account_login_header_text"
             android:textAlignment="center"
             android:textSize="44sp"
-            android:padding="24dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,10 +30,10 @@
             android:id="@+id/deeplinkHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="24dp"
             android:text="@string/login_hint"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:padding="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/accountLoginHeader" />
@@ -43,10 +42,10 @@
             android:id="@+id/emailName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:text="@string/email_address"
             android:textAlignment="viewStart"
             android:textSize="16sp"
-            android:layout_marginStart="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/deeplinkHint" />
 
@@ -54,9 +53,9 @@
             android:id="@+id/loginInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
             android:drawablePadding="10dp"
             android:fontFamily="@font/medium"
             android:gravity="center_vertical"
@@ -68,7 +67,7 @@
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/emailName"/>
+            app:layout_constraintTop_toBottomOf="@id/emailName" />
 
         <TextView
             android:id="@+id/password"
@@ -76,24 +75,24 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
+            android:padding="10dp"
             android:text="@string/password"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:padding="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loginInput" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/passwordInput"
-            android:inputType = "textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
             android:drawablePadding="10dp"
             android:fontFamily="@font/medium"
             android:gravity="center_vertical"
+            android:inputType="textPassword"
             android:maxLines="1"
             android:padding="10dp"
             android:paddingStart="5dp"
@@ -101,19 +100,19 @@
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/password"/>
+            app:layout_constraintTop_toBottomOf="@id/password" />
 
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/btnLogIn"
             style="@style/ButtonStyle"
-            android:background="@drawable/bg_button_disabled"
             android:layout_width="match_parent"
             android:layout_margin="20dp"
-            android:padding="10dp"
+            android:background="@drawable/bg_button_disabled"
             android:clickable="false"
             android:enabled="false"
             android:gravity="center"
+            android:padding="10dp"
             android:text="@string/log_in"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"

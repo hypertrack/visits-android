@@ -7,9 +7,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.fragment_webview.*
+import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
 
-class MapWebViewFragment : Fragment(R.layout.fragment_webview) {
+class MapWebViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view1: View, savedInstanceState: Bundle?) {
@@ -22,8 +22,10 @@ class MapWebViewFragment : Fragment(R.layout.fragment_webview) {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                if (srlHistory.isRefreshing) {
-                    srlHistory.isRefreshing = false
+                srlHistory?.let {
+                    if (srlHistory.isRefreshing) {
+                        srlHistory.isRefreshing = false
+                    }
                 }
             }
         }
