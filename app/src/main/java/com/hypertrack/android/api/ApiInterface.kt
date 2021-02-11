@@ -203,7 +203,7 @@ data class History(
     @field:Json(name = "insights") val insights: Insights,
     @field:Json(name = "locations") val locations: Locations,
     @field:Json(name = "markers") val markers: List<HistoryMarker>
-) : HistoryResult()
+)
 
 interface HistoryMarker {
     val markerId: String
@@ -280,9 +280,6 @@ data class MarkerTerminal(
 
 @JsonClass(generateAdapter = true)
 data class MarkerLocation(@field:Json(name = "geometry") val geometry: Geometry)
-
-class HistoryError(val error: Throwable?) : HistoryResult()
-sealed class HistoryResult
 
 @JsonClass(generateAdapter = true)
 data class Insights(

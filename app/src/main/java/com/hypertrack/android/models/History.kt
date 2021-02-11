@@ -4,7 +4,7 @@ data class History(
     val summary: Summary,
     val locationTimePoints: List<Pair<Location, Long>>,
     val markers: List<Marker>,
-)
+) : HistoryResult()
 
 data class Summary(
     val totalDistance: Int,
@@ -29,3 +29,7 @@ enum class MarkerType{
     GEOTAG,
     GEOFENCE_ENTRY
 }
+
+
+class HistoryError(val error: Throwable?) : HistoryResult()
+sealed class HistoryResult
