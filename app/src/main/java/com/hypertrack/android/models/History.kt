@@ -2,7 +2,7 @@ package com.hypertrack.android.models
 
 data class History(
     val summary: Summary,
-    val locationTimePoints: List<Pair<Location, Long>>,
+    val locationTimePoints: List<Pair<Location, String>>,
     val markers: List<Marker>,
 ) : HistoryResult()
 
@@ -20,7 +20,7 @@ data class Location(
 
 data class Marker(
     val type: MarkerType,
-    val timestamp: Long,
+    val timestamp: String,
     val location: Location,
 )
 

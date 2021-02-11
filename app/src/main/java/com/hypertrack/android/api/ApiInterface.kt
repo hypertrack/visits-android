@@ -52,7 +52,7 @@ interface ApiInterface {
         @Path("device_id") deviceId: String,
         @Path("day") day: String,
         @Query("timezone") timezone: String
-    ) : Response<History>
+    ) : Response<HistoryResponse>
 
 }
 
@@ -198,8 +198,9 @@ data class GeofenceMarker(
 data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = "")
 
 @JsonClass(generateAdapter = true)
-data class History(
+data class HistoryResponse(
     @field:Json(name = "distance") val distance: Int,
+    @field:Json(name = "duration") val duration: Int,
     @field:Json(name = "insights") val insights: Insights,
     @field:Json(name = "locations") val locations: Locations,
     @field:Json(name = "markers") val markers: List<HistoryMarker>
@@ -264,7 +265,10 @@ data class HistoryGeofenceMarkerGeofence(@field:Json(name = "geofence_id") val g
 @JsonClass(generateAdapter = true)
 data class HistoryGeofenceMarkerArrival(@field:Json(name = "location") val location: HistoryGeofenceArrivalLocation)
 @JsonClass(generateAdapter = true)
-data class HistoryGeofenceArrivalLocation(@field:Json(name = "recorded_at") val recordedAt: String)
+data class HistoryGeofenceArrivalLocation(
+    @field:Json(name="geometry") val geometry: Geometry,
+    @field:Json(name = "recorded_at") val recordedAt: String,
+)
 
 @JsonClass(generateAdapter = true)
 data class MarkerRoute(

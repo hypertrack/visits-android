@@ -3,6 +3,7 @@
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.hypertrack.android.models.*
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.squareup.moshi.JsonDataException
 import io.mockk.every
@@ -536,28 +537,12 @@ class ApiClientTest {
         val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
         assertTrue(historyResult is History)
-        val history = historyResult as History
-        assertEquals(6347, history.distance)
-        with( historyResult.insights) {
-            assertEquals(0, geofencesCount)
-            assertEquals(0, geotagsRouteToTime)
-            assertEquals(100, trackingRate)
-            assertEquals(6347, driveDistance)
-            assertEquals(0, inactiveDuration)
-            assertEquals(0, stepCount)
-            assertEquals(0, geofencesIdleTime)
-            assertEquals(0, tripsArrivedAtDestination)
-            assertEquals(0, geofencesRouteToTime)
-            assertEquals(0, geotagsCount)
-            assertEquals(0, geofencesTime)
-            assertEquals(743, stopDuration)
-            assertEquals(0, estimatedDistance)
-            assertEquals(0, tripsOnTime)
-            assertEquals(1353, activeDuration)
-            assertEquals(0, walkDuration)
-            assertEquals(1353, totalTrackingTime)
-            assertEquals(610, driveDuration)
-            assertEquals(0, tripsCount)
+        with( historyResult as History) {
+
+            assertEquals(6347, summary.totalDistance)
+            assertEquals(6347, summary.totalDriveDistance)
+            assertEquals(86400, summary.totalDuration)
+            assertEquals(610, summary.totalDriveDuration)
         }
 
     }
@@ -619,17 +604,13 @@ class ApiClientTest {
         assertEquals("GET", request.method)
         assertTrue(historyResult is History)
         val history = historyResult as History
-        assertEquals("LineString", history.locations.type)
-        with(history.locations.coordinates) {
+        with(history.locationTimePoints) {
             assertEquals(5, size)
-            assertEquals(-122.397368, this[0].longitude, 0.000001)
-            assertEquals(37.792382, this[0].latitude, 0.000001)
-            assertEquals(42.0, this[0].altitude!!, 0.01)
-            assertEquals("2021-02-05T11:53:10.544Z", this[0].timestamp)
-            assertEquals(42.42, this[1].altitude!!, 0.01)
-            assertNull(this[2].altitude)
-            assertEquals(-122.39737, this[3].longitude, 0.000001)
-            assertEquals("2021-02-05T11:53:29.259Z", this[4].timestamp)
+            assertEquals(-122.397368, this[0].first.longitude, 0.000001)
+            assertEquals(37.792382, this[0].first.latitude, 0.000001)
+            assertEquals("2021-02-05T11:53:10.544Z", this[0].second)
+            assertEquals(-122.39737, this[3].first.longitude, 0.000001)
+            assertEquals("2021-02-05T11:53:29.259Z", this[4].second)
         }
     }
 
@@ -765,21 +746,25 @@ class ApiClientTest {
         assertTrue(historyResult is History)
         val history = historyResult as History
         assertEquals(3, history.markers.size)
-        with(history.markers.first() as HistoryStatusMarker) {
-            assertEquals("inactive", data.value)
-            assertEquals("2021-02-05T00:00:00+00:00", data.start.recordedAt)
-            assertEquals(42791, data.duration)
+        with(history.markers.first()) {
+            assertEquals(MarkerType.STATUS, type)
+            assertEquals("2021-02-05T00:00:00+00:00", timestamp)
+            assertEquals(-122.397368, location.longitude, 0.000001)
+            assertEquals(37.792382, location.latitude, 0.000001)
         }
 
-        with(history.markers[1] as HistoryTripMarker) {
-            assertEquals("Test geotag at 1612342206755", data.metadata!!["type"])
-            assertEquals("2021-02-03T08:50:06.757Z", data.recordedAt)
+        with(history.markers[1]) {
+            assertEquals(MarkerType.GEOTAG, type)
+            assertEquals("2021-02-03T08:50:06.757Z", timestamp)
+            assertEquals( -122.084, location.longitude, 0.000001)
+            assertEquals( 37.421998, location.latitude, 0.000001)
         }
 
-        with(history.markers.last() as HistoryGeofenceMarker) {
-            assertEquals("8b63f7d3-4ba4-4dbf-b100-0c843445d5b2", data.geofence.geofenceId)
-            assertEquals("2021-02-05T12:11:37.838Z", data.arrival.location.recordedAt)
-            assertEquals(403, data.duration)
+        with(history.markers.last()) {
+            assertEquals(MarkerType.GEOFENCE_ENTRY, type)
+            assertEquals("2021-02-05T12:11:37.838Z", timestamp)
+            assertEquals(-122.4249, location.longitude, 0.000001)
+            assertEquals(37.7599, location.latitude, 0.000001)
         }
     }
 
