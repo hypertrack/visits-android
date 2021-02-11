@@ -11,14 +11,15 @@
         android:roundIcon="@drawable/ic_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        tools:replace="android:allowBackup,android:fullBackupContent"
+        >
+
         <activity
-            android:name="com.hypertrack.android.ui.PermissionRequestActivity"
-            android:label="@string/title_activity_permission_request"></activity>
-        <activity
-            android:name="com.hypertrack.android.ui.SplashScreen"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            android:name="com.hypertrack.android.ui.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,26 +44,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="hypertrack-logistics.app.link"
-                    android:scheme="https" />
-                <data
-                    android:host="hypertrack-logistics.app.link"
-                    android:scheme="https" />
+                    android:scheme="https"
+                    android:host="hypertrack-logistics.app.link" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.hypertrack.android.ui.DriverIdInputActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name="com.hypertrack.android.ui.AccountLoginActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name="com.hypertrack.android.ui.VisitsManagementActivity"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name="com.hypertrack.android.ui.VisitDetailsActivity"
-            android:parentActivityName="com.hypertrack.android.ui.VisitsManagementActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -71,9 +56,10 @@
             android:name="io.branch.sdk.BranchKey"
             android:value="@string/branch_io_api_key" />
 
-        <service android:name="com.hypertrack.android.messaging.VisitsMessagingService"
+        <service
+            android:name="com.hypertrack.android.messaging.VisitsMessagingService"
             android:exported="false">
-            <intent-filter android:priority="10" >
+            <intent-filter android:priority="10">
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
