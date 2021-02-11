@@ -3,10 +3,7 @@ package com.hypertrack.android.utils
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.hypertrack.android.api.ApiClient
-import com.hypertrack.android.api.Geometry
-import com.hypertrack.android.api.Point
-import com.hypertrack.android.api.Polygon
+import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.view_models.*
@@ -50,10 +47,13 @@ object Injector {
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
     fun getMoshi() : Moshi = Moshi.Builder()
+        .add(HistoryCoordinateJsonAdapter())
+        .add(GeometryJsonAdapter())
         .add(
-            RuntimeJsonAdapterFactory(Geometry::class.java, "type")
-                .registerSubtype(Point::class.java, "Point")
-                .registerSubtype(Polygon::class.java, "Polygon")
+            RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
+                .registerSubtype(HistoryStatusMarker::class.java, "device_status")
+                .registerSubtype(HistoryTripMarker::class.java, "trip_marker")
+                .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
         )
         .build()
 

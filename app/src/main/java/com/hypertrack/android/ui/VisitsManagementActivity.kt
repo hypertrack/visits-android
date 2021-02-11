@@ -45,10 +45,7 @@ class VisitsManagementActivity : ProgressDialogActivity() {
 
 
         visitsManagementViewModel.visits
-            .observe(this, {
-                visits -> // Log.d(TAG, "Got visits $visits")
-                viewAdapter.notifyDataSetChanged()
-            })
+            .observe(this, { viewAdapter.notifyDataSetChanged() })
 
         viewpager.adapter = SimpleFragmentPagerAdapter(
             supportFragmentManager, this, viewAdapter, viewManager,

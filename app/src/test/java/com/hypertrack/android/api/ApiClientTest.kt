@@ -3,7 +3,9 @@
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.hypertrack.android.models.*
 import com.hypertrack.android.repository.AccessTokenRepository
+import com.squareup.moshi.JsonDataException
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -12,14 +14,13 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
+import org.junit.Assert.*
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
+import java.net.HttpURLConnection
+import java.time.LocalDate
+import java.util.*
 
 @ExperimentalCoroutinesApi
 class ApiClientTest {
@@ -423,6 +424,376 @@ class ApiClientTest {
         assertEquals("GET", request.method)
 
         assertEquals(2, trips.size)
+    }
+
+    @Test
+    fun `it should send get request to get device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        val path = request.path
+        assertEquals("/client/devices/$DEVICE_ID/history/2020-02-05?timezone=America%2FLos_Angeles", path)
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+
+    }
+
+    @Test
+    fun `it should receive distance and insights from device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [
+                       [ -122.397368, 37.792382, 42.0,  "2021-02-05T11:53:10.544Z" ],
+                       [ -122.39737,  37.79238,  42.42, "2021-02-05T11:53:10.544Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:18.942Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:24.247Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:29.259Z" ]
+                  ],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+        with( historyResult as History) {
+
+            assertEquals(6347, summary.totalDistance)
+            assertEquals(6347, summary.totalDriveDistance)
+            assertEquals(86400, summary.totalDuration)
+            assertEquals(610, summary.totalDriveDuration)
+        }
+
+    }
+
+    @Test
+    fun `it should receive location data points from device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [
+                       [ -122.397368, 37.792382, 42.0,  "2021-02-05T11:53:10.544Z" ],
+                       [ -122.39737,  37.79238,  42.42, "2021-02-05T11:53:10.544Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:18.942Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:24.247Z" ],
+                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:29.259Z" ]
+                  ],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+        val history = historyResult as History
+        with(history.locationTimePoints) {
+            assertEquals(5, size)
+            assertEquals(-122.397368, this[0].first.longitude, 0.000001)
+            assertEquals(37.792382, this[0].first.latitude, 0.000001)
+            assertEquals("2021-02-05T11:53:10.544Z", this[0].second)
+            assertEquals(-122.39737, this[3].first.longitude, 0.000001)
+            assertEquals("2021-02-05T11:53:29.259Z", this[4].second)
+        }
+    }
+
+    @Test
+    fun `it should receive status markers from device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [
+                    {
+                         "marker_id" : "8b6aeb0f-1a8f-4900-95ee-03755ba21015",
+                         "data" : {
+                            "value" : "inactive",
+                            "end" : {
+                               "recorded_at" : "2021-02-05T11:53:10.544Z",
+                               "location" : {
+                                  "geometry" : {
+                                     "coordinates" : [ -122.397368, 37.792382 ],
+                                     "type" : "Point"
+                                  },
+                                  "recorded_at" : "2021-02-05T11:53:10.544Z"
+                               }
+                            },
+                            "start" : {
+                               "recorded_at" : "2021-02-05T00:00:00+00:00",
+                               "location" : {
+                                  "geometry" : {
+                                     "type" : "Point",
+                                     "coordinates" : [ -122.397368, 37.792382 ]
+                                  },
+                                  "recorded_at" : "2021-02-05T11:53:10.544Z"
+                               }
+                            },
+                            "duration" : 42791,
+                            "reason" : "stopped_programmatically"
+                         },
+                         "type" : "device_status"
+                     },
+                     {
+                         "data" : {
+                            "metadata" : {
+                               "type" : "Test geotag at 1612342206755"
+                            },
+                            "location" : {
+                               "type" : "Point",
+                               "coordinates" : [ -122.084, 37.421998, 5 ]
+                            },
+                            "recorded_at" : "2021-02-03T08:50:06.757Z"
+                         },
+                         "type" : "trip_marker",
+                         "marker_id" : "b05df9e8-8f91-44eb-b01f-bacfa59b4349"
+                    },
+                    {
+                        "marker_id" : "5eb13571-d3cc-494d-966e-1cc5759ba965",
+                        "type" : "geofence",
+                        "data" : {
+                           "exit" : {
+                              "location" : {
+                                 "geometry" : null,
+                                 "recorded_at" : "2021-02-05T12:18:20.986Z"
+                              }
+                           },
+                           "duration" : 403,
+                           "arrival" : {
+                              "location" : {
+                                 "geometry" : {
+                                    "coordinates" : [-122.4249, 37.7599 ],
+                                    "type" : "Point"
+                                 },
+                                 "recorded_at" : "2021-02-05T12:11:37.838Z"
+                              }
+                           },
+                           "geofence" : {
+                              "metadata" : {
+                                 "name" : "Mission Dolores Park"
+                              },
+                              "geometry" : {
+                                 "coordinates" : [
+                                    -122.426366,
+                                    37.761115
+                                 ],
+                                 "type" : "Point"
+                              },
+                              "geofence_id" : "8b63f7d3-4ba4-4dbf-b100-0c843445d5b2",
+                              "radius" : 200
+                           }
+                        }
+                     }
+                ],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+        val history = historyResult as History
+        assertEquals(3, history.markers.size)
+        with(history.markers.first()) {
+            assertEquals(MarkerType.STATUS, type)
+            assertEquals("2021-02-05T00:00:00+00:00", timestamp)
+            assertEquals(-122.397368, location.longitude, 0.000001)
+            assertEquals(37.792382, location.latitude, 0.000001)
+        }
+
+        with(history.markers[1]) {
+            assertEquals(MarkerType.GEOTAG, type)
+            assertEquals("2021-02-03T08:50:06.757Z", timestamp)
+            assertEquals( -122.084, location.longitude, 0.000001)
+            assertEquals( 37.421998, location.latitude, 0.000001)
+        }
+
+        with(history.markers.last()) {
+            assertEquals(MarkerType.GEOFENCE_ENTRY, type)
+            assertEquals("2021-02-05T12:11:37.838Z", timestamp)
+            assertEquals(-122.4249, location.longitude, 0.000001)
+            assertEquals(37.7599, location.latitude, 0.000001)
+        }
+    }
+
+    @Test
+    fun `it should return history error if 500 status was received on history endpoint`() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        assertTrue(historyResult is HistoryError)
+    }
+
+    @Test
+    fun `it should return history error if invalid body history was received`() {
+        val body = """{"error": "Internal server error"}"""
+        mockWebServer.enqueue(MockResponse().setBody(body))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        assertTrue(historyResult is HistoryError)
+        assertTrue((historyResult as HistoryError).error is JsonDataException)
     }
 
     @After

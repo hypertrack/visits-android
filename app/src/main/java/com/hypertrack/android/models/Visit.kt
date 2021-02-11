@@ -7,9 +7,11 @@ import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.squareup.moshi.JsonClass
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
+@JsonClass(generateAdapter = true)
 data class Visit(val _id: String,
                  val visit_id: String = "", val customerNote: String = "",
                  val createdAt: String = "", val address: Address = Address(
@@ -24,7 +26,7 @@ data class Visit(val _id: String,
                  val latitude: Double? = null, val longitude: Double? = null,
                  val visitType: VisitType,
                  val _state: VisitStatus?,
-                 private var _icon: String? = null
+                 var _icon: String? = null
  ): VisitListItem() {
 
     val expectedLocation: Location?
@@ -72,9 +74,8 @@ data class Visit(val _id: String,
 
     val tripVisitPickedUp = state != VisitStatus.PENDING
 
-    var icon: Bitmap?
-        get() = _icon?.decodeBase64Bitmap()
-        set(value) { _icon = value?.toBase64() }
+    fun addBitmap(bitmap: Bitmap?) { _icon = bitmap?.toBase64() }
+    fun getBitmap() = _icon?.decodeBase64Bitmap()
 
     fun hasPicture() = visitPicture?.isNotEmpty()?:false
 
@@ -199,6 +200,7 @@ enum class VisitType { TRIP, GEOFENCE, LOCAL }
 sealed class VisitListItem
 data class HeaderVisitItem(val status: VisitStatusGroup) : VisitListItem()
 
+@JsonClass(generateAdapter = true)
 data class Address (val street : String, val postalCode : String?, val city : String?, val country : String?)
 
 /**

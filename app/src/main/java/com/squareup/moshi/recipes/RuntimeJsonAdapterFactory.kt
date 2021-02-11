@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.squareup.moshi.recipes
 
 import com.squareup.moshi.*

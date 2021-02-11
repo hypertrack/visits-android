@@ -1,8 +1,8 @@
 package com.hypertrack.android.api
 
 import com.hypertrack.android.utils.Injector
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import com.squareup.moshi.Types
+import org.junit.Assert.*
 import org.junit.Test
 
 class ApiEntitiesDeserializationTest {
@@ -104,4 +104,225 @@ class ApiEntitiesDeserializationTest {
 
     }
 
+    @Test
+    fun `it should deserialize insights object`() {
+        val serializedInsights = """
+            {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+        """.trimIndent()
+
+        val insights = moshi.adapter(Insights::class.java).fromJson(serializedInsights)!!
+        with (insights) {
+            assertEquals(0,    geofencesCount)
+            assertEquals(100,  trackingRate)
+            assertEquals(6347, driveDistance)
+            assertEquals(0,    inactiveDuration)
+            assertEquals(0,    stepCount)
+            assertEquals(0,    geofencesIdleTime)
+            assertEquals(0,    tripsArrivedAtDestination)
+            assertEquals(0,    geofencesRouteToTime)
+            assertEquals(0,    geotagsCount)
+            assertEquals(0,    geofencesTime)
+            assertEquals(743,  stopDuration)
+            assertEquals(0,    estimatedDistance)
+            assertEquals(0,    tripsOnTime)
+            assertEquals(1353, activeDuration)
+            assertEquals(0,    walkDuration)
+            assertEquals(1353, totalTrackingTime)
+            assertEquals(610,  driveDuration)
+            assertEquals(0,    tripsCount)
+
+        }
+
+    }
+
+    @Test
+    fun `it should deserialize time series object`() {
+        val serializedLocations = """
+            {
+              "type" : "LineString",
+              "coordinates" : [
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:46:31.021Z" ],
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:46:31.021Z" ],
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:46:31.021Z" ],
+                 [ -122.084009, 37.421986, null, "2021-02-03T07:52:34.428Z" ]                      
+              ]
+            }
+      """
+
+        val locations = moshi.adapter(Locations::class.java).nullSafe().fromJson(serializedLocations)!!
+        with (locations) {
+            assertEquals("LineString", type)
+            assertEquals(4, coordinates.size)
+            assertEquals(-122.084009, coordinates[0].longitude, 0.000001)
+            assertEquals(37.421986, coordinates[1].latitude, 0.000001)
+            assertNull(coordinates[2].altitude)
+            assertEquals("2021-02-03T07:52:34.428Z", coordinates[3].timestamp)
+        }
+
+    }
+
+    @Test
+    fun `it should deserialize device history markers`() {
+        val serializedMarkers = """
+            [
+                  {
+                     "marker_id" : "d0879f89-69fd-4227-a07e-65924b323c69",
+                     "data" : {
+                        "value" : "inactive",
+                        "start" : {
+                           "recorded_at" : "2021-02-03T00:00:00+00:00",
+                           "location" : {
+                              "geometry" : {
+                                 "type" : "Point",
+                                 "coordinates" : [ -122.084009, 37.421986 ]
+                              },
+                              "recorded_at" : "2021-02-03T07:46:31.021Z"
+                           }
+                        },
+                        "duration" : 27991,
+                        "reason" : "stopped_programmatically",
+                        "end" : {
+                           "location" : {
+                              "recorded_at" : "2021-02-03T07:46:31.021Z",
+                              "geometry" : {
+                                 "coordinates" : [ -122.084009, 37.421986 ],
+                                 "type" : "Point"
+                              }
+                           },
+                           "recorded_at" : "2021-02-03T07:46:31.021Z"
+                        }
+                     },
+                     "type" : "device_status"
+                  },
+                  {
+                     "data" : {
+                        "metadata" : {
+                           "type" : "Test geotag at 1612342206755"
+                        },
+                        "location" : {
+                           "type" : "Point",
+                           "coordinates" : [ -122.084, 37.421998, 5 ]
+                        },
+                        "recorded_at" : "2021-02-03T08:50:06.757Z"
+                     },
+                     "type" : "trip_marker",
+                     "marker_id" : "b05df9e8-8f91-44eb-b01f-bacfa59b4349"
+                  },
+                    {
+                        "marker_id" : "5eb13571-d3cc-494d-966e-1cc5759ba965",
+                        "type" : "geofence",
+                        "data" : {
+                           "exit" : {
+                              "location" : {
+                                 "geometry" : null,
+                                 "recorded_at" : "2021-02-05T12:18:20.986Z"
+                              }
+                           },
+                           "duration" : 403,
+                           "arrival" : {
+                              "location" : {
+                                 "geometry" : {
+                                    "coordinates" : [
+                                       -122.4249,
+                                       37.7599
+                                    ],
+                                    "type" : "Point"
+                                 },
+                                 "recorded_at" : "2021-02-05T12:11:37.838Z"
+                              }
+                           },
+                           "geofence" : {
+                              "metadata" : {
+                                 "name" : "Mission Dolores Park"
+                              },
+                              "geometry" : {
+                                 "coordinates" : [
+                                    -122.426366,
+                                    37.761115
+                                 ],
+                                 "type" : "Point"
+                              },
+                              "geofence_id" : "8b63f7d3-4ba4-4dbf-b100-0c843445d5b2",
+                              "radius" : 200
+                           }
+                        }
+                     }                  
+            ]
+        """.trimIndent()
+
+        val markers = moshi
+            .adapter<List<HistoryMarker>>(Types.newParameterizedType(List::class.java, HistoryMarker::class.java))
+            .fromJson(serializedMarkers)!!
+
+        assertEquals(3, markers.size)
+
+    }
+
+    @Test
+    fun `it should deserialize device history marker`() {
+        val serializedMarker = """{
+                     "marker_id" : "d0879f89-69fd-4227-a07e-65924b323c69",
+                     "data" : {
+                        "value" : "inactive",
+                        "start" : {
+                           "recorded_at" : "2021-02-03T00:00:00+00:00",
+                           "location" : {
+                              "geometry" : {
+                                 "type" : "Point",
+                                 "coordinates" : [ -122.084009, 37.421986 ]
+                              },
+                              "recorded_at" : "2021-02-03T07:46:31.021Z"
+                           }
+                        },
+                        "duration" : 27991,
+                        "reason" : "stopped_programmatically",
+                        "end" : {
+                           "location" : {
+                              "recorded_at" : "2021-02-03T07:46:31.021Z",
+                              "geometry" : {
+                                 "coordinates" : [ -122.084009, 37.421986 ],
+                                 "type" : "Point"
+                              }
+                           },
+                           "recorded_at" : "2021-02-03T07:46:31.021Z"
+                        }
+                     },
+                     "type" : "device_status"
+                  }
+        """.trimIndent()
+
+        val marker = moshi
+            .adapter(HistoryMarker::class.java)
+            .fromJson(serializedMarker)!!
+        assertTrue(marker is HistoryStatusMarker)
+        with (marker as HistoryStatusMarker) {
+            assertEquals("d0879f89-69fd-4227-a07e-65924b323c69", markerId)
+            assertEquals("inactive", data.value)
+            assertEquals(27991, data.duration)
+            assertEquals("2021-02-03T00:00:00+00:00", data.start.recordedAt)
+            assertEquals("2021-02-03T07:46:31.021Z", data.end.recordedAt)
+        }
+
+    }
 }

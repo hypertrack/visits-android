@@ -218,7 +218,7 @@ class VisitsRepository(
         val target = _visitsMap[id] ?: return@coroutineScope
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
         launch {
-            target.icon = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
+            target.addBitmap(imageDecoder.readBitmap(imagePath, previewMaxSideLength))
             // Log.v(TAG, "Updated icon in target $target")
             updateItem(id, target)
         }

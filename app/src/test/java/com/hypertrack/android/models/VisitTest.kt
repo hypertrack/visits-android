@@ -36,8 +36,8 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
@@ -53,8 +53,8 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
@@ -71,8 +71,8 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
@@ -88,8 +88,8 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
@@ -106,8 +106,8 @@ class VisitTest {
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
@@ -124,8 +124,8 @@ class VisitTest {
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
@@ -144,8 +144,8 @@ class VisitTest {
         )
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
@@ -165,8 +165,8 @@ class VisitTest {
         )
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            _views = Views(null, null), tripId, _createdAt = createdAt,
-            _metadata = null, destination = TripDestination(
+            views = Views(null, null), tripId, createdAt = createdAt,
+            metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
