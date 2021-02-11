@@ -1,6 +1,7 @@
 package com.hypertrack.android.api
 
 import com.hypertrack.android.utils.Injector
+import com.squareup.moshi.Types
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -227,8 +228,101 @@ class ApiEntitiesDeserializationTest {
                      },
                      "type" : "trip_marker",
                      "marker_id" : "b05df9e8-8f91-44eb-b01f-bacfa59b4349"
-                  },                  
+                  },
+                    {
+                        "marker_id" : "5eb13571-d3cc-494d-966e-1cc5759ba965",
+                        "type" : "geofence",
+                        "data" : {
+                           "exit" : {
+                              "location" : {
+                                 "geometry" : null,
+                                 "recorded_at" : "2021-02-05T12:18:20.986Z"
+                              }
+                           },
+                           "duration" : 403,
+                           "arrival" : {
+                              "location" : {
+                                 "geometry" : {
+                                    "coordinates" : [
+                                       -122.4249,
+                                       37.7599
+                                    ],
+                                    "type" : "Point"
+                                 },
+                                 "recorded_at" : "2021-02-05T12:11:37.838Z"
+                              }
+                           },
+                           "geofence" : {
+                              "metadata" : {
+                                 "name" : "Mission Dolores Park"
+                              },
+                              "geometry" : {
+                                 "coordinates" : [
+                                    -122.426366,
+                                    37.761115
+                                 ],
+                                 "type" : "Point"
+                              },
+                              "geofence_id" : "8b63f7d3-4ba4-4dbf-b100-0c843445d5b2",
+                              "radius" : 200
+                           }
+                        }
+                     }                  
             ]
         """.trimIndent()
+
+        val markers = moshi
+            .adapter<List<HistoryMarker>>(Types.newParameterizedType(List::class.java, HistoryMarker::class.java))
+            .fromJson(serializedMarkers)!!
+
+        assertEquals(3, markers.size)
+
+    }
+
+    @Test
+    fun `it should deserialize device history marker`() {
+        val serializedMarker = """{
+                     "marker_id" : "d0879f89-69fd-4227-a07e-65924b323c69",
+                     "data" : {
+                        "value" : "inactive",
+                        "start" : {
+                           "recorded_at" : "2021-02-03T00:00:00+00:00",
+                           "location" : {
+                              "geometry" : {
+                                 "type" : "Point",
+                                 "coordinates" : [ -122.084009, 37.421986 ]
+                              },
+                              "recorded_at" : "2021-02-03T07:46:31.021Z"
+                           }
+                        },
+                        "duration" : 27991,
+                        "reason" : "stopped_programmatically",
+                        "end" : {
+                           "location" : {
+                              "recorded_at" : "2021-02-03T07:46:31.021Z",
+                              "geometry" : {
+                                 "coordinates" : [ -122.084009, 37.421986 ],
+                                 "type" : "Point"
+                              }
+                           },
+                           "recorded_at" : "2021-02-03T07:46:31.021Z"
+                        }
+                     },
+                     "type" : "device_status"
+                  }
+        """.trimIndent()
+
+        val marker = moshi
+            .adapter(HistoryMarker::class.java)
+            .fromJson(serializedMarker)!!
+        assertTrue(marker is HistoryStatusMarker)
+        with (marker as HistoryStatusMarker) {
+            assertEquals("d0879f89-69fd-4227-a07e-65924b323c69", markerId)
+            assertEquals("inactive", data.value)
+            assertEquals(27991, data.duration)
+            assertEquals("2021-02-03T00:00:00+00:00", data.start.recordedAt)
+            assertEquals("2021-02-03T07:46:31.021Z", data.end.recordedAt)
+        }
+
     }
 }

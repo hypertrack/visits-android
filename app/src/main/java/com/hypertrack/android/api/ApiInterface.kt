@@ -214,7 +214,7 @@ interface HistoryMarker {
 @JsonClass(generateAdapter = true)
 data class HistoryStatusMarker(
     @field:Json(name = "marker_id") override val markerId: String,
-    @field:Json(name = "type") override val type: String,
+    @field:Json(name = "type") override val type: String = "device_status",
     @field:Json(name = "data")  override val data: HistoryStatusMarkerData
 ) : HistoryMarker
 
@@ -230,7 +230,7 @@ data class HistoryStatusMarkerData(
 @JsonClass(generateAdapter = true)
 data class HistoryTripMarker(
     @field:Json(name = "marker_id") override val markerId: String,
-    @field:Json(name = "type") override val type: String,
+    @field:Json(name = "type") override val type: String = "trip_marker",
     @field:Json(name = "data") override val data: HistoryTripMarkerData,
 ) : HistoryMarker
 
@@ -238,14 +238,16 @@ data class HistoryTripMarker(
 data class HistoryTripMarkerData(
     @field:Json(name = "recorded_at") val recordedAt: String,
     @field:Json(name = "metadata") val metadata: Map<String, Any>?,
-    @field:Json(name = "location") val location: MarkerLocation,
-    @field:Json(name = "route_to") val routeTo: MarkerRoute,
+    @field:Json(name = "location") val location: HistoryTripMarkerLocation,
+    @field:Json(name = "route_to") val routeTo: MarkerRoute?,
 )
+@JsonClass(generateAdapter = true)
+data class HistoryTripMarkerLocation(val coordinates: List<Double>)
 
 @JsonClass(generateAdapter = true)
 data class HistoryGeofenceMarker(
     @field:Json(name = "marker_id") override val markerId: String,
-    @field:Json(name = "type") override val type: String,
+    @field:Json(name = "type") override val type: String = "geofence",
     @field:Json(name = "data") override val data: HistoryGeofenceMarkerData,
 ) : HistoryMarker
 

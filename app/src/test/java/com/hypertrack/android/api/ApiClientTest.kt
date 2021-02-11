@@ -634,6 +634,93 @@ class ApiClientTest {
     }
 
     @Test
+    fun `it should receive status markers from device history`() = runBlockingTest {
+        val responseBody =
+        """
+            {
+               "started_at" : "2021-02-04T22:00:00.000Z",
+               "duration" : 86400,
+               "distance" : 6347,
+               "markers" : [
+                    {
+                         "marker_id" : "8b6aeb0f-1a8f-4900-95ee-03755ba21015",
+                         "data" : {
+                            "value" : "inactive",
+                            "end" : {
+                               "recorded_at" : "2021-02-05T11:53:10.544Z",
+                               "location" : {
+                                  "geometry" : {
+                                     "coordinates" : [ -122.397368, 37.792382 ],
+                                     "type" : "Point"
+                                  },
+                                  "recorded_at" : "2021-02-05T11:53:10.544Z"
+                               }
+                            },
+                            "start" : {
+                               "recorded_at" : "2021-02-05T00:00:00+00:00",
+                               "location" : {
+                                  "geometry" : {
+                                     "type" : "Point",
+                                     "coordinates" : [ -122.397368, 37.792382 ]
+                                  },
+                                  "recorded_at" : "2021-02-05T11:53:10.544Z"
+                               }
+                            },
+                            "duration" : 42791,
+                            "reason" : "stopped_programmatically"
+                         },
+                         "type" : "device_status"
+                     }
+               ],
+               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+               "completed_at" : "2021-02-05T22:00:00.000Z",
+               "locations" : {
+                  "coordinates" : [],
+                  "type" : "LineString"
+               },
+               "insights" : {
+                  "geofences_count" : 0,
+                  "inactive_reasons" : [],
+                  "geotags_route_to_time" : 0,
+                  "tracking_rate" : 100,
+                  "drive_distance" : 6347,
+                  "inactive_duration" : 0,
+                  "step_count" : 0,
+                  "geofences_idle_time" : 0,
+                  "trips_arrived_at_destination" : 0,
+                  "geofences_route_to_time" : 0,
+                  "geotags_count" : 0,
+                  "geofences_time" : 0,
+                  "stop_duration" : 743,
+                  "estimated_distance" : 0,
+                  "trips_on_time" : 0,
+                  "active_duration" : 1353,
+                  "walk_duration" : 0,
+                  "total_tracking_time" : 1353,
+                  "drive_duration" : 610,
+                  "trips_count" : 0
+               }
+            }
+        """.trimIndent()
+        mockWebServer.enqueue(MockResponse().setBody(responseBody))
+        val historyResult = runBlocking {
+            apiClient.getHistory(
+                LocalDate.of(2020, 2, 5),
+                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+            )
+        }
+
+        val request = mockWebServer.takeRequest()
+        assertEquals("GET", request.method)
+        assertTrue(historyResult is History)
+        val history = historyResult as History
+        assertEquals(1, history.markers.size)
+        with(history.markers.first()) {
+            assertTrue(this is HistoryStatusMarker)
+        }
+    }
+
+    @Test
     fun `it should return history error if 500 status was received on history endpoint`() {
         mockWebServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR))
         val historyResult = runBlocking {

@@ -51,8 +51,8 @@ object Injector {
         .add(GeometryJsonAdapter())
         .add(
             RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
-                .registerSubtype(HistoryTripMarker::class.java, "device_status")
-                .registerSubtype(HistoryStatusMarker::class.java, "trip_marker")
+                .registerSubtype(HistoryStatusMarker::class.java, "device_status")
+                .registerSubtype(HistoryTripMarker::class.java, "trip_marker")
                 .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
         )
         .build()
