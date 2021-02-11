@@ -670,8 +670,58 @@ class ApiClientTest {
                             "reason" : "stopped_programmatically"
                          },
                          "type" : "device_status"
+                     },
+                     {
+                         "data" : {
+                            "metadata" : {
+                               "type" : "Test geotag at 1612342206755"
+                            },
+                            "location" : {
+                               "type" : "Point",
+                               "coordinates" : [ -122.084, 37.421998, 5 ]
+                            },
+                            "recorded_at" : "2021-02-03T08:50:06.757Z"
+                         },
+                         "type" : "trip_marker",
+                         "marker_id" : "b05df9e8-8f91-44eb-b01f-bacfa59b4349"
+                    },
+                    {
+                        "marker_id" : "5eb13571-d3cc-494d-966e-1cc5759ba965",
+                        "type" : "geofence",
+                        "data" : {
+                           "exit" : {
+                              "location" : {
+                                 "geometry" : null,
+                                 "recorded_at" : "2021-02-05T12:18:20.986Z"
+                              }
+                           },
+                           "duration" : 403,
+                           "arrival" : {
+                              "location" : {
+                                 "geometry" : {
+                                    "coordinates" : [-122.4249, 37.7599 ],
+                                    "type" : "Point"
+                                 },
+                                 "recorded_at" : "2021-02-05T12:11:37.838Z"
+                              }
+                           },
+                           "geofence" : {
+                              "metadata" : {
+                                 "name" : "Mission Dolores Park"
+                              },
+                              "geometry" : {
+                                 "coordinates" : [
+                                    -122.426366,
+                                    37.761115
+                                 ],
+                                 "type" : "Point"
+                              },
+                              "geofence_id" : "8b63f7d3-4ba4-4dbf-b100-0c843445d5b2",
+                              "radius" : 200
+                           }
+                        }
                      }
-               ],
+                ],
                "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
                "completed_at" : "2021-02-05T22:00:00.000Z",
                "locations" : {
@@ -714,9 +764,22 @@ class ApiClientTest {
         assertEquals("GET", request.method)
         assertTrue(historyResult is History)
         val history = historyResult as History
-        assertEquals(1, history.markers.size)
-        with(history.markers.first()) {
-            assertTrue(this is HistoryStatusMarker)
+        assertEquals(3, history.markers.size)
+        with(history.markers.first() as HistoryStatusMarker) {
+            assertEquals("inactive", data.value)
+            assertEquals("2021-02-05T00:00:00+00:00", data.start.recordedAt)
+            assertEquals(42791, data.duration)
+        }
+
+        with(history.markers[1] as HistoryTripMarker) {
+            assertEquals("Test geotag at 1612342206755", data.metadata!!["type"])
+            assertEquals("2021-02-03T08:50:06.757Z", data.recordedAt)
+        }
+
+        with(history.markers.last() as HistoryGeofenceMarker) {
+            assertEquals("8b63f7d3-4ba4-4dbf-b100-0c843445d5b2", data.geofence.geofenceId)
+            assertEquals("2021-02-05T12:11:37.838Z", data.arrival.location.recordedAt)
+            assertEquals(403, data.duration)
         }
     }
 
