@@ -1,29 +1,27 @@
-package com.hypertrack.android.ui
+package com.hypertrack.android.ui.screens.login
 
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
-import com.hypertrack.android.navigateTo
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.utils.Destination
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.AccountLoginViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.fragment_login.*
 
-
-class AccountLoginActivity : ProgressDialogActivity() {
+class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
 
     private val accountLoginViewModel: AccountLoginViewModel by viewModels {
-        (application as MyApplication).injector.provideAccountLoginViewModelFactory(applicationContext)
+        MyApplication.injector.provideAccountLoginViewModelFactory(MyApplication.context)
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         loginInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
@@ -45,12 +43,16 @@ class AccountLoginActivity : ProgressDialogActivity() {
             }
         })
 
-        accountLoginViewModel.destination.observe(this) { navigateTo(it) }
-        accountLoginViewModel.showLoginFailureToast.observe(this) { show ->
+        accountLoginViewModel.destination.observe(viewLifecycleOwner) {
+            if(it == Destination.DRIVER_ID_INPUT) {
+                findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDriverIdInputFragment())
+            }
+        }
+        accountLoginViewModel.showLoginFailureToast.observe(viewLifecycleOwner) { show ->
             // Log.d(TAG, "show toast $show")
             if (show) {
                 Toast.makeText(
-                    this,
+                    requireContext(),
                     getString(R.string.account_login_error_message),
                     Toast.LENGTH_LONG
                 )                    .show()
@@ -60,24 +62,22 @@ class AccountLoginActivity : ProgressDialogActivity() {
 
         btnLogIn.setOnClickListener { accountLoginViewModel.onLoginClick() }
 
-        accountLoginViewModel.showProgress.observe(this) { show ->
+        accountLoginViewModel.showProgress.observe(viewLifecycleOwner) { show ->
             // Log.d(TAG, "show progress $show")
             if (show) showProgress() else dismissProgress()
         }
 
-        accountLoginViewModel.isLoginButtonClickable.observe(this,) { isClickable ->
+        accountLoginViewModel.isLoginButtonClickable.observe(viewLifecycleOwner) { isClickable ->
             // Log.d(TAG, "Setting login button clickability $isClickable")
             btnLogIn.isEnabled = isClickable
             btnLogIn.setBackgroundColor(
                 if (isClickable)
-                    getColor(R.color.colorHyperTrackGreen)
+                    requireContext().getColor(R.color.colorHyperTrackGreen)
                 else
-                    getColor(R.color.colorBtnDisable))
+                    requireContext().getColor(R.color.colorBtnDisable))
 
         }
-
     }
 
     companion object { const val TAG = "AccountLoginAct" }
-
 }
