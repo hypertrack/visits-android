@@ -59,6 +59,7 @@
         name="tab_names">
         <item>Visits List</item>
         <item>Daily History</item>
+        <item>Summary</item>
     </string-array>
     <string-array
         name="visit_state_group_names">

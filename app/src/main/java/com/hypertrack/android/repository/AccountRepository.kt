@@ -1,6 +1,5 @@
 package com.hypertrack.android.repository
 
-import android.util.Log
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.AccountPreferencesProvider
