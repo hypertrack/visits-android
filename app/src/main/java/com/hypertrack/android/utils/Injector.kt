@@ -122,8 +122,14 @@ object Injector {
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
-    fun provideHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
+    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
         = GoogleMapHistoryRenderer(supportMapFragment)
+
+    private fun getHistoryRepository(context: Context) = HistoryRepository(
+        getVisitsApiClient(context),
+        crashReportsProvider,
+        getOsUtilsProvider(context)
+    )
 
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
