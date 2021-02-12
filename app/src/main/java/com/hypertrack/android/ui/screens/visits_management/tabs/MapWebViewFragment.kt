@@ -3,41 +3,32 @@ package com.hypertrack.android.ui.screens.visits_management.tabs
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.SupportMapFragment
+import com.hypertrack.android.utils.HistoryRendererFactory
+import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
-class MapWebViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
+class MapWebViewFragment(
+    private val historyMapViewModelFactory: ViewModelProvider.Factory,
+    private val historyRendererFactory: HistoryRendererFactory
+) : Fragment(R.layout.fragment_tab_map_webview) {
+
+    private val historyViewModel: HistoryViewModel by viewModels { historyMapViewModelFactory }
+    private var historyRenderer: HistoryMapRenderer? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view1: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view1, savedInstanceState)
-        webView.settings.javaScriptEnabled = true
-
-        val historyUrl = requireArguments().getString(WEBVIEW_URL)!!
-        webView.loadUrl(historyUrl)
-
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                srlHistory?.let {
-                    if (srlHistory.isRefreshing) {
-                        srlHistory.isRefreshing = false
-                    }
-                }
-            }
-        }
-        srlHistory.setOnRefreshListener { webView.reload() }
-    }
-
-    companion object {
-        const val WEBVIEW_URL = "webviewUrl"
-
-        fun newInstance(deviceHistoryUrl: String) = MapWebViewFragment().apply {
-            arguments = Bundle().apply {
-                putString(WEBVIEW_URL, deviceHistoryUrl)
+        val supportMapFragment = (childFragmentManager.findFragmentById(R.id.deviceHistoryView) as SupportMapFragment)
+        historyRenderer = historyRendererFactory.create(supportMapFragment)
+        historyViewModel.history.observe(viewLifecycleOwner) { history ->
+            historyRenderer?.let {
+                MainScope().launch { it.showHistory(history) }
             }
         }
     }

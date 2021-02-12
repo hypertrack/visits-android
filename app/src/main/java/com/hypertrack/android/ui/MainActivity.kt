@@ -1,12 +1,14 @@
 package com.hypertrack.android.ui
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.navigation.findNavController
 import com.hypertrack.android.ui.base.NavActivity
 import com.hypertrack.android.ui.screens.permission_request.PermissionRequestFragment
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.DeeplinkResultListener
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.NavGraphDirections
@@ -23,6 +25,11 @@ class MainActivity: NavActivity(), DeeplinkResultListener {
     override val layoutRes: Int = R.layout.fragment_main
 
     override val navHostId: Int = R.id.navHost
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        supportFragmentManager.fragmentFactory = Injector.getFragmentFactory(applicationContext)
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)

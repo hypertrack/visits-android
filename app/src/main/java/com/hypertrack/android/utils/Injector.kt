@@ -1,20 +1,23 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
-import com.hypertrack.android.ui.GoogleMapHistoryRenderer
-import com.hypertrack.android.ui.HistoryMapRenderer
+import com.hypertrack.android.ui.screens.visits_management.tabs.GoogleMapHistoryRenderer
+import com.hypertrack.android.ui.screens.visits_management.tabs.HistoryMapRenderer
+import com.hypertrack.android.ui.screens.visits_management.tabs.MapWebViewFragment
 import com.hypertrack.android.view_models.*
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
+import javax.inject.Provider
 
 
 class ServiceLocator {
@@ -117,19 +120,19 @@ object Injector {
         return result
     }
 
-    private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
-
-    private fun getLoginProvider(context: Context): AccountLoginProvider
-            = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
-
-    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
+    fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
         = GoogleMapHistoryRenderer(supportMapFragment)
 
-    private fun getHistoryRepository(context: Context) = HistoryRepository(
+    fun getHistoryRepository(context: Context) = HistoryRepository(
         getVisitsApiClient(context),
         crashReportsProvider,
         getOsUtilsProvider(context)
     )
+
+    private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
+
+    private fun getLoginProvider(context: Context): AccountLoginProvider
+            = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
@@ -166,6 +169,16 @@ object Injector {
         )
 
     }
+
+    fun provideHistoryViewModelFactory(context: Context) =
+        HistoryViewModelFactory(getHistoryRepository(context))
+
+    fun getMapHistoryFragmentProvider(context: Context) = Provider {
+        MapWebViewFragment(provideHistoryViewModelFactory(context), HistoryRendererFactory() )
+    }
+
+    fun getFragmentFactory(context: Context): FragmentFactory =
+        CustomFragmentFactory(getMapHistoryFragmentProvider(context))
 }
 
 class PermissionRequestsViewModelFactory(private val accountRepository: AccountRepository, private val context: Context) : ViewModelProvider.Factory {
@@ -243,6 +256,23 @@ class SplashScreenViewModelFactory(
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
     }
+}
+
+class HistoryViewModelFactory(
+    private val historyRepository: HistoryRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+
+        return when (modelClass) {
+            HistoryViewModel::class.java -> HistoryViewModel(historyRepository) as T
+            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
+        }
+    }
+}
+
+class HistoryRendererFactory {
+    fun create(supportMapFragment: SupportMapFragment) = Injector.getHistoryMapRenderer(supportMapFragment)
 }
 
 interface AccountPreferencesProvider {

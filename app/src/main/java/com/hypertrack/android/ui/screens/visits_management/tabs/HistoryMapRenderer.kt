@@ -1,4 +1,4 @@
-package com.hypertrack.android.ui
+package com.hypertrack.android.ui.screens.visits_management.tabs
 
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
