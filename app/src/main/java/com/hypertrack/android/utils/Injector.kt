@@ -3,9 +3,12 @@ package com.hypertrack.android.utils
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.ui.GoogleMapHistoryRenderer
+import com.hypertrack.android.ui.HistoryMapRenderer
 import com.hypertrack.android.view_models.*
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
@@ -118,6 +121,9 @@ object Injector {
 
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
+
+    fun provideHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
+        = GoogleMapHistoryRenderer(supportMapFragment)
 
     fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
         val repository = getVisitsRepo(context)
