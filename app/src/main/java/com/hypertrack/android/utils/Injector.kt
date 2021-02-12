@@ -170,10 +170,10 @@ object Injector {
 
     }
 
-    fun provideHistoryViewModelFactory(context: Context) =
+    private fun provideHistoryViewModelFactory(context: Context) =
         HistoryViewModelFactory(getHistoryRepository(context))
 
-    fun getMapHistoryFragmentProvider(context: Context) = Provider {
+    private fun getMapHistoryFragmentProvider(context: Context) = Provider {
         MapWebViewFragment(provideHistoryViewModelFactory(context), HistoryRendererFactory() )
     }
 

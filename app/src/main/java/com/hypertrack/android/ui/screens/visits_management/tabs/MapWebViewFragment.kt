@@ -24,12 +24,11 @@ class MapWebViewFragment(
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view1: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view1, savedInstanceState)
-        val supportMapFragment = (childFragmentManager.findFragmentById(R.id.deviceHistoryView) as SupportMapFragment)
-        historyRenderer = historyRendererFactory.create(supportMapFragment)
+        (childFragmentManager.findFragmentById(R.id.deviceHistoryView) as SupportMapFragment?)?.let {
+            historyRenderer = historyRendererFactory.create(it)
+        }
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
-            historyRenderer?.let {
-                MainScope().launch { it.showHistory(history) }
-            }
+            historyRenderer?.let {map -> MainScope().launch { map.showHistory(history) } }
         }
     }
 }
