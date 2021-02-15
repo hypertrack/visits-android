@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorGrey"
+    android:background="@color/colorWhite"
     android:clickable="true"
-    android:focusable="true"
     android:fitsSystemWindows="true"
+    android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:background="@color/colorWhite"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:fontFamily="@font/medium"
-             android:textColor="@color/colorBlack"
+            android:textColor="@color/colorBlack"
             android:textSize="20sp" />
 
     </RelativeLayout>
@@ -48,17 +48,15 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorGrey"
         android:clickable="true"
-        android:focusable="true"
         android:fillViewport="true"
         android:fitsSystemWindows="true"
+        android:focusable="true"
         android:focusableInTouchMode="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorGrey"
             android:fillViewport="true"
             android:fitsSystemWindows="true"
             android:paddingBottom="16dp">
@@ -107,9 +105,9 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCompleteTime"
@@ -119,7 +117,8 @@
                 android:id="@+id/tvTitleLocation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/medium"
                 android:text="@string/location"
                 android:textColor="@color/colorTitle"
@@ -137,16 +136,16 @@
                 android:fontFamily="@font/regular"
                 android:textColor="@color/colorBlack"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvTitleLocation"
                 app:layout_constraintStart_toStartOf="@id/tvTitleLocation"
                 app:layout_constraintTop_toBottomOf="@id/tvTitleLocation" />
 
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvAddress"
@@ -157,6 +156,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/medium"
                 android:text="@string/customer_note"
                 android:textColor="@color/colorTitle"
@@ -174,17 +174,18 @@
                 android:fontFamily="@font/regular"
                 android:textColor="@color/colorBlack"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvTitleCustomerNote"
                 app:layout_constraintStart_toStartOf="@id/tvTitleCustomerNote"
                 app:layout_constraintTop_toBottomOf="@id/tvTitleCustomerNote" />
 
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivVisitNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCustomerNote"
                 app:srcCompat="@drawable/ic_file" />
@@ -193,6 +194,7 @@
                 android:id="@+id/tvTitleVisitNote"
                 android:layout_width="328dp"
                 android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/medium"
                 android:text="@string/visit_notes"
                 android:textColor="@color/colorTitle"
@@ -206,7 +208,8 @@
                 android:id="@+id/etVisitNote"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/edit_bg"
                 android:gravity="top|start"
                 android:lines="5"
@@ -217,10 +220,10 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivCamera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:srcCompat="@drawable/ic_cam" />
@@ -234,7 +237,7 @@
                 android:text="@string/visit_picture"
                 android:textColor="@color/colorTitle"
                 android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/etVisitNote"
                 app:layout_constraintStart_toEndOf="@id/ivCamera"
                 app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:layout_constraintTop_toTopOf="@id/ivCamera" />
@@ -244,29 +247,44 @@
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:padding="5dp"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
                 android:textColor="@color/colorWhite"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvCameraTitle"
-                app:layout_constraintTop_toBottomOf="@id/ivCamera" />
+                android:visibility="visible"
+                app:layout_constraintDimensionRatio="w,1:1"
+                app:layout_constraintStart_toEndOf="@+id/ivCamera"
+                app:layout_constraintStart_toStartOf="@+id/tvCameraTitle"
+                app:layout_constraintTop_toBottomOf="@id/ivCamera"
+                app:srcCompat="@drawable/ic_cam" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTakePicture"
-                style="@style/ButtonStyle"
+                style="@style/MinorButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:enabled="false"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:drawablePadding="16dp"
                 android:gravity="center"
                 android:text="@string/take_picture"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ivVisitPic" />
+                app:layout_constraintTop_toBottomOf="@+id/ivVisitPic" />
+
+            <ImageView
+                android:id="@+id/divider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTakePicture"
+                app:srcCompat="@color/colorBlack" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivClose"
@@ -280,59 +298,63 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPickUp"
-                style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_margin="20dp"
+                style="@style/LightButtonStyle"
+                android:layout_width="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:padding="10dp"
                 android:text="@string/pick_up"
                 android:textColor="@color/colorWhite"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/etVisitNote"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvTakePicture" />
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCheckIn"
-                style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_margin="20dp"
-                android:fontFamily="@font/medium"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/check_in"
-                android:textColor="@color/colorWhite"
+            <ImageView
+                android:id="@+id/divider2"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvPickUp" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPickUp"
+                app:srcCompat="@color/colorBlack" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCheckOut"
                 style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_margin="20dp"
+                android:layout_width="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:padding="10dp"
                 android:text="@string/check_out"
                 android:textColor="@color/colorWhite"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvCheckIn" />
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/tvCancel"
+                app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCancel"
-                style="@style/ButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_margin="20dp"
+                style="@style/CancelButtonStyle"
+                android:layout_width="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:padding="10dp"
                 android:text="@string/cancel"
                 android:textColor="@color/colorWhite"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tvCheckOut"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvCheckOut" />
+                app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/customerNoteGroup"

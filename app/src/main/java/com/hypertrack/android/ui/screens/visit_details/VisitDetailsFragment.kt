@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visit_details
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,8 +9,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -18,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.utils.setGoneState
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visit_detail.*
@@ -25,11 +29,14 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
+
 class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_detail) {
 
     private val args: VisitDetailsFragmentArgs by navArgs()
 
     private lateinit var viewModel: VisitDetailsViewModel
+
+    private lateinit var cancelDialog: AlertDialog
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,19 +53,23 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
             etVisitNote.setText(text)
         }
 
+        viewModel.pickUpButton.observe(viewLifecycleOwner, { visible ->
+            tvPickUp.setGoneState(!visible)
+            divider.setGoneState(!visible)
+        })
+
+        viewModel.takePictureButton.observe(viewLifecycleOwner, { visible ->
+            tvTakePicture.setGoneState(!visible)
+        })
+
         listOf(
-                viewModel.takePictureButton to tvTakePicture,
-                viewModel.pickUpButton to tvPickUp,
-                viewModel.checkInButton to tvCheckIn,
                 viewModel.checkOutButton to tvCheckOut,
                 viewModel.cancelButton to tvCancel,
-
-                ).forEach { (model, view) ->
-            view.visibility = if (model.value == true) View.VISIBLE else View.GONE
-            view.isEnabled = model.value == true
+        ).forEach { (model, view) ->
             model.observe(viewLifecycleOwner) { enabled ->
                 view.visibility = if (enabled) View.VISIBLE else View.GONE
                 view.isEnabled = enabled
+                divider2.setGoneState(!tvCheckOut.isVisible && !tvCancel.isVisible)
             }
         }
 
@@ -72,6 +83,18 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync {
             onMapReady(it)
         }
+
+        tvCancel.setOnClickListener {
+            cancelDialog.show()
+        }
+
+        cancelDialog = AlertDialog.Builder(requireContext())
+            .setMessage(R.string.cancel_visit_confirmation)
+                .setPositiveButton(R.string.yes, DialogInterface.OnClickListener { dialog, which ->
+                    viewModel.onCancelClicked()
+                })
+                .setNegativeButton(R.string.no, null)
+                .create()
     }
 
     fun onMapReady(p0: GoogleMap?) {
@@ -124,12 +147,13 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
 
         })
 
+        tvTakePicture.setOnClickListener {
+            dispatchTakePictureIntent()
+        }
+
         listOf(
-                tvTakePicture to this::dispatchTakePictureIntent,
                 tvPickUp to viewModel::onPickUpClicked,
-                tvCheckIn to viewModel::onCheckInClicked,
                 tvCheckOut to viewModel::onCheckOutClicked,
-                tvCancel to viewModel::onCancelClicked
         ).forEach { (view, action) ->
             view.setOnClickListener {
                 disableHandlers()
@@ -176,7 +200,6 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
             listOf<View>(
                     tvTakePicture,
                     tvPickUp,
-                    tvCheckIn,
                     tvCheckOut,
                     tvCancel,
                     etVisitNote
