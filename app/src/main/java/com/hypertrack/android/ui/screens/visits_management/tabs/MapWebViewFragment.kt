@@ -2,10 +2,12 @@ package com.hypertrack.android.ui.screens.visits_management.tabs
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.utils.HistoryRendererFactory
 import com.hypertrack.android.view_models.HistoryViewModel
@@ -23,12 +25,20 @@ class MapWebViewFragment(
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view1: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated")
         super.onViewCreated(view1, savedInstanceState)
         (childFragmentManager.findFragmentById(R.id.deviceHistoryView) as SupportMapFragment?)?.let {
+            Log.d(TAG, "Initializing history Renderer")
             historyRenderer = historyRendererFactory.create(it)
         }
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
-            historyRenderer?.let {map -> MainScope().launch { map.showHistory(history) } }
+            Log.d(TAG, "Inside history update callback")
+            historyRenderer?.let {map -> viewLifecycleOwner.lifecycleScope.launch {
+                Log.d(TAG, "Launching history rendering coroutine")
+                map.showHistory(history)
+            } }
         }
+        historyViewModel.getHistory()
     }
+    companion object {const val TAG = "MapWebViewFragment"}
 }

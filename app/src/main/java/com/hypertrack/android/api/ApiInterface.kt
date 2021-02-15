@@ -239,7 +239,7 @@ data class HistoryTripMarker(
 data class HistoryTripMarkerData(
     @field:Json(name = "recorded_at") val recordedAt: String,
     @field:Json(name = "metadata") val metadata: Map<String, Any>?,
-    @field:Json(name = "location") val location: HistoryTripMarkerLocation,
+    @field:Json(name = "location") val location: HistoryTripMarkerLocation?,
     @field:Json(name = "route_to") val routeTo: MarkerRoute?,
 )
 @JsonClass(generateAdapter = true)
@@ -278,7 +278,7 @@ data class MarkerRoute(
 
 @JsonClass(generateAdapter = true)
 data class MarkerTerminal(
-    @field:Json(name = "location") val location: MarkerLocation,
+    @field:Json(name = "location") val location: MarkerLocation?,
     @field:Json(name = "recorded_at") val recordedAt: String,
 )
 
