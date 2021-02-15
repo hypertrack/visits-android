@@ -14,6 +14,7 @@ import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.MapWebViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.VisitsListFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.StatusString
 import com.hypertrack.android.view_models.VisitsManagementViewModel
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_visits_management.*
 
 class VisitsManagementFragment(
     val mapWebViewFragment: MapWebViewFragment
-    ) : ProgressDialogFragment(R.layout.fragment_visits_management) {
+) : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideVisitsManagementViewModelFactory(MyApplication.context)
@@ -36,20 +37,22 @@ class VisitsManagementFragment(
         checkInvariants()
 
         viewAdapter = VisitListAdapter(
-                visitsManagementViewModel.visits,
-                object : VisitListAdapter.OnListAdapterClick {
-                    override fun onJobItemClick(position: Int) {
-                        // Log.d(TAG, "Clicked visit at position $position")
-                        val visit = visitsManagementViewModel.visits.value?.get(position)
-                        visit?.let {
-                            if (it is Visit) {
-                                findNavController().navigate(
-                                        VisitsManagementFragmentDirections.actionVisitManagementFragmentToVisitDetailsFragment(it._id)
+            visitsManagementViewModel.visits,
+            object : VisitListAdapter.OnListAdapterClick {
+                override fun onJobItemClick(position: Int) {
+                    // Log.d(TAG, "Clicked visit at position $position")
+                    val visit = visitsManagementViewModel.visits.value?.get(position)
+                    visit?.let {
+                        if (it is Visit) {
+                            findNavController().navigate(
+                                VisitsManagementFragmentDirections.actionVisitManagementFragmentToVisitDetailsFragment(
+                                    it._id
                                 )
-                            }
+                            )
                         }
                     }
                 }
+            }
         )
 
         visitsManagementViewModel.visits.observe(viewLifecycleOwner, { visits ->
@@ -58,11 +61,12 @@ class VisitsManagementFragment(
         })
 
         viewpager.adapter = object :
-                FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+            FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
             private val fragments = listOf(
-                    VisitsListFragment.newInstance(),
-                    mapWebViewFragment
+                VisitsListFragment.newInstance(),
+                mapWebViewFragment,
+                SummaryFragment.newInstance()
             )
             private val tabTitles = resources.getStringArray(R.array.tab_names)
 
@@ -137,8 +141,8 @@ class VisitsManagementFragment(
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(viewLifecycleOwner) { msg ->
             if (msg.isNotEmpty()) Toast
-                    .makeText(requireContext(), msg, Toast.LENGTH_LONG)
-                    .show()
+                .makeText(requireContext(), msg, Toast.LENGTH_LONG)
+                .show()
         }
 
         //moved from onActivityResult
@@ -160,8 +164,8 @@ class VisitsManagementFragment(
         if (BuildConfig.DEBUG) {
             if (resources.getStringArray(R.array.visit_state_group_names).size != VisitStatusGroup.values().size) {
                 error(
-                        "visit_state_group_names array doesn't contain enough members to represent " +
-                                "all the VisitStatusGroup values"
+                    "visit_state_group_names array doesn't contain enough members to represent " +
+                            "all the VisitStatusGroup values"
                 )
             }
         }

@@ -5,7 +5,7 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.utils.PermissionsUtils
+import com.hypertrack.android.ui.common.PermissionsUtils
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 

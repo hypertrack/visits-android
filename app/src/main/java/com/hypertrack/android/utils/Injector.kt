@@ -8,6 +8,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.HistoryMapRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.MapWebViewFragment
@@ -167,7 +168,10 @@ object Injector {
             getAccountRepo(context),
             crashReportsProvider
         )
+    }
 
+    fun provideSummaryViewModelFactory(context: Context) : SummaryViewModelFactory {
+        return SummaryViewModelFactory(/*getHistoryRepo(context)*/)
     }
 
     private fun provideHistoryViewModelFactory(context: Context) =

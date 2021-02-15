@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
+        //todo
+//    private val historyRepository: HistoryRepository,
     accountRepository: AccountRepository,
     accessTokenRepository: AccessTokenRepository,
     private val crashReportsProvider: CrashReportsProvider
@@ -136,6 +138,13 @@ class VisitsManagementViewModel(
                 _showSync.postValue(false)
                 block()
             }
+        }
+    }
+
+    fun refreshHistory() {
+        MainScope().launch {
+            //todo
+//            historyRepository.refreshHistory()
         }
     }
 

@@ -7,10 +7,13 @@ data class History(
 ) : HistoryResult()
 
 data class Summary(
-    val totalDistance: Int,
-    val totalDuration: Int,
-    val totalDriveDistance: Int,
-    val totalDriveDuration: Int,
+        val totalDistance: Int,
+        val totalDuration: Int,
+        val totalDriveDistance: Int,
+        val totalDriveDuration: Int,
+        val stepsCount: Int,
+        val totalWalkDuration: Int,
+        val totalStopDuration: Int,
 )
 
 data class Location(

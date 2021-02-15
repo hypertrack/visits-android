@@ -55,6 +55,10 @@
     <string name="vist_note_updated">Visit note was updated</string>
     <string name="cannot_create_file_msg">Can\'t create a file for a picture. Check if there\'s enough space</string>
     <string name="whitelisting_rational">Disable power optimization to make tracking durable</string>
+    <string name="summary_total_tracking_time">Tracked duration</string>
+    <string name="summary_drive">Drives</string>
+    <string name="summary_walk">Walks</string>
+    <string name="summary_stop">Stops</string>
     <string name="clock_hint_tracking_on">Pressing Clock Out will stop location tracking</string>
     <string name="clock_hint_tracking_off">Pressing Clock In will start location tracking</string>
     <string name="cancel_visit_confirmation">Are you sure you want to cancel this visit?</string>
@@ -64,6 +68,7 @@
         name="tab_names">
         <item>Visits</item>
         <item>Daily History</item>
+        <item>Summary</item>
     </string-array>
     <string-array
         name="visit_state_group_names">
@@ -71,4 +76,9 @@
         <item>@string/visited</item>
         <item>@string/completed</item>
     </string-array>
+    <string name="duration">%1$d hr, %2$d min</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="steps">%1$d steps</string>
+    <string name="miles">%1$d mil</string>
+    <string name="kms">%1$d km</string>
 </resources>
