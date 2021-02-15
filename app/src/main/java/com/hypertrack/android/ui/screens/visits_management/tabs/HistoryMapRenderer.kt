@@ -39,11 +39,9 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment): His
                 if (history.locationTimePoints.isEmpty()) {
                     map?.moveCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
                 } else {
-                    val locations = history.locationTimePoints.map { it.first }
-                    val northEast = LatLng(locations.map {it.latitude}.maxOrNull()!!, locations.map {it.longitude}.maxOrNull()!!)
-                    val southWest = LatLng(locations.map {it.latitude}.minOrNull()!!, locations.map {it.longitude}.minOrNull()!!)
-                    val bounds = LatLngBounds(southWest, northEast)
-                    map?.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0))
+                    map?.moveCamera(CameraUpdateFactory.newLatLngBounds(
+                        history.locationTimePoints.map { it.first }.boundRect(), 0
+                    ))
 
                 }
                 continuation.resume(true, null)
@@ -68,3 +66,9 @@ private fun History.asPolylineOptions(): PolylineOptions = this
     .fold(PolylineOptions()) {
             options, point ->  options.add(LatLng(point.latitude, point.longitude))
     }
+
+private fun Iterable<Location>.boundRect() : LatLngBounds {
+    val northEast = LatLng(this.map {it.latitude}.maxOrNull()!!, this.map {it.longitude}.maxOrNull()!!)
+    val southWest = LatLng(this.map {it.latitude}.minOrNull()!!, this.map {it.longitude}.minOrNull()!!)
+    return LatLngBounds(southWest, northEast)
+}
