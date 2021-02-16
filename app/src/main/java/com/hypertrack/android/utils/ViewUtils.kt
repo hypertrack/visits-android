@@ -36,7 +36,7 @@ abstract class SimpleTextWatcher : TextWatcher {
     open fun afterChanged(text: String) {}
 
     override fun afterTextChanged(s: Editable?) {
-        afterChanged(s.toString())
+        afterChanged((s ?: "").toString())
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}

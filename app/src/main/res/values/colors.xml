@@ -4,23 +4,25 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#00574B</color>
 
-
+    <color name="colorHyperTrackGreenSemitransparent">#7700ce5b</color>
+    <color name="colorHyperTrackGreen">#00ce5b</color>
+    <color name="colorRed">#EB5B64</color>
+    <color name="tertiary_2_xdark">#4c4b5d</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGrey">#F4F4F4</color>
+
     <color name="colorDescription">#9B9B9B</color>
     <color name="colorTitle">#9B9B9B</color>
     <color name="colorTakePicture">#857777</color>
     <color name="colorBtnDisable">#AAAAAA</color>
+    <color name="colorButtonCancel">@color/colorRed</color>
     <color name="colorListStatus">#1A7CB8</color>
     <color name="colorVisitedBg">#D0B44E</color>
     <color name="colorCompletedBg">#24C963</color>
     <color name="colorTrackingActive">#24C963</color>
-    <color name="colorTrackingError">#EB5B64</color>
+    <color name="colorTrackingError">@color/colorRed</color>
     <color name="colorTrackingStopped">#A0A0A0</color>
-
-    <color name="colorHyperTrackGreen">#00ce5b</color>
-    <color name="tertiary_2_xdark">#4c4b5d</color>
 
 
 </resources>

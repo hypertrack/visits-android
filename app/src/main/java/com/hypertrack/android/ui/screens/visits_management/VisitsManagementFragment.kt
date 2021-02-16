@@ -95,12 +95,7 @@ class VisitsManagementFragment(
                         val groupNames = resources.getStringArray(R.array.visit_state_group_names)
                         val messageText = msg.stats.entries.filter { it.value > 0 }
                                 .fold(getString(R.string.empty_string)) { acc, entry ->
-                                    acc + "${entry.value} ${groupNames[entry.key.ordinal]} ${
-                                        resources.getQuantityString(
-                                                R.plurals.item_plurals,
-                                                entry.value
-                                        )
-                                    } "
+                                    acc + "${entry.value} ${groupNames[entry.key.ordinal]} "
                                 }
                         // Log.v(TAG, "Created message text $messageText")
                         tvTrackerStatus.text = messageText
@@ -126,6 +121,13 @@ class VisitsManagementFragment(
             checkIn.visibility = View.GONE
         visitsManagementViewModel.clockInButtonText.observe(viewLifecycleOwner) {
             clockIn.text = it
+        }
+        visitsManagementViewModel.isTracking.observe(viewLifecycleOwner) { isTracking ->
+            tvClockHint.setText(if(isTracking) {
+                R.string.clock_hint_tracking_on
+            } else {
+                R.string.clock_hint_tracking_off
+            })
         }
         visitsManagementViewModel.checkInButtonText.observe(viewLifecycleOwner) {
             checkIn.text = it

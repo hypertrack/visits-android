@@ -10,11 +10,11 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.TrackingStateValue
+import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import com.hypertrack.logistics.android.github.R
 
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
@@ -22,6 +22,8 @@ class VisitsManagementViewModel(
     accessTokenRepository: AccessTokenRepository,
     private val crashReportsProvider: CrashReportsProvider
 ) : ViewModel() {
+
+    val isTracking = visitsRepository.isTracking
 
     private val _clockInButtonText = MediatorLiveData<CharSequence>()
     init {
