@@ -6,6 +6,8 @@ import android.util.Log
 import com.hypertrack.android.models.Address
 import com.hypertrack.logistics.android.github.R
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
 class OsUtilsProvider(private val context: Context, private val crashReportsProvider: CrashReportsProvider) {
@@ -51,6 +53,10 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
             country = null
         )
     }
+
+    fun getLocalDate(): LocalDate = LocalDate.now()
+
+    fun getTimeZoneId(): ZoneId = ZoneId.systemDefault()
 
     private fun stubStreet(latitude: Double, longitude: Double) =
         context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"

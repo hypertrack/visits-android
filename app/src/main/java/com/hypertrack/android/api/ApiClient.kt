@@ -35,7 +35,7 @@ class ApiClient(
             OkHttpClient.Builder()
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
-                .addInterceptor(loggingInterceptor)
+//                .addInterceptor(loggingInterceptor)
                 .addInterceptor(UserAgentInterceptor())
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
@@ -122,9 +122,9 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
 private fun HistoryMarker.asMarker(): Marker {
     return when (this) {
         is HistoryStatusMarker ->
-            Marker(MarkerType.STATUS, data.start.recordedAt, data.start.location.geometry.asLocation())
+            Marker(MarkerType.STATUS, data.start.recordedAt, data.start.location?.geometry?.asLocation())
         is HistoryTripMarker ->
-            Marker(MarkerType.GEOTAG, data.recordedAt, data.location.asLocation())
+            Marker(MarkerType.GEOTAG, data.recordedAt, data.location?.asLocation())
         is HistoryGeofenceMarker ->
             Marker(MarkerType.GEOFENCE_ENTRY, data.arrival.location.recordedAt, data.arrival.location.geometry.asLocation())
         else -> throw IllegalArgumentException("Unknown marker type $type")

@@ -21,7 +21,7 @@ data class Location(
 data class Marker(
     val type: MarkerType,
     val timestamp: String,
-    val location: Location,
+    val location: Location?,
 )
 
 enum class MarkerType{
