@@ -20,8 +20,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.utils.setGoneState
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visit_detail.*

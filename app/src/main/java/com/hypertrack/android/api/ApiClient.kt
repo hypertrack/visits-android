@@ -94,7 +94,9 @@ class ApiClient(
     suspend fun getHistory(day: LocalDate, timezone: ZoneId): HistoryResult {
         try {
             with(api.getHistory(deviceId, day.format(DateTimeFormatter.ISO_LOCAL_DATE), timezone.id)) {
-                if (isSuccessful) return body().asHistory()
+                if (isSuccessful) {
+                    return body().asHistory()
+                }
             }
         } catch (e: Throwable) {
             Log.w(TAG, "Got exception $e fetching device history")
