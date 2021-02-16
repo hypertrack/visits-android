@@ -171,7 +171,7 @@ object Injector {
     }
 
     fun provideSummaryViewModelFactory(context: Context) : SummaryViewModelFactory {
-        return SummaryViewModelFactory(/*getHistoryRepo(context)*/)
+        return SummaryViewModelFactory(getHistoryRepository(context))
     }
 
     private fun provideHistoryViewModelFactory(context: Context) =
