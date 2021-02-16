@@ -12,7 +12,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.utils.HistoryRendererFactory
 import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.coroutines.MainScope
+import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
 import kotlinx.coroutines.launch
 
 class MapWebViewFragment(
@@ -31,6 +31,7 @@ class MapWebViewFragment(
             Log.d(TAG, "Initializing history Renderer")
             historyRenderer = historyRendererFactory.create(it)
         }
+
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
             Log.d(TAG, "Inside history update callback")
             historyRenderer?.let {map -> viewLifecycleOwner.lifecycleScope.launch {
@@ -38,6 +39,11 @@ class MapWebViewFragment(
                 map.showHistory(history)
             } }
         }
+
+        srlHistory.setOnRefreshListener {
+            historyViewModel.getHistory()
+        }
+
         historyViewModel.getHistory()
     }
     companion object {const val TAG = "MapWebViewFragment"}

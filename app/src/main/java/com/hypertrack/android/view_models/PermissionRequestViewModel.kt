@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.ui.base.BaseStateViewModel
 import com.hypertrack.android.ui.base.State
-import com.hypertrack.android.utils.PermissionsUtils
+import com.hypertrack.android.ui.common.PermissionsUtils
 import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 class PermissionRequestViewModel(

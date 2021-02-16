@@ -83,7 +83,7 @@
             android:enabled="false"
             android:gravity="center"
             android:padding="10dp"
-            android:text="@string/check_in"
+            android:text="@string/submit_driver_id"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

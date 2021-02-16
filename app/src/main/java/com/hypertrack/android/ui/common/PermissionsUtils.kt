@@ -1,9 +1,11 @@
-package com.hypertrack.android.utils
+package com.hypertrack.android.ui.common
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import com.hypertrack.android.utils.MyApplication
 
+//todo move to vm
 object PermissionsUtils {
 
     fun hasRequiredPermissions(): Boolean {

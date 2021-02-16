@@ -9,8 +9,8 @@ import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.JustSuccess
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.utils.SimpleTextWatcher
-import com.hypertrack.android.utils.textString
+import com.hypertrack.android.ui.common.SimpleTextWatcher
+import com.hypertrack.android.ui.common.textString
 import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_driver_id_input.*

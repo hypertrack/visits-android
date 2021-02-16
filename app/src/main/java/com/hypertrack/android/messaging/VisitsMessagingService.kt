@@ -6,14 +6,12 @@ import android.content.Intent
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hypertrack.android.ui.MainActivity
-import com.hypertrack.android.utils.Logg
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class VisitsMessagingService: FirebaseMessagingService() {
 
     //todo
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
-        Logg.d("push received")
         if (remoteMessage?.data?.get("visits") != null) {
             // Log.d(TAG, "Got remote message with payload ${remoteMessage.data}")
             val intent = Intent(this as Context, MainActivity::class.java)
