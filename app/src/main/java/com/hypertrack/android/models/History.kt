@@ -11,8 +11,7 @@ data class Summary(
         val totalDuration: Int,
         val totalDriveDistance: Int,
         val totalDriveDuration: Int,
-        /** Always 0 as removed from API response */
-        val stepsCount: Int = 0,
+        val stepsCount: Int,
         val totalWalkDuration: Int,
         val totalStopDuration: Int,
 )
