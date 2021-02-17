@@ -28,7 +28,7 @@ class VisitsManagementFragment(
 ) : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
-        MyApplication.injector.provideVisitsManagementViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

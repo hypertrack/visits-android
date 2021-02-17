@@ -8,9 +8,9 @@ import androidx.navigation.fragment.findNavController
 import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.JustSuccess
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.ui.common.SimpleTextWatcher
 import com.hypertrack.android.ui.common.textString
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_driver_id_input.*
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_driver_id_input.*
 class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_input) {
 
     private val driverLoginModel: DriverLoginViewModel by viewModels {
-        MyApplication.injector.provideDriverLoginViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

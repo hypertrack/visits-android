@@ -17,7 +17,7 @@ import com.hypertrack.logistics.android.github.R
 class MainActivity: NavActivity(), DeeplinkResultListener {
 
     val splashScreenViewModel: SplashScreenViewModel by viewModels {
-        MyApplication.injector.provideSplashScreenViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     private val deepLinkProcessor = MyApplication.injector.deeplinkProcessor

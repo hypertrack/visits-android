@@ -2,17 +2,15 @@ package com.hypertrack.android.utils
 
 import android.content.Context
 import androidx.fragment.app.FragmentFactory
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.HistoryMapRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModelFactory
-import com.hypertrack.android.view_models.*
+import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
@@ -24,20 +22,20 @@ import javax.inject.Provider
 class ServiceLocator {
 
 
-    fun getAccessTokenRepository(deviceId : String, userName : String) = BasicAuthAccessTokenRepository(
-        AUTH_URL, deviceId, userName)
+    fun getAccessTokenRepository(deviceId: String, userName: String) = BasicAuthAccessTokenRepository(
+            AUTH_URL, deviceId, userName)
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         val listener = TrackingState()
         val sdkInstance = HyperTrack
-            .getInstance(publishableKey)
-            .addTrackingListener(listener)
-            .setTrackingNotificationConfig(
-                ServiceNotificationConfig.Builder()
-                    .setSmallIcon(R.drawable.ic_notif_logo_small)
-                    .build()
-            )
-            .allowMockLocations()
+                .getInstance(publishableKey)
+                .addTrackingListener(listener)
+                .setTrackingNotificationConfig(
+                        ServiceNotificationConfig.Builder()
+                                .setSmallIcon(R.drawable.ic_notif_logo_small)
+                                .build()
+                )
+                .allowMockLocations()
 
         return HyperTrackService(listener, sdkInstance)
     }
@@ -53,44 +51,44 @@ object Injector {
 
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
-    fun getMoshi() : Moshi = Moshi.Builder()
-        .add(HistoryCoordinateJsonAdapter())
-        .add(GeometryJsonAdapter())
-        .add(
-            RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
-                .registerSubtype(HistoryStatusMarker::class.java, "device_status")
-                .registerSubtype(HistoryTripMarker::class.java, "trip_marker")
-                .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
-        )
-        .build()
+    fun getMoshi(): Moshi = Moshi.Builder()
+            .add(HistoryCoordinateJsonAdapter())
+            .add(GeometryJsonAdapter())
+            .add(
+                    RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
+                            .registerSubtype(HistoryStatusMarker::class.java, "device_status")
+                            .registerSubtype(HistoryTripMarker::class.java, "trip_marker")
+                            .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
+            )
+            .build()
 
     private fun getMyPreferences(context: Context): MyPreferences =
-        MyPreferences(context, getMoshi())
+            MyPreferences(context, getMoshi())
 
     private fun getDriver(context: Context): Driver = getMyPreferences(context).getDriverValue()
 
-    fun getDriverRepo(context: Context) = DriverRepo(
-        getDriver(context),
-        getMyPreferences(context),
-        crashReportsProvider
+    fun getDriverRepo(context: Context) = DriverRepository(
+            getDriver(context),
+            getMyPreferences(context),
+            crashReportsProvider
     )
 
     private fun getVisitsApiClient(context: Context): ApiClient {
         val accessTokenRepository = accessTokenRepository(context)
         return ApiClient(accessTokenRepository,
-            BASE_URL, accessTokenRepository.deviceId)
+                BASE_URL, accessTokenRepository.deviceId)
     }
 
     private fun accessTokenRepository(context: Context) =
-        (getMyPreferences(context).restoreRepository()
-            ?: throw IllegalStateException("No access token repository was saved"))
+            (getMyPreferences(context).restoreRepository()
+                    ?: throw IllegalStateException("No access token repository was saved"))
 
     fun getAccountRepo(context: Context) =
-        AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
+            AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
 
     private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()
 
-    private fun getOsUtilsProvider(context: Context) : OsUtilsProvider {
+    private fun getOsUtilsProvider(context: Context): OsUtilsProvider {
         return OsUtilsProvider(context, crashReportsProvider)
 
     }
@@ -98,7 +96,7 @@ object Injector {
     private fun getHyperTrackService(context: Context): HyperTrackService {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
-            ?: throw IllegalStateException("No publishableKey saved")
+                ?: throw IllegalStateException("No publishableKey saved")
         return ServiceLocator().getHyperTrackService(publishableKey)
     }
 
@@ -106,15 +104,15 @@ object Injector {
         visitsRepository?.let { return it }
 
         getMyPreferences(context).getAccountData().publishableKey
-            ?: throw IllegalStateException("No publishableKey saved")
+                ?: throw IllegalStateException("No publishableKey saved")
         val result = VisitsRepository(
-            getOsUtilsProvider(context),
-            getVisitsApiClient(context),
-            getMyPreferences(context),
-            getHyperTrackService(context),
-            getAccountRepo(context),
-            getImageDecoder(),
-            crashReportsProvider
+                getOsUtilsProvider(context),
+                getVisitsApiClient(context),
+                getMyPreferences(context),
+                getHyperTrackService(context),
+                getAccountRepo(context),
+                getImageDecoder(),
+                crashReportsProvider
         )
         visitsRepository = result
 
@@ -137,147 +135,30 @@ object Injector {
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
-    fun provideVisitsManagementViewModelFactory(context: Context): VisitsManagementViewModelFactory {
-        val repository = getVisitsRepo(context)
-        val accountRepository = getAccountRepo(context)
-        return VisitsManagementViewModelFactory(
-            repository,
+    fun provideViewModelFactory(context: Context): ViewModelFactory {
+        return ViewModelFactory(
+                context,
+                accessTokenRepository(context),
+                getVisitsRepo(context),
                 historyRepository,
-            accountRepository,
-            accessTokenRepository(context),
-            crashReportsProvider
+                getAccountRepo(context),
+                getDriverRepo(context),
+                crashReportsProvider,
+                getHyperTrackService(context),
+                getLoginProvider(context)
         )
     }
 
-    fun provideVisitStatusViewModel(context: Context, visitId:String): VisitDetailsViewModel {
+    fun provideVisitStatusViewModel(context: Context, visitId: String): VisitDetailsViewModel {
         return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
-    fun providePermissionRequestsViewModelFactory(context: Context) : PermissionRequestsViewModelFactory {
-        return PermissionRequestsViewModelFactory(getAccountRepo(context), context)
-    }
-
-    fun provideDriverLoginViewModelFactory(context: Context) : DriverLoginViewModelFactory {
-        return DriverLoginViewModelFactory(getDriverRepo(context), getHyperTrackService(context))
-    }
-
-    fun provideAccountLoginViewModelFactory(context: Context) : AccountLoginViewModelFactory {
-        return AccountLoginViewModelFactory(getLoginProvider(context), getAccountRepo(context))
-    }
-
-    fun provideSplashScreenViewModelFactory(context: Context): SplashScreenViewModelFactory {
-        return SplashScreenViewModelFactory(
-            getDriverRepo(context),
-            getAccountRepo(context),
-            crashReportsProvider
-        )
-    }
-
-    fun provideSummaryViewModelFactory(context: Context) : SummaryViewModelFactory {
-        return SummaryViewModelFactory(historyRepository)
-    }
-
-    private fun provideHistoryViewModelFactory(context: Context) =
-        HistoryViewModelFactory(historyRepository)
-
     private fun getMapHistoryFragmentProvider(context: Context) = Provider {
-        MapViewFragment(provideHistoryViewModelFactory(context), HistoryRendererFactory() )
+        MapViewFragment(provideViewModelFactory(context), HistoryRendererFactory())
     }
 
     fun getFragmentFactory(context: Context): FragmentFactory =
-        CustomFragmentFactory(getMapHistoryFragmentProvider(context))
-}
-
-class PermissionRequestsViewModelFactory(private val accountRepository: AccountRepository, private val context: Context) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>) = when (modelClass) {
-        PermissionRequestViewModel::class.java -> PermissionRequestViewModel(accountRepository, context) as T
-        else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
-    }
-}
-
-class VisitsManagementViewModelFactory(
-    private val visitsRepository: VisitsRepository,
-    private val historyRepository: HistoryRepository,
-    val accountRepository: AccountRepository,
-    val accessTokenRepository: AccessTokenRepository,
-    val crashReportsProvider: CrashReportsProvider
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-
-        when (modelClass) {
-            VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(
-                visitsRepository,
-                    historyRepository,
-                    accountRepository,
-                accessTokenRepository,
-                crashReportsProvider
-            ) as T
-            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
-        }
-    }
-}
-
-
-class DriverLoginViewModelFactory(
-    private val driverRepo: DriverRepo,
-    private val hyperTrackService: HyperTrackService
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-
-        when (modelClass) {
-            DriverLoginViewModel::class.java -> return DriverLoginViewModel(driverRepo, hyperTrackService) as T
-            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
-        }
-    }
-}
-
-class AccountLoginViewModelFactory(
-    private val accountLoginProvider: AccountLoginProvider,
-    private val accountRepository: AccountRepository
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-
-        when (modelClass) {
-            AccountLoginViewModel::class.java -> return AccountLoginViewModel(accountLoginProvider, accountRepository) as T
-            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
-        }
-    }
-}
-
-class SplashScreenViewModelFactory(
-    private val driverRepo: DriverRepo,
-    private val accountRepository: AccountRepository,
-    private val crashReportsProvider: CrashReportsProvider
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-
-        when (modelClass) {
-            SplashScreenViewModel::class.java -> return SplashScreenViewModel(
-                driverRepo,
-                accountRepository,
-                crashReportsProvider
-            ) as T
-            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
-        }
-    }
-}
-
-class HistoryViewModelFactory(
-    private val historyRepository: HistoryRepository
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-
-        return when (modelClass) {
-            HistoryViewModel::class.java -> HistoryViewModel(historyRepository) as T
-            else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
-        }
-    }
+            CustomFragmentFactory(getMapHistoryFragmentProvider(context))
 }
 
 class HistoryRendererFactory {
@@ -292,6 +173,6 @@ interface AccountPreferencesProvider {
 }
 
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
-const val LIVE_API_URL_BASE  = "https://live-api.htprod.hypertrack.com/"
+const val LIVE_API_URL_BASE = "https://live-api.htprod.hypertrack.com/"
 const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"
 const val MAX_IMAGE_SIDE_LENGTH_PX = 1024

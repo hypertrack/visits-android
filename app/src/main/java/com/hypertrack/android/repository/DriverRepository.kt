@@ -5,7 +5,7 @@ import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.squareup.moshi.JsonClass
 
-class DriverRepo(
+class DriverRepository(
     private var _driver: Driver,
     private val accountDataStorage: AccountDataStorage,
     private val crashReportsProvider: CrashReportsProvider

@@ -1,7 +1,7 @@
 package com.hypertrack.android.view_models
 
 import androidx.lifecycle.viewModelScope
-import com.hypertrack.android.repository.DriverRepo
+import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseStateViewModel
 import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.JustSuccess
@@ -9,8 +9,8 @@ import com.hypertrack.android.utils.HyperTrackService
 import kotlinx.coroutines.launch
 
 class DriverLoginViewModel(
-    private val driverRepo: DriverRepo,
-    private val hyperTrackService: HyperTrackService
+        private val driverRepository: DriverRepository,
+        private val hyperTrackService: HyperTrackService
 ) : BaseStateViewModel() {
 
     fun onLoginClick(driverId: String?) {
@@ -18,7 +18,7 @@ class DriverLoginViewModel(
             state.postValue(JustLoading)
             // Log.d(TAG, "Proceeding with Driver Id $driverId")
             hyperTrackService.driverId = driverId
-            driverRepo.driverId = driverId
+            driverRepository.driverId = driverId
             viewModelScope.launch {
                 state.postValue(JustSuccess)
             }
@@ -27,8 +27,8 @@ class DriverLoginViewModel(
 
     fun checkAutoLogin() {
         // Log.v(TAG, "checkAutoLogin")
-        if (driverRepo.hasDriverId) {
-            onLoginClick(driverRepo.driverId)
+        if (driverRepository.hasDriverId) {
+            onLoginClick(driverRepository.driverId)
         }
     }
 

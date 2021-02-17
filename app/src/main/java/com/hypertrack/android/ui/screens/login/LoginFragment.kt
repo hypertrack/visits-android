@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_login.*
 class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
 
     private val accountLoginViewModel: AccountLoginViewModel by viewModels {
-        MyApplication.injector.provideAccountLoginViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

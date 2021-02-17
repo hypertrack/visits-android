@@ -3,7 +3,7 @@ package com.hypertrack.android.view_models
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.AccountRepository
-import com.hypertrack.android.repository.DriverRepo
+import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseStateViewModel
 import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.State
@@ -11,9 +11,9 @@ import com.hypertrack.android.utils.CrashReportsProvider
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
-    private val driverRepository: DriverRepo,
-    private val accountRepository: AccountRepository,
-    val crashReportsProvider: CrashReportsProvider
+        private val driverRepository: DriverRepository,
+        private val accountRepository: AccountRepository,
+        val crashReportsProvider: CrashReportsProvider
 ) : BaseStateViewModel()  {
 
 //    private val _destination = MutableLiveData(Destination.SPLASH_SCREEN)
