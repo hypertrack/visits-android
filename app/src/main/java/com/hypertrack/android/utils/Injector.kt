@@ -1,22 +1,19 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
-import androidx.fragment.app.FragmentFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.ui.common.ViewModelFactory
-import com.hypertrack.android.ui.screens.visits_management.tabs.GoogleMapHistoryRenderer
-import com.hypertrack.android.ui.screens.visits_management.tabs.HistoryMapRenderer
-import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
-import javax.inject.Provider
 
 
 class ServiceLocator {
@@ -153,12 +150,6 @@ object Injector {
         return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
-    private fun getMapHistoryFragmentProvider(context: Context) = Provider {
-        MapViewFragment(provideViewModelFactory(context), HistoryRendererFactory())
-    }
-
-    fun getFragmentFactory(context: Context): FragmentFactory =
-            CustomFragmentFactory(getMapHistoryFragmentProvider(context))
 }
 
 class HistoryRendererFactory {

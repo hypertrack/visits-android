@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.SupportMapFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.utils.HistoryRendererFactory
 import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R

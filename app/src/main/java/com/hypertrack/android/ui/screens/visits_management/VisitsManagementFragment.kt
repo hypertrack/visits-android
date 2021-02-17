@@ -13,7 +13,7 @@ import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.VisitsListFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.StatusString

@@ -1,4 +1,4 @@
-package com.hypertrack.android.ui.screens.visits_management.tabs
+package com.hypertrack.android.ui.screens.visits_management.tabs.visits
 
 import android.os.Bundle
 import android.view.View
