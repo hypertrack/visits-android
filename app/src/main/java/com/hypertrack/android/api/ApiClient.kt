@@ -119,11 +119,11 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
                 Summary(
                         distance,
                         duration,
-                        insights.driveDistance,
-                        insights.driveDuration,
-                        insights.stepCount,
-                        insights.walkDuration,
-                        insights.stopDuration,
+                        distance,
+                        driveDuration?:0,
+                        0,
+                        walkDuration,
+                        stopDuration,
                 ),
                 locations.coordinates.map { Location(it.longitude, it.latitude) to it.timestamp },
                 markers.map { it.asMarker() }

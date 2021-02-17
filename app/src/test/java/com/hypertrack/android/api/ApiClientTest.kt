@@ -430,40 +430,24 @@ class ApiClientTest {
     fun `it should send get request to get device history`() = runBlockingTest {
         val responseBody =
         """
-            {
-               "started_at" : "2021-02-04T22:00:00.000Z",
-               "duration" : 86400,
-               "distance" : 6347,
-               "markers" : [],
-               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
-               "completed_at" : "2021-02-05T22:00:00.000Z",
-               "locations" : {
-                  "coordinates" : [],
-                  "type" : "LineString"
-               },
-               "insights" : {
-                  "geofences_count" : 0,
-                  "inactive_reasons" : [],
-                  "geotags_route_to_time" : 0,
-                  "tracking_rate" : 100,
-                  "drive_distance" : 6347,
-                  "inactive_duration" : 0,
-                  "step_count" : 0,
-                  "geofences_idle_time" : 0,
-                  "trips_arrived_at_destination" : 0,
-                  "geofences_route_to_time" : 0,
-                  "geotags_count" : 0,
-                  "geofences_time" : 0,
-                  "stop_duration" : 743,
-                  "estimated_distance" : 0,
-                  "trips_on_time" : 0,
-                  "active_duration" : 1353,
-                  "walk_duration" : 0,
-                  "total_tracking_time" : 1353,
-                  "drive_duration" : 610,
-                  "trips_count" : 0
-               }
-            }
+        {
+            "locations": { "type": "LineString", "coordinates": [] },
+            "markers": [],
+            "device_id": "832C9D60-CF83-3217-B150-B62017B192B4",
+            "started_at": "2021-02-16T22:00:00.000Z",
+            "completed_at": "2021-02-17T22:00:00.000Z",
+            "distance": 0,
+            "duration": 86400,
+            "tracking_rate": 0,
+            "inactive_reasons": [],
+            "inactive_duration": 0,
+            "active_duration": 0,
+            "stop_duration": 0,
+            "walk_duration": 0,
+            "trips": 0,
+            "geotags": 0,
+            "geofences_visited": 0
+        }
         """.trimIndent()
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val historyResult = runBlocking {
@@ -485,46 +469,25 @@ class ApiClientTest {
     fun `it should receive distance and insights from device history`() = runBlockingTest {
         val responseBody =
         """
-            {
-               "started_at" : "2021-02-04T22:00:00.000Z",
-               "duration" : 86400,
-               "distance" : 6347,
-               "markers" : [],
-               "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
-               "completed_at" : "2021-02-05T22:00:00.000Z",
-               "locations" : {
-                  "coordinates" : [
-                       [ -122.397368, 37.792382, 42.0,  "2021-02-05T11:53:10.544Z" ],
-                       [ -122.39737,  37.79238,  42.42, "2021-02-05T11:53:10.544Z" ],
-                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:18.942Z" ],
-                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:24.247Z" ],
-                       [ -122.39737,  37.79238,  null,  "2021-02-05T11:53:29.259Z" ]
-                  ],
-                  "type" : "LineString"
-               },
-               "insights" : {
-                  "geofences_count" : 0,
-                  "inactive_reasons" : [],
-                  "geotags_route_to_time" : 0,
-                  "tracking_rate" : 100,
-                  "drive_distance" : 6347,
-                  "inactive_duration" : 0,
-                  "step_count" : 0,
-                  "geofences_idle_time" : 0,
-                  "trips_arrived_at_destination" : 0,
-                  "geofences_route_to_time" : 0,
-                  "geotags_count" : 0,
-                  "geofences_time" : 0,
-                  "stop_duration" : 743,
-                  "estimated_distance" : 0,
-                  "trips_on_time" : 0,
-                  "active_duration" : 1353,
-                  "walk_duration" : 0,
-                  "total_tracking_time" : 1353,
-                  "drive_duration" : 610,
-                  "trips_count" : 0
-               }
-            }
+        {
+            "device_id": "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
+            "locations": {"type": "LineString", "coordinates": []},
+            "markers": [ ],
+            "started_at": "2021-02-16T22:00:00.000Z",
+            "completed_at": "2021-02-17T22:00:00.000Z",
+            "distance": 6347.0,
+            "duration": 86400,
+            "tracking_rate": 100.0,
+            "inactive_reasons": [],
+            "inactive_duration": 0,
+            "active_duration": 158,
+            "stop_duration": 0,
+            "drive_duration": 610,
+            "walk_duration": 0,
+            "trips": 0,
+            "geotags": 0,
+            "geofences_visited": 0
+        }
         """.trimIndent()
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val historyResult = runBlocking {
@@ -552,12 +515,7 @@ class ApiClientTest {
         val responseBody =
         """
             {
-               "started_at" : "2021-02-04T22:00:00.000Z",
-               "duration" : 86400,
-               "distance" : 6347,
-               "markers" : [],
                "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
-               "completed_at" : "2021-02-05T22:00:00.000Z",
                "locations" : {
                   "coordinates" : [
                        [ -122.397368, 37.792382, 42.0,  "2021-02-05T11:53:10.544Z" ],
@@ -568,28 +526,21 @@ class ApiClientTest {
                   ],
                   "type" : "LineString"
                },
-               "insights" : {
-                  "geofences_count" : 0,
-                  "inactive_reasons" : [],
-                  "geotags_route_to_time" : 0,
-                  "tracking_rate" : 100,
-                  "drive_distance" : 6347,
-                  "inactive_duration" : 0,
-                  "step_count" : 0,
-                  "geofences_idle_time" : 0,
-                  "trips_arrived_at_destination" : 0,
-                  "geofences_route_to_time" : 0,
-                  "geotags_count" : 0,
-                  "geofences_time" : 0,
-                  "stop_duration" : 743,
-                  "estimated_distance" : 0,
-                  "trips_on_time" : 0,
-                  "active_duration" : 1353,
-                  "walk_duration" : 0,
-                  "total_tracking_time" : 1353,
-                  "drive_duration" : 610,
-                  "trips_count" : 0
-               }
+            "markers": [ ],
+            "started_at": "2021-02-16T22:00:00.000Z",
+            "completed_at": "2021-02-17T22:00:00.000Z",
+            "distance": 1007.0,
+            "duration": 86400,
+            "tracking_rate": 100.0,
+            "inactive_reasons": [],
+            "inactive_duration": 0,
+            "active_duration": 158,
+            "stop_duration": 0,
+            "drive_duration": 158,
+            "walk_duration": 0,
+            "trips": 0,
+            "geotags": 0,
+            "geofences_visited": 0
             }
         """.trimIndent()
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
@@ -619,9 +570,6 @@ class ApiClientTest {
         val responseBody =
         """
             {
-               "started_at" : "2021-02-04T22:00:00.000Z",
-               "duration" : 86400,
-               "distance" : 6347,
                "markers" : [
                     {
                          "marker_id" : "8b6aeb0f-1a8f-4900-95ee-03755ba21015",
@@ -709,28 +657,20 @@ class ApiClientTest {
                   "coordinates" : [],
                   "type" : "LineString"
                },
-               "insights" : {
-                  "geofences_count" : 0,
-                  "inactive_reasons" : [],
-                  "geotags_route_to_time" : 0,
-                  "tracking_rate" : 100,
-                  "drive_distance" : 6347,
-                  "inactive_duration" : 0,
-                  "step_count" : 0,
-                  "geofences_idle_time" : 0,
-                  "trips_arrived_at_destination" : 0,
-                  "geofences_route_to_time" : 0,
-                  "geotags_count" : 0,
-                  "geofences_time" : 0,
-                  "stop_duration" : 743,
-                  "estimated_distance" : 0,
-                  "trips_on_time" : 0,
-                  "active_duration" : 1353,
-                  "walk_duration" : 0,
-                  "total_tracking_time" : 1353,
-                  "drive_duration" : 610,
-                  "trips_count" : 0
-               }
+            "started_at": "2021-02-16T22:00:00.000Z",
+            "completed_at": "2021-02-17T22:00:00.000Z",
+            "distance": 1007.0,
+            "duration": 86400,
+            "tracking_rate": 100.0,
+            "inactive_reasons": [],
+            "inactive_duration": 0,
+            "active_duration": 158,
+            "stop_duration": 0,
+            "drive_duration": 158,
+            "walk_duration": 0,
+            "trips": 0,
+            "geotags": 0,
+            "geofences_visited": 0
             }
         """.trimIndent()
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
@@ -749,22 +689,22 @@ class ApiClientTest {
         with(history.markers.first()) {
             assertEquals(MarkerType.STATUS, type)
             assertEquals("2021-02-05T00:00:00+00:00", timestamp)
-            assertEquals(-122.397368, location.longitude, 0.000001)
-            assertEquals(37.792382, location.latitude, 0.000001)
+            assertEquals(-122.397368, location!!.longitude, 0.000001)
+            assertEquals(37.792382, location!!.latitude, 0.000001)
         }
 
         with(history.markers[1]) {
             assertEquals(MarkerType.GEOTAG, type)
             assertEquals("2021-02-03T08:50:06.757Z", timestamp)
-            assertEquals( -122.084, location.longitude, 0.000001)
-            assertEquals( 37.421998, location.latitude, 0.000001)
+            assertEquals( -122.084, location!!.longitude, 0.000001)
+            assertEquals( 37.421998, location!!.latitude, 0.000001)
         }
 
         with(history.markers.last()) {
             assertEquals(MarkerType.GEOFENCE_ENTRY, type)
             assertEquals("2021-02-05T12:11:37.838Z", timestamp)
-            assertEquals(-122.4249, location.longitude, 0.000001)
-            assertEquals(37.7599, location.latitude, 0.000001)
+            assertEquals(-122.4249, location!!.longitude, 0.000001)
+            assertEquals(37.7599, location!!.latitude, 0.000001)
         }
     }
 
