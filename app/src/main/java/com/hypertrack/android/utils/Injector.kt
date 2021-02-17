@@ -8,10 +8,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.response.AccountData
-import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.HistoryMapRenderer
-import com.hypertrack.android.ui.screens.visits_management.tabs.MapWebViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModelFactory
 import com.hypertrack.android.view_models.*
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
@@ -124,11 +124,13 @@ object Injector {
     fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
         = GoogleMapHistoryRenderer(supportMapFragment)
 
-    fun getHistoryRepository(context: Context) = HistoryRepository(
-        getVisitsApiClient(context),
-        crashReportsProvider,
-        getOsUtilsProvider(context)
-    )
+    val historyRepository: HistoryRepository by lazy {
+        HistoryRepository(
+                getVisitsApiClient(MyApplication.context),
+                crashReportsProvider,
+                getOsUtilsProvider(MyApplication.context)
+        )
+    }
 
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
@@ -140,6 +142,7 @@ object Injector {
         val accountRepository = getAccountRepo(context)
         return VisitsManagementViewModelFactory(
             repository,
+                historyRepository,
             accountRepository,
             accessTokenRepository(context),
             crashReportsProvider
@@ -171,14 +174,14 @@ object Injector {
     }
 
     fun provideSummaryViewModelFactory(context: Context) : SummaryViewModelFactory {
-        return SummaryViewModelFactory(getHistoryRepository(context))
+        return SummaryViewModelFactory(historyRepository)
     }
 
     private fun provideHistoryViewModelFactory(context: Context) =
-        HistoryViewModelFactory(getHistoryRepository(context))
+        HistoryViewModelFactory(historyRepository)
 
     private fun getMapHistoryFragmentProvider(context: Context) = Provider {
-        MapWebViewFragment(provideHistoryViewModelFactory(context), HistoryRendererFactory() )
+        MapViewFragment(provideHistoryViewModelFactory(context), HistoryRendererFactory() )
     }
 
     fun getFragmentFactory(context: Context): FragmentFactory =
@@ -195,6 +198,7 @@ class PermissionRequestsViewModelFactory(private val accountRepository: AccountR
 
 class VisitsManagementViewModelFactory(
     private val visitsRepository: VisitsRepository,
+    private val historyRepository: HistoryRepository,
     val accountRepository: AccountRepository,
     val accessTokenRepository: AccessTokenRepository,
     val crashReportsProvider: CrashReportsProvider
@@ -205,7 +209,8 @@ class VisitsManagementViewModelFactory(
         when (modelClass) {
             VisitsManagementViewModel::class.java -> return VisitsManagementViewModel(
                 visitsRepository,
-                accountRepository,
+                    historyRepository,
+                    accountRepository,
                 accessTokenRepository,
                 crashReportsProvider
             ) as T

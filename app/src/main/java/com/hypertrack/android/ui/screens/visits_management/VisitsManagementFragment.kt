@@ -12,7 +12,7 @@ import com.hypertrack.android.adapters.VisitListAdapter
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.MapWebViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.VisitsListFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.utils.MyApplication
@@ -24,7 +24,7 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
 class VisitsManagementFragment(
-    val mapWebViewFragment: MapWebViewFragment
+    val mapViewFragment: MapViewFragment
 ) : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
@@ -65,7 +65,7 @@ class VisitsManagementFragment(
 
             private val fragments = listOf(
                 VisitsListFragment.newInstance(),
-                mapWebViewFragment,
+                mapViewFragment,
                 SummaryFragment.newInstance()
             )
             private val tabTitles = resources.getStringArray(R.array.tab_names)
@@ -147,6 +147,8 @@ class VisitsManagementFragment(
 
         //moved from onActivityResult
         visitsManagementViewModel.possibleLocalVisitCompletion()
+
+        visitsManagementViewModel.refreshHistory()
     }
 
     lateinit var viewAdapter: RecyclerView.Adapter<*>

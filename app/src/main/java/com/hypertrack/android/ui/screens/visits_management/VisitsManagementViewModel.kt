@@ -7,6 +7,7 @@ import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.TrackingStateValue
@@ -17,12 +18,11 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class VisitsManagementViewModel(
-    private val visitsRepository: VisitsRepository,
-        //todo
-//    private val historyRepository: HistoryRepository,
-    accountRepository: AccountRepository,
-    accessTokenRepository: AccessTokenRepository,
-    private val crashReportsProvider: CrashReportsProvider
+        private val visitsRepository: VisitsRepository,
+        private val historyRepository: HistoryRepository,
+        accountRepository: AccountRepository,
+        accessTokenRepository: AccessTokenRepository,
+        private val crashReportsProvider: CrashReportsProvider
 ) : ViewModel() {
 
     val isTracking = visitsRepository.isTracking
@@ -143,8 +143,7 @@ class VisitsManagementViewModel(
 
     fun refreshHistory() {
         MainScope().launch {
-            //todo
-//            historyRepository.refreshHistory()
+            historyRepository.getHistory()
         }
     }
 
