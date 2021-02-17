@@ -64,7 +64,7 @@ class ApiClient(
             if (response.isSuccessful) {
                 // Log.v(TAG, "Got response ${response.body()}")
                 return response.body()?.trips?.filterNot {
-                    it.destination == null || it.tripId.isNullOrEmpty()
+                    it.destination == null || it.tripId.isEmpty()
                 }
                         ?: emptyList()
             }
@@ -121,7 +121,7 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
                         duration,
                         distance,
                         driveDuration?:0,
-                        0,
+                        stepsCount?:0,
                         walkDuration,
                         stopDuration,
                 ),
