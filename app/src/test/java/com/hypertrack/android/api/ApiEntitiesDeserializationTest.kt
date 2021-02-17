@@ -105,58 +105,6 @@ class ApiEntitiesDeserializationTest {
     }
 
     @Test
-    fun `it should deserialize insights object`() {
-        val serializedInsights = """
-            {
-                  "geofences_count" : 0,
-                  "inactive_reasons" : [],
-                  "geotags_route_to_time" : 0,
-                  "tracking_rate" : 100,
-                  "drive_distance" : 6347,
-                  "inactive_duration" : 0,
-                  "step_count" : 0,
-                  "geofences_idle_time" : 0,
-                  "trips_arrived_at_destination" : 0,
-                  "geofences_route_to_time" : 0,
-                  "geotags_count" : 0,
-                  "geofences_time" : 0,
-                  "stop_duration" : 743,
-                  "estimated_distance" : 0,
-                  "trips_on_time" : 0,
-                  "active_duration" : 1353,
-                  "walk_duration" : 0,
-                  "total_tracking_time" : 1353,
-                  "drive_duration" : 610,
-                  "trips_count" : 0
-               }
-        """.trimIndent()
-
-        val insights = moshi.adapter(Insights::class.java).fromJson(serializedInsights)!!
-        with (insights) {
-            assertEquals(0,    geofencesCount)
-            assertEquals(100,  trackingRate)
-            assertEquals(6347, driveDistance)
-            assertEquals(0,    inactiveDuration)
-            assertEquals(0,    stepCount)
-            assertEquals(0,    geofencesIdleTime)
-            assertEquals(0,    tripsArrivedAtDestination)
-            assertEquals(0,    geofencesRouteToTime)
-            assertEquals(0,    geotagsCount)
-            assertEquals(0,    geofencesTime)
-            assertEquals(743,  stopDuration)
-            assertEquals(0,    estimatedDistance)
-            assertEquals(0,    tripsOnTime)
-            assertEquals(1353, activeDuration)
-            assertEquals(0,    walkDuration)
-            assertEquals(1353, totalTrackingTime)
-            assertEquals(610,  driveDuration)
-            assertEquals(0,    tripsCount)
-
-        }
-
-    }
-
-    @Test
     fun `it should deserialize time series object`() {
         val serializedLocations = """
             {
