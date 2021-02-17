@@ -75,7 +75,7 @@ class VisitsRepository(
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
             } else {
-                val newValue = currentValue.update(prototype, accountPreferences.isAutoCheckInEnabled)
+                val newValue = currentValue.update(prototype)
                 _visitsMap[prototype._id] = newValue
                 // getValue/postValue invocations below are called on different instances:
                 // `getValue` is called on Map with default value
@@ -206,7 +206,7 @@ class VisitsRepository(
 
     fun transitionAllowed(targetState: VisitStatus, visitId: String): Boolean {
         // Log.v(TAG, "transitionAllowed $targetState, $visitId")
-        if (targetState == VisitStatus.VISITED && accountPreferences.isAutoCheckInEnabled) return false
+        if (targetState == VisitStatus.VISITED) return false
         val visit = visitForId(visitId).value!!
         if (visit.state == VisitStatus.COMPLETED) return false
         return visit.state.canTransitionTo(targetState) && isTracking.value == true

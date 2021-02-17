@@ -159,7 +159,6 @@ class HistoryRendererFactory {
 interface AccountPreferencesProvider {
     var wasWhitelisted: Boolean
     val isManualCheckInAllowed: Boolean
-    val isAutoCheckInEnabled: Boolean
     val isPickUpAllowed: Boolean
 }
 
