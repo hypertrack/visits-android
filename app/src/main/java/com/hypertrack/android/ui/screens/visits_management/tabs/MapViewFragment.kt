@@ -47,5 +47,5 @@ class MapViewFragment(
 
 //        historyViewModel.getHistory()
     }
-    companion object {const val TAG = "MapWebViewFragment"}
+    companion object {const val TAG = "MapViewFragment"}
 }
