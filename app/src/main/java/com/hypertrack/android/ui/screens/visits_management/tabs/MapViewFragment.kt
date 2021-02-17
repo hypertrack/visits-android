@@ -15,7 +15,7 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
 import kotlinx.coroutines.launch
 
-class MapWebViewFragment(
+class MapViewFragment(
     private val historyMapViewModelFactory: ViewModelProvider.Factory,
     private val historyRendererFactory: HistoryRendererFactory
 ) : Fragment(R.layout.fragment_tab_map_webview) {
@@ -33,6 +33,7 @@ class MapWebViewFragment(
         }
 
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
+            srlHistory.isRefreshing = false
             Log.d(TAG, "Inside history update callback")
             historyRenderer?.let {map -> viewLifecycleOwner.lifecycleScope.launch {
                 Log.d(TAG, "Launching history rendering coroutine")
@@ -44,7 +45,7 @@ class MapWebViewFragment(
             historyViewModel.getHistory()
         }
 
-        historyViewModel.getHistory()
+//        historyViewModel.getHistory()
     }
-    companion object {const val TAG = "MapWebViewFragment"}
+    companion object {const val TAG = "MapViewFragment"}
 }

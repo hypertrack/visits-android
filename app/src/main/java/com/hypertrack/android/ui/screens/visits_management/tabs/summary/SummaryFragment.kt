@@ -27,19 +27,13 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
         rvSummary.adapter = adapter
 
         vm.summary.observe(viewLifecycleOwner, { summary ->
+            srlSummary.isRefreshing = false
             displaySummary(summary)
         })
 
-        vm.loadingState.observe(viewLifecycleOwner, { isLoading ->
-            if (isLoading) {
-                showProgress()
-            } else {
-                dismissProgress()
-            }
-        })
-
-        vm.init()
-
+        srlSummary.setOnRefreshListener {
+            vm.refreshSummary()
+        }
     }
 
     private fun displaySummary(summary: Summary) {
