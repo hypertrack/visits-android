@@ -4,7 +4,6 @@ import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.repository.AccountData
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
@@ -59,9 +58,6 @@ object Injector {
                             .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
             )
             .build()
-
-    fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
-            = GoogleMapHistoryRenderer(supportMapFragment)
 
     fun provideViewModelFactory(context: Context): ViewModelFactory {
         return ViewModelFactory(
@@ -157,15 +153,18 @@ object Injector {
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
-    class UserScope(
-            val historyRepository: HistoryRepository
-    )
+    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
+            = GoogleMapHistoryRenderer(supportMapFragment)
+
+    fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
+        Factory { a -> getHistoryMapRenderer(a) }
+
 
 }
 
-class HistoryRendererFactory {
-    fun create(supportMapFragment: SupportMapFragment) = Injector.getHistoryMapRenderer(supportMapFragment)
-}
+private class UserScope(val historyRepository: HistoryRepository)
+
+fun interface Factory<A, T> { fun create(a: A) : T }
 
 interface AccountPreferencesProvider {
     var wasWhitelisted: Boolean
