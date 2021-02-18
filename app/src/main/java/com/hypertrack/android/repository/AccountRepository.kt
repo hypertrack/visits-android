@@ -3,6 +3,7 @@ package com.hypertrack.android.repository
 import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.AccountPreferencesProvider
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.ServiceLocator
 
 class AccountRepository(
@@ -67,6 +68,7 @@ class AccountRepository(
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
+        MyApplication.injector.destroyUserScope()
         return true
     }
 

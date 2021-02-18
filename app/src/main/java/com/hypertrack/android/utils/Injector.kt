@@ -18,7 +18,6 @@ import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 
 class ServiceLocator {
 
-
     fun getAccessTokenRepository(deviceId: String, userName: String) = BasicAuthAccessTokenRepository(
             AUTH_URL, deviceId, userName)
 
@@ -42,11 +41,32 @@ class ServiceLocator {
 
 object Injector {
 
+    private var userScope: UserScope? = null
+    private fun getUserScope(): UserScope {
+            if(userScope == null) {
+                userScope = UserScope(
+                        HistoryRepository(
+                                getVisitsApiClient(MyApplication.context),
+                                crashReportsProvider,
+                                getOsUtilsProvider(MyApplication.context)
+                        )
+                )
+            }
+            return userScope!!
+    }
+    fun destroyUserScope() {
+        userScope = null
+    }
+
     private var visitsRepository: VisitsRepository? = null
 
     private val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
 
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Public
+    ///////////////////////////////////////////////////////////////////////////
 
     fun getMoshi(): Moshi = Moshi.Builder()
             .add(HistoryCoordinateJsonAdapter())
@@ -59,12 +79,37 @@ object Injector {
             )
             .build()
 
+    fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
+            = GoogleMapHistoryRenderer(supportMapFragment)
+
+    fun provideViewModelFactory(context: Context): ViewModelFactory {
+        return ViewModelFactory(
+                context,
+                accessTokenRepository(context),
+                getVisitsRepo(context),
+                getUserScope().historyRepository,
+                getAccountRepo(context),
+                getDriverRepo(context),
+                crashReportsProvider,
+                getHyperTrackService(context),
+                getLoginProvider(context)
+        )
+    }
+
+    fun provideVisitStatusViewModel(context: Context, visitId: String): VisitDetailsViewModel {
+        return VisitDetailsViewModel(getVisitsRepo(context), visitId)
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Private
+    ///////////////////////////////////////////////////////////////////////////
+
     private fun getMyPreferences(context: Context): MyPreferences =
             MyPreferences(context, getMoshi())
 
     private fun getDriver(context: Context): Driver = getMyPreferences(context).getDriverValue()
 
-    fun getDriverRepo(context: Context) = DriverRepository(
+    private fun getDriverRepo(context: Context) = DriverRepository(
             getDriver(context),
             getMyPreferences(context),
             crashReportsProvider
@@ -80,7 +125,7 @@ object Injector {
             (getMyPreferences(context).restoreRepository()
                     ?: throw IllegalStateException("No access token repository was saved"))
 
-    fun getAccountRepo(context: Context) =
+    private fun getAccountRepo(context: Context) =
             AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
 
     private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()
@@ -116,39 +161,14 @@ object Injector {
         return result
     }
 
-    fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
-        = GoogleMapHistoryRenderer(supportMapFragment)
-
-    val historyRepository: HistoryRepository by lazy {
-        HistoryRepository(
-                getVisitsApiClient(MyApplication.context),
-                crashReportsProvider,
-                getOsUtilsProvider(MyApplication.context)
-        )
-    }
-
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
     private fun getLoginProvider(context: Context): AccountLoginProvider
             = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
-    fun provideViewModelFactory(context: Context): ViewModelFactory {
-        return ViewModelFactory(
-                context,
-                accessTokenRepository(context),
-                getVisitsRepo(context),
-                historyRepository,
-                getAccountRepo(context),
-                getDriverRepo(context),
-                crashReportsProvider,
-                getHyperTrackService(context),
-                getLoginProvider(context)
-        )
-    }
-
-    fun provideVisitStatusViewModel(context: Context, visitId: String): VisitDetailsViewModel {
-        return VisitDetailsViewModel(getVisitsRepo(context), visitId)
-    }
+    class UserScope(
+            val historyRepository: HistoryRepository
+    )
 
 }
 
