@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
-import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.repository.AccountData
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
@@ -42,18 +42,7 @@ class ServiceLocator {
 object Injector {
 
     private var userScope: UserScope? = null
-    private fun getUserScope(): UserScope {
-            if(userScope == null) {
-                userScope = UserScope(
-                        HistoryRepository(
-                                getVisitsApiClient(MyApplication.context),
-                                crashReportsProvider,
-                                getOsUtilsProvider(MyApplication.context)
-                        )
-                )
-            }
-            return userScope!!
-    }
+
     fun destroyUserScope() {
         userScope = null
     }
@@ -63,10 +52,6 @@ object Injector {
     private val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
 
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Public
-    ///////////////////////////////////////////////////////////////////////////
 
     fun getMoshi(): Moshi = Moshi.Builder()
             .add(HistoryCoordinateJsonAdapter())
@@ -100,9 +85,18 @@ object Injector {
         return VisitDetailsViewModel(getVisitsRepo(context), visitId)
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Private
-    ///////////////////////////////////////////////////////////////////////////
+    private fun getUserScope(): UserScope {
+        if(userScope == null) {
+            userScope = UserScope(
+                HistoryRepository(
+                    getVisitsApiClient(MyApplication.context),
+                    crashReportsProvider,
+                    getOsUtilsProvider(MyApplication.context)
+                )
+            )
+        }
+        return userScope!!
+    }
 
     private fun getMyPreferences(context: Context): MyPreferences =
             MyPreferences(context, getMoshi())
