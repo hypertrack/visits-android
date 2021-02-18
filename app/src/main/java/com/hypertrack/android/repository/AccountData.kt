@@ -1,4 +1,4 @@
-package com.hypertrack.android.response
+package com.hypertrack.android.repository
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

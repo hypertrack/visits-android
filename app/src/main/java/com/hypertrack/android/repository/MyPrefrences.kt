@@ -3,7 +3,7 @@ package com.hypertrack.android.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.hypertrack.android.response.AccountData
+import com.hypertrack.android.repository.AccountData
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.models.Visit
 import com.squareup.moshi.Moshi
