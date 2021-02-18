@@ -43,10 +43,6 @@ object Injector {
 
     private var userScope: UserScope? = null
 
-    fun destroyUserScope() {
-        userScope = null
-    }
-
     private var visitsRepository: VisitsRepository? = null
 
     private val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
@@ -121,6 +117,7 @@ object Injector {
 
     private fun getAccountRepo(context: Context) =
             AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
+            { userScope = null }
 
     private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()
 

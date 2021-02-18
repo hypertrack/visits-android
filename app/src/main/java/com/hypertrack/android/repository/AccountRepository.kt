@@ -1,15 +1,14 @@
 package com.hypertrack.android.repository
 
-import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.AccountPreferencesProvider
-import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.ServiceLocator
 
 class AccountRepository(
     private val serviceLocator: ServiceLocator,
     private val accountData: AccountData,
-    private val accountDataStorage: AccountDataStorage
+    private val accountDataStorage: AccountDataStorage,
+    private val clearLoginAction: () -> Unit
 ) : AccountPreferencesProvider {
 
     val isVerifiedAccount : Boolean
@@ -68,7 +67,7 @@ class AccountRepository(
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
-        MyApplication.injector.destroyUserScope()
+        clearLoginAction()
         return true
     }
 
