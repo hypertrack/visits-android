@@ -23,9 +23,7 @@ import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
-class VisitsManagementFragment(
-    val mapViewFragment: MapViewFragment
-) : ProgressDialogFragment(R.layout.fragment_visits_management) {
+class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
@@ -65,7 +63,7 @@ class VisitsManagementFragment(
 
             private val fragments = listOf(
                 VisitsListFragment.newInstance(),
-                mapViewFragment,
+                MapViewFragment(),
                 SummaryFragment.newInstance()
             )
             private val tabTitles = resources.getStringArray(R.array.tab_names)
