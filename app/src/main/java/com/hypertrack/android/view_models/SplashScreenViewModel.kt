@@ -3,7 +3,7 @@ package com.hypertrack.android.view_models
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.AccountRepository
-import com.hypertrack.android.repository.DriverRepo
+import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseStateViewModel
 import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.State
@@ -11,10 +11,10 @@ import com.hypertrack.android.utils.CrashReportsProvider
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
-    private val driverRepository: DriverRepo,
-    private val accountRepository: AccountRepository,
-    val crashReportsProvider: CrashReportsProvider
-) : BaseStateViewModel()  {
+        private val driverRepository: DriverRepository,
+        private val accountRepository: AccountRepository,
+        val crashReportsProvider: CrashReportsProvider
+) : BaseStateViewModel() {
 
 //    private val _destination = MutableLiveData(Destination.SPLASH_SCREEN)
 
@@ -45,9 +45,7 @@ class SplashScreenViewModel(
         val key = parameters["publishable_key"] as String?
         val email = parameters["email"] as String?
         val driverId = parameters["driver_id"] as String?
-        val showCheckIn = parameters["show_manual_visits"] as String? ?:""
-        //todo useless? (always true)
-        val autoCheckIn = parameters["auto_check_in"] as String? ?: ""
+        val showCheckIn = parameters["show_manual_visits"] as String? ?: ""
         val pickUpAllowed = parameters["pick_up_allowed"] as String? ?: ""
         // Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn pickUp allowed $pickUpAllowed")
         if (key != null) {
@@ -55,11 +53,14 @@ class SplashScreenViewModel(
             try {
                 state.value = JustLoading
                 viewModelScope.launch {
-                    val correctKey = accountRepository.onKeyReceived(key, showCheckIn, autoCheckIn, pickUpAllowed)
+                    val correctKey = accountRepository.onKeyReceived(key,
+                            checkInEnabled = showCheckIn,
+                            pickUpAllowed = pickUpAllowed
+                    )
                     // Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
                         // Log.d(TAG, "Key validated successfully")
-                        driverId?.let { driverRepository.driverId = it}
+                        driverId?.let { driverRepository.driverId = it }
                         email?.let { driverRepository.driverId = it }
                         state.value = KeyIsCorrect
                     } else {
@@ -67,12 +68,12 @@ class SplashScreenViewModel(
                     }
                 }
                 // Log.d(TAG, "coroutine finished")
-            } catch (e : Throwable) {
+            } catch (e: Throwable) {
                 Log.w(TAG, "Cannot validate the key", e)
                 login()
             }
         } else {
-            parameters["error"]?.let {  Log.e(TAG, "Deeplink processing failed. $it") }
+            parameters["error"]?.let { Log.e(TAG, "Deeplink processing failed. $it") }
             login()
         }
     }
@@ -81,9 +82,9 @@ class SplashScreenViewModel(
         const val TAG = "SplashScreenVM"
     }
 
-    object KeyIsCorrect: State()
-    object LoggedIn: State()
-    object AccountVerified: State()
-    object NoPublishableKey: State()
+    object KeyIsCorrect : State()
+    object LoggedIn : State()
+    object AccountVerified : State()
+    object NoPublishableKey : State()
 
 }

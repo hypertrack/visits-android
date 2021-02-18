@@ -12,9 +12,10 @@ import com.hypertrack.android.adapters.VisitListAdapter
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.VisitsListFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.StatusString
 import com.hypertrack.android.view_models.VisitsManagementViewModel
@@ -23,12 +24,10 @@ import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
-class VisitsManagementFragment(
-    val mapViewFragment: MapViewFragment
-) : ProgressDialogFragment(R.layout.fragment_visits_management) {
+class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
-        MyApplication.injector.provideVisitsManagementViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,7 +64,7 @@ class VisitsManagementFragment(
 
             private val fragments = listOf(
                 VisitsListFragment.newInstance(),
-                mapViewFragment,
+                MapViewFragment(),
                 SummaryFragment.newInstance()
             )
             private val tabTitles = resources.getStringArray(R.array.tab_names)
@@ -144,6 +143,10 @@ class VisitsManagementFragment(
                 .makeText(requireContext(), msg, Toast.LENGTH_LONG)
                 .show()
         }
+
+        visitsManagementViewModel.error.observe(viewLifecycleOwner, { error ->
+            SnackbarUtil.showErrorSnackbar(view, error.toString())
+        })
 
         //moved from onActivityResult
         visitsManagementViewModel.possibleLocalVisitCompletion()

@@ -1,7 +1,9 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.summary
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.ui.base.BaseStateViewModel
 import kotlinx.coroutines.launch
@@ -14,9 +16,14 @@ class SummaryViewModel(
         it.summary
     }
 
+    val error = MutableLiveData<HistoryError>()
+
     fun refreshSummary() {
         viewModelScope.launch {
-            historyRepository.getHistory()
+            val res = historyRepository.getHistory()
+            if(res is HistoryError) {
+                error.postValue(res)
+            }
         }
     }
 }

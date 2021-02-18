@@ -5,6 +5,7 @@ import android.util.Log
 import com.hypertrack.android.models.*
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
+import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -27,20 +28,21 @@ class ApiClient(
     }
 
     val api: ApiInterface = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .client(
-            OkHttpClient.Builder()
-                .authenticator(AccessTokenAuthenticator(accessTokenRepository))
-                .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
-//                .addInterceptor(loggingInterceptor)
-                .addInterceptor(UserAgentInterceptor())
-                .readTimeout(30, TimeUnit.SECONDS)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .build()
-        )
-        .build().create(ApiInterface::class.java)
+            .baseUrl(baseUrl)
+            .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .client(OkHttpClient.Builder()
+                    .authenticator(AccessTokenAuthenticator(accessTokenRepository))
+                    .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
+                    .addInterceptor(UserAgentInterceptor())
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS).apply {
+                        if (BuildConfig.DEBUG) {
+                            addInterceptor(loggingInterceptor)
+                        }
+                    }.build())
+            .build()
+            .create(ApiInterface::class.java)
 
     suspend fun clockIn() = api.clockIn(deviceId)
 

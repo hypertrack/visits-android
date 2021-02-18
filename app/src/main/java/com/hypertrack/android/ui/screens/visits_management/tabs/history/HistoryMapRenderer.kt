@@ -1,4 +1,4 @@
-package com.hypertrack.android.ui.screens.visits_management.tabs
+package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory

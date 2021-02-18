@@ -81,7 +81,7 @@ data class Visit(val _id: String,
 
     fun hasNotes() = visitNote.isNotEmpty()
 
-    fun update(prototype: VisitDataSource, isAutoCheckInAllowed: Boolean) : Visit {
+    fun update(prototype: VisitDataSource) : Visit {
         // prototype can have visitedAt or metadata field updated that we need to copy or
         return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
             else Visit(
@@ -98,7 +98,7 @@ data class Visit(val _id: String,
             latitude,
             longitude,
             visitType,
-            _state = if (isAutoCheckInAllowed) adjustState(state, prototype.visitedAt) else state,
+            _state = adjustState(state, prototype.visitedAt),
             _icon = _icon
         )
 
@@ -166,7 +166,7 @@ data class Visit(val _id: String,
         visitType = source.visitType,
         _state =
             when {
-                source.visitedAt.isNotEmpty() && preferences.isAutoCheckInEnabled -> VisitStatus.VISITED
+                source.visitedAt.isNotEmpty() -> VisitStatus.VISITED
                 preferences.isPickUpAllowed -> VisitStatus.PENDING
                 else -> VisitStatus.PICKED_UP
             }

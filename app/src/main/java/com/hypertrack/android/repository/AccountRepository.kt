@@ -1,6 +1,5 @@
 package com.hypertrack.android.repository
 
-import com.hypertrack.android.response.AccountData
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.ServiceLocator
@@ -8,7 +7,8 @@ import com.hypertrack.android.utils.ServiceLocator
 class AccountRepository(
     private val serviceLocator: ServiceLocator,
     private val accountData: AccountData,
-    private val accountDataStorage: AccountDataStorage
+    private val accountDataStorage: AccountDataStorage,
+    private val clearLoginAction: () -> Unit
 ) : AccountPreferencesProvider {
 
     val isVerifiedAccount : Boolean
@@ -23,9 +23,7 @@ class AccountRepository(
     override var isManualCheckInAllowed: Boolean
         get() = accountData.isManualVisitEnabled
         set(value) { accountData.isManualVisitEnabled = value }
-    override var isAutoCheckInEnabled: Boolean
-        get() = accountData.autoCheckIn
-        set(value)  { accountData.autoCheckIn = value }
+
     override var isPickUpAllowed: Boolean
         get() = accountData.pickUpAllowed
         set(value) { accountData.pickUpAllowed = value }
@@ -33,7 +31,6 @@ class AccountRepository(
     suspend fun onKeyReceived(
         key: String,
         checkInEnabled: String = "false",
-        autoCheckIn: String = "true",
         pickUpAllowed: String = "true"
     ) : Boolean {
 
@@ -57,9 +54,6 @@ class AccountRepository(
         if (checkInEnabled in listOf("true", "True")) {
             isManualCheckInAllowed = true
         }
-        if (autoCheckIn in listOf("false", "False")) {
-            isAutoCheckInEnabled = false
-        }
         if (pickUpAllowed in listOf("false", "False")) {
             isPickUpAllowed = false
         }
@@ -69,11 +63,11 @@ class AccountRepository(
                 publishableKey = key,
                 lastToken = token,
                 isManualVisitEnabled = isManualCheckInAllowed,
-                autoCheckIn = isAutoCheckInEnabled,
                 _pickUpAllowed = isPickUpAllowed
             )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
+        clearLoginAction()
         return true
     }
 

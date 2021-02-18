@@ -7,6 +7,7 @@ import com.hypertrack.android.models.Summary
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.DateTimeUtils
 import com.hypertrack.android.ui.common.DistanceUtils
+import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.common.setLinearLayoutManager
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
@@ -17,7 +18,7 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
     private val adapter = SummaryItemsAdapter()
 
     private val vm: SummaryViewModel by viewModels {
-        MyApplication.injector.provideSummaryViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,6 +30,11 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
         vm.summary.observe(viewLifecycleOwner, { summary ->
             srlSummary.isRefreshing = false
             displaySummary(summary)
+        })
+
+        vm.error.observe(viewLifecycleOwner, { error ->
+            srlSummary.isRefreshing = false
+            SnackbarUtil.showErrorSnackbar(view, error.error?.message.toString())
         })
 
         srlSummary.setOnRefreshListener {
