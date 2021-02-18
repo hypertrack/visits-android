@@ -12,9 +12,10 @@ import com.hypertrack.android.adapters.VisitListAdapter
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.StatusString
 import com.hypertrack.android.view_models.VisitsManagementViewModel
@@ -142,6 +143,10 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
                 .makeText(requireContext(), msg, Toast.LENGTH_LONG)
                 .show()
         }
+
+        visitsManagementViewModel.error.observe(viewLifecycleOwner, { error ->
+            SnackbarUtil.showErrorSnackbar(view, error.toString())
+        })
 
         //moved from onActivityResult
         visitsManagementViewModel.possibleLocalVisitCompletion()

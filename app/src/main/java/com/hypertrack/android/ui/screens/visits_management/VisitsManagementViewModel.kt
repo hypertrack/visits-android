@@ -2,6 +2,7 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.models.VisitStatusGroup
@@ -109,7 +110,7 @@ class VisitsManagementViewModel(
 
     val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
 
-    val deviceHistoryWebViewUrl = accessTokenRepository.deviceHistoryWebViewUrl
+    val error = MutableLiveData<String?>()
 
     fun refreshVisits(block: () -> Unit) {
         // Log.v(TAG, "Refresh visits")
@@ -143,7 +144,11 @@ class VisitsManagementViewModel(
 
     fun refreshHistory() {
         MainScope().launch {
-            historyRepository.getHistory()
+            historyRepository.getHistory().also {
+                if(it is HistoryError) {
+                    error.postValue(it.error?.message)
+                }
+            }
         }
     }
 
