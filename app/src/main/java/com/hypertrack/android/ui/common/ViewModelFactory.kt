@@ -10,6 +10,7 @@ import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.view_models.*
 
+@Suppress("UNCHECKED_CAST")
 class ViewModelFactory(
         private val context: Context,
         private val accessTokenRepository: AccessTokenRepository,
