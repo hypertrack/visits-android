@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -37,6 +39,8 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
     private lateinit var viewModel: VisitDetailsViewModel
 
     private lateinit var cancelDialog: AlertDialog
+
+    private val photosAdapter = PhotosAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,6 +81,11 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
             if (show) {
                 Toast.makeText(requireContext(), getString(R.string.vist_note_updated), Toast.LENGTH_LONG).show()
             }
+        }
+
+        rvPhotos.apply {
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            adapter = photosAdapter
         }
 
         setActionListeners()
@@ -123,8 +132,10 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
                 if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
         // Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
         visitPreviewGroup.visibility = pictureGroupVisitility
-        ivVisitPic.visibility = if (newValue.getBitmap() == null) View.GONE else View.VISIBLE
-        ivVisitPic.setImageBitmap(newValue.getBitmap())
+        rvPhotos.visibility = if (newValue.getBitmap() == null) View.GONE else View.VISIBLE
+        newValue.getBitmap()?.let {
+            photosAdapter.updateItems(listOf(CachedPhoto(it)))
+        }
         tvAddress.text = newValue.address.street
         if (newValue.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newValue.visitNote)

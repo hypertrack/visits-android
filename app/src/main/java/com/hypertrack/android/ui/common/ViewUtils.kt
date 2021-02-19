@@ -1,6 +1,7 @@
 package com.hypertrack.android.ui.common
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -102,6 +103,10 @@ fun String.toView(textView: TextView) {
 
 fun Int.toView(imageView: ImageView) {
     imageView.setImageResource(this)
+}
+
+fun Bitmap.toView(imageView: ImageView) {
+    imageView.setImageBitmap(this)
 }
 
 fun Int.toTextView(textView: TextView) {
