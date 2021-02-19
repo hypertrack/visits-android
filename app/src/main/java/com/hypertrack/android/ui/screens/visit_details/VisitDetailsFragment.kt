@@ -20,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
+import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
@@ -122,25 +123,22 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
     }
 
-    private fun updateView(newValue: Visit) {
+    private fun updateView(newVisit: Visit) {
         // Log.v(TAG, "updated view with value $newValue")
-        tvCustomerNote.text = newValue.customerNote
-        customerNoteGroup.visibility = if (newValue.customerNote.isEmpty()) View.GONE else View.VISIBLE
+        tvCustomerNote.text = newVisit.customerNote
+        customerNoteGroup.visibility = if (newVisit.customerNote.isEmpty()) View.GONE else View.VISIBLE
         val takePictureButtonDisabled = tvTakePicture.visibility == View.GONE
-        val hasNoPreview = newValue.getBitmap() == null
+        val hasNoPreview = newVisit.getBitmap() == null
         val pictureGroupVisitility =
                 if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
         // Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
         visitPreviewGroup.visibility = pictureGroupVisitility
-        rvPhotos.visibility = if (newValue.getBitmap() == null) View.GONE else View.VISIBLE
-        newValue.getBitmap()?.let {
-            photosAdapter.updateItems(listOf(CachedPhoto(it)))
+        rvPhotos.visibility = if (newVisit.localVisitPicturesBase64.isEmpty()) View.GONE else View.VISIBLE
+        photosAdapter.updateItems(newVisit.localVisitPicturesBase64.map { CachedPhoto(it.decodeBase64Bitmap()) })
+        tvAddress.text = newVisit.address.street
+        if (newVisit.visitNote != etVisitNote.text.toString()) {
+            etVisitNote.setText(newVisit.visitNote)
         }
-        tvAddress.text = newValue.address.street
-        if (newValue.visitNote != etVisitNote.text.toString()) {
-            etVisitNote.setText(newValue.visitNote)
-        }
-
     }
 
     private fun setActionListeners() {

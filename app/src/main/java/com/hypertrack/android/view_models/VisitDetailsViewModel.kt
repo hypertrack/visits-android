@@ -95,7 +95,7 @@ class VisitDetailsViewModel(
 
     fun onPictureResult(path: String) {
         // Log.d(TAG, "onPicResult $path")
-        MainScope().launch { visitsRepository.setImage(id, path) }
+        MainScope().launch { visitsRepository.addPhotoToVisit(id, path) }
     }
 
     companion object {

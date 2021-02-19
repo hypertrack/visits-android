@@ -25,11 +25,14 @@ class VisitsRepository(
         private val crashReportsProvider: CrashReportsProvider
 ) {
 
-    private val _visitsMap: MutableMap<String, Visit> = visitsStorage.restoreVisits().associateBy { it._id }.toMutableMap()
+    private val _visitsMap: MutableMap<String, Visit>
+            = visitsStorage.restoreVisits().associateBy { it._id  }.toMutableMap()
 
-    private val _visitListItems: MutableLiveData<List<VisitListItem>> = MutableLiveData(_visitsMap.values.sortedWithHeaders())
+    private val _visitListItems: MutableLiveData<List<VisitListItem>>
+            = MutableLiveData(_visitsMap.values.sortedWithHeaders())
 
-    private val _visitItemsById: MutableMap<String, MutableLiveData<Visit>> = _visitsMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
+    private val _visitItemsById: MutableMap<String, MutableLiveData<Visit>>
+            = _visitsMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
 
     val visitListItems: LiveData<List<VisitListItem>>
         get() = _visitListItems
@@ -211,22 +214,22 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    suspend fun setImage(id: String, imagePath: String) = coroutineScope {
+    suspend fun addPhotoToVisit(visitId: String, imagePath: String) = coroutineScope {
         // Log.d(TAG, "Update image for visit $id")
 
-        val target = _visitsMap[id] ?: return@coroutineScope
+        val target = _visitsMap[visitId] ?: return@coroutineScope
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
         launch {
             target.addBitmap(imageDecoder.readBitmap(imagePath, previewMaxSideLength))
             // Log.v(TAG, "Updated icon in target $target")
-            updateItem(id, target)
+            updateItem(visitId, target)
         }
 
         // Log.d(TAG, "Launched preview update task")
         try {
             retryWithBackoff(
-                    times = 5, factor = 10.0,
-                    block = { uploadImage(imagePath, target, id) }
+                times = 5, factor = 10.0,
+                block = { uploadImage(imagePath, target, visitId) }
             )
         } catch (t: Throwable) {
             when (t) {
@@ -241,12 +244,12 @@ class VisitsRepository(
     private suspend fun uploadImage(
             imagePath: String,
             target: Visit,
-            id: String
-    ) {
+            visitId: String
+    )  {
         val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
         val imageKey = apiClient.uploadImage(uploadedImage)
-        target.visitPicture = imageKey
-        updateItem(id, target)
+        target.visitPicturesIds.add(imageKey)
+        updateItem(visitId, target)
         // Log.v(TAG, "Updated visit pic in target $target")
         File(imagePath).apply { if (exists()) delete() }
     }
