@@ -103,3 +103,7 @@ fun String.toView(textView: TextView) {
 fun Int.toView(imageView: ImageView) {
     imageView.setImageResource(this)
 }
+
+fun Int.toTextView(textView: TextView) {
+    textView.setText(this)
+}

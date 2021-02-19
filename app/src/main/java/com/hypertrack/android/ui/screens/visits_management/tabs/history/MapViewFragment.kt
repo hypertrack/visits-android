@@ -1,4 +1,4 @@
-package com.hypertrack.android.ui.screens.visits_management.tabs
+package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
 import android.os.Bundle
 import android.view.View
@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
-import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.HistoryViewModel

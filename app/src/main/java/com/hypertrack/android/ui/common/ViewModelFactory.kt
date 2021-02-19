@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModel
 import com.hypertrack.android.utils.AccountLoginProvider
 import com.hypertrack.android.utils.CrashReportsProvider
@@ -21,6 +22,7 @@ class ViewModelFactory(
         private val crashReportsProvider: CrashReportsProvider,
         private val hyperTrackService: HyperTrackService,
         private val accountLoginProvider: AccountLoginProvider,
+        private val deviceId: String,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -49,6 +51,10 @@ class ViewModelFactory(
                     driverRepository,
                     accountRepository,
                     crashReportsProvider
+            ) as T
+            ProfileViewModel::class.java -> return ProfileViewModel(
+                    deviceId,
+                    driverRepository,
             ) as T
             HistoryViewModel::class.java -> HistoryViewModel(historyRepository) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
