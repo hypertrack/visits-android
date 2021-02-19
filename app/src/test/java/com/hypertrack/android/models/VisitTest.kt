@@ -46,7 +46,7 @@ class VisitTest {
                 arrivedAt = "2020-02-02T20:20:02.020Z"
         )
         )
-        val updated = pending.update(prototype, true)
+        val updated = pending.update(prototype)
         assertEquals(VisitStatus.VISITED, updated.state)
     }
 
@@ -63,44 +63,10 @@ class VisitTest {
                 arrivedAt = "2020-02-02T20:20:02.020Z"
         )
         )
-        val updated = pending.update(prototype, true)
+        val updated = pending.update(prototype)
         assertEquals(VisitStatus.VISITED, updated.state)
     }
 
-
-    @Test
-    fun `it should not automatically check in pending if arrival time is present in prototype if auto check in is not allowed`() {
-        val createdAt = "2020-02-02T20:02:02.020Z"
-        val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
-        val prototype: VisitDataSource = Trip(
-                views = Views(null, null), tripId, createdAt = createdAt,
-                metadata = emptyMap(), destination = TripDestination(
-                null,
-                Point(listOf(42.0, 42.0)),
-                arrivedAt = "2020-02-02T20:20:02.020Z"
-        )
-        )
-        val updated = pending.update(prototype, false)
-        assertEquals(VisitStatus.PENDING, updated.state)
-    }
-
-    @Test
-    fun `it should not automatically check in picked up if arrival time is present in prototype if auto check in is not allowed`() {
-        val createdAt = "2020-02-02T20:02:02.020Z"
-        val tripId = "42"
-        val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
-        val prototype: VisitDataSource = Trip(
-                views = Views(null, null), tripId, createdAt = createdAt,
-                metadata = emptyMap(), destination = TripDestination(
-                null,
-                Point(listOf(42.0, 42.0)),
-                arrivedAt = "2020-02-02T20:20:02.020Z"
-        )
-        )
-        val updated = pending.update(prototype, false)
-        assertEquals(VisitStatus.PICKED_UP, updated.state)
-    }
 
     @Test
     fun `it should update arrival in pending if arrival time is present in prototype`() {
@@ -116,7 +82,7 @@ class VisitTest {
                 arrivedAt = arrivedAt
         )
         )
-        val updated = pending.update(prototype, true)
+        val updated = pending.update(prototype)
         assertEquals(arrivedAt, updated.visitedAt)
     }
 
@@ -134,7 +100,7 @@ class VisitTest {
                 arrivedAt = arrivedAt
         )
         )
-        val updated = pending.update(prototype, true)
+        val updated = pending.update(prototype)
         assertEquals(arrivedAt, updated.visitedAt)
     }
 
@@ -154,7 +120,7 @@ class VisitTest {
                 arrivedAt = arrivedAt
         )
         )
-        val updated = pending.update(prototype, true)
+        val updated = pending.update(prototype)
         assertEquals(pending.visitNote, updated.visitNote)
     }
 
@@ -175,7 +141,7 @@ class VisitTest {
                 arrivedAt = arrivedAt
         )
         )
-        val updated = pending.update(prototype, true)
+        val updated = pending.update(prototype)
         assertEquals(pending.visitNote, updated.visitNote)
     }
 }
