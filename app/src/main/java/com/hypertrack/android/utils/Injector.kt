@@ -69,7 +69,8 @@ object Injector {
                 getDriverRepo(context),
                 crashReportsProvider,
                 getHyperTrackService(context),
-                getLoginProvider(context)
+                getLoginProvider(context),
+                accessTokenRepository(context).deviceId
         )
     }
 

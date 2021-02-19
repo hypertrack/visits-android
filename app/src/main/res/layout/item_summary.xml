@@ -17,6 +17,7 @@
 
     <TextView
         android:id="@+id/tvItemName"
+        style="@style/Text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
@@ -29,24 +30,22 @@
 
     <TextView
         android:id="@+id/tvItemValue1"
+        style="@style/SmallTitle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:textColor="@color/colorBlack"
         android:textSize="16dp"
-        android:textStyle="bold"
         tools:text="0 km" />
 
     <TextView
         android:id="@+id/tvItemValue2"
+        style="@style/SmallTitle"
         android:layout_width="116dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:ellipsize="end"
         android:gravity="right|center_vertical"
         android:maxLines="1"
-        android:textColor="@color/colorBlack"
         android:textSize="16dp"
-        android:textStyle="bold"
         tools:text="12340000 hr, 30 min" />
 </LinearLayout>

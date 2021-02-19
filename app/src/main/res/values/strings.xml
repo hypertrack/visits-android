@@ -70,6 +70,7 @@
         <item>Visits</item>
         <item>Daily History</item>
         <item>Summary</item>
+        <item>Profile</item>
     </string-array>
     <string-array
         name="visit_state_group_names">
@@ -83,4 +84,6 @@
     <string name="miles">%1$d mil</string>
     <string name="kms">%1$d km</string>
     <string name="close">Close</string>
+    <string name="device_id">Device ID</string>
+    <string name="driver_id">Driver ID</string>
 </resources>

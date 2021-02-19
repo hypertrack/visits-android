@@ -13,7 +13,8 @@ import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
-import com.hypertrack.android.ui.screens.visits_management.tabs.MapViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.MyApplication
@@ -36,22 +37,22 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         checkInvariants()
 
         viewAdapter = VisitListAdapter(
-            visitsManagementViewModel.visits,
-            object : VisitListAdapter.OnListAdapterClick {
-                override fun onJobItemClick(position: Int) {
-                    // Log.d(TAG, "Clicked visit at position $position")
-                    val visit = visitsManagementViewModel.visits.value?.get(position)
-                    visit?.let {
-                        if (it is Visit) {
-                            findNavController().navigate(
-                                VisitsManagementFragmentDirections.actionVisitManagementFragmentToVisitDetailsFragment(
-                                    it._id
+                visitsManagementViewModel.visits,
+                object : VisitListAdapter.OnListAdapterClick {
+                    override fun onJobItemClick(position: Int) {
+                        // Log.d(TAG, "Clicked visit at position $position")
+                        val visit = visitsManagementViewModel.visits.value?.get(position)
+                        visit?.let {
+                            if (it is Visit) {
+                                findNavController().navigate(
+                                        VisitsManagementFragmentDirections.actionVisitManagementFragmentToVisitDetailsFragment(
+                                                it._id
+                                        )
                                 )
-                            )
+                            }
                         }
                     }
                 }
-            }
         )
 
         visitsManagementViewModel.visits.observe(viewLifecycleOwner, { visits ->
@@ -60,12 +61,13 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         })
 
         viewpager.adapter = object :
-            FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+                FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
             private val fragments = listOf(
-                VisitsListFragment.newInstance(),
-                MapViewFragment(),
-                SummaryFragment.newInstance()
+                    VisitsListFragment.newInstance(),
+                    MapViewFragment(),
+                    SummaryFragment.newInstance(),
+                    ProfileFragment()
             )
             private val tabTitles = resources.getStringArray(R.array.tab_names)
 
@@ -126,7 +128,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
             clockIn.text = it
         }
         visitsManagementViewModel.isTracking.observe(viewLifecycleOwner) { isTracking ->
-            tvClockHint.setText(if(isTracking) {
+            tvClockHint.setText(if (isTracking) {
                 R.string.clock_hint_tracking_on
             } else {
                 R.string.clock_hint_tracking_off
@@ -140,8 +142,8 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(viewLifecycleOwner) { msg ->
             if (msg.isNotEmpty()) Toast
-                .makeText(requireContext(), msg, Toast.LENGTH_LONG)
-                .show()
+                    .makeText(requireContext(), msg, Toast.LENGTH_LONG)
+                    .show()
         }
 
         visitsManagementViewModel.error.observe(viewLifecycleOwner, { error ->
@@ -169,8 +171,8 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         if (BuildConfig.DEBUG) {
             if (resources.getStringArray(R.array.visit_state_group_names).size != VisitStatusGroup.values().size) {
                 error(
-                    "visit_state_group_names array doesn't contain enough members to represent " +
-                            "all the VisitStatusGroup values"
+                        "visit_state_group_names array doesn't contain enough members to represent " +
+                                "all the VisitStatusGroup values"
                 )
             }
         }

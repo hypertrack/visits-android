@@ -50,7 +50,12 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment): His
             Log.d(TAG, "Adding polyline to existing map")
             polyLine?.remove()
             polyLine = map?.addPolyline(history.asPolylineOptions())
-            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(history.locationTimePoints.first().first.asLatLng(), 13.0f))
+            map?.let { map ->
+                history.locationTimePoints.firstOrNull()?.let { point ->
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
+                }
+            }
+
             continuation.resume(true, null)
         }
     }
