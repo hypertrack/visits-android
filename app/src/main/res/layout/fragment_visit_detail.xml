@@ -9,7 +9,8 @@
     android:fitsSystemWindows="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:visibility="visible">
 
     <RelativeLayout
         android:id="@+id/topBar"
@@ -279,14 +280,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvTakePicture"
                 app:srcCompat="@color/colorBlack" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:src="@drawable/ic_close"
-                android:visibility="gone" />
-
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPickUp"
                 style="@style/LightButtonStyle"
@@ -352,12 +345,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="tvCustomerNote,ivNote,tvTitleCustomerNote" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/visitPreviewGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="ivCamera,tvCameraTitle" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

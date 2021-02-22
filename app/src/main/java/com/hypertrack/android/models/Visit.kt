@@ -3,7 +3,6 @@ package com.hypertrack.android.models
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.location.Location
-import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -32,7 +31,7 @@ data class Visit(
         val visitType: VisitType,
         val _state: VisitStatus?,
         val visitPicturesIds: MutableList<String> = mutableListOf(),
-        val localVisitPicturesBase64: MutableList<String> = mutableListOf()
+        val localVisitPicturesBase64: MutableMap<String, String> = mutableMapOf()
 ) : VisitListItem() {
 
     constructor(
@@ -101,14 +100,11 @@ data class Visit(
 
     val tripVisitPickedUp = state != VisitStatus.PENDING
 
-    fun addBitmap(bitmap: Bitmap) {
-        localVisitPicturesBase64.add(bitmap.toBase64())
+    fun addLocalPhoto(filename: String, bitmap: Bitmap) {
+        localVisitPicturesBase64[filename] = bitmap.toBase64()
     }
 
-    //todo
-    fun getBitmap(): Bitmap? = localVisitPicturesBase64.firstOrNull()?.decodeBase64Bitmap()
-
-    fun hasPicture() = visitPicturesIds.isNotEmpty()
+    fun hasUploadedPictures() = visitPicturesIds.isNotEmpty()
 
     fun hasNotes() = visitNote.isNotEmpty()
 

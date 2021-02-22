@@ -1,13 +1,14 @@
 package com.hypertrack.android.view_models
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
+import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
+import com.hypertrack.android.ui.screens.visit_details.VisitPhoto
+import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -17,13 +18,19 @@ class VisitDetailsViewModel(
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
+
+    val visitPhotos = Transformations.map(visit) { visit ->
+        visit.localVisitPicturesBase64.map {
+            VisitPhoto(it.value.decodeBase64Bitmap(), it.key in visit.visitPicturesIds)
+        }
+    }
+
     private val _takePictureButton = MediatorLiveData<Boolean>()
     private val _pickUpButton = MediatorLiveData<Boolean>()
     private val _checkInButton = MediatorLiveData<Boolean>()
     private val _checkOutButton = MediatorLiveData<Boolean>()
     private val _cancelButton = MediatorLiveData<Boolean>()
     private var _visitNote = MediatorLiveData<Pair<String, Boolean>>() //
-    private var _showToast = MutableLiveData(false)
     private var updatedNote: String? = null
 
     init {
@@ -48,10 +55,11 @@ class VisitDetailsViewModel(
 
     }
 
+    val message = MutableLiveData<String>()
+
     val visitNote: LiveData<Pair<String, Boolean>>
         get() = _visitNote
-    val showToast: LiveData<Boolean>
-        get() = _showToast
+
     val takePictureButton: LiveData<Boolean>
         get() = _takePictureButton
     val pickUpButton: LiveData<Boolean>
@@ -70,11 +78,28 @@ class VisitDetailsViewModel(
 
     fun onPickUpClicked() = visitsRepository.setPickedUp(id, updatedNote)
 
-    fun onCheckInClicked() = visitsRepository.setVisited(id, updatedNote)
+    //todo
+    fun onCheckOutClicked() {
+        if (visitHasUploadingPhotos(visit.value!!)) {
+            message.postValue(MyApplication.context.getString(R.string.photos_still_uploading))
+        } else {
+            visitsRepository.setCompleted(id, updatedNote)
+        }
+    }
 
-    fun onCheckOutClicked() = visitsRepository.setCompleted(id, updatedNote)
+    fun onCancelClicked() {
+        if (visitHasUploadingPhotos(visit.value!!)) {
+            message.postValue(MyApplication.context.getString(R.string.photos_still_uploading))
+        } else {
+            visitsRepository.setCancelled(id, updatedNote)
+        }
+    }
 
-    fun onCancelClicked() = visitsRepository.setCancelled(id, updatedNote)
+    private fun visitHasUploadingPhotos(visit: Visit): Boolean {
+        return visit.localVisitPicturesBase64.filter {
+            it.key !in visit.visitPicturesIds
+        }.isNotEmpty()
+    }
 
     fun getLatLng(): LatLng? {
         visit.value?.latitude?.let { lat -> visit.value?.longitude?.let { lng -> return LatLng(lat, lng) } }
@@ -89,13 +114,15 @@ class VisitDetailsViewModel(
         // Log.v(TAG, "updateNote")
         updatedNote?.let {
             if (visitsRepository.updateVisitNote(id, it))
-                _showToast.postValue(true)
+                message.postValue(MyApplication.context.getString(R.string.vist_note_updated))
         }
     }
 
     fun onPictureResult(path: String) {
         // Log.d(TAG, "onPicResult $path")
-        MainScope().launch { visitsRepository.addPhotoToVisit(id, path) }
+        MainScope().launch {
+            visitsRepository.addPhotoToVisit(id, path)
+        }
     }
 
     companion object {

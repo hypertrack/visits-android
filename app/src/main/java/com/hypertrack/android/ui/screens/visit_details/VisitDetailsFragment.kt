@@ -20,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
@@ -50,7 +49,9 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         viewModel = MyApplication.injector
                 .provideVisitStatusViewModel(MyApplication.context, visitId)
 
-        viewModel.visit.observe(viewLifecycleOwner) { updateView(it) }
+        viewModel.visit.observe(viewLifecycleOwner) { displayVisit(it) }
+
+        viewModel.visitPhotos.observe(viewLifecycleOwner) { displayVisitPhotos(it) }
 
         viewModel.visitNote.observe(viewLifecycleOwner) { (text, isEditable) ->
             // Log.v(TAG, "visitNote text $text isEditable $isEditable")
@@ -78,10 +79,8 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
             }
         }
 
-        viewModel.showToast.observe(viewLifecycleOwner) { show ->
-            if (show) {
-                Toast.makeText(requireContext(), getString(R.string.vist_note_updated), Toast.LENGTH_LONG).show()
-            }
+        viewModel.message.observe(viewLifecycleOwner) { text ->
+            Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
         }
 
         rvPhotos.apply {
@@ -123,22 +122,23 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
     }
 
-    private fun updateView(newVisit: Visit) {
+    private fun displayVisit(newVisit: Visit) {
         // Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newVisit.customerNote
         customerNoteGroup.visibility = if (newVisit.customerNote.isEmpty()) View.GONE else View.VISIBLE
-        val takePictureButtonDisabled = tvTakePicture.visibility == View.GONE
-        val hasNoPreview = newVisit.getBitmap() == null
-        val pictureGroupVisitility =
-                if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
-        // Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
-        visitPreviewGroup.visibility = pictureGroupVisitility
-        rvPhotos.visibility = if (newVisit.localVisitPicturesBase64.isEmpty()) View.GONE else View.VISIBLE
-        photosAdapter.updateItems(newVisit.localVisitPicturesBase64.map { CachedPhoto(it.decodeBase64Bitmap()) })
+
+
+
         tvAddress.text = newVisit.address.street
+
         if (newVisit.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newVisit.visitNote)
         }
+    }
+
+    private fun displayVisitPhotos(photos: List<VisitPhoto>) {
+        rvPhotos.setGoneState(photos.isEmpty())
+        photosAdapter.updateItems(photos)
     }
 
     private fun setActionListeners() {

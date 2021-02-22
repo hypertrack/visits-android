@@ -79,9 +79,9 @@ class ApiClient(
 
     }
 
-    suspend fun uploadImage(image: Bitmap): String {
+    suspend fun uploadImage(filename: String, image: Bitmap): String {
         try {
-            val response = api.persistImage(deviceId, EncodedImage(image))
+            val response = api.persistImage(deviceId, EncodedImage(filename, image))
             if (response.isSuccessful) {
                 // Log.v(TAG, "Got post image response ${response.body()}")
                 return response.body()?.name ?: ""

@@ -23,7 +23,7 @@ interface ApiInterface {
     @POST("client/devices/{device_id}/image")
     suspend fun persistImage(
             @Path("device_id") deviceId: String,
-            @Body encodedImage: EncodedImage
+            @Body encodedImage: EncodedImage,
     ): Response<ImageResponse>
 
     @GET("client/geofences?include_archived=false&include_markers=true")
@@ -57,8 +57,14 @@ interface ApiInterface {
 }
 
 @JsonClass(generateAdapter = true)
-data class EncodedImage(@field:Json(name = "data") val data: String) {
-    constructor(bitmap: Bitmap) : this(bitmap.toBase64())
+data class EncodedImage(
+        @field:Json(name = "file_name") val filename: String,
+        @field:Json(name = "data") val data: String
+) {
+    constructor(filename: String, bitmap: Bitmap) : this(
+            filename=filename,
+            data=bitmap.toBase64()
+    )
 }
 
 @JsonClass(generateAdapter = true)

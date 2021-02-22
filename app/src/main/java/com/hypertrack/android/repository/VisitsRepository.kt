@@ -216,11 +216,12 @@ class VisitsRepository(
 
     suspend fun addPhotoToVisit(visitId: String, imagePath: String) = coroutineScope {
         // Log.d(TAG, "Update image for visit $id")
+        val generatedFilename = UUID.randomUUID().toString()
 
         val target = _visitsMap[visitId] ?: return@coroutineScope
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
         launch {
-            target.addBitmap(imageDecoder.readBitmap(imagePath, previewMaxSideLength))
+            target.addLocalPhoto(generatedFilename, imageDecoder.readBitmap(imagePath, previewMaxSideLength))
             // Log.v(TAG, "Updated icon in target $target")
             updateItem(visitId, target)
         }
@@ -229,7 +230,7 @@ class VisitsRepository(
         try {
             retryWithBackoff(
                 times = 5, factor = 10.0,
-                block = { uploadImage(imagePath, target, visitId) }
+                block = { uploadImage(generatedFilename, imagePath, target, visitId) }
             )
         } catch (t: Throwable) {
             when (t) {
@@ -242,12 +243,13 @@ class VisitsRepository(
     }
 
     private suspend fun uploadImage(
+            filename: String,
             imagePath: String,
             target: Visit,
             visitId: String
     )  {
         val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
-        val imageKey = apiClient.uploadImage(uploadedImage)
+        val imageKey = apiClient.uploadImage(filename, uploadedImage)
         target.visitPicturesIds.add(imageKey)
         updateItem(visitId, target)
         // Log.v(TAG, "Updated visit pic in target $target")
