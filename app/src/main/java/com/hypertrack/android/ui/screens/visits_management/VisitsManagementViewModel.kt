@@ -1,4 +1,4 @@
-package com.hypertrack.android.view_models
+package com.hypertrack.android.ui.screens.visits_management
 
 import android.util.Log
 import androidx.lifecycle.*
@@ -6,7 +6,6 @@ import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.models.VisitStatusGroup
-import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.repository.VisitsRepository
@@ -21,8 +20,7 @@ import kotlinx.coroutines.launch
 class VisitsManagementViewModel(
         private val visitsRepository: VisitsRepository,
         private val historyRepository: HistoryRepository,
-        accountRepository: AccountRepository,
-        accessTokenRepository: AccessTokenRepository,
+        private val accountRepository: AccountRepository,
         private val crashReportsProvider: CrashReportsProvider
 ) : ViewModel() {
 

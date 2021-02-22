@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
@@ -62,16 +63,15 @@ object Injector {
     fun provideViewModelFactory(context: Context): ViewModelFactory {
         return ViewModelFactory(
                 context,
-                accessTokenRepository(context),
-                getVisitsRepo(context),
-                getUserScope().historyRepository,
                 getAccountRepo(context),
                 getDriverRepo(context),
                 crashReportsProvider,
-                getHyperTrackService(context),
                 getLoginProvider(context),
-                accessTokenRepository(context).deviceId
         )
+    }
+
+    fun provideUserScopeViewModelFactory(): UserScopeViewModelFactory {
+        return getUserScope().userScopeViewModelFactory
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId: String): VisitDetailsViewModel {
@@ -79,13 +79,23 @@ object Injector {
     }
 
     private fun getUserScope(): UserScope {
-        if(userScope == null) {
-            userScope = UserScope(
-                HistoryRepository(
+        if (userScope == null) {
+            val context = MyApplication.context
+            val historyRepository = HistoryRepository(
                     getVisitsApiClient(MyApplication.context),
                     crashReportsProvider,
                     getOsUtilsProvider(MyApplication.context)
-                )
+            )
+            userScope = UserScope(
+                    historyRepository,
+                    UserScopeViewModelFactory(
+                            getVisitsRepo(context),
+                            historyRepository,
+                            getDriverRepo(context),
+                            getAccountRepo(context),
+                            crashReportsProvider,
+                            getHyperTrackService(context),
+                    )
             )
         }
         return userScope!!
@@ -151,21 +161,24 @@ object Injector {
 
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
-    private fun getLoginProvider(context: Context): AccountLoginProvider
-            = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
+    private fun getLoginProvider(context: Context): AccountLoginProvider = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
-    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer
-            = GoogleMapHistoryRenderer(supportMapFragment)
+    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer = GoogleMapHistoryRenderer(supportMapFragment)
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
-        Factory { a -> getHistoryMapRenderer(a) }
+            Factory { a -> getHistoryMapRenderer(a) }
 
 
 }
 
-private class UserScope(val historyRepository: HistoryRepository)
+private class UserScope(
+        val historyRepository: HistoryRepository,
+        val userScopeViewModelFactory: UserScopeViewModelFactory
+)
 
-fun interface Factory<A, T> { fun create(a: A) : T }
+fun interface Factory<A, T> {
+    fun create(a: A): T
+}
 
 interface AccountPreferencesProvider {
     var wasWhitelisted: Boolean

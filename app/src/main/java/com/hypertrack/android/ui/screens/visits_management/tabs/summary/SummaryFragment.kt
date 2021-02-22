@@ -18,7 +18,7 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
     private val adapter = SummaryItemsAdapter()
 
     private val vm: SummaryViewModel by viewModels {
-        MyApplication.injector.provideViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideUserScopeViewModelFactory()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

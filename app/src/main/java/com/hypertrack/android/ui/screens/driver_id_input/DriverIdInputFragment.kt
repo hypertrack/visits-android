@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_driver_id_input.*
 class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_input) {
 
     private val driverLoginModel: DriverLoginViewModel by viewModels {
-        MyApplication.injector.provideViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideUserScopeViewModelFactory()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
     private val historyViewModel: HistoryViewModel by viewModels {
-        MyApplication.injector.provideViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideUserScopeViewModelFactory()
     }
     private var historyRenderer: HistoryMapRenderer? = null
 
