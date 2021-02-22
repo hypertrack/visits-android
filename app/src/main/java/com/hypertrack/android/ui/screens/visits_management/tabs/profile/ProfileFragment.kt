@@ -15,7 +15,7 @@ class ProfileFragment: BaseFragment<MainActivity>(R.layout.fragment_profile) {
     private val adapter = ProfileItemsAdapter()
 
     private val vm: ProfileViewModel by viewModels {
-        MyApplication.injector.provideViewModelFactory(requireContext())
+        MyApplication.injector.provideUserScopeViewModelFactory()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

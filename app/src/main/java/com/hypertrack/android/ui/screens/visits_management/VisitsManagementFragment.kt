@@ -18,9 +18,6 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileF
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.StatusString
-import com.hypertrack.android.view_models.VisitsManagementViewModel
-import com.hypertrack.android.view_models.VisitsStats
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_management.*
@@ -28,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_visits_management.*
 class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
-        MyApplication.injector.provideViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideUserScopeViewModelFactory()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
