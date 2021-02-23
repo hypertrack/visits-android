@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='logistics-android'
+rootProject.name='visits-android'
