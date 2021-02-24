@@ -7,11 +7,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R
+import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
 import kotlinx.coroutines.launch
 
 class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
@@ -26,6 +28,27 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(navigationView)
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        bottomAppBar.apply {
+            setNavigationOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            // Handle menu item selected
+            menuItem.isChecked = true
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            true
+        }
+
+        deviceHistoryView.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
 
         (childFragmentManager.findFragmentById(R.id.deviceHistoryView) as SupportMapFragment?)?.let {
             historyRenderer = rendererFactory.create(it)
