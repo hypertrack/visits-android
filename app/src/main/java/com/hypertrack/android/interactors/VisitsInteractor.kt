@@ -3,8 +3,9 @@ package com.hypertrack.android.interactors
 import android.content.res.Resources
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.utils.ImageDecoder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 interface VisitsInteractor {
@@ -23,11 +24,11 @@ class VisitsInteractorImpl(
 
         val target = visitsRepository.getVisit(visitId) ?: return@coroutineScope
         val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
-        launch {
+        withContext(Dispatchers.Default) {
             target.addLocalPhoto(generatedImageId, imageDecoder.readBitmap(imagePath, previewMaxSideLength))
             // Log.v(TAG, "Updated icon in target $target")
-            visitsRepository.updateItem(visitId, target)
         }
+        visitsRepository.updateItem(visitId, target)
 
         photoUploadInteractor.addToQueue(visitId, generatedImageId, imagePath)
     }

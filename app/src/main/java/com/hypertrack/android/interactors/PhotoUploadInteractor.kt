@@ -11,7 +11,6 @@ import com.hypertrack.android.utils.MAX_IMAGE_SIDE_LENGTH_PX
 import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -30,6 +29,8 @@ class UploadingPhoto(
     val visitId: String,
     val imageId: String,
     val filePath: String,
+    //todo
+//    val createdDatetime: DateTime
 )
 
 class PhotoUploadInteractorImpl(
@@ -42,17 +43,10 @@ class PhotoUploadInteractorImpl(
         private val scope: CoroutineScope,
 ) : PhotoUploadInteractor {
 
-    private val loadingQueue = Channel<UploadingPhoto>(5)
-
     init {
         scope.launch {
             val queue = uploadQueueStorageRepository.getUploadingPhotos()
-            queue.forEach { loadingQueue.send(it) }
-
-            while (true) {
-                val photo = loadingQueue.receive()
-                uploadPhoto(photo)
-            }
+            queue.forEach { uploadPhoto(it) }
         }
     }
 
@@ -60,13 +54,14 @@ class PhotoUploadInteractorImpl(
         scope.launch {
             val photo = UploadingPhoto(visitId = visitId, imageId = imageId, filePath = filePath)
             uploadQueueStorageRepository.addUploadingPhoto(photo)
-            loadingQueue.send(photo)
+            uploadPhoto(photo)
         }
     }
 
     private suspend fun uploadPhoto(photo: UploadingPhoto) {
         // Log.d(TAG, "Launched preview update task")
         try {
+            //todo not retry 400
             retryWithBackoff(
                     times = 5, factor = 10.0,
                     block = { uploadImage(imageId = photo.imageId, imagePath = photo.filePath, visitId = photo.visitId) }
