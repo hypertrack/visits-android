@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--BottomAppBar-->
+    <dimen name="bottom_app_bar_height">56dp</dimen>
+    <dimen name="bottom_app_bar_logo_size">32dp</dimen>
+</resources>

@@ -1,6 +1,7 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -11,7 +12,6 @@ import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
 import kotlinx.coroutines.launch
 
 class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
@@ -32,7 +32,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         }
 
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
-            srlHistory.isRefreshing = false
+            Log.d(TAG, "Updating history $history")
             historyRenderer?.let { map ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     map.showHistory(history)
@@ -41,17 +41,10 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         }
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
-            srlHistory.isRefreshing = false
-            //todo
-            SnackbarUtil.showErrorSnackbar(
-                view, /*error.error?.message*/
-                MyApplication.context.getString(R.string.history_error)
-            )
+            Log.w(TAG, "History error $error")
+            SnackbarUtil.showErrorSnackbar(view, error.error?.message)
         })
 
-        srlHistory.setOnRefreshListener {
-            historyViewModel.getHistory()
-        }
     }
 
     companion object {
