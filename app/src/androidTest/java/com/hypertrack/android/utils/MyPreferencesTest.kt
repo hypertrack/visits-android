@@ -1,11 +1,13 @@
 package com.hypertrack.android.utils
 
 import androidx.test.platform.app.InstrumentationRegistry
+import com.hypertrack.android.interactors.UploadingPhoto
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
+import com.hypertrack.android.repository.MyPreferences
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -84,5 +86,15 @@ class MyPreferencesTest {
         myPreferences.saveVisits(visitsExpected)
         val visitsGot = myPreferences.restoreVisits()
         assertEquals(visitsExpected, visitsGot)
+    }
+
+    @Test
+    fun crudUploadPhotosQueue() {
+        assertTrue(myPreferences.getUploadingPhotos().isEmpty())
+        myPreferences.addUploadingPhoto(UploadingPhoto("1", "1", "a"))
+        myPreferences.addUploadingPhoto(UploadingPhoto("2", "2", "a"))
+        assertEquals(2, myPreferences.getUploadingPhotos().size)
+        myPreferences.deleteUploadingPhoto("1")
+        assertEquals(1, myPreferences.getUploadingPhotos().size)
     }
 }

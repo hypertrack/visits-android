@@ -1,8 +1,10 @@
-package com.hypertrack.android.utils
+package com.hypertrack.android.repository
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.hypertrack.android.interactors.UploadQueueStorageRepository
+import com.hypertrack.android.interactors.UploadingPhoto
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.repository.*
 import com.squareup.moshi.Moshi
@@ -10,9 +12,10 @@ import com.squareup.moshi.Types
 
 
 class MyPreferences(context: Context, private val moshi: Moshi) :
-        AccountDataStorage, VisitsStorage {
+    AccountDataStorage, VisitsStorage, UploadQueueStorageRepository {
 
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
+    private val sharedPreferences : SharedPreferences
+            = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
     override fun saveDriver(driverModel: Driver) {
         val serializedModel = moshi.adapter(Driver::class.java).toJson(driverModel)
@@ -93,9 +96,33 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
         const val ACCESS_REPO_KEY = "com.hypertrack.android.utils.access_token_repo"
         const val ACCOUNT_KEY = "com.hypertrack.android.utils.accountKey"
         const val VISITS_KEY = "com.hypertrack.android.utils.deliveries"
+        const val UPLOADING_PHOTOS_KEY = "com.hypertrack.android.utils.uploading_photos"
         const val TAG = "MyPrefs"
     }
 
+    override fun getUploadingPhotos(): Set<UploadingPhoto> {
+        return sharedPreferences.getStringSet(UPLOADING_PHOTOS_KEY, null)?.let { set ->
+            set.map {
+                moshi.adapter(UploadingPhoto::class.java).fromJson(it)!!
+            }.toSet()
+        } ?: setOf()
+    }
+
+    override fun addUploadingPhoto(photo: UploadingPhoto) {
+        sharedPreferences.edit().putStringSet(UPLOADING_PHOTOS_KEY, getUploadingPhotos().toMutableSet().apply {
+            add(photo)
+        }.map {
+            moshi.adapter(UploadingPhoto::class.java).toJson(it)
+        }.toSet()).apply()
+    }
+
+    override fun deleteUploadingPhoto(photoId: String) {
+        sharedPreferences.edit().putStringSet(UPLOADING_PHOTOS_KEY, getUploadingPhotos().toMutableSet().apply {
+            removeIf {  it.imageId == photoId }
+        }.map {
+            moshi.adapter(UploadingPhoto::class.java).toJson(it)
+        }.toSet()).apply()
+    }
 }
 
 interface AccountDataStorage {

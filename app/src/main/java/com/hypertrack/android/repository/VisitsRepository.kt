@@ -1,28 +1,21 @@
 package com.hypertrack.android.repository
 
-import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
-import com.hypertrack.android.retryWithBackoff
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
-import kotlinx.coroutines.*
-import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
 class VisitsRepository(
-        private val osUtilsProvider: OsUtilsProvider,
-        private val apiClient: ApiClient,
-        private val visitsStorage: VisitsStorage,
-        private val hyperTrackService: HyperTrackService,
-        private val accountPreferences: AccountPreferencesProvider,
-        private val imageDecoder: ImageDecoder,
-        private val crashReportsProvider: CrashReportsProvider
+    private val osUtilsProvider: OsUtilsProvider,
+    private val apiClient: ApiClient,
+    private val visitsStorage: VisitsStorage,
+    private val hyperTrackService: HyperTrackService,
+    private val accountPreferences: AccountPreferencesProvider,
 ) {
 
     private val _visitsMap: MutableMap<String, Visit>
@@ -112,7 +105,7 @@ class VisitsRepository(
         return true
     }
 
-    private fun updateItem(id: String, updatedVisit: Visit) {
+    fun updateItem(id: String, updatedVisit: Visit) {
         _visitsMap[id] = updatedVisit
         visitsStorage.saveVisits(_visitsMap.values.toList())
         _visitItemsById[id]?.postValue(updatedVisit)
@@ -214,46 +207,8 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    suspend fun addPhotoToVisit(visitId: String, imagePath: String) = coroutineScope {
-        // Log.d(TAG, "Update image for visit $id")
-        val generatedFilename = UUID.randomUUID().toString()
-
-        val target = _visitsMap[visitId] ?: return@coroutineScope
-        val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
-        launch {
-            target.addLocalPhoto(generatedFilename, imageDecoder.readBitmap(imagePath, previewMaxSideLength))
-            // Log.v(TAG, "Updated icon in target $target")
-            updateItem(visitId, target)
-        }
-
-        // Log.d(TAG, "Launched preview update task")
-        try {
-            retryWithBackoff(
-                times = 5, factor = 10.0,
-                block = { uploadImage(generatedFilename, imagePath, target, visitId) }
-            )
-        } catch (t: Throwable) {
-            when (t) {
-                is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException ->
-                    Log.i(TAG, "Failed to upload image", t)
-                else -> crashReportsProvider.logException(t)
-            }
-
-        }
-    }
-
-    private suspend fun uploadImage(
-            filename: String,
-            imagePath: String,
-            target: Visit,
-            visitId: String
-    )  {
-        val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
-        val imageKey = apiClient.uploadImage(filename, uploadedImage)
-        target.visitPicturesIds.add(imageKey)
-        updateItem(visitId, target)
-        // Log.v(TAG, "Updated visit pic in target $target")
-        File(imagePath).apply { if (exists()) delete() }
+    fun getVisit(visitId: String): Visit? {
+        return _visitsMap[visitId]
     }
 
     companion object {

@@ -1,6 +1,5 @@
 package com.hypertrack.android.repository
 
-import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.squareup.moshi.JsonClass
 

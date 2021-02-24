@@ -3,6 +3,7 @@ package com.hypertrack.android.view_models
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.decodeBase64Bitmap
+import com.hypertrack.android.interactors.VisitsInteractor
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class VisitDetailsViewModel(
         private val visitsRepository: VisitsRepository,
+        private val visitsInteractor: VisitsInteractor,
         private val id: String
 ) : ViewModel() {
 
@@ -121,7 +123,7 @@ class VisitDetailsViewModel(
     fun onPictureResult(path: String) {
         // Log.d(TAG, "onPicResult $path")
         MainScope().launch {
-            visitsRepository.addPhotoToVisit(id, path)
+            visitsInteractor.addPhotoToVisit(id, path)
         }
     }
 

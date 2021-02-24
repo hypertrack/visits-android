@@ -3,6 +3,7 @@ package com.hypertrack.android.utils
 import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
+import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
@@ -14,6 +15,8 @@ import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 
 class ServiceLocator {
@@ -75,7 +78,7 @@ object Injector {
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId: String): VisitDetailsViewModel {
-        return VisitDetailsViewModel(getVisitsRepo(context), visitId)
+        return VisitDetailsViewModel(getVisitsRepo(context), getVisitsInteractor(), visitId)
     }
 
     private fun getUserScope(): UserScope {
@@ -86,6 +89,7 @@ object Injector {
                     crashReportsProvider,
                     getOsUtilsProvider(MyApplication.context)
             )
+            val scope = CoroutineScope(Dispatchers.IO)
             userScope = UserScope(
                     historyRepository,
                     UserScopeViewModelFactory(
@@ -95,10 +99,27 @@ object Injector {
                             getAccountRepo(context),
                             crashReportsProvider,
                             getHyperTrackService(context),
+                    ),
+                    PhotoUploadInteractorImpl(
+                            getVisitsRepo(context),
+                            getFileRepository(),
+                            getUploadQueueStorageRepository(),
+                            crashReportsProvider,
+                            getImageDecoder(),
+                            getVisitsApiClient(MyApplication.context),
+                            scope,
                     )
             )
         }
         return userScope!!
+    }
+
+    private fun getFileRepository(): FileRepository {
+        return FileRepositoryImpl()
+    }
+
+    private fun getUploadQueueStorageRepository(): UploadQueueStorageRepository {
+        return getMyPreferences(MyApplication.context)
     }
 
     private fun getMyPreferences(context: Context): MyPreferences =
@@ -118,6 +139,14 @@ object Injector {
                 BASE_URL, accessTokenRepository.deviceId)
     }
 
+    private fun getVisitsInteractor(): VisitsInteractor {
+        return VisitsInteractorImpl(
+                getVisitsRepo(MyApplication.context),
+                getImageDecoder(),
+                getUserScope().photoUploadInteractor
+        )
+    }
+
     private fun accessTokenRepository(context: Context) =
             (getMyPreferences(context).restoreRepository()
                     ?: throw IllegalStateException("No access token repository was saved"))
@@ -130,7 +159,6 @@ object Injector {
 
     private fun getOsUtilsProvider(context: Context): OsUtilsProvider {
         return OsUtilsProvider(context, crashReportsProvider)
-
     }
 
     private fun getHyperTrackService(context: Context): HyperTrackService {
@@ -151,8 +179,6 @@ object Injector {
                 getMyPreferences(context),
                 getHyperTrackService(context),
                 getAccountRepo(context),
-                getImageDecoder(),
-                crashReportsProvider
         )
         visitsRepository = result
 
@@ -173,7 +199,8 @@ object Injector {
 
 private class UserScope(
         val historyRepository: HistoryRepository,
-        val userScopeViewModelFactory: UserScopeViewModelFactory
+        val userScopeViewModelFactory: UserScopeViewModelFactory,
+        val photoUploadInteractor: PhotoUploadInteractor,
 )
 
 fun interface Factory<A, T> {
