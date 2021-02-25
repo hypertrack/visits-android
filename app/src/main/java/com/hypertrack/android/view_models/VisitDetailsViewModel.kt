@@ -2,12 +2,10 @@ package com.hypertrack.android.view_models
 
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
-import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.interactors.VisitsInteractor
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
-import com.hypertrack.android.ui.screens.visit_details.VisitPhoto
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.MainScope
@@ -22,9 +20,7 @@ class VisitDetailsViewModel(
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
 
     val visitPhotos = Transformations.map(visit) { visit ->
-        visit.localVisitPicturesBase64.map {
-            VisitPhoto(it.value.decodeBase64Bitmap(), it.key in visit.visitPicturesIds)
-        }
+        visit.photos
     }
 
     private val _takePictureButton = MediatorLiveData<Boolean>()
@@ -80,27 +76,12 @@ class VisitDetailsViewModel(
 
     fun onPickUpClicked() = visitsRepository.setPickedUp(id, updatedNote)
 
-    //todo
     fun onCheckOutClicked() {
-        if (visitHasUploadingPhotos(visit.value!!)) {
-            message.postValue(MyApplication.context.getString(R.string.photos_still_uploading))
-        } else {
-            visitsRepository.setCompleted(id, updatedNote)
-        }
+        visitsRepository.setCompleted(id, updatedNote)
     }
 
     fun onCancelClicked() {
-        if (visitHasUploadingPhotos(visit.value!!)) {
-            message.postValue(MyApplication.context.getString(R.string.photos_still_uploading))
-        } else {
-            visitsRepository.setCancelled(id, updatedNote)
-        }
-    }
-
-    private fun visitHasUploadingPhotos(visit: Visit): Boolean {
-        return visit.localVisitPicturesBase64.filter {
-            it.key !in visit.visitPicturesIds
-        }.isNotEmpty()
+        visitsRepository.setCancelled(id, updatedNote)
     }
 
     fun getLatLng(): LatLng? {

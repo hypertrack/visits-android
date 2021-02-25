@@ -5,10 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 
 class MyApplication : Application() {
-
 
     override fun onCreate() {
         super.onCreate()
@@ -16,8 +16,10 @@ class MyApplication : Application() {
         context = this
 
         injector.deeplinkProcessor.appOnCreate(this)
-        //todo remove on prod
-//        HyperTrack.enableDebugLogging()
+
+        if(BuildConfig.DEBUG) {
+//            HyperTrack.enableDebugLogging()
+        }
 
         buildNotificationChannel()
     }

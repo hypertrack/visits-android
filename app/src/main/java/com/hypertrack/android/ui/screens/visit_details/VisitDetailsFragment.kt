@@ -20,7 +20,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
+import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
@@ -51,7 +53,9 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
 
         viewModel.visit.observe(viewLifecycleOwner) { displayVisit(it) }
 
-        viewModel.visitPhotos.observe(viewLifecycleOwner) { displayVisitPhotos(it) }
+        viewModel.visitPhotos.observe(viewLifecycleOwner) { displayVisitPhotos(it.map { photo ->
+            VisitPhotoItem(photo.base64thumbnail.decodeBase64Bitmap(), photo.state != VisitPhotoState.UPLOADED)
+        }) }
 
         viewModel.visitNote.observe(viewLifecycleOwner) { (text, isEditable) ->
             // Log.v(TAG, "visitNote text $text isEditable $isEditable")
@@ -136,7 +140,7 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
     }
 
-    private fun displayVisitPhotos(photos: List<VisitPhoto>) {
+    private fun displayVisitPhotos(photos: List<VisitPhotoItem>) {
         rvPhotos.setGoneState(photos.isEmpty())
         photosAdapter.updateItems(photos)
     }

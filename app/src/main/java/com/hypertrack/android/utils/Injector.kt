@@ -3,7 +3,10 @@ package com.hypertrack.android.utils
 import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.api.*
-import com.hypertrack.android.interactors.*
+import com.hypertrack.android.interactors.PhotoUploadInteractor
+import com.hypertrack.android.interactors.PhotoUploadInteractorImpl
+import com.hypertrack.android.interactors.VisitsInteractor
+import com.hypertrack.android.interactors.VisitsInteractorImpl
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
@@ -103,7 +106,6 @@ object Injector {
                     PhotoUploadInteractorImpl(
                             getVisitsRepo(context),
                             getFileRepository(),
-                            getUploadQueueStorageRepository(),
                             crashReportsProvider,
                             getImageDecoder(),
                             getVisitsApiClient(MyApplication.context),
@@ -116,10 +118,6 @@ object Injector {
 
     private fun getFileRepository(): FileRepository {
         return FileRepositoryImpl()
-    }
-
-    private fun getUploadQueueStorageRepository(): UploadQueueStorageRepository {
-        return getMyPreferences(MyApplication.context)
     }
 
     private fun getMyPreferences(context: Context): MyPreferences =

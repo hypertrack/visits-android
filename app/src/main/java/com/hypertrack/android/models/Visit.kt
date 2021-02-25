@@ -1,9 +1,7 @@
 package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.location.Location
-import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.squareup.moshi.JsonClass
@@ -30,8 +28,7 @@ data class Visit(
         val longitude: Double? = null,
         val visitType: VisitType,
         val _state: VisitStatus?,
-        val visitPicturesIds: MutableList<String> = mutableListOf(),
-        val localVisitPicturesBase64: MutableMap<String, String> = mutableMapOf()
+        val photos: MutableList<VisitPhoto> = mutableListOf()
 ) : VisitListItem() {
 
     constructor(
@@ -100,11 +97,7 @@ data class Visit(
 
     val tripVisitPickedUp = state != VisitStatus.PENDING
 
-    fun addLocalPhoto(filename: String, bitmap: Bitmap) {
-        localVisitPicturesBase64[filename] = bitmap.toBase64()
-    }
-
-    fun hasUploadedPictures() = visitPicturesIds.isNotEmpty()
+    fun hasPictures() = photos.isNotEmpty()
 
     fun hasNotes() = visitNote.isNotEmpty()
 
@@ -239,4 +232,16 @@ enum class VisitStatus {
 enum class VisitStatusGroup {
     // Keep the order consistent with R.array.visit_state_group_names
     PENDING_GROUP, VISITED_GROUP, COMPLETED_GROUP
+}
+
+@JsonClass(generateAdapter = true)
+class VisitPhoto(
+    val imageId: String,
+    val filePath: String,
+    val base64thumbnail: String,
+    var state: VisitPhotoState
+)
+
+enum class VisitPhotoState {
+    UPLOADED, NOT_UPLOADED, ERROR
 }

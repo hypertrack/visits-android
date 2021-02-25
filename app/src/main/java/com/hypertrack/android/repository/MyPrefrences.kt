@@ -3,8 +3,6 @@ package com.hypertrack.android.repository
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.hypertrack.android.interactors.UploadQueueStorageRepository
-import com.hypertrack.android.interactors.UploadingPhoto
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.repository.*
 import com.squareup.moshi.Moshi
@@ -12,7 +10,7 @@ import com.squareup.moshi.Types
 
 
 class MyPreferences(context: Context, private val moshi: Moshi) :
-    AccountDataStorage, VisitsStorage, UploadQueueStorageRepository {
+    AccountDataStorage, VisitsStorage {
 
     private val sharedPreferences : SharedPreferences
             = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
@@ -100,29 +98,6 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
         const val TAG = "MyPrefs"
     }
 
-    override fun getUploadingPhotos(): Set<UploadingPhoto> {
-        return sharedPreferences.getStringSet(UPLOADING_PHOTOS_KEY, null)?.let { set ->
-            set.map {
-                moshi.adapter(UploadingPhoto::class.java).fromJson(it)!!
-            }.toSet()
-        } ?: setOf()
-    }
-
-    override fun addUploadingPhoto(photo: UploadingPhoto) {
-        sharedPreferences.edit().putStringSet(UPLOADING_PHOTOS_KEY, getUploadingPhotos().toMutableSet().apply {
-            add(photo)
-        }.map {
-            moshi.adapter(UploadingPhoto::class.java).toJson(it)
-        }.toSet()).apply()
-    }
-
-    override fun deleteUploadingPhoto(photoId: String) {
-        sharedPreferences.edit().putStringSet(UPLOADING_PHOTOS_KEY, getUploadingPhotos().toMutableSet().apply {
-            removeIf {  it.imageId == photoId }
-        }.map {
-            moshi.adapter(UploadingPhoto::class.java).toJson(it)
-        }.toSet()).apply()
-    }
 }
 
 interface AccountDataStorage {

@@ -4,6 +4,8 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitPhoto
+import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.FileRepository
 import com.hypertrack.android.repository.VisitsRepository
@@ -39,24 +41,30 @@ class PhotoUploadInteractorTest() {
 
     private val visit1 = mockk<Visit>(relaxed = true) {
         every { _id } returns "1"
-        every { visitPicturesIds } returns mutableListOf()
+        every { photos } returns mutableListOf(
+            VisitPhoto("5", "path5", "", VisitPhotoState.NOT_UPLOADED)
+        )
     }
     private val visit2 = mockk<Visit>(relaxed = true) {
         every { _id } returns "2"
-        every { visitPicturesIds } returns mutableListOf()
+        every { photos } returns mutableListOf(
+            VisitPhoto("6", "path6", "", VisitPhotoState.ERROR)
+        )
     }
+
+    lateinit var photoUploadInteractorImpl: PhotoUploadInteractorImpl
 
     lateinit var imageDecoder: ImageDecoder
     lateinit var apiClient: ApiClient
     lateinit var visitsRepository: VisitsRepository
     lateinit var crashReportsProvider: CrashReportsProvider
-    lateinit var photoUploadInteractorImpl: PhotoUploadInteractorImpl
     private val mockWebServer = MockWebServer()
 
     val finishChannel = Channel<Boolean>()
 
     var fileRepository = TestFileRepository()
-    inner class TestFileRepository: FileRepository {
+
+    inner class TestFileRepository : FileRepository {
         var fileCount = 0
 
         override fun deleteIfExists(path: String) {
@@ -69,28 +77,6 @@ class PhotoUploadInteractorTest() {
         }
     }
 
-    var uploadQueueStorageRepository = TestUploadQueueStorageRepository()
-    inner class TestUploadQueueStorageRepository: UploadQueueStorageRepository {
-        val startingQueue = setOf(
-            UploadingPhoto("1", "5", "path5"),
-            UploadingPhoto("2", "6", "path6"),
-        )
-
-        val addCalls = mutableListOf<UploadingPhoto>()
-        val deleteCalls = mutableListOf<String>()
-
-        override fun getUploadingPhotos(): Set<UploadingPhoto> {
-            return startingQueue
-        }
-
-        override fun addUploadingPhoto(photo: UploadingPhoto) {
-            addCalls.add(photo)
-        }
-
-        override fun deleteUploadingPhoto(photoId: String) {
-            deleteCalls.add(photoId)
-        }
-    }
 
     @Before
     fun setUp() {
@@ -102,6 +88,7 @@ class PhotoUploadInteractorTest() {
         visitsRepository = mockk<VisitsRepository>(relaxed = true)
         every { visitsRepository.getVisit("1") } returns visit1
         every { visitsRepository.getVisit("2") } returns visit2
+        every { visitsRepository.visits } returns listOf(visit1, visit2)
         crashReportsProvider = mockk<CrashReportsProvider>(relaxed = true)
 
         mockWebServer.start()
@@ -123,8 +110,9 @@ class PhotoUploadInteractorTest() {
             mockWebServer.enqueue(
                 MockResponse().setBody("""{"name": "a"}""").setBodyDelay(0, TimeUnit.MILLISECONDS)
             )
+            mockWebServer.enqueue(MockResponse().setResponseCode(500))
             mockWebServer.enqueue(
-                MockResponse().setBody("""{"name": "a"}""").setBodyDelay(0, TimeUnit.MILLISECONDS)
+                    MockResponse().setBody("""{"name": "a"}""").setBodyDelay(0, TimeUnit.MILLISECONDS)
             )
             mockWebServer.enqueue(
                 MockResponse().setBody("""{"name": "a"}""").setBodyDelay(0, TimeUnit.MILLISECONDS)
@@ -136,17 +124,28 @@ class PhotoUploadInteractorTest() {
             photoUploadInteractorImpl = PhotoUploadInteractorImpl(
                 visitsRepository,
                 fileRepository,
-                uploadQueueStorageRepository,
                 crashReportsProvider,
                 imageDecoder,
                 apiClient,
                 CoroutineScope(Dispatchers.Unconfined),
             )
 
-            photoUploadInteractorImpl.addToQueue("1", "1", "path")
-            photoUploadInteractorImpl.addToQueue("1", "2", "path1")
-            photoUploadInteractorImpl.addToQueue("2", "3", "path2")
-            photoUploadInteractorImpl.addToQueue("2", "4", "path3")
+            VisitPhoto("1", "path", "", VisitPhotoState.NOT_UPLOADED).also {
+              visit1.photos.add(it)
+              photoUploadInteractorImpl.addToQueue(visit1._id, it)
+            }
+            VisitPhoto("2", "path1", "", VisitPhotoState.NOT_UPLOADED).also {
+              visit1.photos.add(it)
+              photoUploadInteractorImpl.addToQueue(visit1._id, it)
+            }
+            VisitPhoto("3", "path2", "", VisitPhotoState.NOT_UPLOADED).also {
+              visit2.photos.add(it)
+              photoUploadInteractorImpl.addToQueue(visit2._id, it)
+            }
+            VisitPhoto("4", "path3", "", VisitPhotoState.NOT_UPLOADED).also {
+              visit2.photos.add(it)
+              photoUploadInteractorImpl.addToQueue(visit2._id, it)
+            }
 
             finishChannel.receive()
 
@@ -158,31 +157,37 @@ class PhotoUploadInteractorTest() {
                 imageDecoder.readBitmap("path5", MAX_IMAGE_SIDE_LENGTH_PX)
                 imageDecoder.readBitmap("path6", MAX_IMAGE_SIDE_LENGTH_PX)
             }
-            coVerifyAll {
-                visitsRepository.getVisit("1")
-                visitsRepository.updateItem("1", visit1)
-                visitsRepository.getVisit("2")
-                visitsRepository.updateItem("2", visit2)
+
+            val requests = (1..6).map { mockWebServer.takeRequest() }.map { it.body.toString() }
+
+//            requests.forEach { System.out.println(it) }
+//            visit1.photos.forEach { System.out.println("${it.imageId} ${it.state}") }
+//            visit2.photos.forEach { System.out.println("${it.imageId} ${it.state}") }
+
+            listOf(1, 2, 5).forEach { id ->
+                assertTrue(requests.any {
+                    it.contains("\"file_name\":\"${id}\"")
+                })
+                assertTrue(visit1.photos.first { it.imageId == id.toString() }.state == VisitPhotoState.UPLOADED)
             }
-            assertTrue("1" in visit1.visitPicturesIds)
-            assertTrue("2" in visit1.visitPicturesIds)
-            assertTrue("5" in visit1.visitPicturesIds)
 
-            assertTrue("3" in visit2.visitPicturesIds)
-            assertTrue("4" in visit2.visitPicturesIds)
-            assertTrue("6" in visit2.visitPicturesIds)
+            listOf(3, 4, 6).forEach { id ->
+                assertTrue(requests.any {
+                    it.contains("\"file_name\":\"${id}\"")
+                })
+                assertTrue(visit2.photos.first { it.imageId == id.toString() }.state == VisitPhotoState.UPLOADED)
+            }
 
-            assertEquals(6, mockWebServer.requestCount)
+            assertEquals(7, mockWebServer.requestCount)
             assertEquals(6, fileRepository.fileCount)
 
-            assertTrue((1..4).all { it.toString() in uploadQueueStorageRepository.addCalls.map { it.imageId } })
-            assertTrue((1..6).all { it.toString() in uploadQueueStorageRepository.deleteCalls })
+            assertTrue(visitsRepository.visits.all { visit -> visit.photos.all { it.state == VisitPhotoState.UPLOADED } })
         }
 
     }
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
+        Dispatchers.resetMain()
     }
 }

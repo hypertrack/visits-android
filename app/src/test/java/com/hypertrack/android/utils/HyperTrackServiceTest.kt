@@ -2,9 +2,7 @@ package com.hypertrack.android.utils
 
 import android.location.Location
 import android.os.Build
-import com.hypertrack.android.models.Visit
-import com.hypertrack.android.models.VisitStatus
-import com.hypertrack.android.models.VisitType
+import com.hypertrack.android.models.*
 import com.hypertrack.sdk.HyperTrack
 import io.mockk.every
 import io.mockk.mockk
@@ -127,10 +125,14 @@ class HyperTrackServiceTest {
         val listener = TrackingState()
 
         val hyperTrackService = HyperTrackService(listener, sdk)
-        val visitPictures = setOf("photo1", "photo2")
+        val visitPictures = setOf(
+            VisitPhoto("1", "", "", VisitPhotoState.UPLOADED),
+            VisitPhoto("2", "", "", VisitPhotoState.NOT_UPLOADED),
+            VisitPhoto("3", "", "", VisitPhotoState.ERROR),
+        )
         val visit = Visit(
             _id = "42",
-            visitPicturesIds = visitPictures.toMutableList(),
+            photos = visitPictures.toMutableList(),
             visitType = VisitType.LOCAL,
             _state = VisitStatus.COMPLETED
         )

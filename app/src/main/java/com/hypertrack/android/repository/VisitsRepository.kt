@@ -5,7 +5,10 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
-import com.hypertrack.android.utils.*
+import com.hypertrack.android.utils.AccountPreferencesProvider
+import com.hypertrack.android.utils.HyperTrackService
+import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.logistics.android.github.R
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,6 +32,9 @@ class VisitsRepository(
 
     val visitListItems: LiveData<List<VisitListItem>>
         get() = _visitListItems
+
+    val visits: List<Visit>
+        get() = _visitsMap.values.toList()
 
     private val _hasOngoingLocalVisit = MutableLiveData(_visitsMap.getLocalVisit() != null)
     val hasOngoingLocalVisit: LiveData<Boolean>
@@ -106,10 +112,12 @@ class VisitsRepository(
     }
 
     fun updateItem(id: String, updatedVisit: Visit) {
-        _visitsMap[id] = updatedVisit
-        visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(updatedVisit)
-        _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        updatedVisit.copy().let { visit ->
+            _visitsMap[id] = visit
+            visitsStorage.saveVisits(_visitsMap.values.toList())
+            _visitItemsById[id]?.postValue(visit)
+            _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        }
     }
 
     fun setPickedUp(id: String, newNote: String? = null) {

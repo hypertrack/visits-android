@@ -8,6 +8,7 @@ import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -79,18 +80,18 @@ class ApiClient(
 
     }
 
-    suspend fun uploadImage(filename: String, image: Bitmap): String {
+    suspend fun uploadImage(filename: String, image: Bitmap) {
         try {
             val response = api.persistImage(deviceId, EncodedImage(filename, image))
             if (response.isSuccessful) {
                 // Log.v(TAG, "Got post image response ${response.body()}")
-                return response.body()?.name ?: ""
+            } else {
+                throw HttpException(response)
             }
         } catch (e: Throwable) {
             Log.w(TAG, "Got exception $e uploading image")
             throw e
         }
-        return ""
     }
 
     suspend fun getHistory(day: LocalDate, timezone: ZoneId): HistoryResult {
