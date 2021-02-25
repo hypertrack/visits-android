@@ -8,11 +8,14 @@ import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.ImageDecoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
 import java.util.*
 
 interface VisitsInteractor {
     suspend fun addPhotoToVisit(visitId: String, imagePath: String)
+    fun retryVisitPhotoUpload(visitId: String, visitPhoto: VisitPhoto)
+    val photoErrorFlow: MutableSharedFlow<Exception>
 }
 
 class VisitsInteractorImpl(
@@ -20,6 +23,8 @@ class VisitsInteractorImpl(
     private val imageDecoder: ImageDecoder,
     private val photoUploadInteractor: PhotoUploadInteractor
 ) : VisitsInteractor {
+
+    override val photoErrorFlow = photoUploadInteractor.errorFlow
 
     override suspend fun addPhotoToVisit(visitId: String, imagePath: String) = coroutineScope {
         // Log.d(TAG, "Update image for visit $id")
@@ -42,4 +47,7 @@ class VisitsInteractorImpl(
         }
     }
 
+    override fun retryVisitPhotoUpload(visitId: String, visitPhoto: VisitPhoto) {
+        photoUploadInteractor.addToQueue(visitId, visitPhoto)
+    }
 }

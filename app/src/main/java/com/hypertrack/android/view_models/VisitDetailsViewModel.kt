@@ -4,8 +4,10 @@ import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.interactors.VisitsInteractor
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
+import com.hypertrack.android.ui.screens.visit_details.VisitPhotoItem
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.MainScope
@@ -22,6 +24,8 @@ class VisitDetailsViewModel(
     val visitPhotos = Transformations.map(visit) { visit ->
         visit.photos
     }
+
+    val photoError = visitsInteractor.photoErrorFlow.asLiveData()
 
     private val _takePictureButton = MediatorLiveData<Boolean>()
     private val _pickUpButton = MediatorLiveData<Boolean>()
@@ -105,6 +109,12 @@ class VisitDetailsViewModel(
         // Log.d(TAG, "onPicResult $path")
         MainScope().launch {
             visitsInteractor.addPhotoToVisit(id, path)
+        }
+    }
+
+    fun onPhotoClicked(visitPhotoItem: VisitPhotoItem) {
+        if(visitPhotoItem.visitPhoto.state == VisitPhotoState.ERROR) {
+            visitsInteractor.retryVisitPhotoUpload(id, visitPhotoItem.visitPhoto)
         }
     }
 

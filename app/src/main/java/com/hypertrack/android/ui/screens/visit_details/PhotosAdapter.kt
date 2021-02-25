@@ -2,6 +2,8 @@ package com.hypertrack.android.ui.screens.visit_details
 
 import android.graphics.Bitmap
 import android.view.View
+import com.hypertrack.android.models.VisitPhoto
+import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.ui.base.BaseAdapter
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.ui.common.toView
@@ -16,7 +18,8 @@ class PhotosAdapter: BaseAdapter<VisitPhotoItem, BaseAdapter.BaseVh<VisitPhotoIt
         return object: BaseContainerVh<VisitPhotoItem>(view, baseClickListener) {
             override fun bind(item: VisitPhotoItem) {
                 item.thumbnail.toView(containerView.ivPhoto)
-                containerView.progressBar.setGoneState(item.uploaded)
+                containerView.progressBar.setGoneState(item.visitPhoto.state != VisitPhotoState.NOT_UPLOADED)
+                containerView.tvRetry.setGoneState(item.visitPhoto.state != VisitPhotoState.ERROR)
             }
         }
     }
@@ -24,5 +27,5 @@ class PhotosAdapter: BaseAdapter<VisitPhotoItem, BaseAdapter.BaseVh<VisitPhotoIt
 
 class VisitPhotoItem(
         val thumbnail: Bitmap,
-        val uploaded: Boolean
+        val visitPhoto: VisitPhoto
 )

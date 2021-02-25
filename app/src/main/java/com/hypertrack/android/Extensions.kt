@@ -36,21 +36,25 @@ fun String.decodeBase64Bitmap(): Bitmap {
 
 // Retry policy is defined below and implemented at application level. Applied to image upload only.
 suspend fun <T> retryWithBackoff(
-        times: Int = Int.MAX_VALUE,
-        initialDelay: Long = 1000, //  1 sec
-        maxDelay: Long = 100000,    // 100 secs
-        factor: Double = 2.0,
+        retryParams: RetryParams = RetryParams(),
         block: suspend () -> T
 ): T {
-    var currentDelay = initialDelay
-    repeat(times - 1) {
+    var currentDelay = retryParams.initialDelay
+    repeat(retryParams.retryTimes) {
         try {
             return block()
         } catch (_: Throwable) {
             // NOOP
         }
         delay(currentDelay)
-        currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+        currentDelay = (currentDelay * retryParams.factor).toLong().coerceAtMost(retryParams.maxDelay)
     }
     return block() // last attempt
 }
+
+class RetryParams(
+        val retryTimes: Int = Int.MAX_VALUE,
+        val initialDelay: Long = 1000, //  1 sec
+        val maxDelay: Long = 100000,    // 100 secs
+        val factor: Double = 2.0,
+)

@@ -22,8 +22,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Visit
-import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
@@ -54,7 +54,7 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         viewModel.visit.observe(viewLifecycleOwner) { displayVisit(it) }
 
         viewModel.visitPhotos.observe(viewLifecycleOwner) { displayVisitPhotos(it.map { photo ->
-            VisitPhotoItem(photo.base64thumbnail.decodeBase64Bitmap(), photo.state != VisitPhotoState.UPLOADED)
+            VisitPhotoItem(photo.base64thumbnail.decodeBase64Bitmap(), photo)
         }) }
 
         viewModel.visitNote.observe(viewLifecycleOwner) { (text, isEditable) ->
@@ -87,6 +87,10 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
             Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
         }
 
+        viewModel.photoError.observe(viewLifecycleOwner) {
+            SnackbarUtil.showErrorSnackbar(view, /*it.message ?:*/ getString(R.string.photo_upload_unknown_error))
+        }
+
         rvPhotos.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             adapter = photosAdapter
@@ -99,6 +103,10 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
 
         tvCancel.setOnClickListener {
             cancelDialog.show()
+        }
+
+        photosAdapter.onItemClickListener = {
+            viewModel.onPhotoClicked(it)
         }
 
         cancelDialog = AlertDialog.Builder(requireContext())

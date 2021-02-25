@@ -144,7 +144,7 @@ class HyperTrackServiceTest {
         val payload = slot.captured
         assertTrue(payload.isNotEmpty())
         assertTrue(payload.containsKey("_visit_photos"))
-        assertTrue((payload["_visit_photos"] as Set<String>).containsAll(visitPictures))
+        assertTrue((payload["_visit_photos"] as Set<String>).containsAll(visitPictures.map {it.imageId}))
     }
 
     @Test

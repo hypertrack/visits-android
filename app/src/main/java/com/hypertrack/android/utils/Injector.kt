@@ -2,6 +2,7 @@ package com.hypertrack.android.utils
 
 import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
+import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
 import com.hypertrack.android.interactors.PhotoUploadInteractor
 import com.hypertrack.android.interactors.PhotoUploadInteractorImpl
@@ -110,6 +111,12 @@ object Injector {
                             getImageDecoder(),
                             getVisitsApiClient(MyApplication.context),
                             scope,
+                            RetryParams(
+                                    retryTimes = 3,
+                                    initialDelay = 1000,
+                                    factor = 10.0,
+                                    maxDelay = 30 * 1000
+                            )
                     )
             )
         }

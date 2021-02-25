@@ -85,4 +85,6 @@
     <string name="device_id">Device ID</string>
     <string name="driver_id">Driver ID</string>
     <string name="app_version">App Version</string>
+    <string name="retry">Retry</string>
+    <string name="photo_upload_unknown_error">Unknown error during uploading photo</string>
 </resources>
