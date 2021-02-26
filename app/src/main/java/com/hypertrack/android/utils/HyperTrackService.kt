@@ -32,10 +32,10 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
 
     fun sendCompletionEvent(visit: Visit) {
         val payload = mapOf(
-                visit.typeKey to visit._id,
-                "type" to if (visit.state == VisitStatus.COMPLETED) "CHECK_OUT" else "CANCEL",
-                "visit_note" to visit.visitNote,
-                "_visit_photo" to visit.visitPicture
+            visit.typeKey to visit._id,
+            "type" to if (visit.state == VisitStatus.COMPLETED) "CHECK_OUT" else "CANCEL",
+            "visit_note" to visit.visitNote,
+            "_visit_photos" to visit.photos.map { it.imageId }.toSet()
         )
         // Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload, visit.expectedLocation)

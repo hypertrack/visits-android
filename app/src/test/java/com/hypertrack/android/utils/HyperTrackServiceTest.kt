@@ -2,9 +2,7 @@ package com.hypertrack.android.utils
 
 import android.location.Location
 import android.os.Build
-import com.hypertrack.android.models.Visit
-import com.hypertrack.android.models.VisitStatus
-import com.hypertrack.android.models.VisitType
+import com.hypertrack.android.models.*
 import com.hypertrack.sdk.HyperTrack
 import io.mockk.every
 import io.mockk.mockk
@@ -121,18 +119,22 @@ class HyperTrackServiceTest {
     }
 
     @Test
-    fun `it should attach visit photo to completion geotag`() {
+    fun `it should attach visit photos to completion geotag`() {
 
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
         val hyperTrackService = HyperTrackService(listener, sdk)
-        val visitPicture = "abcde"
+        val visitPictures = setOf(
+            VisitPhoto("1", "", "", VisitPhotoState.UPLOADED),
+            VisitPhoto("2", "", "", VisitPhotoState.NOT_UPLOADED),
+            VisitPhoto("3", "", "", VisitPhotoState.ERROR),
+        )
         val visit = Visit(
-                _id = "42",
-                visitPicture = visitPicture,
-                visitType = VisitType.LOCAL,
-                _state = VisitStatus.COMPLETED
+            _id = "42",
+            photos = visitPictures.toMutableList(),
+            visitType = VisitType.LOCAL,
+            _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -141,8 +143,8 @@ class HyperTrackServiceTest {
 
         val payload = slot.captured
         assertTrue(payload.isNotEmpty())
-        assertTrue(payload.containsKey("_visit_photo"))
-        assertTrue(payload["_visit_photo"] == visitPicture)
+        assertTrue(payload.containsKey("_visit_photos"))
+        assertTrue((payload["_visit_photos"] as Set<String>).containsAll(visitPictures.map {it.imageId}))
     }
 
     @Test

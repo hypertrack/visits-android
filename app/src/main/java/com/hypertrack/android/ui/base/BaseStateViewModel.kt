@@ -5,7 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 
-abstract class BaseStateViewModel : ViewModel() {
+//todo remove
+abstract class BaseStateViewModel: ViewModel() {
     val obsMap = mutableMapOf<LiveData<*>, Observer<*>>()
 
     var state = MutableLiveData<State>()
@@ -16,7 +17,6 @@ abstract class BaseStateViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        //todo
         obsMap.keys.forEach {
             it.removeObserver(obsMap[it] as Observer<in Any>)
         }

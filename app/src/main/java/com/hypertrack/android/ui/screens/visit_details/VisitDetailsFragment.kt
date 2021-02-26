@@ -14,12 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
+import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
@@ -38,6 +42,8 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
 
     private lateinit var cancelDialog: AlertDialog
 
+    private val photosAdapter = PhotosAdapter()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -45,7 +51,11 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         viewModel = MyApplication.injector
                 .provideVisitStatusViewModel(MyApplication.context, visitId)
 
-        viewModel.visit.observe(viewLifecycleOwner) { updateView(it) }
+        viewModel.visit.observe(viewLifecycleOwner) { displayVisit(it) }
+
+        viewModel.visitPhotos.observe(viewLifecycleOwner) { displayVisitPhotos(it.map { photo ->
+            VisitPhotoItem(photo.base64thumbnail.decodeBase64Bitmap(), photo)
+        }) }
 
         viewModel.visitNote.observe(viewLifecycleOwner) { (text, isEditable) ->
             // Log.v(TAG, "visitNote text $text isEditable $isEditable")
@@ -73,10 +83,17 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
             }
         }
 
-        viewModel.showToast.observe(viewLifecycleOwner) { show ->
-            if (show) {
-                Toast.makeText(requireContext(), getString(R.string.vist_note_updated), Toast.LENGTH_LONG).show()
-            }
+        viewModel.message.observe(viewLifecycleOwner) { text ->
+            Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
+        }
+
+        viewModel.photoError.observe(viewLifecycleOwner) {
+            SnackbarUtil.showErrorSnackbar(view, /*it.message ?:*/ getString(R.string.photo_upload_unknown_error))
+        }
+
+        rvPhotos.apply {
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            adapter = photosAdapter
         }
 
         setActionListeners()
@@ -86,6 +103,10 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
 
         tvCancel.setOnClickListener {
             cancelDialog.show()
+        }
+
+        photosAdapter.onItemClickListener = {
+            viewModel.onPhotoClicked(it)
         }
 
         cancelDialog = AlertDialog.Builder(requireContext())
@@ -113,23 +134,23 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
     }
 
-    private fun updateView(newValue: Visit) {
+    private fun displayVisit(newVisit: Visit) {
         // Log.v(TAG, "updated view with value $newValue")
-        tvCustomerNote.text = newValue.customerNote
-        customerNoteGroup.visibility = if (newValue.customerNote.isEmpty()) View.GONE else View.VISIBLE
-        val takePictureButtonDisabled = tvTakePicture.visibility == View.GONE
-        val hasNoPreview = newValue.getBitmap() == null
-        val pictureGroupVisitility =
-                if (hasNoPreview && takePictureButtonDisabled) View.GONE else View.VISIBLE
-        // Log.v(TAG, "Picture group visibility is $pictureGroupVisitility")
-        visitPreviewGroup.visibility = pictureGroupVisitility
-        ivVisitPic.visibility = if (newValue.getBitmap() == null) View.GONE else View.VISIBLE
-        ivVisitPic.setImageBitmap(newValue.getBitmap())
-        tvAddress.text = newValue.address.street
-        if (newValue.visitNote != etVisitNote.text.toString()) {
-            etVisitNote.setText(newValue.visitNote)
-        }
+        tvCustomerNote.text = newVisit.customerNote
+        customerNoteGroup.visibility = if (newVisit.customerNote.isEmpty()) View.GONE else View.VISIBLE
 
+
+
+        tvAddress.text = newVisit.address.street
+
+        if (newVisit.visitNote != etVisitNote.text.toString()) {
+            etVisitNote.setText(newVisit.visitNote)
+        }
+    }
+
+    private fun displayVisitPhotos(photos: List<VisitPhotoItem>) {
+        rvPhotos.setGoneState(photos.isEmpty())
+        photosAdapter.updateItems(photos)
     }
 
     private fun setActionListeners() {

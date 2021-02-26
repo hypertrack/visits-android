@@ -8,10 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.models.Address
-import com.hypertrack.android.models.HeaderVisitItem
-import com.hypertrack.android.models.Visit
-import com.hypertrack.android.models.VisitListItem
+import com.hypertrack.android.models.*
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.inflate_header_item.view.*
@@ -54,10 +51,21 @@ class VisitListAdapter(
                 val visitView = holder as VisitViewHolder
                 visitView.tvDescription.text = "" // createAddress(item.address)
                 visitView.tvTitle.text = item.visit_id
-                visitView.ivCameraIcon.visibility = if (item.hasPicture()) View.VISIBLE else View.INVISIBLE
-                visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.INVISIBLE
-                visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.INVISIBLE
+                visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.GONE
+                visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.GONE
 
+                visitView.ivPhotosStateIcon.setGoneState(item.photos.isEmpty())
+                when {
+                    item.photos.any { it.state == VisitPhotoState.ERROR } -> {
+                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_photo_error)
+                    }
+                    item.photos.any { it.state == VisitPhotoState.NOT_UPLOADED } -> {
+                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_photo_loading)
+                    }
+                    else -> {
+                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_photo)
+                    }
+                }
             }
         }
         holder.itemView.setOnClickListener { onItemClick.onJobItemClick(holder.layoutPosition) }
@@ -85,8 +93,8 @@ class VisitListAdapter(
 
         internal var tvTitle: TextView = holder.findViewById(R.id.tvTitle) as TextView
         internal var tvDescription: TextView = holder.findViewById(R.id.tvDescription) as TextView
-        internal var ivCameraIcon: ImageView =
-                holder.findViewById(R.id.ivCameraIcon) as AppCompatImageView
+        internal var ivPhotosStateIcon: ImageView =
+                holder.findViewById(R.id.ivPhotosStateIcon) as AppCompatImageView
         internal var ivNoteIcon: ImageView =
                 holder.findViewById(R.id.ivNote) as AppCompatImageView
         internal var ivCompass: ImageView =

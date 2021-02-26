@@ -6,6 +6,7 @@ import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.models.VisitType
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
 import com.hypertrack.android.repository.Driver
+import com.hypertrack.android.repository.MyPreferences
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -85,4 +86,5 @@ class MyPreferencesTest {
         val visitsGot = myPreferences.restoreVisits()
         assertEquals(visitsExpected, visitsGot)
     }
+
 }

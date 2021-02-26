@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:width="@dimen/visit_list_icon_size"
+        android:height="@dimen/visit_list_icon_size">
+        <layer-list>
+            <item
+                android:width="@dimen/visit_list_icon_image_size"
+                android:height="@dimen/visit_list_icon_image_size"
+                android:drawable="@drawable/ic_cam"
+                android:left="8dp"
+                android:top="8dp" />
+        </layer-list>
+    </item>
+
+</layer-list>

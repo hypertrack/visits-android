@@ -1,4 +1,4 @@
-package com.hypertrack.android.utils
+package com.hypertrack.android.repository
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,9 +10,10 @@ import com.squareup.moshi.Types
 
 
 class MyPreferences(context: Context, private val moshi: Moshi) :
-        AccountDataStorage, VisitsStorage {
+    AccountDataStorage, VisitsStorage {
 
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
+    private val sharedPreferences : SharedPreferences
+            = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
     override fun saveDriver(driverModel: Driver) {
         val serializedModel = moshi.adapter(Driver::class.java).toJson(driverModel)
@@ -93,6 +94,7 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
         const val ACCESS_REPO_KEY = "com.hypertrack.android.utils.access_token_repo"
         const val ACCOUNT_KEY = "com.hypertrack.android.utils.accountKey"
         const val VISITS_KEY = "com.hypertrack.android.utils.deliveries"
+        const val UPLOADING_PHOTOS_KEY = "com.hypertrack.android.utils.uploading_photos"
         const val TAG = "MyPrefs"
     }
 

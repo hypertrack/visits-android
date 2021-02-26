@@ -10,7 +10,7 @@ import com.hypertrack.android.ui.MainActivity
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class VisitsMessagingService : FirebaseMessagingService() {
 
-    //todo
+    //todo test
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         if (remoteMessage?.data?.get("visits") != null) {
             // Log.d(TAG, "Got remote message with payload ${remoteMessage.data}")

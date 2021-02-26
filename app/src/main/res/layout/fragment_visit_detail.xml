@@ -9,7 +9,8 @@
     android:fitsSystemWindows="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:visibility="visible">
 
     <RelativeLayout
         android:id="@+id/topBar"
@@ -242,22 +243,15 @@
                 app:layout_constraintTop_toBottomOf="@id/etVisitNote"
                 app:layout_constraintTop_toTopOf="@id/ivCamera" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivVisitPic"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPhotos"
                 android:layout_width="0dp"
-                android:layout_height="160dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/medium"
-                android:gravity="center"
-                android:padding="5dp"
-                android:scaleType="centerCrop"
-                android:textColor="@color/colorWhite"
-                android:visibility="visible"
-                app:layout_constraintDimensionRatio="w,1:1"
-                app:layout_constraintStart_toEndOf="@+id/ivCamera"
-                app:layout_constraintStart_toStartOf="@+id/tvCameraTitle"
-                app:layout_constraintTop_toBottomOf="@id/ivCamera"
-                app:srcCompat="@drawable/ic_cam" />
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingLeft="56dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCameraTitle" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTakePicture"
@@ -273,7 +267,7 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivVisitPic" />
+                app:layout_constraintTop_toBottomOf="@+id/rvPhotos" />
 
             <ImageView
                 android:id="@+id/divider"
@@ -285,16 +279,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTakePicture"
                 app:srcCompat="@color/colorBlack" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:src="@drawable/ic_close"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/ivVisitPic"
-                app:layout_constraintTop_toTopOf="@id/ivVisitPic" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPickUp"
@@ -361,12 +345,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="tvCustomerNote,ivNote,tvTitleCustomerNote" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/visitPreviewGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="ivCamera,tvCameraTitle" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

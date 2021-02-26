@@ -1,10 +1,7 @@
 package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.location.Location
-import com.hypertrack.android.decodeBase64Bitmap
-import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.squareup.moshi.JsonClass
@@ -12,22 +9,49 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 @JsonClass(generateAdapter = true)
-data class Visit(val _id: String,
-                 val visit_id: String = "", val customerNote: String = "",
-                 val createdAt: String = "", val address: Address = Address(
+data class Visit(
+        val _id: String,
+        val visit_id: String = "",
+        val customerNote: String = "",
+        val createdAt: String = "",
+        val address: Address = Address(
                 "",
                 "",
                 "",
                 ""
         ),
-                 val visitNote: String = "", var visitPicture: String? = null,
-                 var visitedAt: String? = null,
-                 val completedAt: String = "", val exitedAt: String = "",
-                 val latitude: Double? = null, val longitude: Double? = null,
-                 val visitType: VisitType,
-                 val _state: VisitStatus?,
-                 var _icon: String? = null
+        val visitNote: String = "",
+        var visitedAt: String? = null,
+        val completedAt: String = "",
+        val exitedAt: String = "",
+        val latitude: Double? = null,
+        val longitude: Double? = null,
+        val visitType: VisitType,
+        val _state: VisitStatus?,
+        val photos: MutableList<VisitPhoto> = mutableListOf()
 ) : VisitListItem() {
+
+    constructor(
+            source: VisitDataSource,
+            utils: OsUtilsProvider,
+            preferences: AccountPreferencesProvider
+    ) : this(
+            _id = source._id,
+            address = source.address
+                    ?: utils.getAddressFromCoordinates(source.latitude, source.longitude),
+            visit_id = "${utils.getString(source.visitNamePrefixId)} ${createSuffix(source, utils.getAddressFromCoordinates(source.latitude, source.longitude))}",
+            customerNote = source.customerNote,
+            createdAt = source.createdAt,
+            visitedAt = source.visitedAt,
+            latitude = source.latitude, longitude = source.longitude,
+            visitType = source.visitType,
+            _state =
+            when {
+                source.visitedAt.isNotEmpty() -> VisitStatus.VISITED
+                preferences.isPickUpAllowed -> VisitStatus.PENDING
+                else -> VisitStatus.PICKED_UP
+            }
+    )
 
     val expectedLocation: Location?
         get() {
@@ -43,28 +67,25 @@ data class Visit(val _id: String,
             }
             return null
         }
+
     val state: VisitStatus
         get() = _state
                 ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
+
     val isEditable = state < VisitStatus.COMPLETED
+
     val isCompleted = state in listOf(VisitStatus.CANCELLED, VisitStatus.COMPLETED)
+
     val isLocal = visitType == VisitType.LOCAL
+
     val isVisited: Boolean
         get() = visitedAt?.isNotEmpty() == true
+
     val isDeletable: Boolean
         get() {
             return !isLocal &&
                     !(visitType == VisitType.TRIP && isOngoingOrCompletedRecently())
         }
-
-    private fun isOngoingOrCompletedRecently(): Boolean {
-        if (completedAt.isEmpty()) return true
-        return try {
-            completedAt.isLaterThanADayAgo()
-        } catch (ignored: Throwable) {
-            false
-        }
-    }
 
     val typeKey: String
         get() =
@@ -74,54 +95,27 @@ data class Visit(val _id: String,
                 VisitType.LOCAL -> "visit_id"
             }
 
-
     val tripVisitPickedUp = state != VisitStatus.PENDING
 
-    fun addBitmap(bitmap: Bitmap?) {
-        _icon = bitmap?.toBase64()
-    }
-
-    fun getBitmap() = _icon?.decodeBase64Bitmap()
-
-    fun hasPicture() = visitPicture?.isNotEmpty() ?: false
+    fun hasPictures() = photos.isNotEmpty()
 
     fun hasNotes() = visitNote.isNotEmpty()
 
     fun update(prototype: VisitDataSource): Visit {
         // prototype can have visitedAt or metadata field updated that we need to copy or
-        return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
-        else Visit(
-                _id,
-                visit_id,
-                prototype.customerNote,
-                createdAt,
-                address,
-                visitNote,
-                visitPicture,
-                visitedAt = prototype.visitedAt,
-                completedAt,
-                exitedAt,
-                latitude,
-                longitude,
-                visitType,
-                _state = adjustState(state, prototype.visitedAt),
-                _icon = _icon
-        )
-
-    }
-
-    private fun adjustState(state: VisitStatus, visitedAt: String?) = when (state) {
-        VisitStatus.PICKED_UP, VisitStatus.PENDING -> if (visitedAt != null) VisitStatus.VISITED else state
-        else -> state
+        return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) {
+            this
+        } else {
+            copy(
+                    customerNote = prototype.customerNote,
+                    visitedAt = prototype.visitedAt,
+                    _state = adjustState(state, prototype.visitedAt),
+            )
+        }
     }
 
     fun updateNote(newNote: String): Visit {
-        return Visit(
-                _id, visit_id, customerNote,
-                createdAt, address, newNote, visitPicture, visitedAt,
-                completedAt, exitedAt, latitude, longitude, visitType,
-                state, _icon = _icon
-        )
+        return copy(visitNote = newNote)
     }
 
     fun pickUp(newNote: String?) = moveToState(
@@ -146,43 +140,30 @@ data class Visit(val _id: String,
             newNote = newNote
     )
 
+    private fun isOngoingOrCompletedRecently(): Boolean {
+        if (completedAt.isEmpty()) return true
+        return try {
+            completedAt.isLaterThanADayAgo()
+        } catch (ignored: Throwable) {
+            false
+        }
+    }
+
+    private fun adjustState(state: VisitStatus, visitedAt: String?) = when (state) {
+        VisitStatus.PICKED_UP, VisitStatus.PENDING -> if (visitedAt != null) VisitStatus.VISITED else state
+        else -> state
+    }
+
     private fun moveToState(
             newState: VisitStatus,
             transitionedAt: String? = null,
             newNote: String?
-    ) = Visit(
-            _id, visit_id, customerNote,
-            createdAt, address, newNote ?: visitNote, visitPicture, visitedAt,
-            transitionedAt ?: completedAt, exitedAt, latitude, longitude, visitType,
-            _state = newState, _icon = _icon
-    )
-
-    constructor(
-            source: VisitDataSource,
-            utils: OsUtilsProvider,
-            preferences: AccountPreferencesProvider
-    ) : this(
-            _id = source._id,
-            address = source.address
-                    ?: utils.getAddressFromCoordinates(source.latitude, source.longitude),
-            visit_id = "${utils.getString(source.visitNamePrefixId)} ${createSuffix(source, utils.getAddressFromCoordinates(source.latitude, source.longitude))}",
-            customerNote = source.customerNote,
-            createdAt = source.createdAt,
-            visitedAt = source.visitedAt,
-            latitude = source.latitude, longitude = source.longitude,
-            visitType = source.visitType,
-            _state =
-            when {
-                source.visitedAt.isNotEmpty() -> VisitStatus.VISITED
-                preferences.isPickUpAllowed -> VisitStatus.PENDING
-                else -> VisitStatus.PICKED_UP
-            }
-    )
-
+    ) = copy(visitNote=newNote ?: "", _state = newState, completedAt = transitionedAt ?: completedAt)
 
 }
 
-private fun createSuffix(visitDataSource: VisitDataSource, address: Address) = if (visitDataSource.address != null) visitDataSource.visitNameSuffix else address.street
+private fun createSuffix(visitDataSource: VisitDataSource, address: Address) =
+        if (visitDataSource.address != null) visitDataSource.visitNameSuffix else address.street
 
 
 @SuppressLint("NewApi")
@@ -251,4 +232,16 @@ enum class VisitStatus {
 enum class VisitStatusGroup {
     // Keep the order consistent with R.array.visit_state_group_names
     PENDING_GROUP, VISITED_GROUP, COMPLETED_GROUP
+}
+
+@JsonClass(generateAdapter = true)
+class VisitPhoto(
+    val imageId: String,
+    val filePath: String,
+    val base64thumbnail: String,
+    var state: VisitPhotoState
+)
+
+enum class VisitPhotoState {
+    UPLOADED, NOT_UPLOADED, ERROR
 }

@@ -1,38 +1,40 @@
 package com.hypertrack.android.repository
 
-import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
-import com.hypertrack.android.retryWithBackoff
-import com.hypertrack.android.utils.*
+import com.hypertrack.android.utils.AccountPreferencesProvider
+import com.hypertrack.android.utils.HyperTrackService
+import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.logistics.android.github.R
-import kotlinx.coroutines.*
-import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
 class VisitsRepository(
-        private val osUtilsProvider: OsUtilsProvider,
-        private val apiClient: ApiClient,
-        private val visitsStorage: VisitsStorage,
-        private val hyperTrackService: HyperTrackService,
-        private val accountPreferences: AccountPreferencesProvider,
-        private val imageDecoder: ImageDecoder,
-        private val crashReportsProvider: CrashReportsProvider
+    private val osUtilsProvider: OsUtilsProvider,
+    private val apiClient: ApiClient,
+    private val visitsStorage: VisitsStorage,
+    private val hyperTrackService: HyperTrackService,
+    private val accountPreferences: AccountPreferencesProvider,
 ) {
 
-    private val _visitsMap: MutableMap<String, Visit> = visitsStorage.restoreVisits().associateBy { it._id }.toMutableMap()
+    private val _visitsMap: MutableMap<String, Visit>
+            = visitsStorage.restoreVisits().associateBy { it._id  }.toMutableMap()
 
-    private val _visitListItems: MutableLiveData<List<VisitListItem>> = MutableLiveData(_visitsMap.values.sortedWithHeaders())
+    private val _visitListItems: MutableLiveData<List<VisitListItem>>
+            = MutableLiveData(_visitsMap.values.sortedWithHeaders())
 
-    private val _visitItemsById: MutableMap<String, MutableLiveData<Visit>> = _visitsMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
+    private val _visitItemsById: MutableMap<String, MutableLiveData<Visit>>
+            = _visitsMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
 
     val visitListItems: LiveData<List<VisitListItem>>
         get() = _visitListItems
+
+    val visits: List<Visit>
+        get() = _visitsMap.values.toList()
 
     private val _hasOngoingLocalVisit = MutableLiveData(_visitsMap.getLocalVisit() != null)
     val hasOngoingLocalVisit: LiveData<Boolean>
@@ -109,11 +111,13 @@ class VisitsRepository(
         return true
     }
 
-    private fun updateItem(id: String, updatedVisit: Visit) {
-        _visitsMap[id] = updatedVisit
-        visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id]?.postValue(updatedVisit)
-        _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+    fun updateItem(id: String, updatedVisit: Visit) {
+        updatedVisit.copy().let { visit ->
+            _visitsMap[id] = visit
+            visitsStorage.saveVisits(_visitsMap.values.toList())
+            _visitItemsById[id]?.postValue(visit)
+            _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+        }
     }
 
     fun setPickedUp(id: String, newNote: String? = null) {
@@ -211,44 +215,8 @@ class VisitsRepository(
         return visit.state.canTransitionTo(targetState) && isTracking.value == true
     }
 
-    suspend fun setImage(id: String, imagePath: String) = coroutineScope {
-        // Log.d(TAG, "Update image for visit $id")
-
-        val target = _visitsMap[id] ?: return@coroutineScope
-        val previewMaxSideLength: Int = (200 * Resources.getSystem().displayMetrics.density).toInt()
-        launch {
-            target.addBitmap(imageDecoder.readBitmap(imagePath, previewMaxSideLength))
-            // Log.v(TAG, "Updated icon in target $target")
-            updateItem(id, target)
-        }
-
-        // Log.d(TAG, "Launched preview update task")
-        try {
-            retryWithBackoff(
-                    times = 5, factor = 10.0,
-                    block = { uploadImage(imagePath, target, id) }
-            )
-        } catch (t: Throwable) {
-            when (t) {
-                is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException ->
-                    Log.i(TAG, "Failed to upload image", t)
-                else -> crashReportsProvider.logException(t)
-            }
-
-        }
-    }
-
-    private suspend fun uploadImage(
-            imagePath: String,
-            target: Visit,
-            id: String
-    ) {
-        val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
-        val imageKey = apiClient.uploadImage(uploadedImage)
-        target.visitPicture = imageKey
-        updateItem(id, target)
-        // Log.v(TAG, "Updated visit pic in target $target")
-        File(imagePath).apply { if (exists()) delete() }
+    fun getVisit(visitId: String): Visit? {
+        return _visitsMap[visitId]
     }
 
     companion object {
