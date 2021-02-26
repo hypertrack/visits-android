@@ -1,11 +1,7 @@
 package com.hypertrack.android.utils
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  Image related utilities
@@ -17,7 +13,7 @@ interface ImageDecoder {
 
 class SimpleImageDecoder : ImageDecoder {
 
-    override fun readBitmap(imagePath: String, maxSideLength: Int) : Bitmap {
+    override fun readBitmap(imagePath: String, maxSideLength: Int): Bitmap {
         // Log.v(TAG, "fetchIcon $imagePath with size $maxSideLength")
         val options = BitmapFactory.Options().apply {
             // Get the dimensions of the bitmap
@@ -43,7 +39,9 @@ class SimpleImageDecoder : ImageDecoder {
         return BitmapFactory.decodeFile(imagePath, options)
     }
 
-    companion object { const val TAG = "ImageDecoder" }
+    companion object {
+        const val TAG = "ImageDecoder"
+    }
 
 }
 

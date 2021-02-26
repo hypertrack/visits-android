@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
-import com.hypertrack.android.models.VisitType
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.TrackingError
 import com.hypertrack.sdk.TrackingStateObserver
@@ -13,7 +12,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
 
 
     init {
-        when(sdkInstance.isRunning) {
+        when (sdkInstance.isRunning) {
             true -> listener.onTrackingStart()
             else -> listener.onTrackingStop()
         }
@@ -33,10 +32,10 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
 
     fun sendCompletionEvent(visit: Visit) {
         val payload = mapOf(
-            visit.typeKey to visit._id,
-            "type" to if (visit.state == VisitStatus.COMPLETED) "CHECK_OUT" else "CANCEL",
-            "visit_note" to visit.visitNote,
-            "_visit_photo" to visit.visitPicture
+                visit.typeKey to visit._id,
+                "type" to if (visit.state == VisitStatus.COMPLETED) "CHECK_OUT" else "CANCEL",
+                "visit_note" to visit.visitNote,
+                "_visit_photo" to visit.visitPicture
         )
         // Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload, visit.expectedLocation)
@@ -68,7 +67,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
 
 class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
     var state: MutableLiveData<TrackingStateValue> =
-        MutableLiveData(TrackingStateValue.UNKNOWN)
+            MutableLiveData(TrackingStateValue.UNKNOWN)
 
     override fun onTrackingStart() = state.postValue(TrackingStateValue.TRACKING)
 
@@ -83,7 +82,9 @@ class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
 
     override fun onTrackingStop() = state.postValue(TrackingStateValue.STOP)
 
-    companion object {const val TAG = "HyperTrackService"}
+    companion object {
+        const val TAG = "HyperTrackService"
+    }
 }
 
 enum class TrackingStateValue { TRACKING, ERROR, STOP, UNKNOWN, DEVICE_DELETED }

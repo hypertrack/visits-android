@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 
-abstract class BaseStateViewModel: ViewModel() {
+abstract class BaseStateViewModel : ViewModel() {
     val obsMap = mutableMapOf<LiveData<*>, Observer<*>>()
 
     var state = MutableLiveData<State>()
@@ -30,7 +30,6 @@ abstract class BaseStateViewModel: ViewModel() {
 }
 
 
-
 open class State
 object JustInitial : State()
 object JustLoading : State()
@@ -39,4 +38,4 @@ object JustUnknownError : State()
 class JustError(val exception: Throwable) : State()
 object JustInvalidData : State()
 
-class UndefinedStateException(state: State): Exception(state.toString())
+class UndefinedStateException(state: State) : Exception(state.toString())

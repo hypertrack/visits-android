@@ -5,13 +5,13 @@ import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.ServiceLocator
 
 class AccountRepository(
-    private val serviceLocator: ServiceLocator,
-    private val accountData: AccountData,
-    private val accountDataStorage: AccountDataStorage,
-    private val clearLoginAction: () -> Unit
+        private val serviceLocator: ServiceLocator,
+        private val accountData: AccountData,
+        private val accountDataStorage: AccountDataStorage,
+        private val clearLoginAction: () -> Unit
 ) : AccountPreferencesProvider {
 
-    val isVerifiedAccount : Boolean
+    val isVerifiedAccount: Boolean
         get() = accountData.lastToken != null
 
     override var wasWhitelisted: Boolean
@@ -22,17 +22,21 @@ class AccountRepository(
         }
     override var isManualCheckInAllowed: Boolean
         get() = accountData.isManualVisitEnabled
-        set(value) { accountData.isManualVisitEnabled = value }
+        set(value) {
+            accountData.isManualVisitEnabled = value
+        }
 
     override var isPickUpAllowed: Boolean
         get() = accountData.pickUpAllowed
-        set(value) { accountData.pickUpAllowed = value }
+        set(value) {
+            accountData.pickUpAllowed = value
+        }
 
     suspend fun onKeyReceived(
-        key: String,
-        checkInEnabled: String = "false",
-        pickUpAllowed: String = "true"
-    ) : Boolean {
+            key: String,
+            checkInEnabled: String = "false",
+            pickUpAllowed: String = "true"
+    ): Boolean {
 
         val sdk = serviceLocator.getHyperTrackService(key)
         // Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
@@ -49,7 +53,8 @@ class AccountRepository(
         when (accountState) {
             Unknown, InvalidCredentials -> return false
             is Active -> token = accountState.token
-            Suspended -> {} // Log.d(TAG, "Account is suspended or device was deleted")
+            Suspended -> {
+            } // Log.d(TAG, "Account is suspended or device was deleted")
         }
         if (checkInEnabled in listOf("true", "True")) {
             isManualCheckInAllowed = true
@@ -59,12 +64,12 @@ class AccountRepository(
         }
 
         accountDataStorage.saveAccountData(
-            AccountData(
-                publishableKey = key,
-                lastToken = token,
-                isManualVisitEnabled = isManualCheckInAllowed,
-                _pickUpAllowed = isPickUpAllowed
-            )
+                AccountData(
+                        publishableKey = key,
+                        lastToken = token,
+                        isManualVisitEnabled = isManualCheckInAllowed,
+                        _pickUpAllowed = isPickUpAllowed
+                )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
         clearLoginAction()

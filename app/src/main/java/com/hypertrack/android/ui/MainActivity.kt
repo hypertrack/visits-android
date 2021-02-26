@@ -12,7 +12,7 @@ import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.NavGraphDirections
 import com.hypertrack.logistics.android.github.R
 
-class MainActivity: NavActivity(), DeeplinkResultListener {
+class MainActivity : NavActivity(), DeeplinkResultListener {
 
     val splashScreenViewModel: SplashScreenViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
@@ -27,8 +27,8 @@ class MainActivity: NavActivity(), DeeplinkResultListener {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.action == Intent.ACTION_SYNC) {
-            if(getCurrentFragment() is VisitsManagementFragment) {
-                    //todo share vm
+            if (getCurrentFragment() is VisitsManagementFragment) {
+                //todo share vm
                 (getCurrentFragment() as VisitsManagementFragment).refreshVisits()
             } else {
                 findNavController(R.id.root).navigate(NavGraphDirections.actionGlobalVisitManagementFragment())
@@ -48,13 +48,13 @@ class MainActivity: NavActivity(), DeeplinkResultListener {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         getCurrentFragment().let {
-            if(it is PermissionRequestFragment) {
+            if (it is PermissionRequestFragment) {
                 it.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }

@@ -21,7 +21,7 @@ class SummaryViewModel(
     fun refreshSummary() {
         viewModelScope.launch {
             val res = historyRepository.getHistory()
-            if(res is HistoryError) {
+            if (res is HistoryError) {
                 error.postValue(res)
             }
         }

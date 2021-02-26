@@ -13,7 +13,7 @@ class ApiEntitiesDeserializationTest {
     @Test
     fun `it should deserialize geofence api responses from Json`() {
         val geofenceResponseString =
-            """
+                """
             {
                 "data": [
                     {
@@ -47,7 +47,8 @@ class ApiEntitiesDeserializationTest {
         val geofenceResponse = moshi.adapter(GeofenceResponse::class.java).fromJson(geofenceResponseString)
         assertNotNull(geofenceResponse)
         assertNotNull(geofenceResponse?.geofences)
-        val geofences = geofenceResponse?.geofences?: throw NullPointerException("no geofences in response")
+        val geofences = geofenceResponse?.geofences
+                ?: throw NullPointerException("no geofences in response")
         val geofence = geofences.first()
         assertEquals("010b7861-59fc-4157-9fcd-6d2e0c5072d9", geofence.geofence_id)
         assertEquals("2020-01-16T12:51:00.010934+00:00", geofence.created_at)
@@ -81,8 +82,8 @@ class ApiEntitiesDeserializationTest {
                             }
                             """.trimIndent()
         val geofence = moshi.adapter(Geofence::class.java)
-            .fromJson(visitedGeofence)
-            ?: throw NullPointerException("No geofence deserialized")
+                .fromJson(visitedGeofence)
+                ?: throw NullPointerException("No geofence deserialized")
         assertEquals("010b7861-59fc-4157-9fcd-6d2e0c5072d9", geofence.geofence_id)
         assertEquals("2020-01-16T12:51:00.010934+00:00", geofence.created_at)
         assertEquals(30, geofence.radius)
@@ -97,7 +98,7 @@ class ApiEntitiesDeserializationTest {
         """.trimIndent()
 
         val marker = moshi.adapter(GeofenceMarker::class.java).fromJson(serializedMarker)
-            ?: throw NullPointerException("No marker deserialized")
+                ?: throw NullPointerException("No marker deserialized")
 
         assertEquals("2020-02-02T20:02:02.000Z", marker.arrival?.recordedAt)
         assertEquals("42-42", marker.geofenceId)
@@ -119,7 +120,7 @@ class ApiEntitiesDeserializationTest {
       """
 
         val locations = moshi.adapter(Locations::class.java).nullSafe().fromJson(serializedLocations)!!
-        with (locations) {
+        with(locations) {
             assertEquals("LineString", type)
             assertEquals(4, coordinates.size)
             assertEquals(-122.084009, coordinates[0].longitude, 0.000001)
@@ -220,8 +221,8 @@ class ApiEntitiesDeserializationTest {
         """.trimIndent()
 
         val markers = moshi
-            .adapter<List<HistoryMarker>>(Types.newParameterizedType(List::class.java, HistoryMarker::class.java))
-            .fromJson(serializedMarkers)!!
+                .adapter<List<HistoryMarker>>(Types.newParameterizedType(List::class.java, HistoryMarker::class.java))
+                .fromJson(serializedMarkers)!!
 
         assertEquals(3, markers.size)
 
@@ -261,10 +262,10 @@ class ApiEntitiesDeserializationTest {
         """.trimIndent()
 
         val marker = moshi
-            .adapter(HistoryMarker::class.java)
-            .fromJson(serializedMarker)!!
+                .adapter(HistoryMarker::class.java)
+                .fromJson(serializedMarker)!!
         assertTrue(marker is HistoryStatusMarker)
-        with (marker as HistoryStatusMarker) {
+        with(marker as HistoryStatusMarker) {
             assertEquals("d0879f89-69fd-4227-a07e-65924b323c69", markerId)
             assertEquals("inactive", data.value)
             assertEquals(27991, data.duration)

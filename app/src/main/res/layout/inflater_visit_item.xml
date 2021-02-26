@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="7dp"
-    android:background="@color/colorWhite"
- >
+    android:background="@color/colorWhite">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivUserPic"
@@ -60,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
-         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_cam" />
 
     <androidx.appcompat.widget.AppCompatImageView

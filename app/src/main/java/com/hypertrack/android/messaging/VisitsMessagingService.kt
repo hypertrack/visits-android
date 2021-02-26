@@ -8,7 +8,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hypertrack.android.ui.MainActivity
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
-class VisitsMessagingService: FirebaseMessagingService() {
+class VisitsMessagingService : FirebaseMessagingService() {
 
     //todo
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
@@ -23,5 +23,7 @@ class VisitsMessagingService: FirebaseMessagingService() {
     }
 
 
-    companion object {const val TAG = "VisitsMessagingService"}
+    companion object {
+        const val TAG = "VisitsMessagingService"
+    }
 }

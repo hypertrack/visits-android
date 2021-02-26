@@ -8,7 +8,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import org.jetbrains.annotations.TestOnly
 
-abstract class NavActivity: AppCompatActivity() {
+abstract class NavActivity : AppCompatActivity() {
 
     protected val allowNotBaseFragments = false
 
@@ -44,7 +44,7 @@ abstract class NavActivity: AppCompatActivity() {
         if (res is BaseFragment<*>) {
             return res
         } else {
-            if(allowNotBaseFragments) {
+            if (allowNotBaseFragments) {
                 return null
             } else {
                 throw IllegalStateException("allowNotBaseFragments = false")
@@ -58,7 +58,7 @@ abstract class NavActivity: AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(getCurrentBaseFragment()?.onBackPressed() == false) {
+        if (getCurrentBaseFragment()?.onBackPressed() == false) {
             super.onBackPressed()
         }
     }

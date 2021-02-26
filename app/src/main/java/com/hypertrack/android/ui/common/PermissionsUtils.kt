@@ -21,6 +21,6 @@ object PermissionsUtils {
     }
 
     fun hasPermission(permission: String) =
-        MyApplication.context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+            MyApplication.context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 
 }

@@ -22,5 +22,7 @@ class AwsLoginProviderTest {
         }
     }
 
-    companion object {const val TAG = "AwsLoginProviderTest"}
+    companion object {
+        const val TAG = "AwsLoginProviderTest"
+    }
 }

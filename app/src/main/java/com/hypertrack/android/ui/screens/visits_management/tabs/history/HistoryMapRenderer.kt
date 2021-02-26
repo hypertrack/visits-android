@@ -14,11 +14,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 /** Maps imports swimline */
-interface HistoryMapRenderer { suspend fun showHistory(history: History): Boolean }
+interface HistoryMapRenderer {
+    suspend fun showHistory(history: History): Boolean
+}
 
 
-
-class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment): HistoryMapRenderer {
+class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : HistoryMapRenderer {
 
     var map: GoogleMap? = null
     var polyLine: Polyline? = null
@@ -30,7 +31,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment): His
         if (map == null) {
             Log.d(TAG, "Map haven't been yet initialized")
             mapFragment.getMapAsync { googleMap ->
-                Log.d(TAG,  "google map async callback")
+                Log.d(TAG, "google map async callback")
                 googleMap.uiSettings.isMyLocationButtonEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
@@ -40,7 +41,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment): His
                     map?.moveCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
                 } else {
                     map?.moveCamera(CameraUpdateFactory.newLatLngBounds(
-                        history.locationTimePoints.map { it.first }.boundRect(), 0
+                            history.locationTimePoints.map { it.first }.boundRect(), 0
                     ))
 
                 }
@@ -60,20 +61,22 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment): His
         }
     }
 
-    companion object { const val TAG = "HistoryMapRenderer" }
+    companion object {
+        const val TAG = "HistoryMapRenderer"
+    }
 }
 
 private fun Location.asLatLng(): LatLng = LatLng(latitude, longitude)
 
 private fun History.asPolylineOptions(): PolylineOptions = this
-    .locationTimePoints
-    .map { it.first }
-    .fold(PolylineOptions()) {
-            options, point ->  options.add(LatLng(point.latitude, point.longitude))
-    }
+        .locationTimePoints
+        .map { it.first }
+        .fold(PolylineOptions()) { options, point ->
+            options.add(LatLng(point.latitude, point.longitude))
+        }
 
-private fun Iterable<Location>.boundRect() : LatLngBounds {
-    val northEast = LatLng(this.map {it.latitude}.maxOrNull()!!, this.map {it.longitude}.maxOrNull()!!)
-    val southWest = LatLng(this.map {it.latitude}.minOrNull()!!, this.map {it.longitude}.minOrNull()!!)
+private fun Iterable<Location>.boundRect(): LatLngBounds {
+    val northEast = LatLng(this.map { it.latitude }.maxOrNull()!!, this.map { it.longitude }.maxOrNull()!!)
+    val southWest = LatLng(this.map { it.latitude }.minOrNull()!!, this.map { it.longitude }.minOrNull()!!)
     return LatLngBounds(southWest, northEast)
 }

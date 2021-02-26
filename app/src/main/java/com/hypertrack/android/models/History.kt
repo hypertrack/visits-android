@@ -1,9 +1,9 @@
 package com.hypertrack.android.models
 
 data class History(
-    val summary: Summary,
-    val locationTimePoints: List<Pair<Location, String>>,
-    val markers: List<Marker>,
+        val summary: Summary,
+        val locationTimePoints: List<Pair<Location, String>>,
+        val markers: List<Marker>,
 ) : HistoryResult()
 
 data class Summary(
@@ -17,17 +17,17 @@ data class Summary(
 )
 
 data class Location(
-    val longitude: Double,
-    val latitude: Double
+        val longitude: Double,
+        val latitude: Double
 )
 
 data class Marker(
-    val type: MarkerType,
-    val timestamp: String,
-    val location: Location?,
+        val type: MarkerType,
+        val timestamp: String,
+        val location: Location?,
 )
 
-enum class MarkerType{
+enum class MarkerType {
     STATUS,
     GEOTAG,
     GEOFENCE_ENTRY

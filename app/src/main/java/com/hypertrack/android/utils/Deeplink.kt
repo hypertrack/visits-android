@@ -12,9 +12,9 @@ interface DeeplinkProcessor {
     fun appOnCreate(application: Application)
     fun activityOnStart(activity: Activity, intent: Intent?, resultListener: DeeplinkResultListener)
     fun activityOnNewIntent(
-        activity: Activity,
-        intent: Intent?,
-        resultListener: DeeplinkResultListener
+            activity: Activity,
+            intent: Intent?,
+            resultListener: DeeplinkResultListener
     )
 }
 
@@ -23,7 +23,7 @@ interface DeeplinkResultListener {
 }
 
 class BranchIoDeepLinkProcessor(
-    private val crashReportsProvider: CrashReportsProvider
+        private val crashReportsProvider: CrashReportsProvider
 ) : DeeplinkProcessor {
 
     override fun appOnCreate(application: Application) {
@@ -32,16 +32,16 @@ class BranchIoDeepLinkProcessor(
     }
 
     override fun activityOnStart(
-        activity: Activity,
-        intent: Intent?,
-        resultListener: DeeplinkResultListener
+            activity: Activity,
+            intent: Intent?,
+            resultListener: DeeplinkResultListener
     ) {
         intent?.let {
             try {
                 Branch.sessionBuilder(activity)
-                    .withCallback(Branch2ResultListenerAdapter(resultListener))
-                    .withData(intent.data)
-                    .init()
+                        .withCallback(Branch2ResultListenerAdapter(resultListener))
+                        .withData(intent.data)
+                        .init()
             } catch (e: Throwable) {
                 crashReportsProvider.logException(e)
                 resultListener.onDeeplinkResult(mapOf("error" to e))
@@ -50,18 +50,18 @@ class BranchIoDeepLinkProcessor(
     }
 
     override fun activityOnNewIntent(
-        activity: Activity,
-        intent: Intent?,
-        resultListener: DeeplinkResultListener
+            activity: Activity,
+            intent: Intent?,
+            resultListener: DeeplinkResultListener
     ) {
         intent?.let {
             intent.putExtra("branch_force_new_session", true)
             activity.intent = intent
             try {
                 Branch.sessionBuilder(activity)
-                    .withCallback(Branch2ResultListenerAdapter(resultListener))
-                    .withData(intent.data)
-                    .reInit()
+                        .withCallback(Branch2ResultListenerAdapter(resultListener))
+                        .withData(intent.data)
+                        .reInit()
             } catch (e: Throwable) {
                 crashReportsProvider.logException(e)
                 resultListener.onDeeplinkResult(mapOf("error" to e))
@@ -72,14 +72,14 @@ class BranchIoDeepLinkProcessor(
 }
 
 private class Branch2ResultListenerAdapter(
-    val deeplinkResultListener: DeeplinkResultListener
+        val deeplinkResultListener: DeeplinkResultListener
 ) : Branch.BranchUniversalReferralInitListener {
     override fun onInitFinished(
-        branchUniversalObject: BranchUniversalObject?,
-        linkProperties: LinkProperties?,
-        error: BranchError?
+            branchUniversalObject: BranchUniversalObject?,
+            linkProperties: LinkProperties?,
+            error: BranchError?
     ) =
-        deeplinkResultListener.onDeeplinkResult(
-             branchUniversalObject?.contentMetadata?.customMetadata?: emptyMap()
-         )
+            deeplinkResultListener.onDeeplinkResult(
+                    branchUniversalObject?.contentMetadata?.customMetadata ?: emptyMap()
+            )
 }

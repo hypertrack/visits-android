@@ -18,7 +18,7 @@ class MyPreferencesTest {
     @Before
     fun setUp() {
         myPreferences =
-            MyPreferences(InstrumentationRegistry.getInstrumentation().targetContext, Injector.getMoshi())
+                MyPreferences(InstrumentationRegistry.getInstrumentation().targetContext, Injector.getMoshi())
         myPreferences.clearPreferences()
     }
 
@@ -69,17 +69,17 @@ class MyPreferencesTest {
     @Test
     fun crudVisits() {
         val visitsExpected = listOf(
-            Visit(
-                _id="42",
-                visitType = VisitType.LOCAL,
-                _state = VisitStatus.VISITED
-            ),
-            Visit(
-                _id = "24",
-                completedAt = "2020-02-02T20:20:02.020Z",
-                visitType = VisitType.TRIP,
-                _state = VisitStatus.COMPLETED
-            )
+                Visit(
+                        _id = "42",
+                        visitType = VisitType.LOCAL,
+                        _state = VisitStatus.VISITED
+                ),
+                Visit(
+                        _id = "24",
+                        completedAt = "2020-02-02T20:20:02.020Z",
+                        visitType = VisitType.TRIP,
+                        _state = VisitStatus.COMPLETED
+                )
         )
         myPreferences.saveVisits(visitsExpected)
         val visitsGot = myPreferences.restoreVisits()

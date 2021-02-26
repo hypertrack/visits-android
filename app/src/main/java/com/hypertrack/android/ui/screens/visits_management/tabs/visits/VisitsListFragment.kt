@@ -8,7 +8,7 @@ import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragm
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_visits_list.*
 
-class VisitsListFragment: Fragment(R.layout.fragment_tab_visits_list) {
+class VisitsListFragment : Fragment(R.layout.fragment_tab_visits_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

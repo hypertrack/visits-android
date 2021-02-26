@@ -10,9 +10,9 @@ import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 
 class HistoryRepository(
-    private val apiClient: ApiClient,
-    private val crashReportsProvider: CrashReportsProvider,
-    private val osUtilsProvider: OsUtilsProvider
+        private val apiClient: ApiClient,
+        private val crashReportsProvider: CrashReportsProvider,
+        private val osUtilsProvider: OsUtilsProvider
 ) {
 
     private val _history = MutableLiveData<History>()
@@ -22,10 +22,10 @@ class HistoryRepository(
 
     suspend fun getHistory(): HistoryResult {
         val result = apiClient.getHistory(
-            osUtilsProvider.getLocalDate(),
-            osUtilsProvider.getTimeZoneId()
+                osUtilsProvider.getLocalDate(),
+                osUtilsProvider.getTimeZoneId()
         )
-        return when(result) {
+        return when (result) {
             is History -> {
                 _history.postValue(result)
                 result

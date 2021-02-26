@@ -13,9 +13,9 @@ import com.hypertrack.android.ui.common.PermissionsUtils
 import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 class PermissionRequestViewModel(
-    private val accountRepository: AccountRepository,
-    private val context: Context
-    ) : BaseStateViewModel() {
+        private val accountRepository: AccountRepository,
+        private val context: Context
+) : BaseStateViewModel() {
 
     private val autostarter = AutoStartPermissionHelper.getInstance()
 
@@ -23,19 +23,19 @@ class PermissionRequestViewModel(
 
     fun requestPermission(activity: Activity) {
         val requiredPermissions: Array<String> =
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            else arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACTIVITY_RECOGNITION
-            )
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                else arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACTIVITY_RECOGNITION
+                )
         activity.requestPermissions(requiredPermissions, 42)
     }
 
     fun requestWhitelisting(activity: Activity) {
         val granted = AutoStartPermissionHelper.getInstance().getAutoStartPermission(activity)
-        Log.d(TAG, "AutoStart granted value is $granted" )
+        Log.d(TAG, "AutoStart granted value is $granted")
         accountRepository.wasWhitelisted = granted
         whitelistingRequired.postValue(isWhitelistingApplicable())
     }
@@ -49,12 +49,14 @@ class PermissionRequestViewModel(
         whitelistingRequired.postValue(isWhitelistingApplicable())
     }
 
-    private fun isWhitelistingApplicable() : Boolean {
+    private fun isWhitelistingApplicable(): Boolean {
         return autostarter.isAutoStartPermissionAvailable(context) && !accountRepository.wasWhitelisted
     }
 
-    companion object { const val TAG = "PermissionRequestVM" }
+    companion object {
+        const val TAG = "PermissionRequestVM"
+    }
 
-    object PermissionsGranted: State()
-    object PermissionsNotGranted: State()
+    object PermissionsGranted : State()
+    object PermissionsNotGranted : State()
 }

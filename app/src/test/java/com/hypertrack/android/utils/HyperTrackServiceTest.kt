@@ -9,7 +9,8 @@ import com.hypertrack.sdk.HyperTrack
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,10 +29,10 @@ class HyperTrackServiceTest {
         val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
-            _id = "42",
-            visitNote = visitNote,
-            visitType = VisitType.GEOFENCE,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                visitNote = visitNote,
+                visitType = VisitType.GEOFENCE,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -53,10 +54,10 @@ class HyperTrackServiceTest {
         val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
-            _id = "42",
-            visitNote = visitNote,
-            visitType = VisitType.TRIP,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                visitNote = visitNote,
+                visitType = VisitType.TRIP,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -78,10 +79,10 @@ class HyperTrackServiceTest {
         val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
-            _id = "42",
-            visitNote = visitNote,
-            visitType = VisitType.LOCAL,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                visitNote = visitNote,
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -103,10 +104,10 @@ class HyperTrackServiceTest {
         val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
-            _id = "42",
-            visitNote = visitNote,
-            visitType = VisitType.LOCAL,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                visitNote = visitNote,
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -128,10 +129,10 @@ class HyperTrackServiceTest {
         val hyperTrackService = HyperTrackService(listener, sdk)
         val visitPicture = "abcde"
         val visit = Visit(
-            _id = "42",
-            visitPicture = visitPicture,
-            visitType = VisitType.LOCAL,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                visitPicture = visitPicture,
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -153,11 +154,11 @@ class HyperTrackServiceTest {
         val expectedLat = 42.0
         val expectedLong = 3.14
         val visit = Visit(
-            _id = "42",
-            latitude = expectedLat,
-            longitude = expectedLong,
-            visitType = VisitType.TRIP,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                latitude = expectedLat,
+                longitude = expectedLong,
+                visitType = VisitType.TRIP,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Location>()
@@ -178,11 +179,11 @@ class HyperTrackServiceTest {
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
-            _id = "42",
-            latitude = expectedLat,
-            longitude = expectedLong,
-            visitType = VisitType.GEOFENCE,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                latitude = expectedLat,
+                longitude = expectedLong,
+                visitType = VisitType.GEOFENCE,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Location>()
@@ -203,11 +204,11 @@ class HyperTrackServiceTest {
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
-            _id = "42",
-            latitude = expectedLat,
-            longitude = expectedLong,
-            visitType = VisitType.LOCAL,
-            _state = VisitStatus.COMPLETED
+                _id = "42",
+                latitude = expectedLat,
+                longitude = expectedLong,
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.COMPLETED
         )
 
         val slot = slot<Map<String, Any>>()
@@ -227,11 +228,11 @@ class HyperTrackServiceTest {
         val expectedLat = 42.0
         val expectedLong = 3.14
         val visit = Visit(
-            _id = "42",
-            latitude = expectedLat,
-            longitude = expectedLong,
-            visitType = VisitType.TRIP,
-            _state = VisitStatus.CANCELLED
+                _id = "42",
+                latitude = expectedLat,
+                longitude = expectedLong,
+                visitType = VisitType.TRIP,
+                _state = VisitStatus.CANCELLED
         )
 
         val slot = slot<Location>()
@@ -252,11 +253,11 @@ class HyperTrackServiceTest {
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
-            _id = "42",
-            latitude = expectedLat,
-            longitude = expectedLong,
-            visitType = VisitType.GEOFENCE,
-            _state = VisitStatus.CANCELLED
+                _id = "42",
+                latitude = expectedLat,
+                longitude = expectedLong,
+                visitType = VisitType.GEOFENCE,
+                _state = VisitStatus.CANCELLED
         )
 
         val slot = slot<Location>()
@@ -277,11 +278,11 @@ class HyperTrackServiceTest {
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
-            _id = "42",
-            latitude = expectedLat,
-            longitude = expectedLong,
-            visitType = VisitType.LOCAL,
-            _state = VisitStatus.CANCELLED
+                _id = "42",
+                latitude = expectedLat,
+                longitude = expectedLong,
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.CANCELLED
         )
 
         val slot = slot<Map<String, Any>>()

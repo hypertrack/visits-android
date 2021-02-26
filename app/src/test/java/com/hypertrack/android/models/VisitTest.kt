@@ -1,6 +1,9 @@
 package com.hypertrack.android.models
 
-import com.hypertrack.android.api.*
+import com.hypertrack.android.api.Point
+import com.hypertrack.android.api.Trip
+import com.hypertrack.android.api.TripDestination
+import com.hypertrack.android.api.Views
 import org.junit.Assert.*
 import org.junit.Test
 import java.time.Instant
@@ -36,12 +39,12 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
-            )
+        )
         )
         val updated = pending.update(prototype, true)
         assertEquals(VisitStatus.VISITED, updated.state)
@@ -53,12 +56,12 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
-            )
+        )
         )
         val updated = pending.update(prototype, true)
         assertEquals(VisitStatus.VISITED, updated.state)
@@ -71,12 +74,12 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
-            )
+        )
         )
         val updated = pending.update(prototype, false)
         assertEquals(VisitStatus.PENDING, updated.state)
@@ -88,12 +91,12 @@ class VisitTest {
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = "2020-02-02T20:20:02.020Z"
-            )
+        )
         )
         val updated = pending.update(prototype, false)
         assertEquals(VisitStatus.PICKED_UP, updated.state)
@@ -106,12 +109,12 @@ class VisitTest {
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PENDING)
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
-            )
+        )
         )
         val updated = pending.update(prototype, true)
         assertEquals(arrivedAt, updated.visitedAt)
@@ -124,12 +127,12 @@ class VisitTest {
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP, _state = VisitStatus.PICKED_UP)
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
-            )
+        )
         )
         val updated = pending.update(prototype, true)
         assertEquals(arrivedAt, updated.visitedAt)
@@ -140,16 +143,16 @@ class VisitTest {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
         val pending = Visit(tripId, createdAt = createdAt, visitType = VisitType.TRIP,
-            visitNote = "important Note", _state = VisitStatus.PENDING
+                visitNote = "important Note", _state = VisitStatus.PENDING
         )
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
-            )
+        )
         )
         val updated = pending.update(prototype, true)
         assertEquals(pending.visitNote, updated.visitNote)
@@ -160,17 +163,17 @@ class VisitTest {
         val createdAt = "2020-02-02T20:02:02.020Z"
         val tripId = "42"
         val pending = Visit(
-            tripId, createdAt = createdAt, visitType = VisitType.TRIP, visitNote = "important Note",
-            _state = VisitStatus.PICKED_UP
+                tripId, createdAt = createdAt, visitType = VisitType.TRIP, visitNote = "important Note",
+                _state = VisitStatus.PICKED_UP
         )
         val arrivedAt = "2020-02-02T20:20:02.020Z"
         val prototype: VisitDataSource = Trip(
-            views = Views(null, null), tripId, createdAt = createdAt,
-            metadata = emptyMap(), destination = TripDestination(
+                views = Views(null, null), tripId, createdAt = createdAt,
+                metadata = emptyMap(), destination = TripDestination(
                 null,
                 Point(listOf(42.0, 42.0)),
                 arrivedAt = arrivedAt
-            )
+        )
         )
         val updated = pending.update(prototype, true)
         assertEquals(pending.visitNote, updated.visitNote)

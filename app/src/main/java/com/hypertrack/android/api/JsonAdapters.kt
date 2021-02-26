@@ -7,11 +7,11 @@ import com.squareup.moshi.ToJson
 internal class HistoryCoordinateJsonAdapter {
     @ToJson
     fun historyCoordinateToJson(historyCoordinate: HistoryCoordinate): List<Any?> =
-        listOf(
-                historyCoordinate.longitude,
-                historyCoordinate.latitude,
-                historyCoordinate.altitude,
-                historyCoordinate.timestamp
+            listOf(
+                    historyCoordinate.longitude,
+                    historyCoordinate.latitude,
+                    historyCoordinate.altitude,
+                    historyCoordinate.timestamp
             )
 
     @FromJson
@@ -26,7 +26,7 @@ internal class HistoryCoordinateJsonAdapter {
 internal class GeometryJsonAdapter {
     @ToJson
     fun geometryToJson(geometry: Geometry): Map<String, Any> =
-        mapOf("type" to geometry.type, "coordinates" to geometry.coordinates)
+            mapOf("type" to geometry.type, "coordinates" to geometry.coordinates)
 
     @Suppress("UNCHECKED_CAST")
     @FromJson
