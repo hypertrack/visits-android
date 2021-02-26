@@ -29,25 +29,28 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bottomSheetBehavior = BottomSheetBehavior.from(navigationView)
+        val bottomSheetBehavior = BottomSheetBehavior.from(timeLineView)
+        bottomSheetBehavior.peekHeight = 48
 
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        val color = requireContext().resources.getColor(R.color.colorHyperTrackGreen, requireContext().theme)
 
-        bottomAppBar.apply {
-            setNavigationOnClickListener {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        timeLineView.menu.apply {
+            listOf(
+                R.drawable.ic_coffee to "5 min",
+                R.drawable.ic_walk to "10 min • 520 steps",
+                R.drawable.ic_car to "15 min • 8.0 miles",
+                R.drawable.ic_coffee to "30 min"
+            ).forEach {(icon, description) ->
+                val item = this.add(description)
+                item.setIcon(icon)
+                item.actionView?.setBackgroundColor(color)
             }
         }
 
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            // Handle menu item selected
-            menuItem.isChecked = true
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            true
-        }
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         deviceHistoryView.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         (childFragmentManager.findFragmentById(R.id.deviceHistoryView) as SupportMapFragment?)?.let {
@@ -74,3 +77,4 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         const val TAG = "MapViewFragment"
     }
 }
+

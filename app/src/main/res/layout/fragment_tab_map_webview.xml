@@ -13,50 +13,11 @@
         android:layout_height="match_parent" />
 
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigationView"
+        android:id="@+id/timeLineView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_hideable="true"
-        />
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_app_bar_height"
-        android:layout_gravity="bottom"
-        style="@style/Widget.MaterialComponents.BottomAppBar.PrimarySurface"
-        android:background="@color/colorTimelineBackground"
-        app:fabAlignmentMode="center">
-
-
-        <LinearLayout
-            android:id="@+id/bottom_app_bar_content_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            >
-
-            <ImageView
-                android:id="@+id/bottom_app_bar_chevron"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/bottom_app_bar_logo_content_desc"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_expand_up" />
-
-            <ImageView
-                android:layout_marginStart="32dp"
-                android:id="@+id/bottom_app_bar_logo"
-                android:layout_width="@dimen/bottom_app_bar_logo_size"
-                android:layout_height="@dimen/bottom_app_bar_logo_size"
-                android:contentDescription="@string/bottom_app_bar_logo_content_desc"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_history" />
-
-        </LinearLayout>
-    </com.google.android.material.bottomappbar.BottomAppBar>
+        app:behavior_hideable="false" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
