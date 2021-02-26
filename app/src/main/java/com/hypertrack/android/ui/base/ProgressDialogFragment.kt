@@ -40,6 +40,11 @@ open class ProgressDialogFragment(layoutId: Int) : BaseFragment<MainActivity>(la
         notificationManager.cancel(SYNC_NOTIFICATION_ID)
     }
 
+    override fun onLeave() {
+        super.onLeave()
+        dismissProgress()
+    }
+
     companion object {
         const val SYNC_NOTIFICATION_ID = 4242
     }

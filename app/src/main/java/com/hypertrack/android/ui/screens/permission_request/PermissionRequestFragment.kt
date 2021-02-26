@@ -14,35 +14,26 @@ import kotlinx.android.synthetic.main.fragment_permission_request.*
 
 class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permission_request) {
 
-    private val permissionRequestViewModel: PermissionRequestViewModel by viewModels {
+    private val vm: PermissionRequestViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        permissionRequestViewModel.state.observe(viewLifecycleOwner, { state ->
-            when (state) {
-                is PermissionRequestViewModel.PermissionsGranted -> {
-                    findNavController().navigate(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToVisitManagementFragment())
-                }
-                is PermissionRequestViewModel.PermissionsNotGranted -> {
-                    permissionRequestViewModel.requestPermission(mainActivity())
-                }
-            }
+        vm.destination.observe(viewLifecycleOwner, {
+            findNavController().navigate(it)
         })
 
-        permissionRequestViewModel.whitelistingRequired.observe(viewLifecycleOwner) { visible ->
+        vm.whitelistingRequired.observe(viewLifecycleOwner) { visible ->
             listOf<View>(btnWhitelisting, whitelistingMessage)
-                    .forEach { it.setGoneState(!visible) }
+                .forEach { it.setGoneState(!visible) }
         }
 
-        btnContinue.setOnClickListener { permissionRequestViewModel.requestPermission(mainActivity()) }
+        btnContinue.setOnClickListener { vm.requestPermissions(mainActivity()) }
 
         btnWhitelisting.setOnClickListener {
-            permissionRequestViewModel.requestWhitelisting(
-                    mainActivity()
-            )
+            vm.requestWhitelisting(mainActivity())
         }
     }
 
@@ -52,12 +43,12 @@ class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permi
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionRequestViewModel.onPermissionResult()
+        vm.onPermissionResult(mainActivity())
     }
 
 

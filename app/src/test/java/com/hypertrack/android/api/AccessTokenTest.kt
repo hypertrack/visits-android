@@ -2,6 +2,7 @@ package com.hypertrack.android.api
 
 import com.hypertrack.android.repository.AUTH_HEADER_KEY
 import com.hypertrack.android.repository.BasicAuthAccessTokenRepository
+import com.hypertrack.android.ui.screens.splash_screen.SplashScreenFragmentDirections
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse

@@ -44,7 +44,7 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
     }
 
     override fun onDeeplinkResult(parameters: Map<String, Any>) {
-        splashScreenViewModel.handleDeeplink(parameters)
+        splashScreenViewModel.handleDeeplink(parameters, this)
     }
 
     override fun onRequestPermissionsResult(

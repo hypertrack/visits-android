@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 
 //todo remove
+@Deprecated("")
 abstract class BaseStateViewModel: ViewModel() {
     val obsMap = mutableMapOf<LiveData<*>, Observer<*>>()
 

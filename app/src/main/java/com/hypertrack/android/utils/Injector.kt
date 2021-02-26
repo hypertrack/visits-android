@@ -4,10 +4,7 @@ import android.content.Context
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
-import com.hypertrack.android.interactors.PhotoUploadInteractor
-import com.hypertrack.android.interactors.PhotoUploadInteractorImpl
-import com.hypertrack.android.interactors.VisitsInteractor
-import com.hypertrack.android.interactors.VisitsInteractorImpl
+import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
@@ -25,20 +22,22 @@ import kotlinx.coroutines.Dispatchers
 
 class ServiceLocator {
 
-    fun getAccessTokenRepository(deviceId: String, userName: String) = BasicAuthAccessTokenRepository(
-            AUTH_URL, deviceId, userName)
+    fun getAccessTokenRepository(deviceId: String, userName: String) =
+        BasicAuthAccessTokenRepository(
+            AUTH_URL, deviceId, userName
+        )
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         val listener = TrackingState()
         val sdkInstance = HyperTrack
-                .getInstance(publishableKey)
-                .addTrackingListener(listener)
-                .setTrackingNotificationConfig(
-                        ServiceNotificationConfig.Builder()
-                                .setSmallIcon(R.drawable.ic_notif_logo_small)
-                                .build()
-                )
-                .allowMockLocations()
+            .getInstance(publishableKey)
+            .addTrackingListener(listener)
+            .setTrackingNotificationConfig(
+                ServiceNotificationConfig.Builder()
+                    .setSmallIcon(R.drawable.ic_notif_logo_small)
+                    .build()
+            )
+            .allowMockLocations()
 
         return HyperTrackService(listener, sdkInstance)
     }
@@ -57,23 +56,23 @@ object Injector {
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
     fun getMoshi(): Moshi = Moshi.Builder()
-            .add(HistoryCoordinateJsonAdapter())
-            .add(GeometryJsonAdapter())
-            .add(
-                    RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
-                            .registerSubtype(HistoryStatusMarker::class.java, "device_status")
-                            .registerSubtype(HistoryTripMarker::class.java, "trip_marker")
-                            .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
-            )
-            .build()
+        .add(HistoryCoordinateJsonAdapter())
+        .add(GeometryJsonAdapter())
+        .add(
+            RuntimeJsonAdapterFactory(HistoryMarker::class.java, "type")
+                .registerSubtype(HistoryStatusMarker::class.java, "device_status")
+                .registerSubtype(HistoryTripMarker::class.java, "trip_marker")
+                .registerSubtype(HistoryGeofenceMarker::class.java, "geofence")
+        )
+        .build()
 
     fun provideViewModelFactory(context: Context): ViewModelFactory {
         return ViewModelFactory(
-                context,
-                getAccountRepo(context),
-                getDriverRepo(context),
-                crashReportsProvider,
-                getLoginProvider(context),
+            getAccountRepo(context),
+            getDriverRepo(context),
+            crashReportsProvider,
+            getLoginProvider(context),
+            getPermissionInteractor()
         )
     }
 
@@ -89,35 +88,36 @@ object Injector {
         if (userScope == null) {
             val context = MyApplication.context
             val historyRepository = HistoryRepository(
-                    getVisitsApiClient(MyApplication.context),
-                    crashReportsProvider,
-                    getOsUtilsProvider(MyApplication.context)
+                getVisitsApiClient(MyApplication.context),
+                crashReportsProvider,
+                getOsUtilsProvider(MyApplication.context)
             )
             val scope = CoroutineScope(Dispatchers.IO)
             userScope = UserScope(
+                historyRepository,
+                UserScopeViewModelFactory(
+                    getVisitsRepo(context),
                     historyRepository,
-                    UserScopeViewModelFactory(
-                            getVisitsRepo(context),
-                            historyRepository,
-                            getDriverRepo(context),
-                            getAccountRepo(context),
-                            crashReportsProvider,
-                            getHyperTrackService(context),
-                    ),
-                    PhotoUploadInteractorImpl(
-                            getVisitsRepo(context),
-                            getFileRepository(),
-                            crashReportsProvider,
-                            getImageDecoder(),
-                            getVisitsApiClient(MyApplication.context),
-                            scope,
-                            RetryParams(
-                                    retryTimes = 3,
-                                    initialDelay = 1000,
-                                    factor = 10.0,
-                                    maxDelay = 30 * 1000
-                            )
+                    getDriverRepo(context),
+                    getAccountRepo(context),
+                    crashReportsProvider,
+                    getHyperTrackService(context),
+                    getPermissionInteractor()
+                ),
+                PhotoUploadInteractorImpl(
+                    getVisitsRepo(context),
+                    getFileRepository(),
+                    crashReportsProvider,
+                    getImageDecoder(),
+                    getVisitsApiClient(MyApplication.context),
+                    scope,
+                    RetryParams(
+                        retryTimes = 3,
+                        initialDelay = 1000,
+                        factor = 10.0,
+                        maxDelay = 30 * 1000
                     )
+                )
             )
         }
         return userScope!!
@@ -127,40 +127,49 @@ object Injector {
         return FileRepositoryImpl()
     }
 
+    private fun getPermissionInteractor(): PermissionsInteractor {
+        return PermissionsInteractorImpl(
+            getAccountRepo(MyApplication.context)
+        )
+    }
+
     private fun getMyPreferences(context: Context): MyPreferences =
-            MyPreferences(context, getMoshi())
+        MyPreferences(context, getMoshi())
 
     private fun getDriver(context: Context): Driver = getMyPreferences(context).getDriverValue()
 
     private fun getDriverRepo(context: Context) = DriverRepository(
-            getDriver(context),
-            getMyPreferences(context),
-            crashReportsProvider
+        getDriver(context),
+        getMyPreferences(context),
+        crashReportsProvider
     )
 
     private fun getVisitsApiClient(context: Context): ApiClient {
         val accessTokenRepository = accessTokenRepository(context)
-        return ApiClient(accessTokenRepository,
-                BASE_URL, accessTokenRepository.deviceId)
+        return ApiClient(
+            accessTokenRepository,
+            BASE_URL, accessTokenRepository.deviceId
+        )
     }
 
     private fun getVisitsInteractor(): VisitsInteractor {
         return VisitsInteractorImpl(
-                getVisitsRepo(MyApplication.context),
-                getImageDecoder(),
-                getUserScope().photoUploadInteractor
+            getVisitsRepo(MyApplication.context),
+            getImageDecoder(),
+            getUserScope().photoUploadInteractor
         )
     }
 
     private fun accessTokenRepository(context: Context) =
-            (getMyPreferences(context).restoreRepository()
-                    ?: throw IllegalStateException("No access token repository was saved"))
+        (getMyPreferences(context).restoreRepository()
+            ?: throw IllegalStateException("No access token repository was saved"))
 
     private fun getAccountRepo(context: Context) =
-            AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
-            { userScope = null }
+        AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
+        { userScope = null }
 
-    private fun getAccountData(context: Context): AccountData = getMyPreferences(context).getAccountData()
+    private fun getAccountData(context: Context): AccountData =
+        getMyPreferences(context).getAccountData()
 
     private fun getOsUtilsProvider(context: Context): OsUtilsProvider {
         return OsUtilsProvider(context, crashReportsProvider)
@@ -169,7 +178,7 @@ object Injector {
     private fun getHyperTrackService(context: Context): HyperTrackService {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
-                ?: throw IllegalStateException("No publishableKey saved")
+            ?: throw IllegalStateException("No publishableKey saved")
         return ServiceLocator().getHyperTrackService(publishableKey)
     }
 
@@ -177,13 +186,13 @@ object Injector {
         visitsRepository?.let { return it }
 
         getMyPreferences(context).getAccountData().publishableKey
-                ?: throw IllegalStateException("No publishableKey saved")
+            ?: throw IllegalStateException("No publishableKey saved")
         val result = VisitsRepository(
-                getOsUtilsProvider(context),
-                getVisitsApiClient(context),
-                getMyPreferences(context),
-                getHyperTrackService(context),
-                getAccountRepo(context),
+            getOsUtilsProvider(context),
+            getVisitsApiClient(context),
+            getMyPreferences(context),
+            getHyperTrackService(context),
+            getAccountRepo(context),
         )
         visitsRepository = result
 
@@ -192,20 +201,22 @@ object Injector {
 
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
-    private fun getLoginProvider(context: Context): AccountLoginProvider = CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
+    private fun getLoginProvider(context: Context): AccountLoginProvider =
+        CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
-    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer = GoogleMapHistoryRenderer(supportMapFragment)
+    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
+        GoogleMapHistoryRenderer(supportMapFragment)
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
-            Factory { a -> getHistoryMapRenderer(a) }
+        Factory { a -> getHistoryMapRenderer(a) }
 
 
 }
 
 private class UserScope(
-        val historyRepository: HistoryRepository,
-        val userScopeViewModelFactory: UserScopeViewModelFactory,
-        val photoUploadInteractor: PhotoUploadInteractor,
+    val historyRepository: HistoryRepository,
+    val userScopeViewModelFactory: UserScopeViewModelFactory,
+    val photoUploadInteractor: PhotoUploadInteractor,
 )
 
 fun interface Factory<A, T> {

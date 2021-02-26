@@ -1,34 +1,48 @@
 package com.hypertrack.android.view_models
 
-import androidx.lifecycle.viewModelScope
+import android.app.Activity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavDirections
+import com.hypertrack.android.interactors.PermissionDestination
+import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.DriverRepository
-import com.hypertrack.android.ui.base.BaseStateViewModel
-import com.hypertrack.android.ui.base.JustLoading
-import com.hypertrack.android.ui.base.JustSuccess
+import com.hypertrack.android.ui.screens.driver_id_input.DriverIdInputFragmentDirections
 import com.hypertrack.android.utils.HyperTrackService
-import kotlinx.coroutines.launch
 
 class DriverLoginViewModel(
-        private val driverRepository: DriverRepository,
-        private val hyperTrackService: HyperTrackService
-) : BaseStateViewModel() {
+    private val driverRepository: DriverRepository,
+    private val hyperTrackService: HyperTrackService,
+    private val permissionsInteractor: PermissionsInteractor,
+) : ViewModel() {
 
-    fun onLoginClick(driverId: String?) {
+    val loadingState = MutableLiveData<Boolean>()
+    val destination = MutableLiveData<NavDirections>()
+
+    fun onLoginClick(driverId: String?, activity: Activity) {
         driverId?.let {
-            state.postValue(JustLoading)
+            loadingState.postValue(true)
             // Log.d(TAG, "Proceeding with Driver Id $driverId")
             hyperTrackService.driverId = driverId
             driverRepository.driverId = driverId
-            viewModelScope.launch {
-                state.postValue(JustSuccess)
+            when (permissionsInteractor.checkPermissionState(activity).getDestination()) {
+                PermissionDestination.PASS -> {
+                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToVisitManagementFragment())
+                }
+                PermissionDestination.FOREGROUND_AND_TRACKING,
+                PermissionDestination.WHITELISTING,
+                PermissionDestination.BACKGROUND -> {
+                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
+                }
             }
+
         }
     }
 
-    fun checkAutoLogin() {
+    fun checkAutoLogin(activity: Activity) {
         // Log.v(TAG, "checkAutoLogin")
         if (driverRepository.hasDriverId) {
-            onLoginClick(driverRepository.driverId)
+            onLoginClick(driverRepository.driverId, activity)
         }
     }
 
