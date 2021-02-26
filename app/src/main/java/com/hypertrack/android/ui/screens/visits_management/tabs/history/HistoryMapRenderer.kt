@@ -41,10 +41,10 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                 polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(HISTORY_COLOR))
 
                 if (history.locationTimePoints.isEmpty()) {
-                    map?.moveCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
+                    map?.animateCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
                 } else {
                     viewBounds = history.locationTimePoints.map { it.first }.boundRect()
-                    map?.moveCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, VIEW_PADDING))
+                    map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, VIEW_PADDING))
 
                 }
                 continuation.resume(true, null)
@@ -55,7 +55,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
             polyLine = map?.addPolyline(history.asPolylineOptions().color(HISTORY_COLOR))
             map?.let { map ->
                 history.locationTimePoints.firstOrNull()?.let { point ->
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
                 }
             }
 
@@ -74,13 +74,13 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                     .color(SELECTED_SEGMENT_COLOR)
                     .clickable(true)
             )
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), VIEW_PADDING))
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), VIEW_PADDING))
             googleMap.setOnMapClickListener {
                 Log.d(TAG, "onMapClicked")
                 selectedSegment?.remove()
                 selectedSegment = null
                 viewBounds?.let { bounds ->
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, VIEW_PADDING))
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, VIEW_PADDING))
                 }
 
             }
