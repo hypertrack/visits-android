@@ -18,7 +18,7 @@ import retrofit2.http.Header
 
 interface AccountLoginProvider {
     /** @return publishable key for an account or empty string if fails */
-    suspend fun getPublishableKey(login: String, password: String) : String
+    suspend fun getPublishableKey(login: String, password: String): String
 }
 
 class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiUrl: String) : AccountLoginProvider {
@@ -40,7 +40,7 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun awsInitCallWrapper() : UserStateDetails? {
+    private suspend fun awsInitCallWrapper(): UserStateDetails? {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().initialize(ctx, object : Callback<UserStateDetails> {
                 override fun onResult(result: UserStateDetails?) = it.resume(result) {}
@@ -50,7 +50,7 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun awsLoginCallWrapper(login: String, password: String) : SignInResult? {
+    private suspend fun awsLoginCallWrapper(login: String, password: String): SignInResult? {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().signIn(login, password, emptyMap(), object : Callback<SignInResult> {
                 override fun onResult(result: SignInResult?) = it.resume(result) {}
@@ -60,7 +60,7 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun awsTokenCallWrapper() : String? {
+    private suspend fun awsTokenCallWrapper(): String? {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
                 override fun onResult(result: Tokens?) = it.resume(result?.idToken?.tokenString) {}
@@ -69,25 +69,27 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
         }
     }
 
-    private suspend fun getPublishableKeyFromToken(token: String) : String {
+    private suspend fun getPublishableKeyFromToken(token: String): String {
         val retrofit = Retrofit.Builder()
-            .baseUrl(baseApiUrl)
-            .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
-            .build()
+                .baseUrl(baseApiUrl)
+                .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
+                .build()
         val service = retrofit.create(TokenForPublishableKeyExchangeService::class.java)
         val response = service.getPublishableKey(token)
-        if (response.isSuccessful) return response.body()?.publishableKey?:""
+        if (response.isSuccessful) return response.body()?.publishableKey ?: ""
         return ""
     }
 
 
-    companion object {const val TAG = "CognitoAccountProvider"}
+    companion object {
+        const val TAG = "CognitoAccountProvider"
+    }
 }
 
 interface TokenForPublishableKeyExchangeService {
     @GET("api-key")
-    suspend fun getPublishableKey(@Header("Authorization") token: String) : Response<PublishableKeyContainer>
+    suspend fun getPublishableKey(@Header("Authorization") token: String): Response<PublishableKeyContainer>
 }
 
 @JsonClass(generateAdapter = true)
-data class PublishableKeyContainer(@field:Json(name = "key")val publishableKey: String?)
+data class PublishableKeyContainer(@field:Json(name = "key") val publishableKey: String?)

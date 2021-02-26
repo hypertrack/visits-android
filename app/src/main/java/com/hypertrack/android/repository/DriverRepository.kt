@@ -1,14 +1,13 @@
 package com.hypertrack.android.repository
 
-import android.util.Log
 import com.hypertrack.android.utils.AccountDataStorage
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.squareup.moshi.JsonClass
 
 class DriverRepository(
-    private var _driver: Driver,
-    private val accountDataStorage: AccountDataStorage,
-    private val crashReportsProvider: CrashReportsProvider
+        private var _driver: Driver,
+        private val accountDataStorage: AccountDataStorage,
+        private val crashReportsProvider: CrashReportsProvider
 ) {
 
     var driverId: String
@@ -29,4 +28,4 @@ class DriverRepository(
 }
 
 @JsonClass(generateAdapter = true)
-data class Driver(val driverId : String)
+data class Driver(val driverId: String)

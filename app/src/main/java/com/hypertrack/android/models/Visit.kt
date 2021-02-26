@@ -15,34 +15,37 @@ import java.time.temporal.ChronoUnit
 data class Visit(val _id: String,
                  val visit_id: String = "", val customerNote: String = "",
                  val createdAt: String = "", val address: Address = Address(
-        "",
-        "",
-        "",
-        ""
-    ),
+                "",
+                "",
+                "",
+                ""
+        ),
                  val visitNote: String = "", var visitPicture: String? = null,
-                 var visitedAt:String? = null,
+                 var visitedAt: String? = null,
                  val completedAt: String = "", val exitedAt: String = "",
                  val latitude: Double? = null, val longitude: Double? = null,
                  val visitType: VisitType,
                  val _state: VisitStatus?,
                  var _icon: String? = null
- ): VisitListItem() {
+) : VisitListItem() {
 
     val expectedLocation: Location?
         get() {
             if (visitType == VisitType.LOCAL) return null
-            latitude?.let { longitude?.let {
-                val location = Location("visit")
-                location.longitude = longitude
-                location.latitude = latitude
-                return location
+            latitude?.let {
+                longitude?.let {
+                    val location = Location("visit")
+                    location.longitude = longitude
+                    location.latitude = latitude
+                    return location
 
-            } }
+                }
+            }
             return null
         }
     val state: VisitStatus
-        get() = _state ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
+        get() = _state
+                ?: if (visitType == VisitType.LOCAL) VisitStatus.VISITED else VisitStatus.PENDING
     val isEditable = state < VisitStatus.COMPLETED
     val isCompleted = state in listOf(VisitStatus.CANCELLED, VisitStatus.COMPLETED)
     val isLocal = visitType == VisitType.LOCAL
@@ -63,7 +66,7 @@ data class Visit(val _id: String,
         }
     }
 
-    val typeKey:String
+    val typeKey: String
         get() =
             when (visitType) {
                 VisitType.TRIP -> "trip_id"
@@ -74,97 +77,101 @@ data class Visit(val _id: String,
 
     val tripVisitPickedUp = state != VisitStatus.PENDING
 
-    fun addBitmap(bitmap: Bitmap?) { _icon = bitmap?.toBase64() }
+    fun addBitmap(bitmap: Bitmap?) {
+        _icon = bitmap?.toBase64()
+    }
+
     fun getBitmap() = _icon?.decodeBase64Bitmap()
 
-    fun hasPicture() = visitPicture?.isNotEmpty()?:false
+    fun hasPicture() = visitPicture?.isNotEmpty() ?: false
 
     fun hasNotes() = visitNote.isNotEmpty()
 
-    fun update(prototype: VisitDataSource) : Visit {
+    fun update(prototype: VisitDataSource): Visit {
         // prototype can have visitedAt or metadata field updated that we need to copy or
         return if (prototype.customerNote == customerNote && prototype.visitedAt == visitedAt) this
-            else Visit(
-            _id,
-            visit_id,
-            prototype.customerNote,
-            createdAt,
-            address,
-            visitNote,
-            visitPicture,
-            visitedAt = prototype.visitedAt,
-            completedAt,
-            exitedAt,
-            latitude,
-            longitude,
-            visitType,
-            _state = adjustState(state, prototype.visitedAt),
-            _icon = _icon
+        else Visit(
+                _id,
+                visit_id,
+                prototype.customerNote,
+                createdAt,
+                address,
+                visitNote,
+                visitPicture,
+                visitedAt = prototype.visitedAt,
+                completedAt,
+                exitedAt,
+                latitude,
+                longitude,
+                visitType,
+                _state = adjustState(state, prototype.visitedAt),
+                _icon = _icon
         )
 
     }
 
     private fun adjustState(state: VisitStatus, visitedAt: String?) = when (state) {
-            VisitStatus.PICKED_UP, VisitStatus.PENDING -> if (visitedAt != null) VisitStatus.VISITED else state
-            else -> state
-        }
+        VisitStatus.PICKED_UP, VisitStatus.PENDING -> if (visitedAt != null) VisitStatus.VISITED else state
+        else -> state
+    }
 
     fun updateNote(newNote: String): Visit {
         return Visit(
-            _id, visit_id, customerNote,
-            createdAt, address, newNote, visitPicture, visitedAt,
-            completedAt, exitedAt, latitude, longitude, visitType,
-            state, _icon = _icon
+                _id, visit_id, customerNote,
+                createdAt, address, newNote, visitPicture, visitedAt,
+                completedAt, exitedAt, latitude, longitude, visitType,
+                state, _icon = _icon
         )
     }
 
     fun pickUp(newNote: String?) = moveToState(
-        newState = VisitStatus.PICKED_UP,
-        newNote = newNote
+            newState = VisitStatus.PICKED_UP,
+            newNote = newNote
     )
 
     fun markVisited(newNote: String?) = moveToState(
-        newState = VisitStatus.VISITED,
-        newNote = newNote
+            newState = VisitStatus.VISITED,
+            newNote = newNote
     )
 
     fun complete(completedAt: String, newNote: String?) = moveToState(
-        newState = VisitStatus.COMPLETED,
-        transitionedAt = completedAt,
-        newNote = newNote
+            newState = VisitStatus.COMPLETED,
+            transitionedAt = completedAt,
+            newNote = newNote
     )
 
     fun cancel(cancelledAt: String, newNote: String?) = moveToState(
-        newState = VisitStatus.CANCELLED,
-        transitionedAt = cancelledAt,
-        newNote = newNote
+            newState = VisitStatus.CANCELLED,
+            transitionedAt = cancelledAt,
+            newNote = newNote
     )
 
     private fun moveToState(
-        newState: VisitStatus,
-        transitionedAt: String? = null,
-        newNote: String?
+            newState: VisitStatus,
+            transitionedAt: String? = null,
+            newNote: String?
     ) = Visit(
-        _id, visit_id, customerNote,
-        createdAt, address, newNote?:visitNote, visitPicture, visitedAt,
-        transitionedAt?:completedAt, exitedAt, latitude, longitude, visitType,
-        _state = newState, _icon = _icon
+            _id, visit_id, customerNote,
+            createdAt, address, newNote ?: visitNote, visitPicture, visitedAt,
+            transitionedAt ?: completedAt, exitedAt, latitude, longitude, visitType,
+            _state = newState, _icon = _icon
     )
 
     constructor(
-        source: VisitDataSource,
-        utils: OsUtilsProvider,
-        preferences: AccountPreferencesProvider
+            source: VisitDataSource,
+            utils: OsUtilsProvider,
+            preferences: AccountPreferencesProvider
     ) : this(
-        _id = source._id,
-        address = source.address ?: utils.getAddressFromCoordinates(source.latitude, source.longitude),
-        visit_id = "${utils.getString(source.visitNamePrefixId)} ${createSuffix(source, utils.getAddressFromCoordinates(source.latitude, source.longitude))}",
-        customerNote = source.customerNote,
-        createdAt = source.createdAt,
-        visitedAt = source.visitedAt,
-        latitude = source.latitude, longitude = source.longitude,
-        visitType = source.visitType,
-        _state =
+            _id = source._id,
+            address = source.address
+                    ?: utils.getAddressFromCoordinates(source.latitude, source.longitude),
+            visit_id = "${utils.getString(source.visitNamePrefixId)} ${createSuffix(source, utils.getAddressFromCoordinates(source.latitude, source.longitude))}",
+            customerNote = source.customerNote,
+            createdAt = source.createdAt,
+            visitedAt = source.visitedAt,
+            latitude = source.latitude, longitude = source.longitude,
+            visitType = source.visitType,
+            _state =
             when {
                 source.visitedAt.isNotEmpty() -> VisitStatus.VISITED
                 preferences.isPickUpAllowed -> VisitStatus.PENDING
@@ -174,13 +181,13 @@ data class Visit(val _id: String,
 
 
 }
-private fun createSuffix(visitDataSource: VisitDataSource, address: Address)
-    = if (visitDataSource.address != null) visitDataSource.visitNameSuffix else address.street
+
+private fun createSuffix(visitDataSource: VisitDataSource, address: Address) = if (visitDataSource.address != null) visitDataSource.visitNameSuffix else address.street
 
 
 @SuppressLint("NewApi")
 private fun String.isLaterThanADayAgo(): Boolean =
-    Instant.parse(this).isAfter(Instant.now().minus(1, ChronoUnit.DAYS))
+        Instant.parse(this).isAfter(Instant.now().minus(1, ChronoUnit.DAYS))
 
 interface VisitDataSource {
     val _id: String
@@ -201,7 +208,7 @@ sealed class VisitListItem
 data class HeaderVisitItem(val status: VisitStatusGroup) : VisitListItem()
 
 @JsonClass(generateAdapter = true)
-data class Address (val street : String, val postalCode : String?, val city : String?, val country : String?)
+data class Address(val street: String, val postalCode: String?, val city: String?, val country: String?)
 
 /**
  *
@@ -215,7 +222,7 @@ data class Address (val street : String, val postalCode : String?, val city : St
  *
  */
 enum class VisitStatus {
-    PENDING   {
+    PENDING {
         override fun canTransitionTo(other: VisitStatus) = other > this
         override val group = VisitStatusGroup.PENDING_GROUP
     },
@@ -223,7 +230,7 @@ enum class VisitStatus {
         override fun canTransitionTo(other: VisitStatus) = other > this
         override val group = VisitStatusGroup.PENDING_GROUP
     },
-    VISITED   {
+    VISITED {
         override fun canTransitionTo(other: VisitStatus) = other > this
         override val group = VisitStatusGroup.VISITED_GROUP
     },
@@ -239,6 +246,7 @@ enum class VisitStatus {
     abstract fun canTransitionTo(other: VisitStatus): Boolean
     abstract val group: VisitStatusGroup
 }
+
 /** Group is coarse-grained status where some statuses and merged into one group */
 enum class VisitStatusGroup {
     // Keep the order consistent with R.array.visit_state_group_names

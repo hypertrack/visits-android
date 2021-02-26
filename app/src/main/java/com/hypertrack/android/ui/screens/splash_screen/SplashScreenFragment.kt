@@ -9,7 +9,7 @@ import com.hypertrack.android.ui.common.PermissionsUtils
 import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 
-class SplashScreenFragment: ProgressDialogFragment(R.layout.fragment_splash_screen) {
+class SplashScreenFragment : ProgressDialogFragment(R.layout.fragment_splash_screen) {
 
     private lateinit var splashScreenViewModel: SplashScreenViewModel
 
@@ -18,10 +18,10 @@ class SplashScreenFragment: ProgressDialogFragment(R.layout.fragment_splash_scre
         splashScreenViewModel = mainActivity().splashScreenViewModel
 
         splashScreenViewModel.state.observe(viewLifecycleOwner, { state ->
-            if(state !is JustLoading) {
+            if (state !is JustLoading) {
                 dismissProgress()
             }
-            when(state) {
+            when (state) {
                 is JustLoading -> {
                     showProgress()
                 }
@@ -30,7 +30,7 @@ class SplashScreenFragment: ProgressDialogFragment(R.layout.fragment_splash_scre
                 }
                 is SplashScreenViewModel.LoggedIn -> {
                     //todo check if permissions granted and whitelisted
-                    if(PermissionsUtils.hasRequiredPermissions()) {
+                    if (PermissionsUtils.hasRequiredPermissions()) {
                         findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToVisitManagementFragment())
                     } else {
                         findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())

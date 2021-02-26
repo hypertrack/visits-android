@@ -28,16 +28,16 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
         return "${df.format(now)}${postfixFmt.format(now).toLowerCase(Locale.ENGLISH)}"
     }
 
-    fun getAddressFromCoordinates(latitude: Double, longitude: Double) : Address {
+    fun getAddressFromCoordinates(latitude: Double, longitude: Double): Address {
         try {
             val coder = Geocoder(context)
             val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
             address?.let {
                 return Address(
-                    street = address.thoroughfare ?: stubStreet(latitude, longitude),
-                    postalCode = address.postalCode,
-                    city = address.locality,
-                    country = address.countryName
+                        street = address.thoroughfare ?: stubStreet(latitude, longitude),
+                        postalCode = address.postalCode,
+                        city = address.locality,
+                        country = address.countryName
                 )
             }
         } catch (t: Throwable) {
@@ -47,10 +47,10 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
             }
         }
         return Address(
-            street = stubStreet(latitude, longitude),
-            postalCode = null,
-            city = null,
-            country = null
+                street = stubStreet(latitude, longitude),
+                postalCode = null,
+                city = null,
+                country = null
         )
     }
 
@@ -59,9 +59,11 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
     fun getTimeZoneId(): ZoneId = ZoneId.systemDefault()
 
     private fun stubStreet(latitude: Double, longitude: Double) =
-        context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"
+            context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"
 
     fun getString(resId: Int): String = context.getString(resId)
 
-    companion object { const val TAG = "OsUtilsProvider" }
+    companion object {
+        const val TAG = "OsUtilsProvider"
+    }
 }

@@ -34,7 +34,7 @@
         android:id="@+id/ivGo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-         app:layout_constraintBottom_toBottomOf="@id/tvNoteScan"
+        app:layout_constraintBottom_toBottomOf="@id/tvNoteScan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvNoteScan"
         app:srcCompat="@drawable/ic_go" />

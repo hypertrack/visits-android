@@ -89,7 +89,7 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
 
         cancelDialog = AlertDialog.Builder(requireContext())
-            .setMessage(R.string.cancel_visit_confirmation)
+                .setMessage(R.string.cancel_visit_confirmation)
                 .setPositiveButton(R.string.yes, DialogInterface.OnClickListener { dialog, which ->
                     viewModel.onCancelClicked()
                 })

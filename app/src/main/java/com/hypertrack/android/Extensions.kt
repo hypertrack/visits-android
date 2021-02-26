@@ -15,8 +15,8 @@ fun Map<String, Any>?.toNote(): String {
     if (this == null) return ""
     val result = StringBuilder()
     this
-        .filter { (key, _) -> !key.startsWith("ht_") }
-        .forEach { (key, value) -> result.append("$key: $value\n") }
+            .filter { (key, _) -> !key.startsWith("ht_") }
+            .forEach { (key, value) -> result.append("$key: $value\n") }
     return result.toString().dropLast(1)
 }
 
@@ -36,11 +36,11 @@ fun String.decodeBase64Bitmap(): Bitmap {
 
 // Retry policy is defined below and implemented at application level. Applied to image upload only.
 suspend fun <T> retryWithBackoff(
-    times: Int = Int.MAX_VALUE,
-    initialDelay: Long = 1000, //  1 sec
-    maxDelay: Long = 100000,    // 100 secs
-    factor: Double = 2.0,
-    block: suspend () -> T
+        times: Int = Int.MAX_VALUE,
+        initialDelay: Long = 1000, //  1 sec
+        maxDelay: Long = 100000,    // 100 secs
+        factor: Double = 2.0,
+        block: suspend () -> T
 ): T {
     var currentDelay = initialDelay
     repeat(times - 1) {

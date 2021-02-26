@@ -14,7 +14,7 @@ import com.hypertrack.android.view_models.AccountLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_login.*
 
-class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
+class LoginFragment : ProgressDialogFragment(R.layout.fragment_login) {
 
     private val accountLoginViewModel: AccountLoginViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
@@ -29,7 +29,7 @@ class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                s?.let {accountLoginViewModel.onLoginTextChanged(it)}
+                s?.let { accountLoginViewModel.onLoginTextChanged(it) }
             }
         })
 
@@ -39,12 +39,12 @@ class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                s?.let {accountLoginViewModel.onPasswordTextChanged(it)}
+                s?.let { accountLoginViewModel.onPasswordTextChanged(it) }
             }
         })
 
         accountLoginViewModel.destination.observe(viewLifecycleOwner) {
-            if(it == Destination.DRIVER_ID_INPUT) {
+            if (it == Destination.DRIVER_ID_INPUT) {
                 findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToDriverIdInputFragment())
             }
         }
@@ -52,10 +52,10 @@ class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
             // Log.d(TAG, "show toast $show")
             if (show) {
                 Toast.makeText(
-                    requireContext(),
-                    getString(R.string.account_login_error_message),
-                    Toast.LENGTH_LONG
-                )                    .show()
+                        requireContext(),
+                        getString(R.string.account_login_error_message),
+                        Toast.LENGTH_LONG
+                ).show()
                 deeplinkHint.text = getString(R.string.check_login_credentials_hint)
             }
         }
@@ -71,13 +71,15 @@ class LoginFragment: ProgressDialogFragment(R.layout.fragment_login) {
             // Log.d(TAG, "Setting login button clickability $isClickable")
             btnLogIn.isEnabled = isClickable
             btnLogIn.setBackgroundColor(
-                if (isClickable)
-                    requireContext().getColor(R.color.colorHyperTrackGreen)
-                else
-                    requireContext().getColor(R.color.colorBtnDisable))
+                    if (isClickable)
+                        requireContext().getColor(R.color.colorHyperTrackGreen)
+                    else
+                        requireContext().getColor(R.color.colorBtnDisable))
 
         }
     }
 
-    companion object { const val TAG = "AccountLoginAct" }
+    companion object {
+        const val TAG = "AccountLoginAct"
+    }
 }

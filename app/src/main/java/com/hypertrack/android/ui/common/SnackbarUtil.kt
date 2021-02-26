@@ -8,10 +8,10 @@ import com.hypertrack.logistics.android.github.R
 object SnackbarUtil {
     fun showErrorSnackbar(view: View, text: String?) {
         Snackbar.make(view, text.toString(), Snackbar.LENGTH_LONG).apply {
-                    setAction(MyApplication.context.getString(R.string.close)) {
-                        dismiss()
-                    }
-                    setActionTextColor(MyApplication.context.getColor(R.color.colorRed))
-                }.show()
+            setAction(MyApplication.context.getString(R.string.close)) {
+                dismiss()
+            }
+            setActionTextColor(MyApplication.context.getColor(R.color.colorRed))
+        }.show()
     }
 }

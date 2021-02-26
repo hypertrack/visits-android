@@ -16,8 +16,8 @@ import kotlin.coroutines.suspendCoroutine
 interface AccessTokenRepository {
     fun refreshToken(): String
     fun getAccessToken(): String
-    suspend fun refreshTokenAsync() : AccountState
-    fun  getConfig() : Any
+    suspend fun refreshTokenAsync(): AccountState
+    fun getConfig(): Any
     val deviceHistoryWebViewUrl: String
 }
 
@@ -28,34 +28,34 @@ object InvalidCredentials : AccountState()
 object Unknown : AccountState()
 
 class BasicAuthAccessTokenRepository(
-    private val authUrl: String,
-    val deviceId: String,
-    private val userName: String,
-    private val userPwd: String = "",
-    private var token: String? = null
+        private val authUrl: String,
+        val deviceId: String,
+        private val userName: String,
+        private val userPwd: String = "",
+        private var token: String? = null
 ) : AccessTokenRepository {
 
-    private val okHttpClient : OkHttpClient by lazy {
+    private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder().addInterceptor(UserAgentInterceptor()).build()
     }
 
     private val request: Request by lazy {
         Request.Builder()
-            .url(authUrl)
-            .header(AUTH_HEADER_KEY, Credentials.basic(userName, userPwd))
-            .post("""{"device_id": "$deviceId"}""".toRequestBody(MEDIA_TYPE_JSON))
-            .build()
+                .url(authUrl)
+                .header(AUTH_HEADER_KEY, Credentials.basic(userName, userPwd))
+                .post("""{"device_id": "$deviceId"}""".toRequestBody(MEDIA_TYPE_JSON))
+                .build()
     }
 
-    override fun getAccessToken(): String = token?:refreshToken()
+    override fun getAccessToken(): String = token ?: refreshToken()
 
     override fun refreshToken(): String {
         // Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
 
         val result = okHttpClient
-            .newCall(request)
-            .execute()
-            .use { response -> getTokenFromResponse(response)}
+                .newCall(request)
+                .execute()
+                .use { response -> getTokenFromResponse(response) }
 
         return when (result) {
             is Active -> {
@@ -68,26 +68,27 @@ class BasicAuthAccessTokenRepository(
     }
 
     override suspend fun refreshTokenAsync(): AccountState =
-        suspendCoroutine { cont ->
-            okHttpClient.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e(TAG, "Failed to get ")
-                    cont.resume(Unknown)
-                }
+            suspendCoroutine { cont ->
+                okHttpClient.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Log.e(TAG, "Failed to get ")
+                        cont.resume(Unknown)
+                    }
 
-                override fun onResponse(call: Call, response: Response) {
-                    cont.resume(getTokenFromResponse(response))
-                }
-            })
-        }
+                    override fun onResponse(call: Call, response: Response) {
+                        cont.resume(getTokenFromResponse(response))
+                    }
+                })
+            }
 
-    private fun getTokenFromResponse(response: Response) : AccountState {
+    private fun getTokenFromResponse(response: Response): AccountState {
         // Log.d(TAG, "Getting token from response $response")
         return when {
             response.isSuccessful -> {
                 response.body?.let {
                     try {
-                        val responseObject = Injector.getMoshi().adapter(AuthCallResponse::class.java).fromJson(it.string()) ?: return@let Unknown
+                        val responseObject = Injector.getMoshi().adapter(AuthCallResponse::class.java).fromJson(it.string())
+                                ?: return@let Unknown
                         Active(responseObject.accessToken)
                     } catch (_: Throwable) {
                         Log.w(TAG, "Can't deserialize auth response ${it.string()}")
@@ -110,16 +111,16 @@ class BasicAuthAccessTokenRepository(
         }
     }
 
-    override fun getConfig() : BasicAuthAccessTokenConfig =
-        BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
+    override fun getConfig(): BasicAuthAccessTokenConfig =
+            BasicAuthAccessTokenConfig(authUrl, deviceId, userName, userPwd, token)
 
     override val deviceHistoryWebViewUrl: String
         get() = "https://embed.hypertrack.com/devices/$deviceId?publishable_key=$userName&map_only=true&back=false"
 
     constructor(
-        config: BasicAuthAccessTokenConfig
+            config: BasicAuthAccessTokenConfig
     ) : this(
-        config.authUrl, config.deviceId, config.userName, config.userPwd, config.token
+            config.authUrl, config.deviceId, config.userName, config.userPwd, config.token
     )
 
     companion object {
@@ -130,17 +131,17 @@ class BasicAuthAccessTokenRepository(
 
 @JsonClass(generateAdapter = true)
 internal data class AuthCallResponse(
-    @field:Json(name = "access_token") val accessToken:String,
-    @field:Json(name = "expires_in") val expiresIn: Int
+        @field:Json(name = "access_token") val accessToken: String,
+        @field:Json(name = "expires_in") val expiresIn: Int
 )
 
 @JsonClass(generateAdapter = true)
 data class BasicAuthAccessTokenConfig(
-    val authUrl: String,
-    val deviceId: String,
-    val userName: String,
-    val userPwd: String = "",
-    var token: String? = null
+        val authUrl: String,
+        val deviceId: String,
+        val userName: String,
+        val userPwd: String = "",
+        var token: String? = null
 )
 
 const val AUTH_HEADER_KEY = "Authorization"

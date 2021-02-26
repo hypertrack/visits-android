@@ -10,7 +10,7 @@ import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_profile.*
 
-class ProfileFragment: BaseFragment<MainActivity>(R.layout.fragment_profile) {
+class ProfileFragment : BaseFragment<MainActivity>(R.layout.fragment_profile) {
 
     private val adapter = ProfileItemsAdapter()
 

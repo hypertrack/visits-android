@@ -32,11 +32,11 @@ abstract class BaseAdapter<T : Any, VH : BaseAdapter.BaseVh<T>> : RecyclerView.A
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         return createViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                itemLayoutResource,
-                parent,
-                false
-            )
+                LayoutInflater.from(parent.context).inflate(
+                        itemLayoutResource,
+                        parent,
+                        false
+                )
         ) { position ->
             onItemClickListener?.invoke(items[position])
         }
@@ -57,7 +57,7 @@ abstract class BaseAdapter<T : Any, VH : BaseAdapter.BaseVh<T>> : RecyclerView.A
     }
 
     open class BaseVh<R : Any>(view: View, clickListener: ((Int) -> Unit)) :
-        RecyclerView.ViewHolder(view) {
+            RecyclerView.ViewHolder(view) {
 
         private lateinit var item: R
 
@@ -72,8 +72,8 @@ abstract class BaseAdapter<T : Any, VH : BaseAdapter.BaseVh<T>> : RecyclerView.A
         }
     }
 
-    open inner class BaseContainerVh<R: Any>(override val containerView: View, listener: (Int) -> Unit): BaseVh<R>(containerView, listener),
-        LayoutContainer {
+    open inner class BaseContainerVh<R : Any>(override val containerView: View, listener: (Int) -> Unit) : BaseVh<R>(containerView, listener),
+            LayoutContainer {
     }
 
 }

@@ -28,11 +28,11 @@ class AccessTokenTest {
     @Test
     fun `it should request new token if last saved is null`() {
         val accessTokenRepository =
-            BasicAuthAccessTokenRepository(
-                mockWebServer.authUrl(),
-                DEVICE_ID,
-                PUBLISHABLE_KEY
-            )
+                BasicAuthAccessTokenRepository(
+                        mockWebServer.authUrl(),
+                        DEVICE_ID,
+                        PUBLISHABLE_KEY
+                )
         enqueueAuthResponse()
 
         val token = accessTokenRepository.getAccessToken()
@@ -44,12 +44,12 @@ class AccessTokenTest {
 
         val oldToken = "old.JWT.token"
         val accessTokenRepository =
-            BasicAuthAccessTokenRepository(
-                mockWebServer.authUrl(),
-                DEVICE_ID,
-                PUBLISHABLE_KEY,
-                token = oldToken
-            )
+                BasicAuthAccessTokenRepository(
+                        mockWebServer.authUrl(),
+                        DEVICE_ID,
+                        PUBLISHABLE_KEY,
+                        token = oldToken
+                )
         enqueueAuthResponse()
         val token = accessTokenRepository.getAccessToken()
 
@@ -62,12 +62,12 @@ class AccessTokenTest {
 
         val oldToken = "old.JWT.token"
         val accessTokenRepository =
-            BasicAuthAccessTokenRepository(
-                mockWebServer.authUrl(),
-                DEVICE_ID,
-                PUBLISHABLE_KEY,
-                token = oldToken
-            )
+                BasicAuthAccessTokenRepository(
+                        mockWebServer.authUrl(),
+                        DEVICE_ID,
+                        PUBLISHABLE_KEY,
+                        token = oldToken
+                )
         enqueueAuthResponse()
         val token = accessTokenRepository.refreshToken()
 
@@ -80,28 +80,28 @@ class AccessTokenTest {
 
         val lastToken = "last.JWT.token"
         val client = OkHttpClient.Builder()
-            .addInterceptor(
-                AccessTokenInterceptor(
-                    BasicAuthAccessTokenRepository(
-                        mockWebServer.authUrl(),
-                        DEVICE_ID,
-                        PUBLISHABLE_KEY,
-                        token = lastToken
-                    )
+                .addInterceptor(
+                        AccessTokenInterceptor(
+                                BasicAuthAccessTokenRepository(
+                                        mockWebServer.authUrl(),
+                                        DEVICE_ID,
+                                        PUBLISHABLE_KEY,
+                                        token = lastToken
+                                )
+                        )
                 )
-            )
-            .build()
+                .build()
         val mockWebServer = MockWebServer()
         mockWebServer.enqueue(MockResponse())
         mockWebServer.start()
 
         client
-            .newCall(Request.Builder().url(mockWebServer.url("/")).build())
-            .execute()
+                .newCall(Request.Builder().url(mockWebServer.url("/")).build())
+                .execute()
         val recordedRequest = mockWebServer.takeRequest()
 
         val headers = recordedRequest.headers
-        val authorizationHeader = headers[AUTH_HEADER_KEY]?:""
+        val authorizationHeader = headers[AUTH_HEADER_KEY] ?: ""
         Assert.assertEquals("Bearer $lastToken", authorizationHeader)
         mockWebServer.shutdown()
 
@@ -112,21 +112,21 @@ class AccessTokenTest {
 
         val lastToken = "last.JWT.token"
         val accessTokenRepository =
-            BasicAuthAccessTokenRepository(mockWebServer.authUrl(), DEVICE_ID, PUBLISHABLE_KEY, token = lastToken)
+                BasicAuthAccessTokenRepository(mockWebServer.authUrl(), DEVICE_ID, PUBLISHABLE_KEY, token = lastToken)
         val client = OkHttpClient.Builder()
-            .authenticator(AccessTokenAuthenticator(accessTokenRepository))
-            .build()
+                .authenticator(AccessTokenAuthenticator(accessTokenRepository))
+                .build()
         val mockWebServer = MockWebServer()
         mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
+                MockResponse()
+                        .setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED))
         mockWebServer.enqueue(MockResponse())
         mockWebServer.start()
         enqueueAuthResponse()
 
         client
-            .newCall(Request.Builder().url(mockWebServer.url("/")).build())
-            .execute()
+                .newCall(Request.Builder().url(mockWebServer.url("/")).build())
+                .execute()
 
         val token = accessTokenRepository.getAccessToken()
         Assert.assertEquals(NEW_JWT_TOKEN, token)
@@ -136,15 +136,16 @@ class AccessTokenTest {
 
     @After
     fun tearDown() = try {
-            mockWebServer.shutdown()
-        } catch (_: Throwable) { }
+        mockWebServer.shutdown()
+    } catch (_: Throwable) {
+    }
 
     private fun enqueueAuthResponse() =
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(HttpURLConnection.HTTP_OK)
-                .setBody("""{"access_token":"$NEW_JWT_TOKEN","expires_in":42}""")
-        )
+            mockWebServer.enqueue(
+                    MockResponse()
+                            .setResponseCode(HttpURLConnection.HTTP_OK)
+                            .setBody("""{"access_token":"$NEW_JWT_TOKEN","expires_in":42}""")
+            )
 
     private fun MockWebServer.authUrl() = this.url("/authenticate").toString()
 }

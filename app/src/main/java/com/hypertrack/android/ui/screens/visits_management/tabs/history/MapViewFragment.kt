@@ -21,8 +21,8 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
     }
     private var historyRenderer: HistoryMapRenderer? = null
 
-    private val rendererFactory : Factory<SupportMapFragment, HistoryMapRenderer> =
-        MyApplication.injector.getHistoryRendererFactory()
+    private val rendererFactory: Factory<SupportMapFragment, HistoryMapRenderer> =
+            MyApplication.injector.getHistoryRendererFactory()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

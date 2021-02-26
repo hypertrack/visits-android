@@ -3,7 +3,9 @@
 package com.hypertrack.android.api
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.hypertrack.android.models.*
+import com.hypertrack.android.models.History
+import com.hypertrack.android.models.HistoryError
+import com.hypertrack.android.models.MarkerType
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.squareup.moshi.JsonDataException
 import io.mockk.every
@@ -14,8 +16,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import java.net.HttpURLConnection
@@ -30,19 +36,22 @@ class ApiClientTest {
     @get:Rule
     val coroutineScope = MainCoroutineScopeRule()
 
-    companion object { const val DEVICE_ID = "42" }
+    companion object {
+        const val DEVICE_ID = "42"
+    }
 
     private val mockWebServer = MockWebServer()
-    private lateinit var apiClient : ApiClient
+    private lateinit var apiClient: ApiClient
 
     @Before
     fun setUp() {
         mockWebServer.start()
         val accessTokenRepo = mockk<AccessTokenRepository>()
         every { accessTokenRepo.getAccessToken() } returns "fake.jwt.token"
-        every {  accessTokenRepo.refreshToken() } returns "new.jwt.token"
+        every { accessTokenRepo.refreshToken() } returns "new.jwt.token"
         apiClient = ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID)
     }
+
     @Test
     fun `it should send post request to start Url on checkin`() = coroutineScope.runBlockingTest {
 
@@ -75,7 +84,7 @@ class ApiClientTest {
     @Test
     fun `it should send get request to get list of geofences`() = runBlockingTest {
         val responseBody =
-            """
+                """
             {
                 "data": [
                     {
@@ -181,9 +190,9 @@ class ApiClientTest {
             }
             """.trimIndent()
         mockWebServer.enqueue(
-            MockResponse()
-                .addHeader("Content-Type", "application/json; charset=utf-8")
-                .setBody(responseBody)
+                MockResponse()
+                        .addHeader("Content-Type", "application/json; charset=utf-8")
+                        .setBody(responseBody)
         )
         val geofences = runBlocking { apiClient.getGeofences() }
 
@@ -199,7 +208,7 @@ class ApiClientTest {
     @Test
     fun `it should send get request to get list of trips`() = runBlockingTest {
         val responseBody =
-            """
+                """
             {
                "pagination_token" : null,
                "links" : {},
@@ -429,7 +438,7 @@ class ApiClientTest {
     @Test
     fun `it should send get request to get device history`() = runBlockingTest {
         val responseBody =
-        """
+                """
         {
             "locations": { "type": "LineString", "coordinates": [] },
             "markers": [],
@@ -452,8 +461,8 @@ class ApiClientTest {
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val historyResult = runBlocking {
             apiClient.getHistory(
-                LocalDate.of(2020, 2, 5),
-                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+                    LocalDate.of(2020, 2, 5),
+                    TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
             )
         }
 
@@ -468,7 +477,7 @@ class ApiClientTest {
     @Test
     fun `it should receive distance and insights from device history`() = runBlockingTest {
         val responseBody =
-        """
+                """
         {
             "device_id": "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
             "locations": {"type": "LineString", "coordinates": []},
@@ -492,15 +501,15 @@ class ApiClientTest {
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val historyResult = runBlocking {
             apiClient.getHistory(
-                LocalDate.of(2020, 2, 5),
-                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+                    LocalDate.of(2020, 2, 5),
+                    TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
             )
         }
 
         val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
         assertTrue(historyResult is History)
-        with( historyResult as History) {
+        with(historyResult as History) {
 
             assertEquals(6347, summary.totalDistance)
             assertEquals(6347, summary.totalDriveDistance)
@@ -513,7 +522,7 @@ class ApiClientTest {
     @Test
     fun `it should receive location data points from device history`() = runBlockingTest {
         val responseBody =
-        """
+                """
             {
                "device_id" : "A24BA1B4-3B11-36F7-8DD7-15D97C3FD912",
                "locations" : {
@@ -546,8 +555,8 @@ class ApiClientTest {
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val historyResult = runBlocking {
             apiClient.getHistory(
-                LocalDate.of(2020, 2, 5),
-                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+                    LocalDate.of(2020, 2, 5),
+                    TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
             )
         }
 
@@ -568,7 +577,7 @@ class ApiClientTest {
     @Test
     fun `it should receive status markers from device history`() = runBlockingTest {
         val responseBody =
-        """
+                """
             {
                "markers" : [
                     {
@@ -676,8 +685,8 @@ class ApiClientTest {
         mockWebServer.enqueue(MockResponse().setBody(responseBody))
         val historyResult = runBlocking {
             apiClient.getHistory(
-                LocalDate.of(2020, 2, 5),
-                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+                    LocalDate.of(2020, 2, 5),
+                    TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
             )
         }
 
@@ -696,8 +705,8 @@ class ApiClientTest {
         with(history.markers[1]) {
             assertEquals(MarkerType.GEOTAG, type)
             assertEquals("2021-02-03T08:50:06.757Z", timestamp)
-            assertEquals( -122.084, location!!.longitude, 0.000001)
-            assertEquals( 37.421998, location!!.latitude, 0.000001)
+            assertEquals(-122.084, location!!.longitude, 0.000001)
+            assertEquals(37.421998, location!!.latitude, 0.000001)
         }
 
         with(history.markers.last()) {
@@ -713,8 +722,8 @@ class ApiClientTest {
         mockWebServer.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR))
         val historyResult = runBlocking {
             apiClient.getHistory(
-                LocalDate.of(2020, 2, 5),
-                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+                    LocalDate.of(2020, 2, 5),
+                    TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
             )
         }
 
@@ -727,8 +736,8 @@ class ApiClientTest {
         mockWebServer.enqueue(MockResponse().setBody(body))
         val historyResult = runBlocking {
             apiClient.getHistory(
-                LocalDate.of(2020, 2, 5),
-                TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
+                    LocalDate.of(2020, 2, 5),
+                    TimeZone.getTimeZone("America/Los_Angeles").toZoneId()
             )
         }
 
@@ -751,8 +760,8 @@ class ApiClientTest {
 
 @ExperimentalCoroutinesApi
 class MainCoroutineScopeRule(private val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
-    TestWatcher(),
-    TestCoroutineScope by TestCoroutineScope(dispatcher) {
+        TestWatcher(),
+        TestCoroutineScope by TestCoroutineScope(dispatcher) {
     override fun starting(description: Description?) {
         super.starting(description)
         // If your codebase allows the injection of other dispatchers like

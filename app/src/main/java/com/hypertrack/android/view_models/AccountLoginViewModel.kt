@@ -11,15 +11,15 @@ import com.hypertrack.android.utils.Destination
 import kotlinx.coroutines.launch
 
 class AccountLoginViewModel(
-    private val loginProvider: AccountLoginProvider,
-    private val accountRepository: AccountRepository
+        private val loginProvider: AccountLoginProvider,
+        private val accountRepository: AccountRepository
 ) : ViewModel() {
 
     private var login = ""
     private var password = ""
 
     val showLoginFailureToast: LiveData<Boolean>
-    get() = _showToast
+        get() = _showToast
 
     val showProgress: LiveData<Boolean>
         get() = _showProgress
@@ -57,13 +57,13 @@ class AccountLoginViewModel(
         viewModelScope.launch {
             val pk = loginProvider.getPublishableKey(login, password)
             if (pk.isNotBlank() && accountRepository.onKeyReceived(pk, "true")) {
-                    _destination.postValue(Destination.DRIVER_ID_INPUT)
+                _destination.postValue(Destination.DRIVER_ID_INPUT)
             } else {
                 // show error toast
                 Log.w(TAG, "Can't login with $login account")
                 _showToast.value = true
             }
-        _showProgress.postValue(false)
+            _showProgress.postValue(false)
         }
 
     }
@@ -77,5 +77,7 @@ class AccountLoginViewModel(
         }
     }
 
-    companion object { const val TAG = "AccountLoginVM" }
+    companion object {
+        const val TAG = "AccountLoginVM"
+    }
 }

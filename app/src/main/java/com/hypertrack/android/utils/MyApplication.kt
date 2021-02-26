@@ -10,7 +10,6 @@ import com.hypertrack.logistics.android.github.R
 class MyApplication : Application() {
 
 
-
     override fun onCreate() {
         super.onCreate()
 

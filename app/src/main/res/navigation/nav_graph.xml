@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/splashScreenFragment">
 
     <fragment
         android:id="@+id/splashScreenFragment"
         android:name="com.hypertrack.android.ui.screens.splash_screen.SplashScreenFragment"
-        android:label="SplashScreenFragment" >
+        android:label="SplashScreenFragment">
         <action
             android:id="@+id/action_splashScreenFragment_to_driverIdInputFragment"
             app:destination="@id/driverIdInputFragment" />
@@ -23,7 +24,7 @@
     <fragment
         android:id="@+id/driverIdInputFragment"
         android:name="com.hypertrack.android.ui.screens.driver_id_input.DriverIdInputFragment"
-        android:label="DriverIdInputFragment" >
+        android:label="DriverIdInputFragment">
         <action
             android:id="@+id/action_driverIdInputFragment_to_permissionRequestFragment"
             app:destination="@id/permissionRequestFragment" />
@@ -34,7 +35,7 @@
     <fragment
         android:id="@+id/permissionRequestFragment"
         android:name="com.hypertrack.android.ui.screens.permission_request.PermissionRequestFragment"
-        android:label="PermissionRequestFragment" >
+        android:label="PermissionRequestFragment">
         <action
             android:id="@+id/action_permissionRequestFragment_to_visitManagementFragment"
             app:destination="@id/visitManagementFragment" />
@@ -42,7 +43,7 @@
     <fragment
         android:id="@+id/visitManagementFragment"
         android:name="com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment"
-        android:label="VisitManagementFragment" >
+        android:label="VisitManagementFragment">
         <action
             android:id="@+id/action_visitManagementFragment_to_visitDetailsFragment"
             app:destination="@id/visitDetailsFragment" />
@@ -50,7 +51,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.hypertrack.android.ui.screens.login.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_driverIdInputFragment"
             app:destination="@id/driverIdInputFragment" />
@@ -58,7 +59,7 @@
     <fragment
         android:id="@+id/visitDetailsFragment"
         android:name="com.hypertrack.android.ui.screens.visit_details.VisitDetailsFragment"
-        android:label="VisitDetailsFragment" >
+        android:label="VisitDetailsFragment">
         <argument
             android:name="visitId"
             app:argType="string" />

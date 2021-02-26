@@ -34,14 +34,14 @@ class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permi
 
         permissionRequestViewModel.whitelistingRequired.observe(viewLifecycleOwner) { visible ->
             listOf<View>(btnWhitelisting, whitelistingMessage)
-                .forEach { it.setGoneState(!visible) }
+                    .forEach { it.setGoneState(!visible) }
         }
 
         btnContinue.setOnClickListener { permissionRequestViewModel.requestPermission(mainActivity()) }
 
         btnWhitelisting.setOnClickListener {
             permissionRequestViewModel.requestWhitelisting(
-                mainActivity()
+                    mainActivity()
             )
         }
     }
@@ -52,9 +52,9 @@ class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permi
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionRequestViewModel.onPermissionResult()

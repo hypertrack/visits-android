@@ -1,7 +1,9 @@
 package com.hypertrack.android.view_models
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
@@ -10,16 +12,16 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class VisitDetailsViewModel(
-    private val visitsRepository: VisitsRepository,
-    private val id: String
+        private val visitsRepository: VisitsRepository,
+        private val id: String
 ) : ViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
-    private val _takePictureButton =  MediatorLiveData<Boolean>()
-    private val _pickUpButton =  MediatorLiveData<Boolean>()
-    private val _checkInButton =  MediatorLiveData<Boolean>()
-    private val _checkOutButton =  MediatorLiveData<Boolean>()
-    private val _cancelButton =  MediatorLiveData<Boolean>()
+    private val _takePictureButton = MediatorLiveData<Boolean>()
+    private val _pickUpButton = MediatorLiveData<Boolean>()
+    private val _checkInButton = MediatorLiveData<Boolean>()
+    private val _checkOutButton = MediatorLiveData<Boolean>()
+    private val _cancelButton = MediatorLiveData<Boolean>()
     private var _visitNote = MediatorLiveData<Pair<String, Boolean>>() //
     private var _showToast = MutableLiveData(false)
     private var updatedNote: String? = null
@@ -30,11 +32,11 @@ class VisitDetailsViewModel(
         }
 
         for ((model, targetState) in listOf(
-            _takePictureButton to VisitStatus.COMPLETED,
-            _pickUpButton to VisitStatus.PICKED_UP,
-            _checkInButton to VisitStatus.VISITED,
-            _checkOutButton to VisitStatus.COMPLETED,
-            _cancelButton to VisitStatus.CANCELLED
+                _takePictureButton to VisitStatus.COMPLETED,
+                _pickUpButton to VisitStatus.PICKED_UP,
+                _checkInButton to VisitStatus.VISITED,
+                _checkOutButton to VisitStatus.COMPLETED,
+                _cancelButton to VisitStatus.CANCELLED
         )) {
             model.addSource(visit) {
                 model.postValue(visitsRepository.transitionAllowed(targetState, id))
@@ -55,13 +57,13 @@ class VisitDetailsViewModel(
     val pickUpButton: LiveData<Boolean>
         get() = _pickUpButton
     val checkInButton: LiveData<Boolean>
-        get() =  _checkInButton
+        get() = _checkInButton
     val checkOutButton: LiveData<Boolean>
         get() = _checkOutButton
     val cancelButton: LiveData<Boolean>
         get() = _cancelButton
 
-    fun onVisitNoteChanged(newNote : String) {
+    fun onVisitNoteChanged(newNote: String) {
         // Log.d(TAG, "onVisitNoteChanged $newNote")
         updatedNote = newNote
     }
@@ -74,12 +76,12 @@ class VisitDetailsViewModel(
 
     fun onCancelClicked() = visitsRepository.setCancelled(id, updatedNote)
 
-    fun getLatLng(): LatLng?  {
+    fun getLatLng(): LatLng? {
         visit.value?.latitude?.let { lat -> visit.value?.longitude?.let { lng -> return LatLng(lat, lng) } }
         return null
     }
 
-    fun getLabel() : String = "Parcel ${visit.value?._id?:"unknown"}"
+    fun getLabel(): String = "Parcel ${visit.value?._id ?: "unknown"}"
 
     fun onBackPressed() = updateNote()
 
@@ -96,5 +98,7 @@ class VisitDetailsViewModel(
         MainScope().launch { visitsRepository.setImage(id, path) }
     }
 
-    companion object {const val TAG = "VisitDetailsVM"}
+    companion object {
+        const val TAG = "VisitDetailsVM"
+    }
 }

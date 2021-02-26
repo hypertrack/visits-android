@@ -3,18 +3,16 @@ package com.hypertrack.android.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.hypertrack.android.repository.AccountData
-import com.hypertrack.android.repository.*
 import com.hypertrack.android.models.Visit
+import com.hypertrack.android.repository.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 
 
 class MyPreferences(context: Context, private val moshi: Moshi) :
-    AccountDataStorage, VisitsStorage {
+        AccountDataStorage, VisitsStorage {
 
-    private val sharedPreferences : SharedPreferences
-            = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("hyper_track_pref", Context.MODE_PRIVATE)
 
     override fun saveDriver(driverModel: Driver) {
         val serializedModel = moshi.adapter(Driver::class.java).toJson(driverModel)
@@ -34,10 +32,10 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
         sharedPreferences.edit()?.clear()?.apply()
     }
 
-    override fun getAccountData() : AccountData {
+    override fun getAccountData(): AccountData {
         return try {
             moshi.adapter(AccountData::class.java)
-                .fromJson(sharedPreferences.getString(ACCOUNT_KEY, "{}")!!) ?: AccountData()
+                    .fromJson(sharedPreferences.getString(ACCOUNT_KEY, "{}")!!) ?: AccountData()
         } catch (ignored: Throwable) {
             AccountData()
         }
@@ -45,14 +43,15 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
 
     override fun saveAccountData(accountData: AccountData) {
         sharedPreferences.edit()
-            ?.putString(ACCOUNT_KEY, moshi.adapter(AccountData::class.java).toJson(accountData))
-            ?.apply()
+                ?.putString(ACCOUNT_KEY, moshi.adapter(AccountData::class.java).toJson(accountData))
+                ?.apply()
     }
 
-    override fun restoreRepository() : BasicAuthAccessTokenRepository? {
+    override fun restoreRepository(): BasicAuthAccessTokenRepository? {
         sharedPreferences.getString(ACCESS_REPO_KEY, null)?.let {
             try {
-                val config = moshi.adapter(BasicAuthAccessTokenConfig::class.java).fromJson(it) ?: return null
+                val config = moshi.adapter(BasicAuthAccessTokenConfig::class.java).fromJson(it)
+                        ?: return null
                 return BasicAuthAccessTokenRepository(config)
             } catch (ignored: Throwable) {
 
@@ -63,12 +62,12 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
 
     override fun persistRepository(repo: AccessTokenRepository) {
         sharedPreferences.edit()
-            ?.putString(
-                ACCESS_REPO_KEY,
-                moshi
-                    .adapter(BasicAuthAccessTokenConfig::class.java)
-                    .toJson(repo.getConfig() as BasicAuthAccessTokenConfig)
-            )?.apply()
+                ?.putString(
+                        ACCESS_REPO_KEY,
+                        moshi
+                                .adapter(BasicAuthAccessTokenConfig::class.java)
+                                .toJson(repo.getConfig() as BasicAuthAccessTokenConfig)
+                )?.apply()
     }
 
     override fun saveVisits(visits: List<Visit>) {
@@ -78,7 +77,7 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
     override fun restoreVisits(): List<Visit> {
         try {
             return visitsListAdapter
-                .fromJson(sharedPreferences.getString(VISITS_KEY, "[]")!!) ?: emptyList()
+                    .fromJson(sharedPreferences.getString(VISITS_KEY, "[]")!!) ?: emptyList()
         } catch (e: Throwable) {
             Log.w(TAG, "Can't deserialize visits ${e.message}")
         }
@@ -101,7 +100,7 @@ class MyPreferences(context: Context, private val moshi: Moshi) :
 
 interface AccountDataStorage {
 
-    fun getAccountData() : AccountData
+    fun getAccountData(): AccountData
 
     fun saveAccountData(accountData: AccountData)
 
@@ -114,5 +113,5 @@ interface AccountDataStorage {
 
 interface VisitsStorage {
     fun saveVisits(visits: List<Visit>)
-    fun restoreVisits() : List<Visit>
+    fun restoreVisits(): List<Visit>
 }

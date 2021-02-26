@@ -16,23 +16,20 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class VisitsRepository(
-    private val osUtilsProvider: OsUtilsProvider,
-    private val apiClient: ApiClient,
-    private val visitsStorage: VisitsStorage,
-    private val hyperTrackService: HyperTrackService,
-    private val accountPreferences: AccountPreferencesProvider,
-    private val imageDecoder: ImageDecoder,
-    private val crashReportsProvider: CrashReportsProvider
+        private val osUtilsProvider: OsUtilsProvider,
+        private val apiClient: ApiClient,
+        private val visitsStorage: VisitsStorage,
+        private val hyperTrackService: HyperTrackService,
+        private val accountPreferences: AccountPreferencesProvider,
+        private val imageDecoder: ImageDecoder,
+        private val crashReportsProvider: CrashReportsProvider
 ) {
 
-    private val _visitsMap: MutableMap<String, Visit>
-            = visitsStorage.restoreVisits().associateBy { it._id  }.toMutableMap()
+    private val _visitsMap: MutableMap<String, Visit> = visitsStorage.restoreVisits().associateBy { it._id }.toMutableMap()
 
-    private val _visitListItems: MutableLiveData<List<VisitListItem>>
-            = MutableLiveData(_visitsMap.values.sortedWithHeaders())
+    private val _visitListItems: MutableLiveData<List<VisitListItem>> = MutableLiveData(_visitsMap.values.sortedWithHeaders())
 
-    private val _visitItemsById: MutableMap<String, MutableLiveData<Visit>>
-            = _visitsMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
+    private val _visitItemsById: MutableMap<String, MutableLiveData<Visit>> = _visitsMap.mapValues { MutableLiveData(it.value) }.toMutableMap()
 
     val visitListItems: LiveData<List<VisitListItem>>
         get() = _visitListItems
@@ -45,6 +42,7 @@ class VisitsRepository(
         get() = hyperTrackService.state
 
     private val _isTracking = MediatorLiveData<Boolean>()
+
     init {
         _isTracking.addSource(hyperTrackService.state) {
             _isTracking.postValue(it == TrackingStateValue.TRACKING)
@@ -61,16 +59,16 @@ class VisitsRepository(
         // Log.v(TAG, "Got geofences $geofences")
         val trips = apiClient.getTrips()
         // Log.v(TAG, "Got trips $trips")
-        val prototypes : Set<VisitDataSource> = trips.union(geofences)
+        val prototypes: Set<VisitDataSource> = trips.union(geofences)
         // Log.d(TAG, "Total prototypes $prototypes")
         prototypes.forEach { prototype ->
             // Log.v(TAG, "Processing prototype $prototype")
             val currentValue = _visitsMap[prototype._id]
             if (currentValue == null) {
                 val visit = Visit(
-                    prototype,
-                    osUtilsProvider,
-                    accountPreferences
+                        prototype,
+                        osUtilsProvider,
+                        accountPreferences
                 )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)
@@ -96,7 +94,8 @@ class VisitsRepository(
         // Log.d(TAG, "Updated _visitListItems ${_visitListItems.value}")
     }
 
-    fun visitForId(id: String): LiveData<Visit> = _visitItemsById[id]?:throw IllegalArgumentException("No visit for id $id")
+    fun visitForId(id: String): LiveData<Visit> = _visitItemsById[id]
+            ?: throw IllegalArgumentException("No visit for id $id")
 
     fun updateVisitNote(id: String, newNote: String): Boolean {
         val target = _visitsMap[id] ?: return false
@@ -143,7 +142,7 @@ class VisitsRepository(
         val completedVisit = target.complete(osUtilsProvider.getCurrentTimestamp(), newNote)
         // Log.d(TAG, "Completed visit $completedVisit ")
         hyperTrackService.sendCompletionEvent(
-            completedVisit
+                completedVisit
         )
         updateItem(id, completedVisit)
     }
@@ -155,7 +154,7 @@ class VisitsRepository(
         val completedVisit = target.cancel(osUtilsProvider.getCurrentTimestamp(), newNote)
         // Log.d(TAG, "Cancelled visit $completedVisit")
         hyperTrackService.sendCompletionEvent(
-            completedVisit
+                completedVisit
         )
         updateItem(id, completedVisit)
     }
@@ -182,12 +181,12 @@ class VisitsRepository(
 
         val createdAt = osUtilsProvider.getCurrentTimestamp()
         val newLocalVisit = Visit(
-            _id = UUID.randomUUID().toString(),
-            visit_id = osUtilsProvider.getString(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
-            createdAt = createdAt,
-            visitedAt = createdAt,
-            visitType = VisitType.LOCAL,
-            _state = VisitStatus.VISITED
+                _id = UUID.randomUUID().toString(),
+                visit_id = osUtilsProvider.getString(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
+                createdAt = createdAt,
+                visitedAt = createdAt,
+                visitType = VisitType.LOCAL,
+                _state = VisitStatus.VISITED
         )
         val id = newLocalVisit._id
         _visitsMap[id] = newLocalVisit
@@ -199,10 +198,10 @@ class VisitsRepository(
     }
 
     fun checkLocalVisitCompleted() = _hasOngoingLocalVisit.postValue(
-        _visitsMap.getLocalVisit()?.let { true } ?: false
+            _visitsMap.getLocalVisit()?.let { true } ?: false
     )
 
-    fun canEdit(visitId: String) = visitForId(visitId).value?.isEditable?:false
+    fun canEdit(visitId: String) = visitForId(visitId).value?.isEditable ?: false
 
     fun transitionAllowed(targetState: VisitStatus, visitId: String): Boolean {
         // Log.v(TAG, "transitionAllowed $targetState, $visitId")
@@ -226,8 +225,8 @@ class VisitsRepository(
         // Log.d(TAG, "Launched preview update task")
         try {
             retryWithBackoff(
-                times = 5, factor = 10.0,
-                block = { uploadImage(imagePath, target, id) }
+                    times = 5, factor = 10.0,
+                    block = { uploadImage(imagePath, target, id) }
             )
         } catch (t: Throwable) {
             when (t) {
@@ -240,10 +239,10 @@ class VisitsRepository(
     }
 
     private suspend fun uploadImage(
-        imagePath: String,
-        target: Visit,
-        id: String
-    )  {
+            imagePath: String,
+            target: Visit,
+            id: String
+    ) {
         val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
         val imageKey = apiClient.uploadImage(uploadedImage)
         target.visitPicture = imageKey
@@ -252,7 +251,9 @@ class VisitsRepository(
         File(imagePath).apply { if (exists()) delete() }
     }
 
-    companion object { const val TAG = "VisitsRepository"}
+    companion object {
+        const val TAG = "VisitsRepository"
+    }
 
 }
 
@@ -262,14 +263,14 @@ private fun Collection<Visit>.sortedWithHeaders(): List<VisitListItem> {
     grouped.keys.sortedBy { it.ordinal }.forEach { visitStatus ->
         result.add(HeaderVisitItem(visitStatus))
         result.addAll(
-            grouped[visitStatus]
-                ?.sortedWith(compareBy { it.createdAt })
-                ?.reversed()
-                ?: emptyList()
+                grouped[visitStatus]
+                        ?.sortedWith(compareBy { it.createdAt })
+                        ?.reversed()
+                        ?: emptyList()
         )
     }
     return result
 }
 
 private fun Map<String, Visit>.getLocalVisit(): Visit? =
-    values.firstOrNull { it.isLocal && !it.isCompleted }
+        values.firstOrNull { it.isLocal && !it.isCompleted }

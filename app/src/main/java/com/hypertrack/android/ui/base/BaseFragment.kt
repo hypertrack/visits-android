@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 
-abstract class BaseFragment<T : Activity>(layoutId: Int): Fragment(layoutId) {
+abstract class BaseFragment<T : Activity>(layoutId: Int) : Fragment(layoutId) {
 
     fun mainActivity(): T = activity as T
 
@@ -61,7 +61,7 @@ abstract class BaseFragment<T : Activity>(layoutId: Int): Fragment(layoutId) {
         }
     }
 
-    abstract class FragmentDelegate<M: Activity>(protected val fragment: BaseFragment<M>) {
+    abstract class FragmentDelegate<M : Activity>(protected val fragment: BaseFragment<M>) {
         open fun onViewCreated(view: View) {}
         open fun onResume() {}
         open fun onDestroyView() {}
@@ -78,7 +78,7 @@ abstract class BaseFragment<T : Activity>(layoutId: Int): Fragment(layoutId) {
 
     open fun onBackPressed(): Boolean {
         delegates.forEach {
-            if(it.onBackPressed()) {
+            if (it.onBackPressed()) {
                 return true
             }
         }

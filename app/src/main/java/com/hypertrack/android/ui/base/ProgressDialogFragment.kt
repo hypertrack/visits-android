@@ -11,9 +11,9 @@ import com.hypertrack.android.ui.MainActivity
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 
-open class ProgressDialogFragment(layoutId: Int): BaseFragment<MainActivity>(layoutId) {
+open class ProgressDialogFragment(layoutId: Int) : BaseFragment<MainActivity>(layoutId) {
 
-    private val dialog by lazy {  AnimatedDialog(requireContext()) }
+    private val dialog by lazy { AnimatedDialog(requireContext()) }
 
     protected fun showProgress() = dialog.show()
 
@@ -29,9 +29,9 @@ open class ProgressDialogFragment(layoutId: Int): BaseFragment<MainActivity>(lay
                 else
                     Notification.Builder(requireContext()).setPriority(Notification.PRIORITY_LOW)
                 )
-            .setContentText("Refreshing Visits")
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
-            .build()
+                .setContentText("Refreshing Visits")
+                .setSmallIcon(android.R.drawable.stat_notify_sync)
+                .build()
         notificationManager.notify(SYNC_NOTIFICATION_ID, notification)
     }
 
@@ -40,14 +40,17 @@ open class ProgressDialogFragment(layoutId: Int): BaseFragment<MainActivity>(lay
         notificationManager.cancel(SYNC_NOTIFICATION_ID)
     }
 
-    companion object { const val SYNC_NOTIFICATION_ID = 4242 }
+    companion object {
+        const val SYNC_NOTIFICATION_ID = 4242
+    }
 
 }
 
-class AnimatedDialog(context: Context): Dialog(context, R.style.LoaderDialog) {
+class AnimatedDialog(context: Context) : Dialog(context, R.style.LoaderDialog) {
     init {
         setContentView(R.layout.dialog_progress_bar)
     }
+
     private val animation = findViewById<LottieAnimationView>(R.id.loader)
 
     override fun show() {

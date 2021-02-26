@@ -15,7 +15,7 @@ import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_driver_id_input.*
 
-class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_input) {
+class DriverIdInputFragment : ProgressDialogFragment(R.layout.fragment_driver_id_input) {
 
     private val driverLoginModel: DriverLoginViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
@@ -25,10 +25,10 @@ class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_
         super.onViewCreated(view, savedInstanceState)
 
         driverLoginModel.state.observe(viewLifecycleOwner, { state ->
-            if(state !is JustLoading) {
+            if (state !is JustLoading) {
                 dismissProgress()
             }
-            when(state) {
+            when (state) {
                 is JustLoading -> {
                     showProgress()
                     displayLoginButtonEnabledState(false)
@@ -38,7 +38,7 @@ class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_
 //                    if(PermissionsUtils.hasRequiredPermissions()) {
 //                        findNavController().navigate(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToVisitManagementFragment())
 //                    } else {
-                        findNavController().navigate(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
+                    findNavController().navigate(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
 //                    }
                 }
             }
@@ -46,7 +46,7 @@ class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_
 
         etDriverId.addTextChangedListener(object : SimpleTextWatcher() {
             override fun afterChanged(text: String) {
-                if(text.isNotBlank()) {
+                if (text.isNotBlank()) {
                     displayLoginButtonEnabledState(true)
                 } else {
                     displayLoginButtonEnabledState(false)
@@ -65,10 +65,12 @@ class DriverIdInputFragment: ProgressDialogFragment(R.layout.fragment_driver_id_
     private fun displayLoginButtonEnabledState(enabled: Boolean) {
         btnCheckIn.isEnabled = enabled
         btnCheckIn.background = ContextCompat.getDrawable(requireContext(),
-            if (enabled) R.drawable.bg_button
-            else R.drawable.bg_button_disabled
+                if (enabled) R.drawable.bg_button
+                else R.drawable.bg_button_disabled
         )
     }
 
-    companion object { const val TAG = "LoginAct" }
+    companion object {
+        const val TAG = "LoginAct"
+    }
 }

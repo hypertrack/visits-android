@@ -8,8 +8,8 @@ import com.hypertrack.android.repository.HistoryRepository
 import kotlinx.coroutines.launch
 
 class HistoryViewModel(
-    private val historyRepository: HistoryRepository
-): ViewModel() {
+        private val historyRepository: HistoryRepository
+) : ViewModel() {
 
     val history = historyRepository.history
 
@@ -18,7 +18,7 @@ class HistoryViewModel(
     fun getHistory() {
         viewModelScope.launch {
             val res = historyRepository.getHistory()
-            if(res is HistoryError) {
+            if (res is HistoryError) {
                 error.postValue(res)
             }
         }
