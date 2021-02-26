@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 interface PhotoUploadInteractor {
     fun addToQueue(visitId: String, photo: VisitPhoto)
@@ -59,9 +60,16 @@ class PhotoUploadInteractorImpl(
         // Log.d(TAG, "Launched preview update task")
         try {
             setVisitImageState(visitId = visitId, imageId = photo.imageId, VisitPhotoState.NOT_UPLOADED)
-            retryWithBackoff(retryParams) {
+            retryWithBackoff(retryParams, {
                 uploadImage(imageId = photo.imageId, imagePath = photo.filePath)
-            }
+            }, shouldRetry = {
+                return@retryWithBackoff when(it) {
+                    is HttpException -> {
+                        it.code() !in 400..499
+                    }
+                    else -> true
+                }
+            })
             setVisitImageState(visitId = visitId, imageId = photo.imageId, VisitPhotoState.UPLOADED)
             fileRepository.deleteIfExists(photo.filePath)
         } catch (t: Exception) {

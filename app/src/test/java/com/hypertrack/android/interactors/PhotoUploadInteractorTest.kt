@@ -24,6 +24,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -32,6 +35,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
+import retrofit2.HttpException
+import retrofit2.Response
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class) //Location class in Android
@@ -73,7 +78,8 @@ class PhotoUploadInteractorTest() {
     val retriesLeft = mutableMapOf<String, Int>(
             "3" to 1,
             "2" to 9999,
-            "5" to 2
+            "5" to 2,
+            "4" to 2,
     )
 
     @Before
@@ -92,10 +98,15 @@ class PhotoUploadInteractorTest() {
         apiClient = mockk()
         coEvery { apiClient.uploadImage(any(), any()) } answers {
             val id = args[0] as String
+
             retriesLeft[id]?.let {
                 if (it > 0) {
                     retriesLeft[id] = it - 1
-                    throw Exception("error")
+                    if(id == "4") {
+                        throw HttpException(Response.error<String>(401, "".toResponseBody("application/json".toMediaTypeOrNull())))
+                    } else {
+                        throw Exception("error")
+                    }
                 }
             }
         }
@@ -134,7 +145,6 @@ class PhotoUploadInteractorTest() {
                     checkFinish()
                 }
             }
-            photoUploadInteractorImpl.errorFlow.tryEmit(java.lang.Exception())
 
 
             VisitPhoto("1", "path1", "", VisitPhotoState.NOT_UPLOADED).also {
@@ -179,17 +189,18 @@ class PhotoUploadInteractorTest() {
 
             val photos = visit1.photos.apply { addAll(visit2.photos) }
             assertEquals(6, photos.size)
-            listOf(1, 4, 6).map { it.toString() }.forEach { id ->
+            listOf(1, 6).map { it.toString() }.forEach { id ->
                 assertEquals(id, VisitPhotoState.UPLOADED, photos.firstOrNull { it.imageId == id }?.state)
             }
             listOf(3, 5).map { it.toString() }.forEach { id ->
                 assertEquals(id, VisitPhotoState.UPLOADED, photos.firstOrNull { it.imageId == id }?.state)
             }
 
-            assertEquals(1, errors)
-            listOf(2).map { it.toString() }.forEach { id ->
+            assertEquals(2, errors)
+            listOf(2, 4).map { it.toString() }.forEach { id ->
                 assertEquals(id, VisitPhotoState.ERROR, photos.firstOrNull { it.imageId == id }?.state)
             }
+            assertEquals(1, retriesLeft["4"])
 
             assertEquals(6-errors, fileRepository.fileCount)
 
