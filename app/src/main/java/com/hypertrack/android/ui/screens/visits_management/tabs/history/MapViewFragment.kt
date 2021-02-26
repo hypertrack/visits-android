@@ -41,7 +41,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
                     map.showHistory(HistoryTile.MOCK_TILES.asHistory())
                 }
             }
-            setupTimeline(HistoryTile.MOCK_TILES)
+            setupTimeline(HistoryTile.MOCK_TILES, historyRenderer)
         }
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
@@ -51,9 +51,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
     }
 
-    private fun setupTimeline(historyTiles: List<HistoryTile>) {
-        val onclick: (Int) -> Boolean = { Log.d(TAG, "On click for $it"); true }
-
+    private fun setupTimeline(historyTiles: List<HistoryTile>, historyNavigationHandler: HistoryMapRenderer?) {
 
         val bottomSheetBehavior = BottomSheetBehavior.from(timeLineView)
         bottomSheetBehavior.peekHeight = 48
@@ -64,7 +62,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         historyTiles.forEach { tile ->
             val item = menu.add(tile.description)
             item.setIcon(tile.icon)
-            item.setOnMenuItemClickListener { onclick(tile.id) }
+            item.setOnMenuItemClickListener { historyNavigationHandler?.onTileSelected(tile); true }
         }
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
