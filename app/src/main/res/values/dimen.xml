@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="visit_list_icon_size">64dp</dimen>
+    <dimen name="visit_list_icon_image_size">48dp</dimen>
+    <dimen name="visit_list_icon_image_padding">6dp</dimen>
+    <dimen name="visit_list_subicon_size">24dp</dimen>
+    <dimen name="visit_list_subicon_left">42dp</dimen>
+    <dimen name="visit_list_subicon_top">0dp</dimen>
+</resources>

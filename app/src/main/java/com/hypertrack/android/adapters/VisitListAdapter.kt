@@ -51,19 +51,19 @@ class VisitListAdapter(
                 val visitView = holder as VisitViewHolder
                 visitView.tvDescription.text = "" // createAddress(item.address)
                 visitView.tvTitle.text = item.visit_id
-                visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.INVISIBLE
-                visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.INVISIBLE
+                visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.GONE
+                visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.GONE
 
                 visitView.ivPhotosStateIcon.setGoneState(item.photos.isEmpty())
                 when {
                     item.photos.any { it.state == VisitPhotoState.ERROR } -> {
-                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_close)
+                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_photo_error)
                     }
                     item.photos.any { it.state == VisitPhotoState.NOT_UPLOADED } -> {
-                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_refresh)
+                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_photo_loading)
                     }
                     else -> {
-                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_cam)
+                        visitView.ivPhotosStateIcon.setImageResource(R.drawable.ic_photo)
                     }
                 }
             }
