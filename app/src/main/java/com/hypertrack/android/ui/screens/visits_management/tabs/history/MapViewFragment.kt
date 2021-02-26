@@ -8,6 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.hypertrack.android.models.HistoryTile
+import com.hypertrack.android.models.asHistory
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication

@@ -25,9 +25,6 @@
     <color name="colorTrackingActive">#24C963</color>
     <color name="colorTrackingError">@color/colorRed</color>
     <color name="colorTrackingStopped">#A0A0A0</color>
-    <!--  Polyline colors are 32bit ints  -->
-    <color name="selectedHistorySegment">#FFFF0000</color>
-    <color name="historyPolylineColor">#FF00ce5b</color>
 
 
 </resources>

@@ -9,8 +9,8 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.hypertrack.android.models.History
+import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.Location
-import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 
@@ -25,6 +25,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
     var map: GoogleMap? = null
     var polyLine: Polyline? = null
     var selectedSegment: Polyline? = null
+    var viewBounds: LatLngBounds? = null
 
 
     @ExperimentalCoroutinesApi
@@ -37,14 +38,13 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                 googleMap.uiSettings.isMyLocationButtonEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
-                polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(R.color.historyPolylineColor))
+                polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(HISTORY_COLOR))
 
                 if (history.locationTimePoints.isEmpty()) {
                     map?.moveCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
                 } else {
-                    map?.moveCamera(CameraUpdateFactory.newLatLngBounds(
-                        history.locationTimePoints.map { it.first }.boundRect(), 0
-                    ))
+                    viewBounds = history.locationTimePoints.map { it.first }.boundRect()
+                    map?.moveCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, VIEW_PADDING))
 
                 }
                 continuation.resume(true, null)
@@ -52,7 +52,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
         } else {
             Log.d(TAG, "Adding polyline to existing map")
             polyLine?.remove()
-            polyLine = map?.addPolyline(history.asPolylineOptions().color(R.color.historyPolylineColor))
+            polyLine = map?.addPolyline(history.asPolylineOptions().color(HISTORY_COLOR))
             map?.let { map ->
                 history.locationTimePoints.firstOrNull()?.let { point ->
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
@@ -71,14 +71,18 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                 tile.locations
                     .map { LatLng(it.latitude, it.longitude) }
                     .fold(PolylineOptions()) { options, loc -> options.add(loc) }
-                    .color(R.color.selectedHistorySegment)
+                    .color(SELECTED_SEGMENT_COLOR)
                     .clickable(true)
             )
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), 0))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), VIEW_PADDING))
             googleMap.setOnMapClickListener {
                 Log.d(TAG, "onMapClicked")
                 selectedSegment?.remove()
                 selectedSegment = null
+                viewBounds?.let { bounds ->
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, VIEW_PADDING))
+                }
+
             }
 
         }
@@ -101,3 +105,8 @@ private fun Iterable<Location>.boundRect() : LatLngBounds {
     val southWest = LatLng(this.map {it.latitude}.minOrNull()!!, this.map {it.longitude}.minOrNull()!!)
     return LatLngBounds(southWest, northEast)
 }
+
+private const val SELECTED_SEGMENT_COLOR = 0xffff0000.toInt()
+private const val HISTORY_COLOR = 0xff00ce5b.toInt()
+
+private const val VIEW_PADDING = 32
