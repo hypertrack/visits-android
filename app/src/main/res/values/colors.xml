@@ -27,10 +27,10 @@
     <color name="colorTrackingStopped">#A0A0A0</color>
 
     <!--    History Polyline theme as color int as conversion is a headache -->
-    <integer name="colorHistorySelectedSegmentStop">0xff921828</integer>
-    <integer name="colorHistorySelectedSegmentDrive">0xffffa800</integer>
-    <integer name="colorHistorySelectedSegmentWalk">0xff6ba876</integer>
-    <integer name="colorHistoryOutageSegment">0xffea023e</integer>
-    <integer name="colorHistoryActiveSegment">0xff00c94b</integer>
+    <color name="colorHistorySelectedSegmentStop">#921828</color>
+    <color name="colorHistorySelectedSegmentDrive">#ffa800</color>
+    <color name="colorHistorySelectedSegmentWalk">#6ba876</color>
+    <color name="colorHistoryOutageSegment">#ea023e</color>
+    <color name="colorHistoryActiveSegment">#00c94b</color>
 
 </resources>

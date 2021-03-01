@@ -129,7 +129,4 @@ private fun Iterable<Location>.boundRect() : LatLngBounds {
     return LatLngBounds(southWest, northEast)
 }
 
-private const val SELECTED_SEGMENT_COLOR = 0xffff0000.toInt()
-private const val HISTORY_COLOR = 0xff00ce5b.toInt()
-
 private const val VIEW_PADDING = 32
