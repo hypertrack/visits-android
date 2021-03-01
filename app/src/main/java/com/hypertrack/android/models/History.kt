@@ -36,11 +36,20 @@ enum class MarkerType {
     GEOFENCE_ENTRY
 }
 
+enum class Status {
+    OUTAGE,
+    INACTIVE,
+    DRIVE,
+    WALK,
+    STOP
+}
+
 
 class HistoryError(val error: Throwable?) : HistoryResult()
 sealed class HistoryResult
 data class HistoryTile(
-    @DrawableRes val icon: Int,
+    @DrawableRes val icon: Int, // TODO Denys: move to style, as depends on status
+    val status: Status,
     val description: CharSequence,
     val address: CharSequence?,
     val id: Int,
@@ -107,25 +116,25 @@ data class HistoryTile(
 
         val MOCK_TILES = listOf(
             HistoryTile(
-                R.drawable.ic_coffee, "5 min", "1906 Mission, San Francisco, CA", 0,
+                R.drawable.ic_coffee, Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
                 ashburyXHeightLoitering
             ),
             HistoryTile(
-                R.drawable.ic_walk,
+                R.drawable.ic_walk, Status.WALK,
                 "10 min • 520 steps",
                 null,
                 1,
                 ashburyXHeight2BotanicGarden
             ),
             HistoryTile(
-                R.drawable.ic_coffee,
+                R.drawable.ic_coffee, Status.STOP,
                 "30 min",
                 "McLaren Lodge, Fell, San Francisco, CA",
                 2,
                 botanicGardenLoitering
             ),
             HistoryTile(
-                R.drawable.ic_car,
+                R.drawable.ic_car, Status.DRIVE,
                 "5 min • 3.2 miles",
                 null,
                 1,

@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.*
 import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.Location
+import com.hypertrack.android.models.Status
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 
@@ -23,6 +24,7 @@ interface HistoryStyle {
     val walkSelectionColor: Int
     val stopSelectionColor: Int
     val outageSelectionColor: Int
+    fun colorForStatus(status: Status): Int
 }
 
 class GoogleMapHistoryRenderer(
@@ -81,7 +83,7 @@ class GoogleMapHistoryRenderer(
                 tile.locations
                     .map { LatLng(it.latitude, it.longitude) }
                     .fold(PolylineOptions()) { options, loc -> options.add(loc) }
-                    .color(style.driveSelectionColor)
+                    .color(style.colorForStatus(tile.status))
                     .clickable(true)
             )
             tile.locations.firstOrNull()?.let {
