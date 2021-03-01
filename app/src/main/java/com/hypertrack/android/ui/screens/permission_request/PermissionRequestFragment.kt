@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.permission_request
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,57 +9,41 @@ import androidx.navigation.fragment.findNavController
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.PermissionRequestViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_permission_request.*
 
 class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permission_request) {
 
-    private val permissionRequestViewModel: PermissionRequestViewModel by viewModels {
+    private val vm: PermissionRequestViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        permissionRequestViewModel.state.observe(viewLifecycleOwner, { state ->
-            when (state) {
-                is PermissionRequestViewModel.PermissionsGranted -> {
-                    findNavController().navigate(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToVisitManagementFragment())
-                }
-                is PermissionRequestViewModel.PermissionsNotGranted -> {
-                    permissionRequestViewModel.requestPermission(mainActivity())
-                }
-            }
+        vm.destination.observe(viewLifecycleOwner, {
+            findNavController().navigate(it)
         })
 
-        permissionRequestViewModel.whitelistingRequired.observe(viewLifecycleOwner) { visible ->
+        vm.whitelistingRequired.observe(viewLifecycleOwner) { visible ->
             listOf<View>(btnWhitelisting, whitelistingMessage)
-                    .forEach { it.setGoneState(!visible) }
+                .forEach { it.setGoneState(!visible) }
         }
 
-        btnContinue.setOnClickListener { permissionRequestViewModel.requestPermission(mainActivity()) }
+        vm.showPermissionsButton.observe(viewLifecycleOwner) { show ->
+            listOf<View>(btnContinue, permissionRationalMessage)
+                    .forEach { it.setGoneState(!show) }
+        }
+
+        btnContinue.setOnClickListener { vm.requestPermissions(mainActivity()) }
 
         btnWhitelisting.setOnClickListener {
-            permissionRequestViewModel.requestWhitelisting(
-                    mainActivity()
-            )
+            vm.requestWhitelisting(mainActivity())
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d("PermissionRequestAct", "OnResume")
+        vm.onResume(mainActivity())
     }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionRequestViewModel.onPermissionResult()
-    }
-
-
 }

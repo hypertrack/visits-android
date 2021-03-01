@@ -8,7 +8,7 @@ import com.hypertrack.android.ui.screens.permission_request.PermissionRequestFra
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.DeeplinkResultListener
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.SplashScreenViewModel
+import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.NavGraphDirections
 import com.hypertrack.logistics.android.github.R
 
@@ -44,7 +44,7 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
     }
 
     override fun onDeeplinkResult(parameters: Map<String, Any>) {
-        splashScreenViewModel.handleDeeplink(parameters)
+        splashScreenViewModel.handleDeeplink(parameters, this)
     }
 
     override fun onRequestPermissionsResult(
@@ -53,10 +53,6 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
             grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        getCurrentFragment().let {
-            if (it is PermissionRequestFragment) {
-                it.onRequestPermissionsResult(requestCode, permissions, grantResults)
-            }
-        }
+        getCurrentFragment().onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

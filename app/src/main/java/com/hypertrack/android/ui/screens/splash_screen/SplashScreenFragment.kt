@@ -1,12 +1,10 @@
 package com.hypertrack.android.ui.screens.splash_screen
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.common.PermissionsUtils
-import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 
 class SplashScreenFragment : ProgressDialogFragment(R.layout.fragment_splash_screen) {
@@ -17,32 +15,13 @@ class SplashScreenFragment : ProgressDialogFragment(R.layout.fragment_splash_scr
         super.onViewCreated(view, savedInstanceState)
         splashScreenViewModel = mainActivity().splashScreenViewModel
 
-        splashScreenViewModel.state.observe(viewLifecycleOwner, { state ->
-            if (state !is JustLoading) {
-                dismissProgress()
-            }
-            when (state) {
-                is JustLoading -> {
-                    showProgress()
-                }
-                is SplashScreenViewModel.KeyIsCorrect -> {
-                    findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
-                }
-                is SplashScreenViewModel.LoggedIn -> {
-                    //todo check if permissions granted and whitelisted
-                    if (PermissionsUtils.hasRequiredPermissions()) {
-                        findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToVisitManagementFragment())
-                    } else {
-                        findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
-                    }
-                }
-                is SplashScreenViewModel.AccountVerified -> {
-                    findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
-                }
-                is SplashScreenViewModel.NoPublishableKey -> {
-                    findNavController().navigate(SplashScreenFragmentDirections.actionSplashScreenFragmentToLoginFragment())
-                }
-            }
+        splashScreenViewModel.destination.observe(viewLifecycleOwner, { destination ->
+            findNavController().navigate(destination)
         })
+
+        splashScreenViewModel.loadingState.observe(viewLifecycleOwner, {
+            if(it) showProgress() else dismissProgress()
+        })
+
     }
 }
