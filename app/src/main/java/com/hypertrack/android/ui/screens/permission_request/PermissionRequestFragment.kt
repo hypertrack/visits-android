@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_permission_request.*
 class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permission_request) {
 
     private val vm: PermissionRequestViewModel by viewModels {
-        MyApplication.injector.provideViewModelFactory(MyApplication.context)
+        MyApplication.injector.provideUserScopeViewModelFactory()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

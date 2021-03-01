@@ -93,31 +93,33 @@ object Injector {
                 getOsUtilsProvider(MyApplication.context)
             )
             val scope = CoroutineScope(Dispatchers.IO)
+            val hyperTrackService = getHyperTrackService(context)
             userScope = UserScope(
-                historyRepository,
-                UserScopeViewModelFactory(
-                    getVisitsRepo(context),
                     historyRepository,
-                    getDriverRepo(context),
-                    getAccountRepo(context),
-                    crashReportsProvider,
-                    getHyperTrackService(context),
-                    getPermissionInteractor()
-                ),
-                PhotoUploadInteractorImpl(
-                    getVisitsRepo(context),
-                    getFileRepository(),
-                    crashReportsProvider,
-                    getImageDecoder(),
-                    getVisitsApiClient(MyApplication.context),
-                    scope,
-                    RetryParams(
-                        retryTimes = 3,
-                        initialDelay = 1000,
-                        factor = 10.0,
-                        maxDelay = 30 * 1000
-                    )
-                )
+                    UserScopeViewModelFactory(
+                            getVisitsRepo(context),
+                            historyRepository,
+                            getDriverRepo(context),
+                            getAccountRepo(context),
+                            crashReportsProvider,
+                            hyperTrackService,
+                            getPermissionInteractor()
+                    ),
+                    PhotoUploadInteractorImpl(
+                            getVisitsRepo(context),
+                            getFileRepository(),
+                            crashReportsProvider,
+                            getImageDecoder(),
+                            getVisitsApiClient(MyApplication.context),
+                            scope,
+                            RetryParams(
+                                    retryTimes = 3,
+                                    initialDelay = 1000,
+                                    factor = 10.0,
+                                    maxDelay = 30 * 1000
+                            )
+                    ),
+                    hyperTrackService
             )
         }
         return userScope!!
@@ -214,9 +216,10 @@ object Injector {
 }
 
 private class UserScope(
-    val historyRepository: HistoryRepository,
-    val userScopeViewModelFactory: UserScopeViewModelFactory,
-    val photoUploadInteractor: PhotoUploadInteractor,
+        val historyRepository: HistoryRepository,
+        val userScopeViewModelFactory: UserScopeViewModelFactory,
+        val photoUploadInteractor: PhotoUploadInteractor,
+        val hyperTrackService: HyperTrackService
 )
 
 fun interface Factory<A, T> {

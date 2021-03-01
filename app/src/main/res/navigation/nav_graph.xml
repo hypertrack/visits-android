@@ -81,9 +81,12 @@
     <fragment
         android:id="@+id/backgroundPermissionsFragment"
         android:name="com.hypertrack.android.ui.screens.background_permissions.BackgroundPermissionsFragment"
-        android:label="BackgroundPermissionsFragment" >
+        android:label="BackgroundPermissionsFragment">
         <action
             android:id="@+id/action_backgroundPermissionsFragment_to_visitManagementFragment"
             app:destination="@id/visitManagementFragment" />
+        <action
+            android:id="@+id/action_backgroundPermissionsFragment_to_permissionRequestFragment"
+            app:destination="@id/permissionRequestFragment" />
     </fragment>
 </navigation>
