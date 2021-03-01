@@ -4,10 +4,7 @@ import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.Location
@@ -22,10 +19,11 @@ interface HistoryMapRenderer {
 
 class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : HistoryMapRenderer{
 
-    var map: GoogleMap? = null
-    var polyLine: Polyline? = null
-    var selectedSegment: Polyline? = null
-    var viewBounds: LatLngBounds? = null
+    private var map: GoogleMap? = null
+    private var polyLine: Polyline? = null
+    private var selectedSegment: Polyline? = null
+    private var viewBounds: LatLngBounds? = null
+    private val activeMarkers = mutableListOf<Marker>()
 
 
     @ExperimentalCoroutinesApi
@@ -66,6 +64,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
     override fun onTileSelected(tile: HistoryTile) {
         Log.d(TAG, "onTileSelected $tile")
         selectedSegment?.remove()
+        activeMarkers.forEach { it.remove() }
         map?.let { googleMap ->
             selectedSegment = googleMap.addPolyline(
                 tile.locations
@@ -74,10 +73,15 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                     .color(SELECTED_SEGMENT_COLOR)
                     .clickable(true)
             )
+            tile.locations.firstOrNull()?.let {
+                activeMarkers.add(addMarker(it, googleMap, tile.address))
+            }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), VIEW_PADDING))
             googleMap.setOnMapClickListener {
                 Log.d(TAG, "onMapClicked")
                 selectedSegment?.remove()
+                activeMarkers.forEach { it.remove() }
+                activeMarkers.clear()
                 selectedSegment = null
                 viewBounds?.let { bounds ->
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, VIEW_PADDING))
@@ -86,6 +90,12 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
             }
 
         }
+    }
+
+    private fun addMarker(location: Location, map: GoogleMap, address: CharSequence?): Marker {
+        val markerOptions = MarkerOptions().position(LatLng(location.latitude, location.longitude))
+        address?.let { markerOptions.title(it.toString()) }
+        return map.addMarker(markerOptions)
     }
 
     companion object { const val TAG = "HistoryMapRenderer" }
