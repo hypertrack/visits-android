@@ -49,23 +49,23 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
     private fun displaySummary(summary: Summary) {
         val items = listOf(
                 SummaryItem(
-                        R.drawable.ic_time,
+                        R.drawable.ic_ht_eta,
                         getString(R.string.summary_total_tracking_time),
                         DateTimeUtils.secondsToLocalizedString(summary.totalDuration)
                 ),
                 SummaryItem(
-                        R.drawable.ic_car,
+                        R.drawable.ic_ht_drive,
                         getString(R.string.summary_drive),
                         DateTimeUtils.secondsToLocalizedString(summary.totalDriveDuration),
                         DistanceUtils.metersToDistanceString(summary.totalDriveDistance)
                 ),
                 SummaryItem(
-                        R.drawable.ic_walk, getString(R.string.summary_walk),
+                        R.drawable.ic_ht_walk, getString(R.string.summary_walk),
                         DateTimeUtils.secondsToLocalizedString(summary.totalWalkDuration),
                         resources.getString(R.string.steps, summary.stepsCount)
                 ),
                 SummaryItem(
-                        R.drawable.ic_stop,
+                        R.drawable.ic_ht_stop,
                         getString(R.string.summary_stop),
                         DateTimeUtils.secondsToLocalizedString(summary.totalStopDuration)
                 ),

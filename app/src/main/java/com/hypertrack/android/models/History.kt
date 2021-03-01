@@ -116,25 +116,25 @@ data class HistoryTile(
 
         val MOCK_TILES = listOf(
             HistoryTile(
-                R.drawable.ic_coffee, Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
+                R.drawable.ic_ht_stop, Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
                 ashburyXHeightLoitering
             ),
             HistoryTile(
-                R.drawable.ic_walk, Status.WALK,
+                R.drawable.ic_ht_walk, Status.WALK,
                 "10 min • 520 steps",
                 null,
                 1,
                 ashburyXHeight2BotanicGarden
             ),
             HistoryTile(
-                R.drawable.ic_coffee, Status.STOP,
+                R.drawable.ic_ht_stop, Status.STOP,
                 "30 min",
                 "McLaren Lodge, Fell, San Francisco, CA",
                 2,
                 botanicGardenLoitering
             ),
             HistoryTile(
-                R.drawable.ic_car, Status.DRIVE,
+                R.drawable.ic_ht_drive, Status.DRIVE,
                 "5 min • 3.2 miles",
                 null,
                 1,
