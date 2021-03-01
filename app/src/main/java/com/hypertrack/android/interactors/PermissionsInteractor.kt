@@ -11,7 +11,7 @@ import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 interface PermissionsInteractor {
     fun checkPermissionState(activity: Activity): PermissionState
-    fun isWhitelistingApplicable(): Boolean
+    fun isWhitelistingGranted(): Boolean
     fun requestWhitelisting(activity: Activity)
     fun requestRequiredPermissions(activity: Activity)
     fun requestBackgroundLocationPermission(activity: Activity)
@@ -36,12 +36,13 @@ class PermissionsInteractorImpl(
             } else {
                 true
             },
-            whitelistingGranted = true,
+            whitelistingGranted = isWhitelistingGranted(),
         )
     }
 
-    override fun isWhitelistingApplicable(): Boolean {
-        return autostarter.isAutoStartPermissionAvailable(MyApplication.context) && !accountRepository.wasWhitelisted
+    override fun isWhitelistingGranted(): Boolean {
+        val applicable = autostarter.isAutoStartPermissionAvailable(MyApplication.context)
+        return !applicable || (applicable && accountRepository.wasWhitelisted)
     }
 
     override fun requestWhitelisting(activity: Activity) {
@@ -74,6 +75,7 @@ class PermissionsInteractorImpl(
     private fun hasPermission(permission: String) =
         MyApplication.context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 
+
 }
 
 class PermissionState(
@@ -85,8 +87,8 @@ class PermissionState(
     fun getDestination(): PermissionDestination {
         return when {
             !foregroundLocationGranted || !activityTrackingGranted -> PermissionDestination.FOREGROUND_AND_TRACKING
-            !backgroundLocationGranted -> PermissionDestination.BACKGROUND
             !whitelistingGranted -> PermissionDestination.WHITELISTING
+//            !backgroundLocationGranted -> PermissionDestination.BACKGROUND todo
             else -> PermissionDestination.PASS
         }
     }

@@ -1,4 +1,4 @@
-package com.hypertrack.android.view_models
+package com.hypertrack.android.ui.screens.splash_screen
 
 import android.app.Activity
 import android.util.Log
@@ -10,15 +10,14 @@ import com.hypertrack.android.interactors.PermissionDestination
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
-import com.hypertrack.android.ui.screens.splash_screen.SplashScreenFragmentDirections
 import com.hypertrack.android.utils.CrashReportsProvider
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
-    private val driverRepository: DriverRepository,
-    private val accountRepository: AccountRepository,
-    private val crashReportsProvider: CrashReportsProvider,
-    private val permissionsInteractor: PermissionsInteractor
+        private val driverRepository: DriverRepository,
+        private val accountRepository: AccountRepository,
+        private val crashReportsProvider: CrashReportsProvider,
+        private val permissionsInteractor: PermissionsInteractor
 ) : ViewModel() {
 
     val destination = MutableLiveData<NavDirections>()
@@ -34,9 +33,11 @@ class SplashScreenViewModel(
                     destination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
                 }
                 PermissionDestination.FOREGROUND_AND_TRACKING,
-                PermissionDestination.WHITELISTING,
-                PermissionDestination.BACKGROUND -> {
+                PermissionDestination.WHITELISTING -> {
                     destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
+                }
+                PermissionDestination.BACKGROUND -> {
+                    destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToBackgroundPermissionsFragment())
                 }
             }
         }
@@ -69,16 +70,21 @@ class SplashScreenViewModel(
                 loadingState.postValue(true)
                 viewModelScope.launch {
                     val correctKey = accountRepository.onKeyReceived(
-                        key,
-                        checkInEnabled = showCheckIn,
-                        pickUpAllowed = pickUpAllowed
+                            key,
+                            checkInEnabled = showCheckIn,
+                            pickUpAllowed = pickUpAllowed
                     )
                     // Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
                         // Log.d(TAG, "Key validated successfully")
                         driverId?.let { driverRepository.driverId = it }
                         email?.let { driverRepository.driverId = it }
-                        destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
+                        if(driverRepository.hasDriverId) {
+                            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToVisitManagementFragment())
+                        }
+                        else {
+                            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
+                        }
                     } else {
                         proceedToLogin(activity)
                     }

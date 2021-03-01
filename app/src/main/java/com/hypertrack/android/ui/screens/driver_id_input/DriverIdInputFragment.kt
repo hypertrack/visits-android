@@ -1,17 +1,15 @@
 package com.hypertrack.android.ui.screens.driver_id_input
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.hypertrack.android.ui.base.JustLoading
-import com.hypertrack.android.ui.base.JustSuccess
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SimpleTextWatcher
 import com.hypertrack.android.ui.common.textString
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.DriverLoginViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_driver_id_input.*
 

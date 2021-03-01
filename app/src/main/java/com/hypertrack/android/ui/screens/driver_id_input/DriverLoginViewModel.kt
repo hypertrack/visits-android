@@ -1,4 +1,4 @@
-package com.hypertrack.android.view_models
+package com.hypertrack.android.ui.screens.driver_id_input
 
 import android.app.Activity
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,6 @@ import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.PermissionDestination
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.DriverRepository
-import com.hypertrack.android.ui.screens.driver_id_input.DriverIdInputFragmentDirections
 import com.hypertrack.android.utils.HyperTrackService
 
 class DriverLoginViewModel(
@@ -30,9 +29,11 @@ class DriverLoginViewModel(
                     destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToVisitManagementFragment())
                 }
                 PermissionDestination.FOREGROUND_AND_TRACKING,
-                PermissionDestination.WHITELISTING,
-                PermissionDestination.BACKGROUND -> {
+                PermissionDestination.WHITELISTING -> {
                     destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
+                }
+                PermissionDestination.BACKGROUND -> {
+                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToBackgroundPermissionsFragment())
                 }
             }
 

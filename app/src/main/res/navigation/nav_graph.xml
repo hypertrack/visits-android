@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_splashScreenFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_splashScreenFragment_to_backgroundPermissionsFragment"
+            app:destination="@id/backgroundPermissionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/driverIdInputFragment"
@@ -31,6 +34,9 @@
         <action
             android:id="@+id/action_driverIdInputFragment_to_visitManagementFragment"
             app:destination="@id/visitManagementFragment" />
+        <action
+            android:id="@+id/action_driverIdInputFragment_to_backgroundPermissionsFragment"
+            app:destination="@id/backgroundPermissionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/permissionRequestFragment"
@@ -39,6 +45,9 @@
         <action
             android:id="@+id/action_permissionRequestFragment_to_visitManagementFragment"
             app:destination="@id/visitManagementFragment" />
+        <action
+            android:id="@+id/action_permissionRequestFragment_to_backgroundPermissionsFragment"
+            app:destination="@id/backgroundPermissionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/visitManagementFragment"
@@ -69,4 +78,12 @@
         app:destination="@id/visitManagementFragment"
         app:popUpTo="@id/nav_graph"
         app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/backgroundPermissionsFragment"
+        android:name="com.hypertrack.android.ui.screens.background_permissions.BackgroundPermissionsFragment"
+        android:label="BackgroundPermissionsFragment" >
+        <action
+            android:id="@+id/action_backgroundPermissionsFragment_to_visitManagementFragment"
+            app:destination="@id/visitManagementFragment" />
+    </fragment>
 </navigation>

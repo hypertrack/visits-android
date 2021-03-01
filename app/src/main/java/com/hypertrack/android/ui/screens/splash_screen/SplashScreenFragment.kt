@@ -1,12 +1,10 @@
 package com.hypertrack.android.ui.screens.splash_screen
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import com.hypertrack.android.ui.base.JustLoading
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.view_models.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.R
 
 class SplashScreenFragment : ProgressDialogFragment(R.layout.fragment_splash_screen) {

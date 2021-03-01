@@ -12,7 +12,7 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileV
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModel
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.android.view_models.DriverLoginViewModel
+import com.hypertrack.android.ui.screens.driver_id_input.DriverLoginViewModel
 import com.hypertrack.android.view_models.HistoryViewModel
 
 @Suppress("UNCHECKED_CAST")
