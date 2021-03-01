@@ -17,7 +17,18 @@ interface HistoryMapRenderer {
     fun onTileSelected(tile: HistoryTile)
 }
 
-class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : HistoryMapRenderer{
+interface HistoryStyle {
+    val activeColor: Int
+    val driveSelectionColor: Int
+    val walkSelectionColor: Int
+    val stopSelectionColor: Int
+    val outageSelectionColor: Int
+}
+
+class GoogleMapHistoryRenderer(
+    private val mapFragment: SupportMapFragment,
+    private val style: HistoryStyle,
+    ) : HistoryMapRenderer{
 
     private var map: GoogleMap? = null
     private var polyLine: Polyline? = null
@@ -36,7 +47,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                 googleMap.uiSettings.isMyLocationButtonEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
-                polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(HISTORY_COLOR))
+                polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
 
                 if (history.locationTimePoints.isEmpty()) {
                     map?.animateCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
@@ -50,7 +61,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
         } else {
             Log.d(TAG, "Adding polyline to existing map")
             polyLine?.remove()
-            polyLine = map?.addPolyline(history.asPolylineOptions().color(HISTORY_COLOR))
+            polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
             map?.let { map ->
                 history.locationTimePoints.firstOrNull()?.let { point ->
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
@@ -70,7 +81,7 @@ class GoogleMapHistoryRenderer(private val mapFragment: SupportMapFragment) : Hi
                 tile.locations
                     .map { LatLng(it.latitude, it.longitude) }
                     .fold(PolylineOptions()) { options, loc -> options.add(loc) }
-                    .color(SELECTED_SEGMENT_COLOR)
+                    .color(style.driveSelectionColor)
                     .clickable(true)
             )
             tile.locations.firstOrNull()?.let {

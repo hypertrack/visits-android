@@ -8,6 +8,7 @@ import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHistoryStyle
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.view_models.VisitDetailsViewModel
@@ -209,6 +210,8 @@ object Injector {
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
         GoogleMapHistoryRenderer(supportMapFragment)
+    private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
+        GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context))
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }
