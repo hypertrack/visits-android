@@ -1,13 +1,19 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.math.MathUtils
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.asHistory
 import com.hypertrack.android.ui.common.SnackbarUtil
@@ -72,6 +78,20 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         deviceHistoryView.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+
+        scrim.setOnClickListener { bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED }
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                val baseColor = Color.BLACK
+                val baseAlpha = ResourcesCompat.getFloat(resources, R.dimen.material_emphasis_medium)
+                val alpha = MathUtils.lerp(0f, 255f, slideOffset * baseAlpha).toInt()
+                val color = Color.argb(alpha, baseColor.red, baseColor.green, baseColor.blue)
+                scrim.setBackgroundColor(color)
+                scrim.visibility = if (slideOffset > 0) View.VISIBLE else View.GONE
+            }
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+            }
+        })
     }
 
     companion object {
