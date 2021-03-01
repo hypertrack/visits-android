@@ -38,7 +38,8 @@ captures/
 
 # IntelliJ
 *.iml
-.idea/
+.idea/*
+!.idea/codeStyles/
 
 # Keystore config
 keystore.properties
