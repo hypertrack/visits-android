@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.asHistory
+import com.hypertrack.android.ui.base.AnimatedDialog
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication
@@ -25,6 +26,9 @@ import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
 import kotlinx.coroutines.launch
 
 class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
+
+    private val progress: AnimatedDialog by lazy { AnimatedDialog(requireContext()) }
+    private var state: LoadingProgressState = LoadingProgressState.LOADING
 
     private val historyViewModel: HistoryViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
@@ -47,6 +51,9 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             historyRenderer?.let { map ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     map.showHistory(HistoryTile.MOCK_TILES.asHistory())
+                    if (progress.isShowing) progress.dismiss()
+                    mapLoaderCanvas.visibility = View.GONE
+                    state = LoadingProgressState.DONE
                 }
             }
             setupTimeline(HistoryTile.MOCK_TILES, historyRenderer)
@@ -57,6 +64,16 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             SnackbarUtil.showErrorSnackbar(view, error.error?.message)
         })
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (state == LoadingProgressState.LOADING) progress.show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (progress.isShowing) progress.dismiss()
     }
 
     private fun setupTimeline(historyTiles: List<HistoryTile>, historyNavigationHandler: HistoryMapRenderer?) {
@@ -99,3 +116,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
     }
 }
 
+private enum class LoadingProgressState {
+    LOADING,
+    DONE
+}

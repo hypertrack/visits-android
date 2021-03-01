@@ -13,6 +13,14 @@
         android:layout_height="match_parent" />
 
     <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/mapLoaderCanvas"
+        android:elevation="10dp"
+        android:background="@color/colorWhite"
+        android:visibility="visible"/>
+
+    <FrameLayout
         android:id="@+id/scrim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
