@@ -109,7 +109,7 @@ dependencies {
 
     implementation 'com.airbnb.android:lottie:3.1.0'
 
-    implementation 'com.hypertrack:hypertrack:4.9.0'
+    implementation 'com.hypertrack:hypertrack:4.10.0'
 
     // Branch IO
     implementation 'io.branch.sdk.android:library:5.0.1'
