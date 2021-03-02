@@ -3,12 +3,14 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.history
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.HistoryTile
+import com.hypertrack.android.models.HistoryTileType
 import com.hypertrack.android.models.Status
 import com.hypertrack.logistics.android.github.R
 
@@ -33,9 +35,16 @@ class TimelineTileItemAdapter(
         } else {
             holder.activityPlace.visibility = View.GONE
         }
-        if (tile.status == Status.OUTAGE) {
-            holder.statusStripe.setImageResource(R.drawable.ic_ht_timeline_outage)
+        if (tile.tileType == HistoryTileType.SUMMARY) {
+            holder.statusStripe.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            holder.activityIcon.visibility  = View.INVISIBLE
+            holder.activityTimeFrame.visibility = View.GONE
+        } else {
+            holder.statusStripe.scaleType = ImageView.ScaleType.FIT_XY
+            holder.activityIcon.visibility  = View.VISIBLE
+            holder.activityTimeFrame.visibility = View.GONE
         }
+        holder.statusStripe.setImageResource(style.statusImageForTile(tile.tileType))
         holder.itemView.setOnClickListener { onClick(tile) }
     }
 
@@ -52,4 +61,5 @@ class TimeLineTile(holder: View) : RecyclerView.ViewHolder(holder) {
 
 interface TimelineStyle {
     @DrawableRes fun iconForStatus(status: Status):  Int
+    @DrawableRes fun statusImageForTile(type: HistoryTileType): Int
 }

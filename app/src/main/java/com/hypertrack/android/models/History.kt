@@ -50,6 +50,7 @@ data class HistoryTile(
     val address: CharSequence?,
     val id: Int,
     val timeframe: String,
+    val tileType: HistoryTileType,
     val locations: List<Location> = emptyList()
 ) {
     companion object {
@@ -113,9 +114,16 @@ data class HistoryTile(
 
         val MOCK_TILES = listOf(
             HistoryTile(
+                Status.STOP,"1hr 50 min • 3.2 miles",null, -1,
+                "10:17 am",
+                HistoryTileType.SUMMARY,
+                ashburyXHeightLoitering,
+            ),
+            HistoryTile(
                 Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
                 "10:17 am-10:22 am",
-                ashburyXHeightLoitering
+                HistoryTileType.ACTIVE_START,
+                ashburyXHeightLoitering,
             ),
             HistoryTile(
                 Status.WALK,
@@ -123,6 +131,7 @@ data class HistoryTile(
                 null,
                 1,
                 "10:22 am-10:32 am",
+                HistoryTileType.ACTIVE,
                 ashburyXHeight2BotanicGarden
             ),
             HistoryTile(
@@ -131,6 +140,7 @@ data class HistoryTile(
                 "McLaren Lodge, Fell, San Francisco, CA",
                 2,
                 "10:32 am-11:02 am",
+                HistoryTileType.ACTIVE,
                 botanicGardenLoitering
             ),
             HistoryTile(
@@ -139,6 +149,7 @@ data class HistoryTile(
                 null,
                 3,
                 "11:02 am-11:07 am",
+                HistoryTileType.ACTIVE,
                 BotanicGarden2AshburyXHeight
             ),
             HistoryTile(
@@ -146,12 +157,21 @@ data class HistoryTile(
                 "Location services disabled",
                 null,
                 4,
-                "11:0 am-12:07 pm",
+                "11:07 am-12:07 pm",
+                HistoryTileType.OUTAGE,
                 ashburyXHeightLoitering
             ),
         )
     }
 
+}
+
+enum class HistoryTileType {
+    OUTAGE_START,
+    OUTAGE,
+    ACTIVE_START,
+    ACTIVE,
+    SUMMARY
 }
 
 fun List<HistoryTile>.asHistory() = History(

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.hypertrack.android.models.HistoryTileType
 import com.hypertrack.android.models.Status
 import com.hypertrack.logistics.android.github.R
 import java.lang.IllegalArgumentException
@@ -47,4 +48,13 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
             Status.OUTAGE  -> R.drawable.ic_ht_activity_inactive
             else -> throw IllegalArgumentException("Status not supported")
         }
+
+    override fun statusImageForTile(type: HistoryTileType): Int =
+        when(type)  {
+            HistoryTileType.ACTIVE ->  R.drawable.ic_ht_timeline_active
+            HistoryTileType.ACTIVE_START ->  R.drawable.ic_ht_timeline_active_start
+            HistoryTileType.OUTAGE ->  R.drawable.ic_ht_timeline_outage
+            HistoryTileType.OUTAGE_START ->  R.drawable.ic_ht_timeline_outage
+            HistoryTileType.SUMMARY -> R.drawable.ic_ht_eta
+    }
 }
