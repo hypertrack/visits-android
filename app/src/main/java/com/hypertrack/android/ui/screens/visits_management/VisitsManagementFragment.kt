@@ -14,6 +14,7 @@ import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
@@ -62,7 +63,8 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
             private val fragments = listOf(
                     VisitsListFragment.newInstance(),
-                    MapViewFragment(),
+                    MapViewFragmentOld(visitsManagementViewModel.deviceHistoryWebUrl),
+//                    MapViewFragment(),
                     SummaryFragment.newInstance(),
                     ProfileFragment()
             )

@@ -3,10 +3,7 @@ package com.hypertrack.android.ui.common
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hypertrack.android.interactors.PermissionsInteractor
-import com.hypertrack.android.repository.AccountRepository
-import com.hypertrack.android.repository.DriverRepository
-import com.hypertrack.android.repository.HistoryRepository
-import com.hypertrack.android.repository.VisitsRepository
+import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModel
@@ -24,7 +21,8 @@ class UserScopeViewModelFactory(
     private val accountRepository: AccountRepository,
     private val crashReportsProvider: CrashReportsProvider,
     private val hyperTrackService: HyperTrackService,
-    private val permissionsInteractor: PermissionsInteractor
+    private val permissionsInteractor: PermissionsInteractor,
+    private val accessTokenRepository: AccessTokenRepository
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -41,10 +39,11 @@ class UserScopeViewModelFactory(
                     permissionsInteractor
             ) as T
             VisitsManagementViewModel::class.java -> VisitsManagementViewModel(
-                    visitsRepository,
-                    historyRepository,
-                    accountRepository,
-                    crashReportsProvider
+                visitsRepository,
+                historyRepository,
+                accountRepository,
+                crashReportsProvider,
+                accessTokenRepository
             ) as T
             ProfileViewModel::class.java -> ProfileViewModel(
                 driverRepository,

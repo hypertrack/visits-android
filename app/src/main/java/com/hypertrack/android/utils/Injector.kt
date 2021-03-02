@@ -103,8 +103,8 @@ object Injector {
                             getAccountRepo(context),
                             crashReportsProvider,
                             hyperTrackService,
-                            getPermissionInteractor()
-                    ),
+                            getPermissionInteractor(),
+                            accessTokenRepository(MyApplication.context)                    ),
                     PhotoUploadInteractorImpl(
                             getVisitsRepo(context),
                             getFileRepository(),
