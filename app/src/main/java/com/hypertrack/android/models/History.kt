@@ -137,9 +137,17 @@ data class HistoryTile(
                 Status.DRIVE,
                 "5 min • 3.2 miles",
                 null,
-                1,
+                3,
                 "11:02 am-11:07 am",
                 BotanicGarden2AshburyXHeight
+            ),
+            HistoryTile(
+                Status.OUTAGE,
+                "Location services disabled",
+                null,
+                4,
+                "11:0 am-12:07 pm",
+                ashburyXHeightLoitering
             ),
         )
     }

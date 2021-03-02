@@ -33,6 +33,9 @@ class TimelineTileItemAdapter(
         } else {
             holder.activityPlace.visibility = View.GONE
         }
+        if (tile.status == Status.OUTAGE) {
+            holder.statusStripe.setImageResource(R.drawable.ic_ht_timeline_outage)
+        }
         holder.itemView.setOnClickListener { onClick(tile) }
     }
 
@@ -44,6 +47,7 @@ class TimeLineTile(holder: View) : RecyclerView.ViewHolder(holder) {
     val activitySummary: AppCompatTextView = holder.findViewById(R.id.tvActivitySummary)
     val activityPlace: AppCompatTextView = holder.findViewById(R.id.tvActivityPlace)
     val activityTimeFrame: AppCompatTextView  = holder.findViewById(R.id.tvTimeframe)
+    val statusStripe: AppCompatImageView  = holder.findViewById(R.id.ivStatusStripe)
 }
 
 interface TimelineStyle {
