@@ -1,6 +1,9 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
 import android.content.Context
+import android.graphics.Bitmap
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.hypertrack.android.models.Status
 import com.hypertrack.logistics.android.github.R
 
@@ -24,4 +27,7 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle {
             Status.OUTAGE -> outageSelectionColor
             else -> activeColor
         }
+
+    override fun markerForStatus(status: Status): Bitmap =
+        ResourcesCompat.getDrawable(context.resources, R.drawable.ic_ht_status_marker_boundary, context.theme)!!.toBitmap()
 }

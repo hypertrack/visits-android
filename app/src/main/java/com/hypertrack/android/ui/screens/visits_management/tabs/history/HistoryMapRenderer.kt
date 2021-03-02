@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
+import android.graphics.Bitmap
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,6 +26,7 @@ interface HistoryStyle {
     val stopSelectionColor: Int
     val outageSelectionColor: Int
     fun colorForStatus(status: Status): Int
+    fun markerForStatus(status: Status): Bitmap
 }
 
 class GoogleMapHistoryRenderer(
@@ -87,7 +89,10 @@ class GoogleMapHistoryRenderer(
                     .clickable(true)
             )
             tile.locations.firstOrNull()?.let {
-                activeMarkers.add(addMarker(it, googleMap, tile.address))
+                activeMarkers.add(addMarker(it, googleMap, tile.address, tile.status))
+            }
+            tile.locations.lastOrNull()?.let {
+                activeMarkers.add(addMarker(it, googleMap, tile.address, tile.status))
             }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), VIEW_PADDING))
             googleMap.setOnMapClickListener {
@@ -105,8 +110,14 @@ class GoogleMapHistoryRenderer(
         }
     }
 
-    private fun addMarker(location: Location, map: GoogleMap, address: CharSequence?): Marker {
+    private fun addMarker(
+        location: Location,
+        map: GoogleMap,
+        address: CharSequence?,
+        status: Status
+    ): Marker {
         val markerOptions = MarkerOptions().position(LatLng(location.latitude, location.longitude))
+            .icon(BitmapDescriptorFactory.fromBitmap(style.markerForStatus(status)))
         address?.let { markerOptions.title(it.toString()) }
         return map.addMarker(markerOptions)
     }
