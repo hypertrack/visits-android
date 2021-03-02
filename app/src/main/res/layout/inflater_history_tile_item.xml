@@ -21,8 +21,8 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivActivityIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:paddingTop="6dp"
         android:layout_marginStart="12dp"
         app:layout_constraintStart_toStartOf="@id/ivStatusStripe"

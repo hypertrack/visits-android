@@ -30,13 +30,21 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
         }
 
     override fun markerForStatus(status: Status): Bitmap =
-        ResourcesCompat.getDrawable(context.resources, R.drawable.ic_ht_status_marker_boundary, context.theme)!!.toBitmap()
+        when (status) {
+            Status.STOP -> asBitmap(R.drawable.ic_ht_bubble_activity_stop)
+            Status.WALK -> asBitmap(R.drawable.ic_ht_bubble_activity_walk)
+            Status.DRIVE -> asBitmap(R.drawable.ic_ht_bubble_activity_drive)
+            else -> asBitmap(R.drawable.ic_ht_status_marker_boundary)
+        }
 
+    private fun asBitmap(resource: Int):  Bitmap =
+        ResourcesCompat.getDrawable(context.resources, resource, context.theme)!!.toBitmap()
     override fun iconForStatus(status: Status): Int =
         when (status) {
             Status.DRIVE -> R.drawable.ic_ht_drive
             Status.WALK -> R.drawable.ic_ht_walk
             Status.STOP -> R.drawable.ic_ht_stop
+            Status.OUTAGE  -> R.drawable.ic_ht_activity_inactive
             else -> throw IllegalArgumentException("Status not supported")
         }
 }

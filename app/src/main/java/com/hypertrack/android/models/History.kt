@@ -1,8 +1,5 @@
 package com.hypertrack.android.models
 
-import androidx.annotation.DrawableRes
-import com.hypertrack.logistics.android.github.R
-
 data class History(
         val summary: Summary,
         val locationTimePoints: List<Pair<Location, String>>,
@@ -48,11 +45,11 @@ enum class Status {
 class HistoryError(val error: Throwable?) : HistoryResult()
 sealed class HistoryResult
 data class HistoryTile(
-    @DrawableRes val icon: Int, // TODO Denys: move to style, as depends on status
     val status: Status,
     val description: CharSequence,
     val address: CharSequence?,
     val id: Int,
+    val timeframe: String,
     val locations: List<Location> = emptyList()
 ) {
     companion object {
@@ -116,28 +113,32 @@ data class HistoryTile(
 
         val MOCK_TILES = listOf(
             HistoryTile(
-                R.drawable.ic_ht_stop, Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
+                Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
+                "10:17 am-10:22 am",
                 ashburyXHeightLoitering
             ),
             HistoryTile(
-                R.drawable.ic_ht_walk, Status.WALK,
+                Status.WALK,
                 "10 min • 520 steps",
                 null,
                 1,
+                "10:22 am-10:32 am",
                 ashburyXHeight2BotanicGarden
             ),
             HistoryTile(
-                R.drawable.ic_ht_stop, Status.STOP,
+                Status.STOP,
                 "30 min",
                 "McLaren Lodge, Fell, San Francisco, CA",
                 2,
+                "10:32 am-11:02 am",
                 botanicGardenLoitering
             ),
             HistoryTile(
-                R.drawable.ic_ht_drive, Status.DRIVE,
+                Status.DRIVE,
                 "5 min • 3.2 miles",
                 null,
                 1,
+                "11:02 am-11:07 am",
                 BotanicGarden2AshburyXHeight
             ),
         )

@@ -26,6 +26,7 @@ class TimelineTileItemAdapter(
         val tile = tiles.value?.get(position)?:return
         holder.activityIcon.setImageResource(style.iconForStatus(tile.status))
         holder.activitySummary.text = tile.description
+        holder.activityTimeFrame.text = tile.timeframe
         if (tile.address != null) {
             holder.activityPlace.text = tile.address
             holder.activityPlace.visibility = View.VISIBLE
@@ -42,6 +43,7 @@ class TimeLineTile(holder: View) : RecyclerView.ViewHolder(holder) {
     val activityIcon: AppCompatImageView = holder.findViewById(R.id.ivActivityIcon)
     val activitySummary: AppCompatTextView = holder.findViewById(R.id.tvActivitySummary)
     val activityPlace: AppCompatTextView = holder.findViewById(R.id.tvActivityPlace)
+    val activityTimeFrame: AppCompatTextView  = holder.findViewById(R.id.tvTimeframe)
 }
 
 interface TimelineStyle {
