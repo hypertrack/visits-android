@@ -6,8 +6,9 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.hypertrack.android.models.Status
 import com.hypertrack.logistics.android.github.R
+import java.lang.IllegalArgumentException
 
-class BaseHistoryStyle(private val context: Context) : HistoryStyle {
+class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineStyle{
     override val activeColor: Int
         get() = context.resources.getColor(R.color.colorHistoryActiveSegment, context.theme)
     override val driveSelectionColor: Int
@@ -30,4 +31,12 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle {
 
     override fun markerForStatus(status: Status): Bitmap =
         ResourcesCompat.getDrawable(context.resources, R.drawable.ic_ht_status_marker_boundary, context.theme)!!.toBitmap()
+
+    override fun iconForStatus(status: Status): Int =
+        when (status) {
+            Status.DRIVE -> R.drawable.ic_ht_drive
+            Status.WALK -> R.drawable.ic_ht_walk
+            Status.STOP -> R.drawable.ic_ht_stop
+            else -> throw IllegalArgumentException("Status not supported")
+        }
 }

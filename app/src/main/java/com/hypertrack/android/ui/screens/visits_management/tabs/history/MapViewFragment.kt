@@ -10,7 +10,9 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
@@ -46,6 +48,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             historyRenderer = rendererFactory.create(it)
         }
 
+        val items  = setupTimeline(historyRenderer)
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
             Log.d(TAG, "Updating history $history")
             historyRenderer?.let { map ->
@@ -56,7 +59,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
                     state = LoadingProgressState.DONE
                 }
             }
-            setupTimeline(HistoryTile.MOCK_TILES, historyRenderer)
+            items.postValue(HistoryTile.MOCK_TILES)
         }
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
@@ -76,19 +79,19 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         if (progress.isShowing) progress.dismiss()
     }
 
-    private fun setupTimeline(historyTiles: List<HistoryTile>, historyNavigationHandler: HistoryMapRenderer?) {
+    private fun setupTimeline(historyNavigationHandler: HistoryMapRenderer?
+    )  : MutableLiveData<List<HistoryTile>> {
 
         val bottomSheetBehavior = BottomSheetBehavior.from(timeLineView)
         bottomSheetBehavior.peekHeight = 100
 
-        val menu = timeLineView.menu
-        menu.clear()
-
-        historyTiles.forEach { tile ->
-            val item = menu.add(tile.description)
-            item.setIcon(tile.icon)
-            item.setOnMenuItemClickListener { historyNavigationHandler?.onTileSelected(tile); true }
-        }
+        val items = MutableLiveData<List<HistoryTile>>(emptyList())
+        val adapter = TimelineTileItemAdapter(
+            items,
+            BaseHistoryStyle(MyApplication.context)
+        ) { historyNavigationHandler?.onTileSelected(it) }
+        timeLineView.adapter = adapter
+        timeLineView.layoutManager  =  LinearLayoutManager(MyApplication.context)
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -109,6 +112,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })
+        return items
     }
 
     companion object {
