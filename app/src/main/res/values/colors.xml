@@ -33,4 +33,7 @@
     <color name="colorHistoryOutageSegment">#ea023e</color>
     <color name="colorHistoryActiveSegment">#00c94b</color>
 
+    <color name="timelineStripeOutage">#fe4d5f</color>
+    <color name="timelineStripeActive">#00ce5b</color>
+
 </resources>

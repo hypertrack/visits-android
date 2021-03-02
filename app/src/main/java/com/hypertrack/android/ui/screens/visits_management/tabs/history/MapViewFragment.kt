@@ -79,7 +79,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
     private fun setupTimeline(historyTiles: List<HistoryTile>, historyNavigationHandler: HistoryMapRenderer?) {
 
         val bottomSheetBehavior = BottomSheetBehavior.from(timeLineView)
-        bottomSheetBehavior.peekHeight = 48
+        bottomSheetBehavior.peekHeight = 100
 
         val menu = timeLineView.menu
         menu.clear()
