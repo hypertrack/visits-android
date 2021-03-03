@@ -217,7 +217,7 @@ data class HistoryResponse(
         // Skip reasons for now as constants aren't deserialized automatically but their usage is questionable
 //    @field:Json(name = "inactive_reasons") val inactiveReasons: List<String>,
         @field:Json(name = "stop_duration") val stopDuration: Int,
-        @field:Json(name = "tracking_rate") val trackingRate: Int,
+        @field:Json(name = "tracking_rate") val trackingRate: Double,
         @field:Json(name = "trips") val tripsCount: Int,
         @field:Json(name = "walk_duration") val walkDuration: Int,
         @field:Json(name = "drive_duration") val driveDuration: Int?,

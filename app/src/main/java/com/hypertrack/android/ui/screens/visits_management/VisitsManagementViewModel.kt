@@ -1,11 +1,13 @@
 package com.hypertrack.android.ui.screens.visits_management
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.*
 import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitListItem
 import com.hypertrack.android.models.VisitStatusGroup
+import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.repository.VisitsRepository
@@ -18,11 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("NullSafeMutableLiveData")
 class VisitsManagementViewModel(
-        private val visitsRepository: VisitsRepository,
-        private val historyRepository: HistoryRepository,
-        private val accountRepository: AccountRepository,
-        private val crashReportsProvider: CrashReportsProvider
+    private val visitsRepository: VisitsRepository,
+    private val historyRepository: HistoryRepository,
+    private val accountRepository: AccountRepository,
+    private val crashReportsProvider: CrashReportsProvider,
+    accessTokenRepository: AccessTokenRepository
 ) : ViewModel() {
 
     val isTracking = visitsRepository.isTracking
@@ -47,6 +51,8 @@ class VisitsManagementViewModel(
             }
         }
     }
+
+    val  deviceHistoryWebUrl  = accessTokenRepository.deviceHistoryWebViewUrl
 
     val checkInButtonText: LiveData<CharSequence>
         get() = _checkInButtonText

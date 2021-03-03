@@ -32,6 +32,7 @@ class ServiceLocator {
         val sdkInstance = HyperTrack
             .getInstance(publishableKey)
             .addTrackingListener(listener)
+            .backgroundTrackingRequirement(false)
             .setTrackingNotificationConfig(
                 ServiceNotificationConfig.Builder()
                     .setSmallIcon(R.drawable.ic_notif_logo_small)
@@ -103,8 +104,8 @@ object Injector {
                             getAccountRepo(context),
                             crashReportsProvider,
                             hyperTrackService,
-                            getPermissionInteractor()
-                    ),
+                            getPermissionInteractor(),
+                            accessTokenRepository(MyApplication.context)                    ),
                     PhotoUploadInteractorImpl(
                             getVisitsRepo(context),
                             getFileRepository(),

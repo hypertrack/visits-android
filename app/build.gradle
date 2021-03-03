@@ -20,8 +20,8 @@ android {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 2140
-        versionName "0.2.14-SNAPSHOT"
+        versionCode 4000
+        versionName "0.4.0-SNAPSHOT"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
         resValue "string", "awsLoginTestUserName", rootProject.properties.awsLoginTestUserName
@@ -109,7 +109,7 @@ dependencies {
 
     implementation 'com.airbnb.android:lottie:3.1.0'
 
-    implementation 'com.hypertrack:hypertrack:4.9.0'
+    implementation 'com.hypertrack:hypertrack:4.10.0'
 
     // Branch IO
     implementation 'io.branch.sdk.android:library:5.0.1'

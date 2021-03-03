@@ -106,7 +106,8 @@
             android:text="@string/whitelisting_rational"
             android:textAlignment="center"
             android:textSize="18sp"
-            android:visibility="visible" />
+            android:visibility="visible"
+            tools:ignore="RtlCompat" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/btnWhitelisting"
