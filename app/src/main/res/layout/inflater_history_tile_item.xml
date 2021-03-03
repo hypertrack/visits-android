@@ -17,7 +17,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_ht_timeline_active" />
+        app:srcCompat="@drawable/ic_ht_timeline_active"
+        tools:ignore="ContentDescription" />
     <ImageView
         android:id="@+id/ivEventIcon"
         android:layout_width="wrap_content"
@@ -27,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="@id/ivStatusStripe"
         app:layout_constraintBottom_toBottomOf="@id/ivStatusStripe"
         android:src="@drawable/ic_ht_eta"
-        android:contentDescription="@string/timeline_summary_icon_content_description" />
+        tools:ignore="ContentDescription" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivActivityIcon"
@@ -51,7 +52,7 @@
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/ivActivityIcon"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        tools:ignore="HardcodedText" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTimeframe"
@@ -63,7 +64,8 @@
         android:text="9:18 am - 10:06 am"
         android:textColor="@color/colorDescription"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="HardcodedText" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvActivityPlace"
@@ -75,7 +77,8 @@
         android:textSize="12sp"
         android:paddingBottom="5dp"
         app:layout_constraintStart_toStartOf="@id/tvActivitySummary"
-        app:layout_constraintTop_toBottomOf="@id/tvActivitySummary" />
+        app:layout_constraintTop_toBottomOf="@id/tvActivitySummary"
+        tools:ignore="HardcodedText" />
 
 
 
