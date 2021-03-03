@@ -28,6 +28,11 @@
         <item name="android:background">@drawable/bg_light_button</item>
     </style>
 
+    <style name="TextButtonStyle" parent="ButtonStyle">
+        <item name="android:textColor">@color/colorHyperTrackGreen</item>
+        <item name="android:background">@color/colorWhite</item>
+    </style>
+
     <style name="MinorButtonStyle" parent="ButtonStyle">
         <item name="android:textColor">@color/colorTakePicture</item>
         <item name="android:background">@drawable/bg_minor_button</item>

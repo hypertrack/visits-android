@@ -28,16 +28,14 @@ class SplashScreenViewModel(
         driverRepository.hasDriverId -> {
             // already logged in
             crashReportsProvider.setUserIdentifier(driverRepository.driverId)
-            when (permissionsInteractor.checkPermissionState(activity).getDestination()) {
+            when (permissionsInteractor.checkPermissionsState(activity)
+                .getNextPermissionRequest()) {
                 PermissionDestination.PASS -> {
                     destination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
                 }
                 PermissionDestination.FOREGROUND_AND_TRACKING,
-                PermissionDestination.WHITELISTING -> {
-                    destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
-                }
                 PermissionDestination.BACKGROUND -> {
-                    destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToBackgroundPermissionsFragment())
+                    destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
                 }
             }
         }

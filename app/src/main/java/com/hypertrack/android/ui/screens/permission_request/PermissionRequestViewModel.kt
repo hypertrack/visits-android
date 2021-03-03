@@ -1,7 +1,6 @@
 package com.hypertrack.android.ui.screens.permission_request
 
 import android.app.Activity
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
@@ -14,36 +13,49 @@ class PermissionRequestViewModel(
     private val hyperTrackService: HyperTrackService
 ) : ViewModel() {
 
-    val whitelistingRequired = MutableLiveData<Boolean>(!permissionsInteractor.isWhitelistingGranted())
+    val showWhitelistingButton =
+        MutableLiveData<Boolean>(!permissionsInteractor.isWhitelistingGranted())
     val showPermissionsButton = MutableLiveData<Boolean>(true)
+    val showSkipButton = MutableLiveData<Boolean>(false)
 
     val destination = MutableLiveData<NavDirections>()
 
     fun requestWhitelisting(activity: Activity) {
         permissionsInteractor.requestWhitelisting(activity)
-        whitelistingRequired.postValue(!permissionsInteractor.isWhitelistingGranted())
+        showWhitelistingButton.postValue(!permissionsInteractor.isWhitelistingGranted())
     }
 
     private fun onPermissionResult(activity: Activity) {
-        when (permissionsInteractor.checkPermissionState(activity).getDestination()) {
-            PermissionDestination.PASS -> {
-                syncDeviceSettings()
-                destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToVisitManagementFragment())
+        permissionsInteractor.checkPermissionsState(activity).let {
+            when (permissionsInteractor.checkPermissionsState(activity)
+                .getNextPermissionRequest()) {
+                PermissionDestination.FOREGROUND_AND_TRACKING -> {
+                    showPermissionsButton.postValue(true)
+                }
+                PermissionDestination.BACKGROUND -> {
+                    syncDeviceSettings()
+                    destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToBackgroundPermissionsFragment())
+                }
+                PermissionDestination.PASS -> {
+                    syncDeviceSettings()
+                    if (permissionsInteractor.isWhitelistingGranted()) {
+                        destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToVisitManagementFragment())
+                    }
+                }
             }
-            PermissionDestination.FOREGROUND_AND_TRACKING -> {
-                showPermissionsButton.postValue(true)
-            }
-            PermissionDestination.BACKGROUND -> {
-                syncDeviceSettings()
-                destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToBackgroundPermissionsFragment())
-            }
-            PermissionDestination.WHITELISTING -> {
-                syncDeviceSettings()
-                showPermissionsButton.postValue(false)
-            }
-        }
 
-        whitelistingRequired.postValue(!permissionsInteractor.isWhitelistingGranted())
+            showPermissionsButton.postValue(!permissionsInteractor.isBasePermissionsGranted())
+            showWhitelistingButton.postValue(!permissionsInteractor.isWhitelistingGranted())
+            showSkipButton.postValue(it.foregroundLocationGranted)
+        }
+    }
+
+    fun onSkipClicked() {
+        if (permissionsInteractor.isBackgroundLocationGranted()) {
+            destination.postValue(PermissionRequestFragmentDirections.actionGlobalVisitManagementFragment())
+        } else {
+            destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToBackgroundPermissionsFragment())
+        }
     }
 
 

@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:background="@color/colorWhite">
 
+
     <TextView
         android:id="@+id/textHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:text="@string/allow_background_location_access"
         android:textAlignment="center"
@@ -22,7 +22,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appCompatImageView2" />
-
 
     <TextView
         android:id="@+id/permissionRationalMessage2"
@@ -36,11 +35,32 @@
         android:textAlignment="center"
         android:textSize="18sp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/btnContinue"
+        app:layout_constraintBottom_toTopOf="@+id/tvOptionHint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textHeader"
+        tools:ignore="RtlCompat" />
+
+    <TextView
+        android:id="@+id/tvOptionHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="3dp"
+        android:gravity="center_vertical"
+        android:text="@string/background_location_permission_option_hint"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/btnContinue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/permissionRationalMessage2"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="RtlCompat" />
 
     <androidx.appcompat.widget.AppCompatTextView

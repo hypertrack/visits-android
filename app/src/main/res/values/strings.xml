@@ -18,7 +18,8 @@
     <string name="use_the_link_to_login">Please use the link to login or contact your manager to get one</string>
     <string name="visits">Visits</string>
     <string name="permission_rational">We need your permission to access location and activity data</string>
-    <string name="background_location_permission_rationale">We need your permission to access device location data while app is running in the background \n (to turn on tracking when new order is assigned to you)</string>
+    <string name="background_location_permission_rationale">We need your permission to access device location data while app is running in the background. It is used to automatically start tracking location based on your work schedule (without you having to open app)</string>
+    <string name="background_location_permission_option_hint">To grant the permission press</string>
     <string name="continue_btn_text">Allow</string>
     <string name="whitelisting_btn_text">Go to Settings</string>
     <string name="title_activity_permission_request">PermissionRequestActivity</string>
@@ -90,4 +91,5 @@
     <string name="retry">Retry</string>
     <string name="photo_upload_unknown_error">Unknown error during uploading photo</string>
     <string name="history_error">Error when loading history</string>
+    <string name="skip">Skip</string>
 </resources>
