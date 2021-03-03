@@ -40,6 +40,9 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
 
     private fun asBitmap(resource: Int):  Bitmap =
         ResourcesCompat.getDrawable(context.resources, resource, context.theme)!!.toBitmap()
+
+    override fun summaryIcon() = R.drawable.ic_ht_eta
+
     override fun iconForStatus(status: Status): Int =
         when (status) {
             Status.DRIVE -> R.drawable.ic_ht_drive
@@ -57,4 +60,10 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
             HistoryTileType.OUTAGE_START ->  R.drawable.ic_ht_timeline_outage
             HistoryTileType.SUMMARY -> R.drawable.ic_ht_eta
     }
+
+    override fun textColorForType(tileType: HistoryTileType) = ResourcesCompat.getColor(context.resources,
+        when (tileType) {
+        HistoryTileType.OUTAGE_START, HistoryTileType.OUTAGE ->  R.color.textOutage
+        else -> R.color.textNormal
+    }, context.theme)
 }

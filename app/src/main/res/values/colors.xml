@@ -35,5 +35,7 @@
 
     <color name="timelineStripeOutage">#fe4d5f</color>
     <color name="timelineStripeActive">#00ce5b</color>
+    <color name="textOutage">#fe4d5f</color>
+    <color name="textNormal">#4c4b5d</color>
 
 </resources>

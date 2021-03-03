@@ -18,6 +18,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_ht_timeline_active" />
+    <ImageView
+        android:id="@+id/ivEventIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/ivStatusStripe"
+        app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
+        app:layout_constraintEnd_toEndOf="@id/ivStatusStripe"
+        app:layout_constraintBottom_toBottomOf="@id/ivStatusStripe"
+        android:src="@drawable/ic_ht_eta"
+        android:contentDescription="@string/timeline_summary_icon_content_description" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivActivityIcon"
@@ -29,7 +39,6 @@
         app:layout_constraintTop_toTopOf="@id/tvActivitySummary"
         app:layout_constraintBottom_toBottomOf="@id/tvActivitySummary"
         app:srcCompat="@drawable/ic_ht_stop" />
-
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvActivitySummary"

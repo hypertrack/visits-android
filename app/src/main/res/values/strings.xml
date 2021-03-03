@@ -86,5 +86,6 @@
     <string name="retry">Retry</string>
     <string name="photo_upload_unknown_error">Unknown error during uploading photo</string>
     <string name="history_error">Error when loading history</string>
+    <string name="timeline_summary_icon_content_description">timeline summary icon</string>
     <string name="skip">Skip</string>
 </resources>
