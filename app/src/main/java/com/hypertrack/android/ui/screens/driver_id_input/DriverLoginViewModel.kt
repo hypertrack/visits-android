@@ -24,16 +24,14 @@ class DriverLoginViewModel(
             // Log.d(TAG, "Proceeding with Driver Id $driverId")
             hyperTrackService.driverId = driverId
             driverRepository.driverId = driverId
-            when (permissionsInteractor.checkPermissionState(activity).getDestination()) {
+            when (permissionsInteractor.checkPermissionsState(activity)
+                .getNextPermissionRequest()) {
                 PermissionDestination.PASS -> {
                     destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToVisitManagementFragment())
                 }
                 PermissionDestination.FOREGROUND_AND_TRACKING,
-                PermissionDestination.WHITELISTING -> {
-                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
-                }
                 PermissionDestination.BACKGROUND -> {
-                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToBackgroundPermissionsFragment())
+                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
                 }
             }
 

@@ -10,11 +10,13 @@ import com.hypertrack.android.utils.MyApplication
 import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 interface PermissionsInteractor {
-    fun checkPermissionState(activity: Activity): PermissionState
-    fun isWhitelistingGranted(): Boolean
+    fun checkPermissionsState(activity: Activity): PermissionsState
     fun requestWhitelisting(activity: Activity)
     fun requestRequiredPermissions(activity: Activity)
     fun requestBackgroundLocationPermission(activity: Activity)
+    fun isWhitelistingGranted(): Boolean
+    fun isBackgroundLocationGranted(): Boolean
+    fun isBasePermissionsGranted(): Boolean
 }
 
 class PermissionsInteractorImpl(
@@ -23,26 +25,38 @@ class PermissionsInteractorImpl(
 
     private val autostarter = AutoStartPermissionHelper.getInstance()
 
-    override fun checkPermissionState(activity: Activity): PermissionState {
-        return PermissionState(
-            activityTrackingGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                hasPermission(Manifest.permission.ACTIVITY_RECOGNITION)
-            } else {
-                true
-            },
+    override fun checkPermissionsState(activity: Activity): PermissionsState {
+        return PermissionsState(
+            activityTrackingGranted = isActivityGranted(),
             foregroundLocationGranted = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION),
-            backgroundLocationGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-            } else {
-                true
-            },
-            whitelistingGranted = isWhitelistingGranted(),
+            backgroundLocationGranted = isBackgroundLocationGranted(),
         )
     }
 
     override fun isWhitelistingGranted(): Boolean {
         val applicable = autostarter.isAutoStartPermissionAvailable(MyApplication.context)
         return !applicable || (applicable && accountRepository.wasWhitelisted)
+    }
+
+    override fun isBasePermissionsGranted(): Boolean {
+        return isActivityGranted() && hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    private fun isActivityGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            hasPermission(Manifest.permission.ACTIVITY_RECOGNITION)
+        } else {
+            true
+        }
+    }
+
+    override fun isBackgroundLocationGranted(): Boolean {
+        //we don't need ACCESS_BACKGROUND_LOCATION for Q
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        } else {
+            true
+        }
     }
 
     override fun requestWhitelisting(activity: Activity) {
@@ -78,22 +92,20 @@ class PermissionsInteractorImpl(
 
 }
 
-class PermissionState(
+class PermissionsState(
     val activityTrackingGranted: Boolean,
     val foregroundLocationGranted: Boolean,
     val backgroundLocationGranted: Boolean,
-    val whitelistingGranted: Boolean
 ) {
-    fun getDestination(): PermissionDestination {
+    fun getNextPermissionRequest(): PermissionDestination {
         return when {
             !foregroundLocationGranted || !activityTrackingGranted -> PermissionDestination.FOREGROUND_AND_TRACKING
-            !whitelistingGranted -> PermissionDestination.WHITELISTING
-//            !backgroundLocationGranted -> PermissionDestination.BACKGROUND todo
+            !backgroundLocationGranted -> PermissionDestination.BACKGROUND
             else -> PermissionDestination.PASS
         }
     }
 }
 
 enum class PermissionDestination {
-    PASS, FOREGROUND_AND_TRACKING, BACKGROUND, WHITELISTING
+    PASS, FOREGROUND_AND_TRACKING, BACKGROUND
 }

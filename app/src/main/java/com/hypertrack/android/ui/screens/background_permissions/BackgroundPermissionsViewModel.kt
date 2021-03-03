@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.PermissionDestination
 import com.hypertrack.android.interactors.PermissionsInteractor
-import com.hypertrack.android.ui.MainActivity
 
 class BackgroundPermissionsViewModel(
         private val permissionsInteractor: PermissionsInteractor
@@ -19,7 +18,7 @@ class BackgroundPermissionsViewModel(
     }
 
     fun onPermissionResult(activity: Activity) {
-        when (permissionsInteractor.checkPermissionState(activity).getDestination()) {
+        when (permissionsInteractor.checkPermissionsState(activity).getNextPermissionRequest()) {
             PermissionDestination.PASS -> {
                 destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToVisitManagementFragment())
             }
@@ -27,10 +26,7 @@ class BackgroundPermissionsViewModel(
                 destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToPermissionRequestFragment())
             }
             PermissionDestination.BACKGROUND -> {
-                //todo should we let user proceed?
-            }
-            PermissionDestination.WHITELISTING -> {
-                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToPermissionRequestFragment())
+                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToVisitManagementFragment())
             }
         }
 
