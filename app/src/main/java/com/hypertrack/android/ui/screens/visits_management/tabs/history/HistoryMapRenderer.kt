@@ -6,10 +6,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.hypertrack.android.models.History
-import com.hypertrack.android.models.HistoryTile
-import com.hypertrack.android.models.Location
-import com.hypertrack.android.models.Status
+import com.google.android.gms.maps.model.Marker
+import com.hypertrack.android.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 
@@ -78,6 +76,8 @@ class GoogleMapHistoryRenderer(
 
     override fun onTileSelected(tile: HistoryTile) {
         Log.d(TAG, "onTileSelected $tile")
+        if (tile.tileType == HistoryTileType.SUMMARY) return
+
         selectedSegment?.remove()
         activeMarkers.forEach { it.remove() }
         map?.let { googleMap ->
