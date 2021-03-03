@@ -42,7 +42,11 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
             srlHistory.isRefreshing = false
-            SnackbarUtil.showErrorSnackbar(view, error.error?.message)
+            //todo
+            SnackbarUtil.showErrorSnackbar(
+                view, /*error.error?.message*/
+                MyApplication.context.getString(R.string.history_error)
+            )
         })
 
         srlHistory.setOnRefreshListener {
