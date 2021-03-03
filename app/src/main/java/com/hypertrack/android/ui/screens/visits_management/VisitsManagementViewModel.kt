@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.*
 import com.hypertrack.android.models.HistoryError
@@ -19,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("NullSafeMutableLiveData")
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
     private val historyRepository: HistoryRepository,
