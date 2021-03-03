@@ -1,8 +1,6 @@
 package com.hypertrack.android.ui.screens.permission_request
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -25,17 +23,24 @@ class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permi
             findNavController().navigate(it)
         })
 
-        vm.whitelistingRequired.observe(viewLifecycleOwner) { visible ->
+        vm.showSkipButton.observe(viewLifecycleOwner) { visible ->
+            btnSkip.setGoneState(!visible)
+        }
+
+
+        vm.showWhitelistingButton.observe(viewLifecycleOwner) { visible ->
             listOf<View>(btnWhitelisting, whitelistingMessage)
                 .forEach { it.setGoneState(!visible) }
         }
 
         vm.showPermissionsButton.observe(viewLifecycleOwner) { show ->
-            listOf<View>(btnContinue, permissionRationalMessage)
-                    .forEach { it.setGoneState(!show) }
+            listOf<View>(btnAllow, permissionRationalMessage)
+                .forEach { it.setGoneState(!show) }
         }
 
-        btnContinue.setOnClickListener { vm.requestPermissions(mainActivity()) }
+        btnSkip.setOnClickListener { vm.onSkipClicked() }
+
+        btnAllow.setOnClickListener { vm.requestPermissions(mainActivity()) }
 
         btnWhitelisting.setOnClickListener {
             vm.requestWhitelisting(mainActivity())
