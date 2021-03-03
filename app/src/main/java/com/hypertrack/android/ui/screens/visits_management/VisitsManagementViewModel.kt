@@ -10,6 +10,7 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -120,7 +121,7 @@ class VisitsManagementViewModel(
 
     val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
 
-    val error = MutableLiveData<String?>()
+    val error = MutableLiveData<String>()
 
     fun refreshVisits(block: () -> Unit) {
         // Log.v(TAG, "Refresh visits")
@@ -156,7 +157,8 @@ class VisitsManagementViewModel(
         MainScope().launch {
             historyRepository.getHistory().also {
                 if (it is HistoryError) {
-                    error.postValue(it.error?.message)
+                    //todo
+                    error.postValue(/*it.error?.message*/ MyApplication.context.getString(R.string.history_error))
                 }
             }
         }

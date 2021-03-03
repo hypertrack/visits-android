@@ -34,7 +34,11 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
 
         vm.error.observe(viewLifecycleOwner, { error ->
             srlSummary.isRefreshing = false
-            SnackbarUtil.showErrorSnackbar(view, error.error?.message.toString())
+            //todo
+            SnackbarUtil.showErrorSnackbar(
+                view, /*error.error?.message.toString()*/
+                MyApplication.context.getString(R.string.history_error)
+            )
         })
 
         srlSummary.setOnRefreshListener {
