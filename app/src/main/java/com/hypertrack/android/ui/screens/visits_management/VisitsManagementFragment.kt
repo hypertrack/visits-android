@@ -63,7 +63,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
             private val fragments = listOf(
                     VisitsListFragment.newInstance(),
-                    MapViewFragmentOld(visitsManagementViewModel.deviceHistoryWebUrl),
+                    MapViewFragmentOld(),
 //                    MapViewFragment(),
                     SummaryFragment.newInstance(),
                     ProfileFragment()
@@ -76,7 +76,15 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
             override fun getCount(): Int = fragments.size
 
-            override fun getItem(position: Int): Fragment = fragments[position]
+            override fun getItem(position: Int): Fragment {
+                val fragment = fragments[position]
+                if (fragment is MapViewFragmentOld) {
+                    fragment.arguments = Bundle().apply {
+                        putString(MapViewFragmentOld.WEBVIEW_URL, visitsManagementViewModel.deviceHistoryWebUrl)
+                    }
+                }
+                return fragment
+            }
 
             override fun getPageTitle(position: Int): CharSequence? = tabTitles[position]
 

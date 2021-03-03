@@ -11,7 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.hypertrack.logistics.android.github.R
 
-class MapViewFragmentOld(private val url: String) : Fragment() {
+class MapViewFragmentOld : Fragment() {
+
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
@@ -23,6 +24,7 @@ class MapViewFragmentOld(private val url: String) : Fragment() {
         val view = rootView.findViewById<WebView>(R.id.webView)
         if (view is WebView) {
             view.settings.javaScriptEnabled = true
+            val url = arguments?.getString(WEBVIEW_URL)?:"https://hypertrack.com/"
             view.loadUrl(url)
             view.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -34,4 +36,6 @@ class MapViewFragmentOld(private val url: String) : Fragment() {
         rootView.setOnRefreshListener { view.reload() }
         return rootView
     }
+
+    companion object {const val WEBVIEW_URL = "ARG_URL" }
 }
