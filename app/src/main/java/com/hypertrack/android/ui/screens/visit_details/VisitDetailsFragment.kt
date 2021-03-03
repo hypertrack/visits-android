@@ -139,8 +139,6 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         tvCustomerNote.text = newVisit.customerNote
         customerNoteGroup.visibility = if (newVisit.customerNote.isEmpty()) View.GONE else View.VISIBLE
 
-
-
         tvAddress.text = newVisit.address.street
 
         if (newVisit.visitNote != etVisitNote.text.toString()) {
@@ -234,13 +232,18 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         val timeStamp = "${Date().time}"
         val storageDir: File = MyApplication.context.cacheDir
         return File.createTempFile(
-                "JPEG_${timeStamp}_", /* prefix */
-                ".jpg", /* suffix */
-                storageDir /* directory */
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        viewModel.onBackPressed()
+        return super.onBackPressed()
     }
 
     companion object {
