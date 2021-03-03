@@ -59,6 +59,10 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         sdkInstance.addGeotag(mapOf("type" to "CLOCK_IN"))
     }
 
+    fun syncDeviceSettings() {
+        sdkInstance.syncDeviceSettings()
+    }
+
     companion object {
         private const val TAG = "HyperTrackAdapter"
     }
