@@ -21,10 +21,10 @@ class BackgroundPermissionsViewModel(
     fun onPermissionResult(activity: Activity) {
         when (permissionsInteractor.checkPermissionState(activity).getDestination()) {
             PermissionDestination.PASS -> {
-                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToPermissionRequestFragment())
+                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToVisitManagementFragment())
             }
             PermissionDestination.FOREGROUND_AND_TRACKING -> {
-                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToVisitManagementFragment())
+                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToPermissionRequestFragment())
             }
             PermissionDestination.BACKGROUND -> {
                 //todo should we let user proceed?
