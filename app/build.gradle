@@ -21,7 +21,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 3000
-        versionName "0.3.0-rc"
+        versionName "0.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
         resValue "string", "awsLoginTestUserName", rootProject.properties.awsLoginTestUserName
