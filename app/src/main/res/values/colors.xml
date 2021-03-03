@@ -26,15 +26,13 @@
     <color name="colorTrackingError">@color/colorRed</color>
     <color name="colorTrackingStopped">#A0A0A0</color>
 
-    <!--    History Polyline theme as color int as conversion is a headache -->
+    <!--    History Polyline theme -->
     <color name="colorHistorySelectedSegmentStop">#921828</color>
     <color name="colorHistorySelectedSegmentDrive">#ffa800</color>
     <color name="colorHistorySelectedSegmentWalk">#6ba876</color>
     <color name="colorHistoryOutageSegment">#ea023e</color>
     <color name="colorHistoryActiveSegment">#00c94b</color>
 
-    <color name="timelineStripeOutage">#fe4d5f</color>
-    <color name="timelineStripeActive">#00ce5b</color>
     <color name="textOutage">#fe4d5f</color>
     <color name="textNormal">#4c4b5d</color>
 
