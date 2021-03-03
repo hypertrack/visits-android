@@ -7,6 +7,7 @@
     android:padding="16dp">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -46,27 +47,29 @@
         android:layout_height="@dimen/visit_list_icon_size"
         android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
         app:srcCompat="@drawable/ic_cam" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivNote"
-        android:layout_width="@dimen/visit_list_icon_size"
-        android:layout_height="@dimen/visit_list_icon_size"
-        android:padding="5dp"
+        android:layout_width="@dimen/visit_list_icon_image_size"
+        android:layout_height="@dimen/visit_list_icon_image_size"
+        android:layout_marginTop="8dp"
+        android:padding="@dimen/visit_list_icon_image_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ivPhotosStateIcon"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
         app:srcCompat="@drawable/ic_file" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivCompass"
-        android:layout_width="@dimen/visit_list_icon_size"
-        android:layout_height="@dimen/visit_list_icon_size"
-        android:padding="5dp"
+        android:layout_width="@dimen/visit_list_icon_image_size"
+        android:layout_height="@dimen/visit_list_icon_image_size"
+        android:layout_marginTop="8dp"
+        android:padding="@dimen/visit_list_icon_image_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ivNote"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
         app:srcCompat="@drawable/ic_nav" />
 
 
