@@ -27,17 +27,7 @@ class SplashScreenViewModel(
     private fun proceedToLogin(activity: Activity) = when {
         driverRepository.hasDriverId -> {
             // already logged in
-            crashReportsProvider.setUserIdentifier(driverRepository.driverId)
-            when (permissionsInteractor.checkPermissionsState(activity)
-                .getNextPermissionRequest()) {
-                PermissionDestination.PASS -> {
-                    destination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
-                }
-                PermissionDestination.FOREGROUND_AND_TRACKING,
-                PermissionDestination.BACKGROUND -> {
-                    destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
-                }
-            }
+            proceedToVisitsManagement(activity)
         }
         accountRepository.isVerifiedAccount -> {
             // publishable key already verified
@@ -68,9 +58,9 @@ class SplashScreenViewModel(
                 loadingState.postValue(true)
                 viewModelScope.launch {
                     val correctKey = accountRepository.onKeyReceived(
-                            key,
-                            checkInEnabled = showCheckIn,
-                            pickUpAllowed = pickUpAllowed
+                        key,
+                        checkInEnabled = showCheckIn,
+                        pickUpAllowed = pickUpAllowed
                     )
                     // Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
@@ -78,7 +68,7 @@ class SplashScreenViewModel(
                         driverId?.let { driverRepository.driverId = it }
                         email?.let { driverRepository.driverId = it }
                         if(driverRepository.hasDriverId) {
-                            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToVisitManagementFragment())
+                            proceedToVisitsManagement(activity)
                         }
                         else {
                             destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
@@ -95,6 +85,20 @@ class SplashScreenViewModel(
         } else {
             parameters["error"]?.let { Log.e(TAG, "Deeplink processing failed. $it") }
             proceedToLogin(activity)
+        }
+    }
+
+    private fun proceedToVisitsManagement(activity: Activity) {
+        crashReportsProvider.setUserIdentifier(driverRepository.driverId)
+        when (permissionsInteractor.checkPermissionsState(activity)
+            .getNextPermissionRequest()) {
+            PermissionDestination.PASS -> {
+                destination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
+            }
+            PermissionDestination.FOREGROUND_AND_TRACKING,
+            PermissionDestination.BACKGROUND -> {
+                destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
+            }
         }
     }
 
