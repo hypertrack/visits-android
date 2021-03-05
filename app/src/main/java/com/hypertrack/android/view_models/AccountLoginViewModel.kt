@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.utils.AccountLoginProvider
 import com.hypertrack.android.utils.Destination
+import com.hypertrack.android.utils.PublishableKey
 import kotlinx.coroutines.launch
 
 class AccountLoginViewModel(
@@ -55,11 +56,17 @@ class AccountLoginViewModel(
         _isLoginButtonClickable.postValue(false)
         _showProgress.value = true
         viewModelScope.launch {
-            val pk = loginProvider.getPublishableKey(login, password)
-            if (pk.isNotBlank() && accountRepository.onKeyReceived(pk, "true")) {
-                _destination.postValue(Destination.DRIVER_ID_INPUT)
+            val res = loginProvider.getPublishableKey(login, password)
+            if (res is PublishableKey) {
+                res.key.let { pk ->
+                    if (pk.isNotBlank() && accountRepository.onKeyReceived(pk, "true")) {
+                        _destination.postValue(Destination.DRIVER_ID_INPUT)
+                    } else {
+                        Log.w(TAG, "Can't login with $login account")
+                        _showToast.value = true
+                    }
+                }
             } else {
-                // show error toast
                 Log.w(TAG, "Can't login with $login account")
                 _showToast.value = true
             }

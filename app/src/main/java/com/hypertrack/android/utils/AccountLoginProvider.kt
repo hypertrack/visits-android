@@ -5,7 +5,10 @@ import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserStateDetails
 import com.amazonaws.mobile.client.results.SignInResult
+import com.amazonaws.mobile.client.results.SignInState
 import com.amazonaws.mobile.client.results.Tokens
+import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
+import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,25 +21,58 @@ import retrofit2.http.Header
 
 interface AccountLoginProvider {
     /** @return publishable key for an account or empty string if fails */
-    suspend fun getPublishableKey(login: String, password: String): String
+    //todo fix return
+    suspend fun getPublishableKey(login: String, password: String): LoginResult
 }
 
-class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiUrl: String) : AccountLoginProvider {
+sealed class LoginResult
+class PublishableKey(val key: String) : LoginResult()
+object NoSuchUser : LoginResult()
+object InvalidLoginOrPassword : LoginResult()
+class LoginError(val exception: Exception) : LoginResult()
+
+sealed class AwsSignInResult
+object AwsSignInSuccess : AwsSignInResult()
+class AwsSignInError(val exception: Exception) : AwsSignInResult()
+
+class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiUrl: String) :
+    AccountLoginProvider {
+
     @Suppress("UNUSED_VARIABLE")
     @ExperimentalCoroutinesApi
-    override suspend fun getPublishableKey(login: String, password: String): String {
+    override suspend fun getPublishableKey(login: String, password: String): LoginResult {
 
         // get Cognito token
-        val userStateDetails = awsInitCallWrapper() ?: return ""
+        val userStateDetails = awsInitCallWrapper() ?: return LoginError(Exception("Unknown error"))
+
         // Log.v(TAG, "Initialized with user State $userStateDetails")
-        val signInResult = awsLoginCallWrapper(login, password) ?: return ""
-        // Log.v(TAG, "Sign in result $signInResult")
-        val idToken = awsTokenCallWrapper() ?: return ""
-        // Log.v(TAG, "Got id token $idToken")
-        val pk = getPublishableKeyFromToken(idToken)
-        AWSMobileClient.getInstance().signOut()
-        // Log.d(TAG, "Got pk $pk")
-        return pk
+        val signInResult = awsLoginCallWrapper(login, password)
+        when (signInResult) {
+            is AwsSignInSuccess -> {
+                // Log.v(TAG, "Sign in result $signInResult")
+                val idToken = awsTokenCallWrapper() ?: return LoginError(Exception("Unknown error"))
+                // Log.v(TAG, "Got id token $idToken")
+                val pk = getPublishableKeyFromToken(idToken)
+                AWSMobileClient.getInstance().signOut()
+                // Log.d(TAG, "Got pk $pk")
+                return PublishableKey(pk)
+            }
+            is AwsSignInError -> {
+                signInResult.exception.let {
+                    return when (it) {
+                        is UserNotFoundException -> {
+                            NoSuchUser
+                        }
+                        is NotAuthorizedException -> {
+                            InvalidLoginOrPassword
+                        }
+                        else -> {
+                            LoginError(it)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @ExperimentalCoroutinesApi
@@ -50,12 +86,29 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun awsLoginCallWrapper(login: String, password: String): SignInResult? {
+    private suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult {
         return suspendCancellableCoroutine {
-            AWSMobileClient.getInstance().signIn(login, password, emptyMap(), object : Callback<SignInResult> {
-                override fun onResult(result: SignInResult?) = it.resume(result) {}
-                override fun onError(e: Exception?) = it.resume(null) {}
-            })
+            AWSMobileClient.getInstance().signIn(
+                login,
+                password,
+                emptyMap(),
+                object : Callback<SignInResult> {
+                    override fun onResult(result: SignInResult) {
+                        when (result.signInState) {
+                            SignInState.DONE -> {
+                                it.resume(AwsSignInSuccess) {}
+                            }
+                            else -> {
+                                it.resume(AwsSignInError(Exception(result.signInState.toString()))) {}
+                            }
+                        }
+
+                    }
+
+                    override fun onError(e: Exception) {
+                        it.resume(AwsSignInError(e)) {}
+                    }
+                })
         }
     }
 

@@ -74,9 +74,11 @@ object Injector {
             getDriverRepo(context),
             crashReportsProvider,
             getLoginProvider(context),
-            getPermissionInteractor()
+            getPermissionInteractor(),
+            getLoginInteractor()
         )
     }
+
 
     fun provideUserScopeViewModelFactory(): UserScopeViewModelFactory {
         return getUserScope().userScopeViewModelFactory
@@ -135,6 +137,13 @@ object Injector {
 
     private fun getPermissionInteractor(): PermissionsInteractor {
         return PermissionsInteractorImpl(
+            getAccountRepo(MyApplication.context)
+        )
+    }
+
+    private fun getLoginInteractor(): LoginInteractor {
+        return LoginInteractorImpl(
+            getLoginProvider(MyApplication.context),
             getAccountRepo(MyApplication.context)
         )
     }
