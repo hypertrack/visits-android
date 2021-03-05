@@ -29,7 +29,7 @@
     <string name="submit_driver_id">Check in</string>
     <string name="check_in">Add Visit</string>
     <string name="clock_in">Clock In</string>
-    <string name="check_out">Complete</string>
+    <string name="check_out">Complete Visit</string>
     <string name="clock_out">Clock Out</string>
     <string name="pick_up">On my way</string>
     <string name="cancel">Cancel Visit</string>
