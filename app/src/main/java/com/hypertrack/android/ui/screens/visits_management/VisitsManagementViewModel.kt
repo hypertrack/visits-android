@@ -42,19 +42,19 @@ class VisitsManagementViewModel(
     val clockInButtonText: LiveData<CharSequence>
         get() = _clockInButtonText
 
-    private val _checkInButtonText = MediatorLiveData<CharSequence>()
+    private val _checkInButtonText = MediatorLiveData<LocalVisitCtaLabel>()
 
     init {
         if (accountRepository.isManualCheckInAllowed) {
             _checkInButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
-                _checkInButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
+                _checkInButtonText.postValue(if (hasVisit) LocalVisitCtaLabel.CHECK_OUT else LocalVisitCtaLabel.CHECK_IN)
             }
         }
     }
 
     val  deviceHistoryWebUrl  = accessTokenRepository.deviceHistoryWebViewUrl
 
-    val checkInButtonText: LiveData<CharSequence>
+    val checkInButtonText: LiveData<LocalVisitCtaLabel>
         get() = _checkInButtonText
 
     private val _showSpinner = MutableLiveData(false)
@@ -199,3 +199,7 @@ fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
 sealed class StatusMessage
 class StatusString(val stringId: Int) : StatusMessage()
 class VisitsStats(val stats: Map<VisitStatusGroup, Int>) : StatusMessage()
+
+enum class LocalVisitCtaLabel {
+    CHECK_IN, CHECK_OUT
+}

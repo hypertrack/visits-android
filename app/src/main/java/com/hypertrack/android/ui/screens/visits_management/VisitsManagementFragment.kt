@@ -141,8 +141,11 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
                 R.string.clock_hint_tracking_off
             })
         }
-        visitsManagementViewModel.checkInButtonText.observe(viewLifecycleOwner) {
-            checkIn.text = it
+        visitsManagementViewModel.checkInButtonText.observe(viewLifecycleOwner) { label ->
+            checkIn.text = when (label) {
+                LocalVisitCtaLabel.CHECK_OUT -> getString(R.string.check_out)
+                else -> getString(R.string.check_in)
+            }
         }
 
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
