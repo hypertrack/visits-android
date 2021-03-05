@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 class VisitsManagementViewModel(
     private val visitsRepository: VisitsRepository,
     private val historyRepository: HistoryRepository,
-    private val accountRepository: AccountRepository,
+    accountRepository: AccountRepository,
     private val crashReportsProvider: CrashReportsProvider,
     accessTokenRepository: AccessTokenRepository
 ) : ViewModel() {
@@ -52,7 +52,7 @@ class VisitsManagementViewModel(
         }
     }
 
-    val  deviceHistoryWebUrl  = accessTokenRepository.deviceHistoryWebViewUrl
+    val deviceHistoryWebUrl = accessTokenRepository.deviceHistoryWebViewUrl
 
     val checkInButtonText: LiveData<LocalVisitCtaLabel>
         get() = _checkInButtonText
@@ -91,7 +91,9 @@ class VisitsManagementViewModel(
             when (it) {
                 TrackingStateValue.TRACKING -> _statusBarColor.postValue(R.color.colorTrackingActive)
                 TrackingStateValue.STOP -> _statusBarColor.postValue(R.color.colorTrackingStopped)
-                TrackingStateValue.DEVICE_DELETED, TrackingStateValue.ERROR -> _statusBarColor.postValue(R.color.colorTrackingError)
+                TrackingStateValue.DEVICE_DELETED, TrackingStateValue.ERROR -> _statusBarColor.postValue(
+                    R.color.colorTrackingError
+                )
                 else -> _statusBarColor.postValue(null)
             }
         }
@@ -105,17 +107,17 @@ class VisitsManagementViewModel(
     init {
         _statusBarMessage.addSource(visitsRepository.trackingState) {
             _statusBarMessage.postValue(
-                    when (it) {
-                        TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
-                        TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
-                        else -> visitsRepository.visitListItems.value.asStats()
-                    }
+                when (it) {
+                    TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
+                    TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
+                    else -> visitsRepository.visitListItems.value.asStats()
+                }
             )
         }
         _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
             when (_statusBarMessage.value) {
                 is StatusString -> {
-                } // Log.v(TAG, "Not updating message as it shows tracking info")
+                }
                 else -> _statusBarMessage.postValue(visits.asStats())
             }
 
@@ -130,7 +132,6 @@ class VisitsManagementViewModel(
     val error = MutableLiveData<String>()
 
     fun refreshVisits(block: () -> Unit) {
-        // Log.v(TAG, "Refresh visits")
 
         if (_showSync.value == true) return block()
         _showSync.postValue(true)
@@ -145,9 +146,9 @@ class VisitsManagementViewModel(
                 Log.e(TAG, "Got error $e refreshing visits")
                 when (e) {
                     is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException -> Log.i(
-                            TAG,
-                            "Failed to refresh visits",
-                            e
+                        TAG,
+                        "Failed to refresh visits",
+                        e
                     )
                     else -> crashReportsProvider.logException(e)
                 }
@@ -171,7 +172,6 @@ class VisitsManagementViewModel(
     }
 
     fun switchTracking() {
-        // Log.v(TAG, "switchTracking")
         _showSpinner.postValue(true)
         viewModelScope.launch {
             visitsRepository.switchTracking()
@@ -192,8 +192,8 @@ class VisitsManagementViewModel(
 
 fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
     VisitsStats(filterIsInstance<Visit>()
-            .groupBy { it.state.group }
-            .mapValues { (_, items) -> items.size })
+        .groupBy { it.state.group }
+        .mapValues { (_, items) -> items.size })
 } ?: VisitsStats(emptyMap())
 
 sealed class StatusMessage
