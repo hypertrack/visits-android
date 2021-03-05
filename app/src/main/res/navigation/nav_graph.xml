@@ -64,6 +64,9 @@
         <action
             android:id="@+id/action_loginFragment_to_driverIdInputFragment"
             app:destination="@id/driverIdInputFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
     <fragment
         android:id="@+id/visitDetailsFragment"
@@ -89,4 +92,30 @@
             android:id="@+id/action_backgroundPermissionsFragment_to_permissionRequestFragment"
             app:destination="@id/permissionRequestFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.hypertrack.android.ui.screens.sign_in.SignInFragment"
+        android:label="SignInFragment">
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_visitManagementFragment"
+            app:destination="@id/visitManagementFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_confirmFragment"
+            app:destination="@id/confirmFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.hypertrack.android.ui.screens.sign_up.SignUpFragment"
+        android:label="SignUpFragment">
+        <action
+            android:id="@+id/action_signUpFragment_to_confirmFragment"
+            app:destination="@id/confirmFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/confirmFragment"
+        android:name="com.hypertrack.android.ui.screens.confirm_email.ConfirmFragment"
+        android:label="ConfirmFragment" />
 </navigation>

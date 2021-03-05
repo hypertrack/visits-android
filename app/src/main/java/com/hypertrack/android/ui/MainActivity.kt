@@ -1,7 +1,9 @@
 package com.hypertrack.android.ui
 
 import android.content.Intent
+import android.util.Log
 import androidx.activity.viewModels
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.hypertrack.android.ui.base.NavActivity
 import com.hypertrack.android.ui.screens.permission_request.PermissionRequestFragment
@@ -36,6 +38,12 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         } else {
             deepLinkProcessor.activityOnNewIntent(this, intent, this)
         }
+    }
+
+    override fun onDestinationChanged(destination: NavDestination) {
+        super.onDestinationChanged(destination)
+        //todo task
+        Log.e("cutag", destination.displayName)
     }
 
     override fun onStart() {

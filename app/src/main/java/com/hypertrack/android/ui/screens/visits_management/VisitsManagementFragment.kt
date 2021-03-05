@@ -24,7 +24,7 @@ import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
-class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
+class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
@@ -56,6 +56,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             visitsManagementViewModel.visits,
             object : VisitListAdapter.OnListAdapterClick {
                 override fun onJobItemClick(position: Int) {
+                    // Log.d(TAG, "Clicked visit at position $position")
                     val visit = visitsManagementViewModel.visits.value?.get(position)
                     visit?.let {
                         if (it is Visit) {
@@ -70,7 +71,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             }
         )
 
-        visitsManagementViewModel.visits.observe(viewLifecycleOwner, {
+        visitsManagementViewModel.visits.observe(viewLifecycleOwner, { visits ->
+            // Log.d(TAG, "Got visits $visits")
             viewAdapter.notifyDataSetChanged()
         })
 
@@ -117,6 +119,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
                             .fold(getString(R.string.empty_string)) { acc, entry ->
                                 acc + "${entry.value} ${groupNames[entry.key.ordinal]} "
                             }
+                        // Log.v(TAG, "Created message text $messageText")
                         tvTrackerStatus.text = messageText
                     }
 
@@ -150,11 +153,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
                 }
             )
         }
-        visitsManagementViewModel.checkInButtonText.observe(viewLifecycleOwner) { label ->
-            checkIn.text = when (label) {
-                LocalVisitCtaLabel.CHECK_OUT -> getString(R.string.check_out)
-                else -> getString(R.string.check_in)
-            }
+        visitsManagementViewModel.checkInButtonText.observe(viewLifecycleOwner) {
+            checkIn.text = it
         }
 
         clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
@@ -199,6 +199,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
     override fun onPause() {
         super.onPause()
+        // Log.d(TAG, "onPause")
         visitsManagementViewModel.showSync.value?.let {
             if (it) {
                 dismissSyncNotification()
@@ -208,6 +209,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
     companion object {
         const val TAG = "VisitsManagementAct"
+        const val KEY_EXTRA_VISIT_ID = "delivery_id"
+        const val KEY_EXTRA_VISIT_POS = "delivery_position"
     }
 
 }

@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="content_padding">16dp</dimen>
+    <dimen name="elevation">6dp</dimen>
+</resources>
