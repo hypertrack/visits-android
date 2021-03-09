@@ -40,14 +40,16 @@ class LoginInteractorImpl(
 
     override suspend fun signUp(login: String, password: String): RegisterResult {
         // get Cognito token
-        val userStateDetails =
-            cognito.awsInitCallWrapper() ?: return SignUpError(Exception("Unknown error"))
+        val res = cognito.awsInitCallWrapper()
+        if (res is AwsError) {
+            return SignUpError(res.exception)
+        }
 
         // Log.v(TAG, "Initialized with user State $userStateDetails")
         val signUpResult = cognito.awsSignUpCallWrapper(login, password)
         when (signUpResult) {
             is AwsSignUpSuccess -> {
-                return SignUpError(Exception("Unknown error"))
+                return SignUpError(Exception("Confirmation request expected, but got success"))
                 //todo
 //                // Log.v(TAG, "Sign in result $signInResult")
 //                val idToken = awsTokenCallWrapper() ?: return LoginError(Exception("Unknown error"))
@@ -73,8 +75,10 @@ class LoginInteractorImpl(
     private suspend fun getPublishableKey(login: String, password: String): LoginResult {
 
         // get Cognito token
-        val userStateDetails =
-            cognito.awsInitCallWrapper() ?: return LoginError(Exception("Unknown error"))
+        val res = cognito.awsInitCallWrapper()
+        if (res is AwsError) {
+            return LoginError(res.exception)
+        }
 
         // Log.v(TAG, "Initialized with user State $userStateDetails")
         val signInResult = cognito.awsLoginCallWrapper(login, password)

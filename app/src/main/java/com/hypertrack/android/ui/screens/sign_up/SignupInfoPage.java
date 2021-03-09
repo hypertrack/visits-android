@@ -91,6 +91,12 @@ public class SignupInfoPage {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
+        //todo task
+        stateSelector.setSelection(1);
+        scaleSelector.setSelection(1);
+        useCaseSelector.setSelection(1);
+
         return view;
     }
 }

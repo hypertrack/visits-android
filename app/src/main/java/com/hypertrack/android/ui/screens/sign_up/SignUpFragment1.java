@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -36,12 +35,8 @@ import com.hypertrack.live.utils.HTTextWatcher;
 import com.hypertrack.live.views.SignupInfoPage;*/
 
 import com.amazonaws.services.cognitoidentityprovider.model.UsernameExistsException;
-import com.hypertrack.android.cognito.CognitoClient;
 import com.hypertrack.android.live.HTTextWatcher;
 import com.hypertrack.android.ui.base.ProgressDialogFragment;
-import com.hypertrack.android.ui.screens.confirm_email.ConfirmFragment;
-import com.hypertrack.android.ui.screens.sign_in.SignInFragment;
-import com.hypertrack.android.ui.screens.sign_in.SignInFragmentDirections;
 import com.hypertrack.logistics.android.github.R;
 
 import java.util.Arrays;
@@ -49,7 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("ConstantConditions")
-public class SignUpFragment extends ProgressDialogFragment implements CognitoClient.Callback {
+public class SignUpFragment1 extends ProgressDialogFragment /*implements CognitoClient.Callback */ {
 
 
     private static final int PAGES_COUNT = 2;
@@ -69,7 +64,7 @@ public class SignUpFragment extends ProgressDialogFragment implements CognitoCli
     private String password;
     private Map<String, String> cognitoUserAttributes = new HashMap<>();
 
-    public SignUpFragment() {
+    public SignUpFragment1() {
         super(R.layout.fragment_signup);
     }
 
@@ -151,7 +146,7 @@ public class SignUpFragment extends ProgressDialogFragment implements CognitoCli
                     return;
                 }
                 showProgress();
-                CognitoClient.getInstance(getContext()).signUp(email, password, cognitoUserAttributes, SignUpFragment.this);
+//                CognitoClient.getInstance(getContext()).signUp(email, password, cognitoUserAttributes, SignUpFragment.this);
             }
         });
 
@@ -200,16 +195,16 @@ public class SignUpFragment extends ProgressDialogFragment implements CognitoCli
         incorrect.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onSuccess(CognitoClient mobileClient) {
+    //    @Override
+    public void onSuccess(/*CognitoClient mobileClient*/) {
         if (getActivity() != null) {
             dismissProgress();
-            NavHostFragment.findNavController(SignUpFragment.this)
+            NavHostFragment.findNavController(SignUpFragment1.this)
                     .navigate(SignUpFragmentDirections.Companion.actionSignUpFragmentToConfirmFragment());
         }
     }
 
-    @Override
+    //    @Override
     public void onError(String message, Exception e) {
         if (getActivity() != null) {
             dismissProgress();

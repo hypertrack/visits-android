@@ -117,5 +117,9 @@
     <fragment
         android:id="@+id/confirmFragment"
         android:name="com.hypertrack.android.ui.screens.confirm_email.ConfirmFragment"
-        android:label="ConfirmFragment" />
+        android:label="ConfirmFragment">
+        <action
+            android:id="@+id/action_confirmFragment_to_visitManagementFragment"
+            app:destination="@id/visitManagementFragment" />
+    </fragment>
 </navigation>

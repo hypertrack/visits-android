@@ -4,14 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.amazonaws.services.cognitoidentityprovider.model.UserNotConfirmedException;
-import com.hypertrack.android.cognito.CognitoClient;
 import com.hypertrack.android.live.App;
 import com.hypertrack.logistics.android.github.R;
 //import com.hypertrack.live.App;

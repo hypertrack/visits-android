@@ -23,7 +23,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 
 interface CognitoAccountLoginProvider {
-    suspend fun awsInitCallWrapper(): UserStateDetails?
+    suspend fun awsInitCallWrapper(): AwsInitResult
     suspend fun awsTokenCallWrapper(): String?
     suspend fun awsSignUpCallWrapper(login: String, password: String): AwsSignUpResult
     suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult
@@ -40,15 +40,19 @@ object AwsSignUpConfirmationRequired : AwsSignUpResult()
 object AwsSignUpSuccess : AwsSignUpResult()
 class AwsSignUpError(val exception: Exception) : AwsSignUpResult()
 
+sealed class AwsInitResult
+object AwsSuccess : AwsInitResult()
+class AwsError(val exception: Exception) : AwsInitResult()
+
 @ExperimentalCoroutinesApi
 class CognitoAccountLoginProviderImpl(private val ctx: Context, private val baseApiUrl: String) :
     CognitoAccountLoginProvider {
 
-    override suspend fun awsInitCallWrapper(): UserStateDetails? {
+    override suspend fun awsInitCallWrapper(): AwsInitResult {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().initialize(ctx, object : Callback<UserStateDetails> {
-                override fun onResult(result: UserStateDetails?) = it.resume(result) {}
-                override fun onError(e: Exception?) = it.resume(null) {}
+                override fun onResult(result: UserStateDetails?) = it.resume(AwsSuccess) {}
+                override fun onError(e: Exception) = it.resume(AwsError(e)) {}
             })
         }
     }
@@ -89,7 +93,8 @@ class CognitoAccountLoginProviderImpl(private val ctx: Context, private val base
                 emptyMap(),
                 object : Callback<SignUpResult> {
                     override fun onResult(result: SignUpResult) {
-                        if (result.confirmationState) {
+                        //true - user is confirmed, no further action is necessary
+                        if (!result.confirmationState) {
                             it.resume(AwsSignUpConfirmationRequired) {}
                         } else {
                             it.resume(AwsSignUpSuccess) {}

@@ -26,7 +26,7 @@ import retrofit2.Response
 class LoginInteractorImplTest {
 
     private var accountLoginProvider: CognitoAccountLoginProviderImpl = mockk {
-        coEvery { awsInitCallWrapper() } returns UserStateDetails(UserState.SIGNED_OUT, mapOf())
+        coEvery { awsInitCallWrapper() } returns AwsSuccess
 
         coEvery { awsLoginCallWrapper("login", "password") } returns AwsSignInSuccess
         coEvery {
