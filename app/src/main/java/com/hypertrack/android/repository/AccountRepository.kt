@@ -31,6 +31,13 @@ class AccountRepository(
             accountData.pickUpAllowed = value
         }
 
+    override var shouldStartTracking: Boolean
+        get() = accountData.shouldUseFirstRunExperienceFlow
+        set(value) {
+            accountData.shouldUseFirstRunExperienceFlow = value
+            accountDataStorage.saveAccountData(accountData)
+        }
+
     suspend fun onKeyReceived(
             key: String,
             checkInEnabled: String = "false",

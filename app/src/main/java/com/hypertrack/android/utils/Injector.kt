@@ -231,6 +231,7 @@ interface AccountPreferencesProvider {
     var wasWhitelisted: Boolean
     val isManualCheckInAllowed: Boolean
     val isPickUpAllowed: Boolean
+    var shouldStartTracking: Boolean
 }
 
 const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
