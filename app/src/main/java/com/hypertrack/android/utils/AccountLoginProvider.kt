@@ -9,6 +9,7 @@ import com.amazonaws.mobile.client.results.SignInState
 import com.amazonaws.mobile.client.results.SignUpResult
 import com.amazonaws.mobile.client.results.Tokens
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
+import com.amazonaws.services.cognitoidentityprovider.model.UserNotConfirmedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
 import com.hypertrack.android.interactors.LoginResult
 import com.hypertrack.android.interactors.RegisterResult
@@ -74,11 +75,14 @@ class CognitoAccountLoginProviderImpl(private val ctx: Context, private val base
                                 it.resume(AwsSignInError(Exception(result.signInState.toString()))) {}
                             }
                         }
-
                     }
 
                     override fun onError(e: Exception) {
-                        it.resume(AwsSignInError(e)) {}
+                        if (e is UserNotConfirmedException) {
+                            it.resume(AwsSignInConfirmationRequired) {}
+                        } else {
+                            it.resume(AwsSignInError(e)) {}
+                        }
                     }
                 })
         }

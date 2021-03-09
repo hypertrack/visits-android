@@ -86,7 +86,8 @@ class LoginInteractorImpl(
             is AwsSignInSuccess -> {
                 // Log.v(TAG, "Sign in result $signInResult")
                 val idToken =
-                    cognito.awsTokenCallWrapper() ?: return LoginError(Exception("Unknown error"))
+                    cognito.awsTokenCallWrapper()
+                        ?: return LoginError(Exception("Failed to retrieve Cognito token"))
                 // Log.v(TAG, "Got id token $idToken")
                 val pk = getPublishableKeyFromToken(idToken)
                 cognito.signOut()
