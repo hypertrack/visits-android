@@ -37,6 +37,10 @@ class VisitsManagementViewModel(
         _clockInButtonText.addSource(visitsRepository.isTracking) { tracking ->
             _clockInButtonText.postValue(if (tracking) "Clock Out" else "Clock In")
         }
+        if (accountRepository.shouldStartTracking) {
+            visitsRepository.startTracking()
+            accountRepository.shouldStartTracking = false
+        }
     }
 
     val clockInButtonText: LiveData<CharSequence>
