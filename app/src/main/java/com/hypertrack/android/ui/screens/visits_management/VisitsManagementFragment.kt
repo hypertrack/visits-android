@@ -3,6 +3,7 @@ package com.hypertrack.android.ui.screens.visits_management
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
@@ -86,11 +87,19 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
                 return fragment
             }
 
-            override fun getPageTitle(position: Int): CharSequence? = tabTitles[position]
-
         }
 
         sliding_tabs.setupWithViewPager(viewpager)
+        val icons = listOf(
+            // TODO Denys: add correct icons
+            R.drawable.ic_time,
+            R.drawable.ic_car,
+            R.drawable.ic_walk,
+            R.drawable.ic_avatar
+        )
+        for (i in 0 until sliding_tabs.tabCount) {
+            sliding_tabs.getTabAt(i)?.icon = ResourcesCompat.getDrawable(resources, icons[i], requireContext().theme)
+        }
 
         visitsManagementViewModel.statusBarColor.observe(viewLifecycleOwner) { color ->
             tvTrackerStatus.visibility = if (color == null) View.GONE else View.VISIBLE
