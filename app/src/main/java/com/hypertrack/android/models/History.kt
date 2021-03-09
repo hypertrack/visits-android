@@ -41,9 +41,10 @@ enum class Status {
     STOP
 }
 
-
 class HistoryError(val error: Throwable?) : HistoryResult()
 sealed class HistoryResult
+
+
 data class HistoryTile(
     val status: Status,
     val description: CharSequence,
@@ -179,3 +180,9 @@ fun List<HistoryTile>.asHistory() = History(
     flatMap { it.locations }.map { it to "2020-02-02T20:20:02.020Z" },
     emptyList()
 )
+
+fun History.asTiles(): List<HistoryTile> {
+    // TODO Denys
+
+    return emptyList()
+}
