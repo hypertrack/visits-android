@@ -68,12 +68,6 @@
     <string name="cancel_visit_confirmation">Are you sure you want to cancel this visit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string-array name="tab_names">
-        <item>Daily History</item>
-        <item>Visits</item>
-        <item>Summary</item>
-        <item>Profile</item>
-    </string-array>
     <string-array name="visit_state_group_names">
         <item>@string/pending</item>
         <item>@string/visited</item>

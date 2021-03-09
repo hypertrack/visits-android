@@ -28,6 +28,21 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
     }
+    private val tabIcons = listOf(
+        R.drawable.ic_map_tab,
+        R.drawable.ic_visits_list_tab,
+        R.drawable.ic_insights_tab,
+        R.drawable.ic_profile_tab
+    )
+    private val tabFragments = listOf(
+        MapViewFragmentOld(),
+//                    MapViewFragment(),
+        VisitsListFragment.newInstance(),
+        SummaryFragment.newInstance(),
+        ProfileFragment()
+    )
+
+    init { check(tabIcons.size == tabFragments.size) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,23 +74,10 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         viewpager.adapter = object :
             FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-            private val fragments = listOf(
-                MapViewFragmentOld(),
-//                    MapViewFragment(),
-                VisitsListFragment.newInstance(),
-                SummaryFragment.newInstance(),
-                ProfileFragment()
-            )
-            private val tabTitles = resources.getStringArray(R.array.tab_names)
-
-            init {
-                check(tabTitles.size == fragments.size)
-            }
-
-            override fun getCount(): Int = fragments.size
+            override fun getCount(): Int = tabFragments.size
 
             override fun getItem(position: Int): Fragment {
-                val fragment = fragments[position]
+                val fragment = tabFragments[position]
                 if (fragment is MapViewFragmentOld) {
                     fragment.arguments = Bundle().apply {
                         putString(
@@ -90,15 +92,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         }
 
         sliding_tabs.setupWithViewPager(viewpager)
-        val icons = listOf(
-            // TODO Denys: add correct icons
-            R.drawable.ic_time,
-            R.drawable.ic_car,
-            R.drawable.ic_walk,
-            R.drawable.ic_avatar
-        )
         for (i in 0 until sliding_tabs.tabCount) {
-            sliding_tabs.getTabAt(i)?.icon = ResourcesCompat.getDrawable(resources, icons[i], requireContext().theme)
+            sliding_tabs.getTabAt(i)?.icon = ResourcesCompat.getDrawable(resources, tabIcons[i], requireContext().theme)
         }
 
         visitsManagementViewModel.statusBarColor.observe(viewLifecycleOwner) { color ->
