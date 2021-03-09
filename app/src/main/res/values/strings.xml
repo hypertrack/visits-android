@@ -69,8 +69,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string-array name="tab_names">
-        <item>Visits</item>
         <item>Daily History</item>
+        <item>Visits</item>
         <item>Summary</item>
         <item>Profile</item>
     </string-array>

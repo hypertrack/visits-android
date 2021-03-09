@@ -59,9 +59,9 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
             private val fragments = listOf(
-                VisitsListFragment.newInstance(),
                 MapViewFragmentOld(),
 //                    MapViewFragment(),
+                VisitsListFragment.newInstance(),
                 SummaryFragment.newInstance(),
                 ProfileFragment()
             )
