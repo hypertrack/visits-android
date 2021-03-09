@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDirections
+import com.hypertrack.android.interactors.InvalidLoginOrPassword
 import com.hypertrack.android.interactors.LoginInteractor
+import com.hypertrack.android.interactors.NoSuchUser
+import com.hypertrack.android.interactors.PublishableKey
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.*
@@ -83,6 +86,10 @@ class SignInViewModel(
             // Log.v(TAG, "enabling Button")
             isLoginButtonClickable.postValue(true)
         }
+    }
+
+    fun onSignUpClick() {
+        destination.postValue(SignInFragmentDirections.actionSignInFragmentToSignUpFragment())
     }
 
     companion object {

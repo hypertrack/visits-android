@@ -5,15 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hypertrack.android.interactors.LoginInteractor
+import com.hypertrack.android.interactors.PublishableKey
 import com.hypertrack.android.repository.AccountRepository
-import com.hypertrack.android.utils.AccountLoginProvider
+import com.hypertrack.android.utils.CognitoAccountLoginProvider
 import com.hypertrack.android.utils.Destination
-import com.hypertrack.android.utils.PublishableKey
 import kotlinx.coroutines.launch
 
 class AccountLoginViewModel(
-        private val loginProvider: AccountLoginProvider,
-        private val accountRepository: AccountRepository
+    private val loginInteractor: LoginInteractor,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
 
     private var login = ""
@@ -56,7 +57,7 @@ class AccountLoginViewModel(
         _isLoginButtonClickable.postValue(false)
         _showProgress.value = true
         viewModelScope.launch {
-            val res = loginProvider.getPublishableKey(login, password)
+            val res = loginInteractor.signIn(login, password)
             if (res is PublishableKey) {
                 res.key.let { pk ->
                     if (pk.isNotBlank() && accountRepository.onKeyReceived(pk, "true")) {

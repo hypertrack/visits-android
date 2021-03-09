@@ -6,9 +6,12 @@ import com.amazonaws.mobile.client.Callback
 import com.amazonaws.mobile.client.UserStateDetails
 import com.amazonaws.mobile.client.results.SignInResult
 import com.amazonaws.mobile.client.results.SignInState
+import com.amazonaws.mobile.client.results.SignUpResult
 import com.amazonaws.mobile.client.results.Tokens
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
+import com.hypertrack.android.interactors.LoginResult
+import com.hypertrack.android.interactors.RegisterResult
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,64 +22,29 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 
-interface AccountLoginProvider {
-    /** @return publishable key for an account or empty string if fails */
-    //todo fix return
-    suspend fun getPublishableKey(login: String, password: String): LoginResult
+interface CognitoAccountLoginProvider {
+    suspend fun awsInitCallWrapper(): UserStateDetails?
+    suspend fun awsTokenCallWrapper(): String?
+    suspend fun awsSignUpCallWrapper(login: String, password: String): AwsSignUpResult
+    suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult
+    fun signOut()
 }
-
-sealed class LoginResult
-class PublishableKey(val key: String) : LoginResult()
-object NoSuchUser : LoginResult()
-object InvalidLoginOrPassword : LoginResult()
-class LoginError(val exception: Exception) : LoginResult()
 
 sealed class AwsSignInResult
 object AwsSignInSuccess : AwsSignInResult()
+object AwsSignInConfirmationRequired : AwsSignInResult()
 class AwsSignInError(val exception: Exception) : AwsSignInResult()
 
-class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiUrl: String) :
-    AccountLoginProvider {
+sealed class AwsSignUpResult
+object AwsSignUpConfirmationRequired : AwsSignUpResult()
+object AwsSignUpSuccess : AwsSignUpResult()
+class AwsSignUpError(val exception: Exception) : AwsSignUpResult()
 
-    @Suppress("UNUSED_VARIABLE")
-    @ExperimentalCoroutinesApi
-    override suspend fun getPublishableKey(login: String, password: String): LoginResult {
+@ExperimentalCoroutinesApi
+class CognitoAccountLoginProviderImpl(private val ctx: Context, private val baseApiUrl: String) :
+    CognitoAccountLoginProvider {
 
-        // get Cognito token
-        val userStateDetails = awsInitCallWrapper() ?: return LoginError(Exception("Unknown error"))
-
-        // Log.v(TAG, "Initialized with user State $userStateDetails")
-        val signInResult = awsLoginCallWrapper(login, password)
-        when (signInResult) {
-            is AwsSignInSuccess -> {
-                // Log.v(TAG, "Sign in result $signInResult")
-                val idToken = awsTokenCallWrapper() ?: return LoginError(Exception("Unknown error"))
-                // Log.v(TAG, "Got id token $idToken")
-                val pk = getPublishableKeyFromToken(idToken)
-                AWSMobileClient.getInstance().signOut()
-                // Log.d(TAG, "Got pk $pk")
-                return PublishableKey(pk)
-            }
-            is AwsSignInError -> {
-                signInResult.exception.let {
-                    return when (it) {
-                        is UserNotFoundException -> {
-                            NoSuchUser
-                        }
-                        is NotAuthorizedException -> {
-                            InvalidLoginOrPassword
-                        }
-                        else -> {
-                            LoginError(it)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @ExperimentalCoroutinesApi
-    private suspend fun awsInitCallWrapper(): UserStateDetails? {
+    override suspend fun awsInitCallWrapper(): UserStateDetails? {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().initialize(ctx, object : Callback<UserStateDetails> {
                 override fun onResult(result: UserStateDetails?) = it.resume(result) {}
@@ -85,8 +53,8 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
         }
     }
 
-    @ExperimentalCoroutinesApi
-    private suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult {
+
+    override suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().signIn(
                 login,
@@ -112,8 +80,30 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
         }
     }
 
-    @ExperimentalCoroutinesApi
-    private suspend fun awsTokenCallWrapper(): String? {
+    override suspend fun awsSignUpCallWrapper(login: String, password: String): AwsSignUpResult {
+        return suspendCancellableCoroutine {
+            AWSMobileClient.getInstance().signUp(
+                login,
+                password,
+                emptyMap(),
+                emptyMap(),
+                object : Callback<SignUpResult> {
+                    override fun onResult(result: SignUpResult) {
+                        if (result.confirmationState) {
+                            it.resume(AwsSignUpConfirmationRequired) {}
+                        } else {
+                            it.resume(AwsSignUpSuccess) {}
+                        }
+                    }
+
+                    override fun onError(e: Exception) {
+                        it.resume(AwsSignUpError(e)) {}
+                    }
+                })
+        }
+    }
+
+    override suspend fun awsTokenCallWrapper(): String? {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
                 override fun onResult(result: Tokens?) = it.resume(result?.idToken?.tokenString) {}
@@ -122,17 +112,9 @@ class CognitoAccountLoginProvider(private val ctx: Context, private val baseApiU
         }
     }
 
-    private suspend fun getPublishableKeyFromToken(token: String): String {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(baseApiUrl)
-                .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
-                .build()
-        val service = retrofit.create(TokenForPublishableKeyExchangeService::class.java)
-        val response = service.getPublishableKey(token)
-        if (response.isSuccessful) return response.body()?.publishableKey ?: ""
-        return ""
+    override fun signOut() {
+        AWSMobileClient.getInstance().signOut()
     }
-
 
     companion object {
         const val TAG = "CognitoAccountProvider"

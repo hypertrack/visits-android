@@ -19,6 +19,9 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 
 class ServiceLocator {
@@ -73,7 +76,7 @@ object Injector {
             getAccountRepo(context),
             getDriverRepo(context),
             crashReportsProvider,
-            getLoginProvider(context),
+            getCognitoLoginProvider(context),
             getPermissionInteractor(),
             getLoginInteractor()
         )
@@ -141,10 +144,20 @@ object Injector {
         )
     }
 
+    private val tokenForPublishableKeyExchangeService by lazy {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(LIVE_API_URL_BASE)
+            .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
+            .build()
+        return@lazy retrofit.create(TokenForPublishableKeyExchangeService::class.java)
+    }
+
+    @ExperimentalCoroutinesApi
     private fun getLoginInteractor(): LoginInteractor {
         return LoginInteractorImpl(
-            getLoginProvider(MyApplication.context),
-            getAccountRepo(MyApplication.context)
+            getCognitoLoginProvider(MyApplication.context),
+            getAccountRepo(MyApplication.context),
+            tokenForPublishableKeyExchangeService
         )
     }
 
@@ -216,8 +229,8 @@ object Injector {
 
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
-    private fun getLoginProvider(context: Context): AccountLoginProvider =
-        CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
+    private fun getCognitoLoginProvider(context: Context): CognitoAccountLoginProvider =
+        CognitoAccountLoginProviderImpl(context, LIVE_API_URL_BASE)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
         GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context))

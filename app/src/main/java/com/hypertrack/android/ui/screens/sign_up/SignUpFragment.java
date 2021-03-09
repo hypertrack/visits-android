@@ -137,8 +137,8 @@ public class SignUpFragment extends ProgressDialogFragment implements CognitoCli
             @Override
             public void onClick(View view) {
                 //todo task
-//                ((EditText) viewPager.findViewById(R.id.email_address)).setText("ozh14873@cuoly.com");
-//                ((EditText) viewPager.findViewById(R.id.password)).setText("qwerty123");
+                ((EditText) viewPager.findViewById(R.id.email_address)).setText("ywo44503@zwoho.com");
+                ((EditText) viewPager.findViewById(R.id.password)).setText("qwerty123");
                 nextPage();
             }
         });

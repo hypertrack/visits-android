@@ -42,6 +42,10 @@ class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
             }
         })
 
+        sign_up.setOnClickListener {
+            vm.onSignUpClick()
+        }
+
         vm.destination.observe(viewLifecycleOwner) {
             findNavController().navigate(it)
         }
