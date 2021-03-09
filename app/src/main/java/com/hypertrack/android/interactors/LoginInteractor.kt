@@ -11,6 +11,7 @@ interface LoginInteractor {
     suspend fun signIn(login: String, password: String): LoginResult
     suspend fun signUp(login: String, password: String): RegisterResult
     suspend fun resendEmailConfirmation()
+    suspend fun signInAfterVerify(): LoginResult
 }
 
 @ExperimentalCoroutinesApi
@@ -68,6 +69,24 @@ class LoginInteractorImpl(
         }
     }
 
+    override suspend fun signInAfterVerify(): LoginResult {
+        val res = getPublishableKey()
+        return when (res) {
+            is PublishableKey -> {
+                val pkValid = accountRepository.onKeyReceived(res.key, "true")
+                if (pkValid) {
+                    res
+                } else {
+                    //todo task
+                    LoginError(Exception("Invalid Publishable Key"))
+                }
+            }
+            else -> {
+                res
+            }
+        }
+    }
+
     override suspend fun resendEmailConfirmation() {
         TODO("Not yet implemented")
     }
@@ -90,7 +109,8 @@ class LoginInteractorImpl(
                         ?: return LoginError(Exception("Failed to retrieve Cognito token"))
                 // Log.v(TAG, "Got id token $idToken")
                 val pk = getPublishableKeyFromToken(idToken)
-                cognito.signOut()
+                //todo task
+//                cognito.signOut()
                 // Log.d(TAG, "Got pk $pk")
                 return PublishableKey(pk)
             }
@@ -113,6 +133,15 @@ class LoginInteractorImpl(
                 return EmailConfirmationRequired
             }
         }
+    }
+
+    private suspend fun getPublishableKey(): LoginResult {
+        val idToken = cognito.awsTokenCallWrapper()
+            ?: return LoginError(Exception("Failed to retrieve Cognito token"))
+        // Log.v(TAG, "Got id token $idToken")
+        val pk = getPublishableKeyFromToken(idToken)
+        // Log.d(TAG, "Got pk $pk")
+        return PublishableKey(pk)
     }
 
     private suspend fun getPublishableKeyFromToken(token: String): String {

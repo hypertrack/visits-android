@@ -121,5 +121,8 @@
         <action
             android:id="@+id/action_confirmFragment_to_visitManagementFragment"
             app:destination="@id/visitManagementFragment" />
+        <action
+            android:id="@+id/action_confirmFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
 </navigation>

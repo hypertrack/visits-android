@@ -76,7 +76,6 @@ object Injector {
             getAccountRepo(context),
             getDriverRepo(context),
             crashReportsProvider,
-            getCognitoLoginProvider(context),
             getPermissionInteractor(),
             getLoginInteractor()
         )

@@ -96,9 +96,9 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
             findNavController().navigate(it)
         })
 
-        //todo task
-//        view.findViewById<View>(R.id.sign_in)
-//            .setOnClickListener { req.supportFragmentManager.popBackStack() }
+        sign_in.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun nextPage() {
