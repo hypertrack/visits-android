@@ -110,13 +110,4 @@ class LoginInteractorImplTest {
         }
     }
 
-    @Test
-    fun `sign up invalid data`() {
-        throw NotImplementedError()
-        runBlocking {
-            val res = loginInteractor.signIn("malformed login", "password")
-            assertEquals("pk", (res as PublishableKey).key)
-        }
-    }
-
 }

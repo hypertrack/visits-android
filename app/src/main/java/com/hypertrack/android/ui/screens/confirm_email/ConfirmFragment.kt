@@ -6,12 +6,15 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
+import com.hypertrack.android.ui.common.Utils
 import com.hypertrack.android.ui.views.VerificationCodeView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
@@ -57,10 +60,7 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
                 vm.onVerifiedClick(verificationCode.code, complete)
             }
         }
-        verificationCode.etCode.requestFocus()
-        val inputMethodManager =
-            requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(requireActivity().currentFocus, 0)
+        Utils.showKeyboard(mainActivity(), verificationCode.etCode)
 
         verified.setOnClickListener {
             vm.onVerifiedClick(verificationCode.code, verificationCode.isCodeComplete)
@@ -68,7 +68,16 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
         resend.setOnClickListener {
             vm.onResendClick()
         }
+
+        vm.clipboardCode.observe(viewLifecycleOwner, {
+            verificationCode.code = it
+            Toast.makeText(requireContext(), R.string.code_from_clipboard, LENGTH_SHORT).show()
+            Utils.hideKeyboard(mainActivity())
+        })
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
 }

@@ -89,4 +89,5 @@
     <string name="skip">Skip</string>
     <string name="unknown_error">Unknown error</string>
     <string name="wrong_code">Code is incorrect</string>
+    <string name="code_from_clipboard">Code have pasted from clipboard</string>
 </resources>

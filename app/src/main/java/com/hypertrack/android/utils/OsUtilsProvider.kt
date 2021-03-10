@@ -1,5 +1,8 @@
 package com.hypertrack.android.utils
 
+import android.content.ClipData
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
 import android.content.Context
 import android.location.Geocoder
 import android.util.Log
@@ -11,6 +14,7 @@ import java.time.ZoneId
 import java.util.*
 
 class OsUtilsProvider(private val context: Context, private val crashReportsProvider: CrashReportsProvider) {
+
     fun getCurrentTimestamp(): String {
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
         df.timeZone = TimeZone.getTimeZone("UTC")
@@ -59,9 +63,21 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
     fun getTimeZoneId(): ZoneId = ZoneId.systemDefault()
 
     private fun stubStreet(latitude: Double, longitude: Double) =
-            context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"
+        context.getString(R.string.unknown_location_at) + "($latitude, $longitude)"
 
     fun getString(resId: Int): String = context.getString(resId)
+
+    fun getClipboardContents(): String? {
+        val manager =
+            MyApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//        Log.e(TAG, manager.primaryClip?.getItemAt(0)?.text.toString())
+//        Log.e(TAG, manager.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN).toString())
+        if (manager.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
+            return manager.primaryClip?.getItemAt(0)?.text?.toString()
+        } else {
+            return null
+        }
+    }
 
     companion object {
         const val TAG = "OsUtilsProvider"

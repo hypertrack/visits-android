@@ -77,7 +77,8 @@ object Injector {
             getDriverRepo(context),
             crashReportsProvider,
             getPermissionInteractor(),
-            getLoginInteractor()
+            getLoginInteractor(),
+            getOsUtilsProvider(MyApplication.context),
         )
     }
 
