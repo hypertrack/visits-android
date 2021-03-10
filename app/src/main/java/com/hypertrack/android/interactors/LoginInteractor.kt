@@ -6,6 +6,7 @@ import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.utils.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.util.*
 
 interface LoginInteractor {
     suspend fun signIn(login: String, password: String): LoginResult
@@ -23,7 +24,7 @@ class LoginInteractorImpl(
 ) : LoginInteractor {
 
     override suspend fun signIn(login: String, password: String): LoginResult {
-        val res = getPublishableKey(login, password)
+        val res = getPublishableKey(login.toLowerCase(Locale.getDefault()), password)
         return when (res) {
             is PublishableKey -> {
                 val pkValid = accountRepository.onKeyReceived(res.key, "true")
@@ -48,7 +49,8 @@ class LoginInteractorImpl(
         }
 
         // Log.v(TAG, "Initialized with user State $userStateDetails")
-        val signUpResult = cognito.awsSignUpCallWrapper(login, password)
+        val signUpResult =
+            cognito.awsSignUpCallWrapper(login.toLowerCase(Locale.getDefault()), password)
         when (signUpResult) {
             is AwsSignUpSuccess -> {
                 //todo
