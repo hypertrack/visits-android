@@ -102,6 +102,7 @@
     <Button
         android:id="@+id/sign_up"
         style="@style/ActionButtonStyle"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/bg_button_light"
         android:text="@string/sign_up"
         android:textColor="@color/colorHyperTrack"
