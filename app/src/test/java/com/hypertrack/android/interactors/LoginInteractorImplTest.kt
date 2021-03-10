@@ -1,10 +1,8 @@
 package com.hypertrack.android.interactors
 
-import android.os.Build
-import com.amazonaws.mobile.client.UserState
-import com.amazonaws.mobile.client.UserStateDetails
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
+import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.utils.*
 import io.mockk.coEvery
@@ -12,14 +10,10 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
-import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import retrofit2.Response
 
 @ExperimentalCoroutinesApi
@@ -49,7 +43,7 @@ class LoginInteractorImplTest {
 
         coEvery { awsSignUpCallWrapper("login", "password") } returns AwsSignUpConfirmationRequired
 
-        coEvery { awsTokenCallWrapper() } returns "cognito token"
+        coEvery { awsTokenCallWrapper() } returns CognitoToken("cognito token")
 
         every { signOut() } returns Unit
     }
@@ -61,6 +55,9 @@ class LoginInteractorImplTest {
             PublishableKeyContainer("pk")
         )
     }
+    private var liveAccountUrlService = mockk<LiveAccountApi> {
+    }
+
     private lateinit var loginInteractor: LoginInteractor
 
     @Before
@@ -68,7 +65,8 @@ class LoginInteractorImplTest {
         loginInteractor = LoginInteractorImpl(
             accountLoginProvider,
             accountRepository,
-            tokenService
+            tokenService,
+            liveAccountUrlService
         )
     }
 
@@ -97,15 +95,6 @@ class LoginInteractorImplTest {
     }
 
     @Test
-    fun `sign in invalid data`() {
-        throw NotImplementedError()
-        runBlocking {
-            val res = loginInteractor.signIn("login", "password")
-            assertEquals("pk", (res as PublishableKey).key)
-        }
-    }
-
-    @Test
     fun `sign in needs email confirmation`() {
         runBlocking {
             val res = loginInteractor.signIn("login needs confirmation", "password")
@@ -119,13 +108,13 @@ class LoginInteractorImplTest {
             val res = loginInteractor.signUp("login", "password")
             assertEquals(ConfirmationRequired::class.java, res::class.java)
         }
-    }
+    }s
 
     @Test
     fun `sign up invalid data`() {
         throw NotImplementedError()
         runBlocking {
-            val res = loginInteractor.signIn("login", "password")
+            val res = loginInteractor.signIn("malformed login", "password")
             assertEquals("pk", (res as PublishableKey).key)
         }
     }

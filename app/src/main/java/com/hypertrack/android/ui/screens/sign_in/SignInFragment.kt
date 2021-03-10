@@ -75,6 +75,7 @@ class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
 
         //todo task
         email_address.setText("5@testmail.com")
+//        email_address.setText("spqrta+a@gmail.com")
 //        email_address.setText("spqrta@gmail.com")
         password.setText("qwerty123")
     }

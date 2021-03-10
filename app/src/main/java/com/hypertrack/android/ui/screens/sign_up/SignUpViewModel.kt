@@ -20,7 +20,11 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : ViewModel(
             val res = loginInteractor.signUp(login, password)
             when (res) {
                 ConfirmationRequired -> {
-                    destination.postValue(SignUpFragmentDirections.actionSignUpFragmentToConfirmFragment())
+                    destination.postValue(
+                        SignUpFragmentDirections.actionSignUpFragmentToConfirmFragment(
+                            login
+                        )
+                    )
                 }
                 is SignUpError -> {
                     //todo task

@@ -63,9 +63,9 @@
     <string name="my_app_would_track">My app would track</string>
     <string name="my_app_is_for">My app is for</string>
     <string name="verify_your_email">Verify your email</string>
-    <string name="we_have_sent_you_an_email">We have sent you an email with verification link. Please click on the link in the email to continue</string>
+    <string name="we_have_sent_you_an_email">We have sent you an email with verification code. Please enter the code to continue</string>
     <string name="i_have_verified">I have verified</string>
-    <string name="resend_verification_link">Resend verification link</string>
+    <string name="resend_verification_code">Resend verification code</string>
     <string name="user_does_not_exist" tools:ignore="PrivateResource">User does not exist</string>
     <string name="user_is_not_confirmed">User is not confirmed</string>
     <string name="an_account_exists">An account with the given email already exists</string>

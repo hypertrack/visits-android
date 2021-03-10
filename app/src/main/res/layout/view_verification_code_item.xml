@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/verificationCodeView_itemRoot"
+        android:layout_width="@dimen/verification_code_item_width"
+        android:layout_height="@dimen/verification_code_item_height"
+        android:layout_marginRight="@dimen/verification_code_margin"
+        android:background="@drawable/bg_code_item"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/verificationCodeView_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/verification_code_font_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="5" />
+
+        <ImageView
+            android:id="@+id/verificationCodeView_ivCursor"
+            android:layout_width="3dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/verificationCodeView_text"
+            app:layout_constraintStart_toEndOf="@+id/verificationCodeView_text"
+            app:layout_constraintTop_toTopOf="@+id/verificationCodeView_text"
+            app:srcCompat="@color/colorPrimary" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

@@ -69,7 +69,11 @@ class SignInViewModel(
                             errorText.postValue(R.string.incorrect_username_or_pass.stringFromResource())
                         }
                         is EmailConfirmationRequired -> {
-                            destination.postValue(SignInFragmentDirections.actionSignInFragmentToConfirmFragment())
+                            destination.postValue(
+                                SignInFragmentDirections.actionSignInFragmentToConfirmFragment(
+                                    login
+                                )
+                            )
                         }
                         is LoginError -> {
                             Log.e(TAG, res.exception.message.toString())

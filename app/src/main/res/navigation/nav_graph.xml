@@ -105,6 +105,10 @@
         <action
             android:id="@+id/action_signInFragment_to_confirmFragment"
             app:destination="@id/confirmFragment" />
+        <argument
+            android:name="email"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -124,5 +128,8 @@
         <action
             android:id="@+id/action_confirmFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
+        <argument
+            android:name="email"
+            app:argType="string" />
     </fragment>
 </navigation>

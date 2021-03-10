@@ -24,7 +24,11 @@ class LoginFragment : ProgressDialogFragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         //todo task
-        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToSignInFragment())
+        findNavController().navigate(
+            LoginFragmentDirections.actionLoginFragmentToSignInFragment(
+                null
+            )
+        )
 
         loginInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}

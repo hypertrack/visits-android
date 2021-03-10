@@ -25,7 +25,7 @@ import retrofit2.http.Header
 
 interface CognitoAccountLoginProvider {
     suspend fun awsInitCallWrapper(): AwsInitResult
-    suspend fun awsTokenCallWrapper(): String?
+    suspend fun awsTokenCallWrapper(): AwsTokenResult
     suspend fun awsSignUpCallWrapper(login: String, password: String): AwsSignUpResult
     suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult
     fun signOut()
@@ -44,6 +44,10 @@ class AwsSignUpError(val exception: Exception) : AwsSignUpResult()
 sealed class AwsInitResult
 object AwsSuccess : AwsInitResult()
 class AwsError(val exception: Exception) : AwsInitResult()
+
+sealed class AwsTokenResult
+class CognitoToken(val token: String) : AwsTokenResult()
+class CognitoTokenError(val exception: Exception) : AwsTokenResult()
 
 @ExperimentalCoroutinesApi
 class CognitoAccountLoginProviderImpl(private val ctx: Context, private val baseApiUrl: String) :
@@ -112,11 +116,14 @@ class CognitoAccountLoginProviderImpl(private val ctx: Context, private val base
         }
     }
 
-    override suspend fun awsTokenCallWrapper(): String? {
+    override suspend fun awsTokenCallWrapper(): AwsTokenResult {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
-                override fun onResult(result: Tokens?) = it.resume(result?.idToken?.tokenString) {}
-                override fun onError(e: Exception?) = it.resume(null) {}
+                override fun onResult(result: Tokens) {
+                    it.resume(CognitoToken(result.idToken.tokenString)) {}
+                }
+
+                override fun onError(e: Exception) = it.resume(CognitoTokenError(e)) {}
             })
         }
     }

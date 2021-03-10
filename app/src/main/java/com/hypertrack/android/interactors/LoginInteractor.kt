@@ -1,8 +1,8 @@
 package com.hypertrack.android.interactors
 
-import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
+import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.utils.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,14 +11,15 @@ interface LoginInteractor {
     suspend fun signIn(login: String, password: String): LoginResult
     suspend fun signUp(login: String, password: String): RegisterResult
     suspend fun resendEmailConfirmation()
-    suspend fun signInAfterVerify(): LoginResult
+    suspend fun verifyByOtpCode(email: String, code: String): OtpResult
 }
 
 @ExperimentalCoroutinesApi
 class LoginInteractorImpl(
     private val cognito: CognitoAccountLoginProvider,
     private val accountRepository: AccountRepository,
-    private val tokenService: TokenForPublishableKeyExchangeService
+    private val tokenService: TokenForPublishableKeyExchangeService,
+    private val liveAccountUrlService: LiveAccountApi
 ) : LoginInteractor {
 
     override suspend fun signIn(login: String, password: String): LoginResult {
@@ -50,15 +51,8 @@ class LoginInteractorImpl(
         val signUpResult = cognito.awsSignUpCallWrapper(login, password)
         when (signUpResult) {
             is AwsSignUpSuccess -> {
-                return SignUpError(Exception("Confirmation request expected, but got success"))
                 //todo
-//                // Log.v(TAG, "Sign in result $signInResult")
-//                val idToken = awsTokenCallWrapper() ?: return LoginError(Exception("Unknown error"))
-//                // Log.v(TAG, "Got id token $idToken")
-//                val pk = getPublishableKeyFromToken(idToken)
-//                AWSMobileClient.getInstance().signOut()
-//                // Log.d(TAG, "Got pk $pk")
-//                return PublishableKey(pk)
+                return SignUpError(Exception("Confirmation request expected, but got success"))
             }
             is AwsSignUpConfirmationRequired -> {
                 return ConfirmationRequired
@@ -69,26 +63,24 @@ class LoginInteractorImpl(
         }
     }
 
-    override suspend fun signInAfterVerify(): LoginResult {
-        val res = getPublishableKey()
-        return when (res) {
-            is PublishableKey -> {
-                val pkValid = accountRepository.onKeyReceived(res.key, "true")
-                if (pkValid) {
-                    res
-                } else {
-                    //todo task
-                    LoginError(Exception("Invalid Publishable Key"))
-                }
-            }
-            else -> {
-                res
-            }
+    override suspend fun verifyByOtpCode(email: String, code: String): OtpResult {
+        //todo task
+        val res = liveAccountUrlService.verifyEmailViaOtpCode(
+            "token",
+            LiveAccountApi.OtpBody(
+                email = email,
+                code = code
+            )
+        )
+        if (res.isSuccessful) {
+            return OtpSuccess
+        } else {
+            return OtpError()
         }
     }
 
     override suspend fun resendEmailConfirmation() {
-        TODO("Not yet implemented")
+        //todo task
     }
 
     private suspend fun getPublishableKey(login: String, password: String): LoginResult {
@@ -103,16 +95,17 @@ class LoginInteractorImpl(
         val signInResult = cognito.awsLoginCallWrapper(login, password)
         when (signInResult) {
             is AwsSignInSuccess -> {
-                // Log.v(TAG, "Sign in result $signInResult")
-                val idToken =
-                    cognito.awsTokenCallWrapper()
-                        ?: return LoginError(Exception("Failed to retrieve Cognito token"))
-                // Log.v(TAG, "Got id token $idToken")
-                val pk = getPublishableKeyFromToken(idToken)
-                //todo task
-//                cognito.signOut()
-                // Log.d(TAG, "Got pk $pk")
-                return PublishableKey(pk)
+                val tokenRes = cognito.awsTokenCallWrapper()
+                return when (tokenRes) {
+                    is CognitoTokenError -> {
+                        LoginError(Exception("Failed to retrieve Cognito token"))
+                    }
+                    is CognitoToken -> {
+                        val pk = getPublishableKeyFromToken(tokenRes.token)
+                        // Log.d(TAG, "Got pk $pk")
+                        PublishableKey(pk)
+                    }
+                }
             }
             is AwsSignInError -> {
                 signInResult.exception.let {
@@ -135,15 +128,6 @@ class LoginInteractorImpl(
         }
     }
 
-    private suspend fun getPublishableKey(): LoginResult {
-        val idToken = cognito.awsTokenCallWrapper()
-            ?: return LoginError(Exception("Failed to retrieve Cognito token"))
-        // Log.v(TAG, "Got id token $idToken")
-        val pk = getPublishableKeyFromToken(idToken)
-        // Log.d(TAG, "Got pk $pk")
-        return PublishableKey(pk)
-    }
-
     private suspend fun getPublishableKeyFromToken(token: String): String {
         val response = tokenService.getPublishableKey(token)
         if (response.isSuccessful) return response.body()?.publishableKey ?: ""
@@ -161,4 +145,8 @@ class LoginError(val exception: Exception) : LoginResult()
 sealed class RegisterResult
 object ConfirmationRequired : RegisterResult()
 class SignUpError(val exception: Exception) : RegisterResult()
+
+sealed class OtpResult
+object OtpSuccess : OtpResult()
+class OtpError : OtpResult()
 

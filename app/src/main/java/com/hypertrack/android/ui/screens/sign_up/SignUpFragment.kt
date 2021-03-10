@@ -36,7 +36,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
 
     //todo task
     private var company = "My company"
-    private var email: String? = "5@testmail.com"
+    private var email: String? = "spqrta+b1@gmail.com"
     private var password: String? = "qwerty123"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

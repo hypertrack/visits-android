@@ -146,9 +146,17 @@ object Injector {
     private val tokenForPublishableKeyExchangeService by lazy {
         val retrofit = Retrofit.Builder()
             .baseUrl(LIVE_API_URL_BASE)
-            .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
+            .addConverterFactory(MoshiConverterFactory.create(getMoshi()))
             .build()
         return@lazy retrofit.create(TokenForPublishableKeyExchangeService::class.java)
+    }
+
+    private val liveAccountUrlService by lazy {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(LIVE_ACCOUNT_URL_BASE)
+            .addConverterFactory(MoshiConverterFactory.create(getMoshi()))
+            .build()
+        return@lazy retrofit.create(LiveAccountApi::class.java)
     }
 
     @ExperimentalCoroutinesApi
@@ -156,7 +164,8 @@ object Injector {
         return LoginInteractorImpl(
             getCognitoLoginProvider(MyApplication.context),
             getAccountRepo(MyApplication.context),
-            tokenForPublishableKeyExchangeService
+            tokenForPublishableKeyExchangeService,
+            liveAccountUrlService
         )
     }
 
@@ -263,3 +272,5 @@ const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
 const val LIVE_API_URL_BASE = "https://live-api.htprod.hypertrack.com/"
 const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"
 const val MAX_IMAGE_SIDE_LENGTH_PX = 1024
+
+const val LIVE_ACCOUNT_URL_BASE = "https://live-account.htprod.hypertrack.com"
