@@ -248,9 +248,15 @@ data class HistoryStatusMarker(
 @JsonClass(generateAdapter = true)
 data class HistoryStatusMarkerData(
         @field:Json(name = "value") val value: String,
+        @field:Json(name = "activity") val activity: String?,
+        @field:Json(name = "reason") val reason: String?,
         @field:Json(name = "duration") val duration: Int,
         @field:Json(name = "start") val start: MarkerTerminal,
         @field:Json(name = "end") val end: MarkerTerminal,
+        @field:Json(name = "steps") val steps: Int?,
+        @field:Json(name = "distance") val distance: Int?,
+        @field:Json(name = "address") val address: String?,
+
 )
 
 // Do not be misguided by name. It's a geotag.
@@ -311,7 +317,10 @@ data class MarkerTerminal(
 )
 
 @JsonClass(generateAdapter = true)
-data class MarkerLocation(@field:Json(name = "geometry") val geometry: Geometry)
+data class MarkerLocation(
+    @field:Json(name = "geometry") val geometry: Geometry,
+    @field:Json(name = "recorded_at") val recordedAt: String,
+)
 
 @JsonClass(generateAdapter = true)
 data class Locations(

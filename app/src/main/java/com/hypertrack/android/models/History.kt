@@ -21,11 +21,34 @@ data class Location(
         val latitude: Double
 )
 
-data class Marker(
-        val type: MarkerType,
-        val timestamp: String,
-        val location: Location?,
-)
+interface Marker {
+    val type: MarkerType
+    val timestamp: String
+    val location: Location?
+}
+
+data class StatusMarker(
+    override val type: MarkerType,
+    override val timestamp: String,
+    override val location: Location?,
+    val startLocation: Location?,
+    val endLocation: Location?,
+    val startTimestamp: String,
+    val endTimestamp: String?,
+    val startLocationTimestamp: String?,
+    val endLocationTimestamp: String?,
+    val status: Status,
+    val duration: Int,
+    val distance: Int?,
+    val stepsCount: Int?,
+    val address: String?,
+) : Marker
+
+data class GenericMarker(
+    override val type: MarkerType,
+    override val timestamp: String,
+    override val location: Location?,
+) : Marker
 
 enum class MarkerType {
     STATUS,
@@ -38,7 +61,8 @@ enum class Status {
     INACTIVE,
     DRIVE,
     WALK,
-    STOP
+    STOP,
+    UNKNOWN
 }
 
 class HistoryError(val error: Throwable?) : HistoryResult()
@@ -49,7 +73,6 @@ data class HistoryTile(
     val status: Status,
     val description: CharSequence,
     val address: CharSequence?,
-    val id: Int,
     val timeframe: String,
     val tileType: HistoryTileType,
     val locations: List<Location> = emptyList()
@@ -115,13 +138,13 @@ data class HistoryTile(
 
         val MOCK_TILES = listOf(
             HistoryTile(
-                Status.STOP,"1hr 50 min • 3.2 miles",null, -1,
+                Status.STOP,"1hr 50 min • 3.2 miles",null,
                 "10:17 am",
                 HistoryTileType.SUMMARY,
                 ashburyXHeightLoitering,
             ),
             HistoryTile(
-                Status.STOP,"5 min","1906 Mission, San Francisco, CA", 0,
+                Status.STOP,"5 min","1906 Mission, San Francisco, CA",
                 "10:17 am-10:22 am",
                 HistoryTileType.ACTIVE_START,
                 ashburyXHeightLoitering,
@@ -130,7 +153,6 @@ data class HistoryTile(
                 Status.WALK,
                 "10 min • 520 steps",
                 null,
-                1,
                 "10:22 am-10:32 am",
                 HistoryTileType.ACTIVE,
                 ashburyXHeight2BotanicGarden
@@ -139,7 +161,6 @@ data class HistoryTile(
                 Status.STOP,
                 "30 min",
                 "McLaren Lodge, Fell, San Francisco, CA",
-                2,
                 "10:32 am-11:02 am",
                 HistoryTileType.ACTIVE,
                 botanicGardenLoitering
@@ -148,7 +169,6 @@ data class HistoryTile(
                 Status.DRIVE,
                 "5 min • 3.2 miles",
                 null,
-                3,
                 "11:02 am-11:07 am",
                 HistoryTileType.ACTIVE,
                 BotanicGarden2AshburyXHeight
@@ -157,7 +177,6 @@ data class HistoryTile(
                 Status.OUTAGE,
                 "Location services disabled",
                 null,
-                4,
                 "11:07 am-12:07 pm",
                 HistoryTileType.OUTAGE,
                 ashburyXHeightLoitering
@@ -182,7 +201,65 @@ fun List<HistoryTile>.asHistory() = History(
 )
 
 fun History.asTiles(): List<HistoryTile> {
-    // TODO Denys
+    val result = mutableListOf<HistoryTile>()
+    val statusMarkers = markers.filterIsInstance<StatusMarker>().sortedBy {
+        it.startTimestamp
+    }
+    var startMarker = true
+    for (marker in statusMarkers) {
+        val tile = HistoryTile(
+            marker.status,
+            marker.asDescription(),
+            marker.address,
+            marker.timeFrame(),
+            when {
+                startMarker && marker.status in listOf(Status.OUTAGE, Status.INACTIVE) -> {
+                    startMarker = false; HistoryTileType.OUTAGE_START
+                }
+                startMarker -> {
+                    startMarker = false; HistoryTileType.ACTIVE_START
+                }
+                marker.status in listOf(Status.OUTAGE, Status.INACTIVE) -> HistoryTileType.OUTAGE
+                else -> HistoryTileType.ACTIVE
+            },
+            filterMarkerLocations(marker, locationTimePoints)
+        )
+    }
 
-    return emptyList()
+    return result
+}
+
+private fun filterMarkerLocations(
+    marker: StatusMarker,
+    locationTimePoints: List<Pair<Location, String>>
+): List<Location> {
+    val from = marker.startLocationTimestamp ?: return emptyList()
+    val upTo = marker.endLocationTimestamp ?: return emptyList()
+
+    return locationTimePoints
+        .filter { (_, time) -> time in upTo..from }
+        .map { (loc, _) -> loc }
+}
+
+private fun StatusMarker.asDescription(): String = when(status) {
+        Status.DRIVE -> formatDriveStats()
+        Status.WALK -> formatWalkStats()
+        else -> formatDuration()
+    }
+
+private fun StatusMarker.formatDuration() = when {
+    duration / 3600 < 1 -> "${duration / 60} min"
+    duration / 3600 == 1 -> "1 hour ${duration % 3600 / 60} min"
+    else -> "${duration / 3600} hours ${duration % 3600 / 60} min"
+}
+private fun StatusMarker.formatDriveStats() =
+    "${formatDuration()} • ${distance ?:0 / 1000} km"
+
+private fun StatusMarker.formatWalkStats() =
+    "${formatDuration()}  • ${stepsCount?:0} steps"
+
+
+private fun StatusMarker.timeFrame(): String {
+    if (endTimestamp == null) return "XXam:XX"
+    return "XXam:XX YYpm:YY"
 }

@@ -16,8 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
+import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.asHistory
+import com.hypertrack.android.models.asTiles
 import com.hypertrack.android.ui.base.AnimatedDialog
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.utils.Factory
@@ -53,13 +55,15 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             Log.d(TAG, "Updating history $history")
             historyRenderer?.let { map ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    map.showHistory(HistoryTile.MOCK_TILES.asHistory())
+                    map.showHistory(history)
+//                    map.showHistory(HistoryTile.MOCK_TILES.asHistory())
                     if (progress.isShowing) progress.dismiss()
                     mapLoaderCanvas.visibility = View.GONE
                     state = LoadingProgressState.DONE
                 }
             }
-            items.postValue(HistoryTile.MOCK_TILES)
+            items.postValue(history.asTiles())
+//            items.postValue(HistoryTile.MOCK_TILES)
         }
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
