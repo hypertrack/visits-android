@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.PublishableKey
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.CognitoAccountLoginProvider
 import com.hypertrack.android.utils.Destination
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 class AccountLoginViewModel(
     private val loginInteractor: LoginInteractor,
     private val accountRepository: AccountRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     private var login = ""
     private var password = ""
@@ -25,9 +26,6 @@ class AccountLoginViewModel(
 
     val showProgress: LiveData<Boolean>
         get() = _showProgress
-
-    val destination: LiveData<Destination>
-        get() = _destination
 
     val isLoginButtonClickable: LiveData<Boolean>
         get() = _isLoginButtonClickable

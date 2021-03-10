@@ -11,6 +11,7 @@ import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.repository.VisitsRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
@@ -27,7 +28,7 @@ class VisitsManagementViewModel(
     private val accountRepository: AccountRepository,
     private val crashReportsProvider: CrashReportsProvider,
     accessTokenRepository: AccessTokenRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     val isTracking = visitsRepository.isTracking
 

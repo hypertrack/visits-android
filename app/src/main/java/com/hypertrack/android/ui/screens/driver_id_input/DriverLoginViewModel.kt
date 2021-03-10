@@ -7,16 +7,16 @@ import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.PermissionDestination
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.DriverRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.HyperTrackService
 
 class DriverLoginViewModel(
     private val driverRepository: DriverRepository,
     private val hyperTrackService: HyperTrackService,
     private val permissionsInteractor: PermissionsInteractor,
-) : ViewModel() {
+) : BaseViewModel() {
 
     val loadingState = MutableLiveData<Boolean>()
-    val destination = MutableLiveData<NavDirections>()
 
     fun onLoginClick(driverId: String?, activity: Activity) {
         driverId?.let {

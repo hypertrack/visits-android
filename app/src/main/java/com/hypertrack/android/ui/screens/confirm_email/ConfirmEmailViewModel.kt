@@ -5,19 +5,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.*
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
 //todo task handle errors
-class ConfirmEmailViewModel(private val loginInteractor: LoginInteractor) : ViewModel() {
+class ConfirmEmailViewModel(private val loginInteractor: LoginInteractor) : BaseViewModel() {
 
     private lateinit var email: String
 
     val loadingState = MutableLiveData<Boolean>()
     val proceedButtonEnabled = MutableLiveData<Boolean>(false)
     val errorText = MutableLiveData<String>()
-    val destination = MutableLiveData<NavDirections>()
 
     fun init(email: String) {
         this.email = email

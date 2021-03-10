@@ -9,6 +9,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
@@ -16,14 +17,13 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel(
     private val loginInteractor: LoginInteractor
-) : ViewModel() {
+) : BaseViewModel() {
 
     private var login = ""
     private var password = ""
 
     val errorText = MutableLiveData<String>()
     val showProgress = MutableLiveData(false)
-    val destination = MutableLiveData<NavDirections>()
     val isLoginButtonClickable = MutableLiveData(false)
 
     fun onLoginTextChanged(email: CharSequence) {

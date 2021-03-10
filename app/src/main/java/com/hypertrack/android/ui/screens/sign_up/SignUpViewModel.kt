@@ -8,12 +8,12 @@ import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.ConfirmationRequired
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.SignUpError
+import com.hypertrack.android.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(private val loginInteractor: LoginInteractor) : ViewModel() {
+class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewModel() {
 
     val errorText = MutableLiveData<String?>()
-    val destination = MutableLiveData<NavDirections>()
 
     fun signUp(login: String, password: String) {
         viewModelScope.launch {

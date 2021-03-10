@@ -6,19 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.PermissionDestination
 import com.hypertrack.android.interactors.PermissionsInteractor
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.HyperTrackService
 
 class PermissionRequestViewModel(
     private val permissionsInteractor: PermissionsInteractor,
     private val hyperTrackService: HyperTrackService
-) : ViewModel() {
+) : BaseViewModel() {
 
     val showWhitelistingButton =
         MutableLiveData<Boolean>(!permissionsInteractor.isWhitelistingGranted())
     val showPermissionsButton = MutableLiveData<Boolean>(true)
     val showSkipButton = MutableLiveData<Boolean>(false)
-
-    val destination = MutableLiveData<NavDirections>()
 
     fun requestWhitelisting(activity: Activity) {
         permissionsInteractor.requestWhitelisting(activity)
