@@ -18,11 +18,11 @@
             android:id="@+id/action_splashScreenFragment_to_visitManagementFragment"
             app:destination="@id/visitManagementFragment" />
         <action
-            android:id="@+id/action_splashScreenFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
             android:id="@+id/action_splashScreenFragment_to_backgroundPermissionsFragment"
             app:destination="@id/backgroundPermissionsFragment" />
+        <action
+            android:id="@+id/action_splashScreenFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
     <fragment
         android:id="@+id/driverIdInputFragment"
@@ -58,17 +58,6 @@
             app:destination="@id/visitDetailsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.hypertrack.android.ui.screens.login.LoginFragment"
-        android:label="LoginFragment">
-        <action
-            android:id="@+id/action_loginFragment_to_driverIdInputFragment"
-            app:destination="@id/driverIdInputFragment" />
-        <action
-            android:id="@+id/action_loginFragment_to_signInFragment"
-            app:destination="@id/signInFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/visitDetailsFragment"
         android:name="com.hypertrack.android.ui.screens.visit_details.VisitDetailsFragment"
         android:label="VisitDetailsFragment">
@@ -100,15 +89,15 @@
             android:id="@+id/action_signInFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
         <action
-            android:id="@+id/action_signInFragment_to_visitManagementFragment"
-            app:destination="@id/visitManagementFragment" />
-        <action
             android:id="@+id/action_signInFragment_to_confirmFragment"
             app:destination="@id/confirmFragment" />
         <argument
             android:name="email"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_signInFragment_to_driverIdInputFragment"
+            app:destination="@id/driverIdInputFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -123,13 +112,13 @@
         android:name="com.hypertrack.android.ui.screens.confirm_email.ConfirmFragment"
         android:label="ConfirmFragment">
         <action
-            android:id="@+id/action_confirmFragment_to_visitManagementFragment"
-            app:destination="@id/visitManagementFragment" />
-        <action
             android:id="@+id/action_confirmFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
         <argument
             android:name="email"
             app:argType="string" />
+        <action
+            android:id="@+id/action_confirmFragment_to_driverIdInputFragment"
+            app:destination="@id/driverIdInputFragment" />
     </fragment>
 </navigation>

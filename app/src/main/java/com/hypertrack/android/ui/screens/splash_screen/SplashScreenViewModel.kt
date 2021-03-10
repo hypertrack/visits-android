@@ -35,7 +35,11 @@ class SplashScreenViewModel(
         }
         else -> {
             // Log.d(TAG, "No publishable key found")
-            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToLoginFragment())
+            destination.postValue(
+                SplashScreenFragmentDirections.actionSplashScreenFragmentToSignInFragment(
+                    null
+                )
+            )
         }
     }
 

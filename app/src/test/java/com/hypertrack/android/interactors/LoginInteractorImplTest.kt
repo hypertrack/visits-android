@@ -108,7 +108,7 @@ class LoginInteractorImplTest {
             val res = loginInteractor.signUp("login", "password")
             assertEquals(ConfirmationRequired::class.java, res::class.java)
         }
-    }s
+    }
 
     @Test
     fun `sign up invalid data`() {

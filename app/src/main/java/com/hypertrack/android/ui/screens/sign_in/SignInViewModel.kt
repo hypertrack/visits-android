@@ -50,7 +50,7 @@ class SignInViewModel(
                 is PublishableKey -> {
                     if (res.key.isNotBlank()) {
                         showProgress.postValue(false)
-                        destination.postValue(SignInFragmentDirections.actionSignInFragmentToVisitManagementFragment())
+                        destination.postValue(SignInFragmentDirections.actionSignInFragmentToDriverIdInputFragment())
                     } else {
                         //todo task
                         Log.w(TAG, "Can't login with $login account")
