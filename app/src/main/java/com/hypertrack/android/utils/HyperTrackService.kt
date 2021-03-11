@@ -33,7 +33,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     fun sendCompletionEvent(visit: Visit) {
         val payload = mapOf(
             visit.typeKey to visit._id,
-            "type" to if (visit.state == VisitStatus.COMPLETED) "VISIT_MARKED_COMPLETE" else "VISIT_MARKED_CANCELED",
+            "type" to if (visit.state == VisitStatus.COMPLETED) Constants.VISIT_MARKED_COMPLETE else Constants.VISIT_MARKED_CANCELED,
             "visit_note" to visit.visitNote,
             "_visit_photos" to visit.photos.map { it.imageId }.toSet()
         )
@@ -41,21 +41,21 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     }
 
     fun createVisitStartEvent(id: String, typeKey: String) {
-        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "VISIT_ADDED"))
+        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to Constants.VISIT_ADDED))
     }
 
     fun sendPickedUp(id: String, typeKey: String) {
-        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "PICK_UP"))
+        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to Constants.PICK_UP))
     }
 
     fun clockOut() {
-        sdkInstance.addGeotag(mapOf("type" to "CLOCK_OUT"))
+        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_OUT))
         sdkInstance.stop()
     }
 
     fun clockIn() {
         sdkInstance.start()
-        sdkInstance.addGeotag(mapOf("type" to "CLOCK_IN"))
+        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_IN))
     }
 
     fun syncDeviceSettings() {

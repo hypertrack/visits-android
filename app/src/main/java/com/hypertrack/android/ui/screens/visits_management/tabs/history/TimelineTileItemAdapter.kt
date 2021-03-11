@@ -44,6 +44,12 @@ class TimelineTileItemAdapter(
             holder.activityIcon.visibility  = View.INVISIBLE
             holder.statusStripe.visibility  = View.INVISIBLE
             holder.activityTimeFrame.visibility = View.GONE
+        } else if (!tile.isStatusTile) {
+            holder.eventIcon.visibility = View.VISIBLE
+            holder.eventIcon.setImageResource(style.eventIcon())
+            holder.activityIcon.visibility = View.INVISIBLE
+            holder.statusStripe.visibility = View.VISIBLE
+            holder.activityTimeFrame.visibility = View.GONE
         } else {
             holder.eventIcon.visibility = View.INVISIBLE
             holder.statusStripe.visibility  = View.VISIBLE
@@ -68,6 +74,7 @@ class TimeLineTile(holder: View) : RecyclerView.ViewHolder(holder) {
 
 interface TimelineStyle {
     @DrawableRes fun summaryIcon(): Int
+    @DrawableRes fun eventIcon(): Int
     @DrawableRes fun iconForStatus(status: Status):  Int
     @DrawableRes fun statusImageForTile(type: HistoryTileType): Int
     @ColorInt fun textColorForType(tileType: HistoryTileType): Int

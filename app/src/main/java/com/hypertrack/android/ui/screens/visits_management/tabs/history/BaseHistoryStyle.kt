@@ -43,6 +43,8 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
 
     override fun summaryIcon() = R.drawable.ic_ht_eta
 
+    override fun eventIcon(): Int = R.drawable.ic_ht_geofence_visited_active
+
     override fun iconForStatus(status: Status): Int =
         when (status) {
             Status.DRIVE -> R.drawable.ic_ht_drive

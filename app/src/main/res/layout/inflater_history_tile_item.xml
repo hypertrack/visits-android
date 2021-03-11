@@ -27,7 +27,7 @@
         app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
         app:layout_constraintEnd_toEndOf="@id/ivStatusStripe"
         app:layout_constraintBottom_toBottomOf="@id/ivStatusStripe"
-        android:src="@drawable/ic_ht_eta"
+        android:src="@drawable/ic_ht_geofence_visited_active"
         tools:ignore="ContentDescription" />
 
     <androidx.appcompat.widget.AppCompatImageView

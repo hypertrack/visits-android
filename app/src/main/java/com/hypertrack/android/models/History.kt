@@ -1,6 +1,7 @@
 package com.hypertrack.android.models
 
 import android.util.Log
+import com.hypertrack.android.utils.Constants
 import com.hypertrack.android.utils.TimeDistanceFormatter
 
 data class History(
@@ -53,6 +54,13 @@ data class GenericMarker(
     override val location: Location?,
 ) : Marker
 
+data class GeoTagMarker(
+    override val type: MarkerType = MarkerType.GEOTAG,
+    override val timestamp: String,
+    override val location: Location?,
+    val metadata: Map<String, Any>,
+) : Marker
+
 enum class MarkerType {
     STATUS,
     GEOTAG,
@@ -78,7 +86,8 @@ data class HistoryTile(
     val address: CharSequence?,
     val timeframe: String,
     val tileType: HistoryTileType,
-    val locations: List<Location> = emptyList()
+    val locations: List<Location> = emptyList(),
+    val isStatusTile: Boolean = true,
 )
 
 enum class HistoryTileType {
@@ -97,29 +106,35 @@ fun List<HistoryTile>.asHistory() = History(
 
 fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryTile> {
     val result = mutableListOf<HistoryTile>()
-    val statusMarkers = markers.filterIsInstance<StatusMarker>().sortedBy {
-        it.startTimestamp
-    }
     var startMarker = true
-    for (marker in statusMarkers) {
-        val tile = HistoryTile(
-            marker.status,
-            marker.asDescription(),
-            marker.address,
-            marker.timeFrame(timeDistanceFormatter),
-            when {
-                startMarker && marker.status in listOf(Status.OUTAGE, Status.INACTIVE) -> {
-                    startMarker = false; HistoryTileType.OUTAGE_START
-                }
-                startMarker -> {
-                    startMarker = false; HistoryTileType.ACTIVE_START
-                }
-                marker.status in listOf(Status.OUTAGE, Status.INACTIVE) -> HistoryTileType.OUTAGE
-                else -> HistoryTileType.ACTIVE
-            },
-            filterMarkerLocations(marker, locationTimePoints)
-        )
-        result.add(tile)
+    var ongoingStatus = Status.UNKNOWN
+    for (marker in markers.sortedBy { it.timestamp }) {
+        when (marker) {
+            is StatusMarker -> {
+                val tile = HistoryTile(
+                    marker.status,
+                    marker.asDescription(),
+                    marker.address,
+                    marker.timeFrame(timeDistanceFormatter),
+                    historyTileType(startMarker, marker.status),
+                    filterMarkerLocations(marker, locationTimePoints)
+                )
+                ongoingStatus = marker.status
+                result.add(tile)
+            }
+            is GeoTagMarker -> {
+                val tile = HistoryTile(
+                    ongoingStatus,
+                    marker.asDescription(),null,
+                    timeDistanceFormatter.formatTime(marker.timestamp),
+                    historyTileType(startMarker, ongoingStatus),
+                    listOf(marker.location!!), false
+                )
+                result.add(tile)
+            }
+            else -> {/* noop */}
+        }
+        startMarker = result.isEmpty()
     }
 
     val summaryTile  = HistoryTile (
@@ -129,6 +144,29 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
             )
 
     return result.apply { add(0, summaryTile) }
+}
+
+private fun historyTileType(
+    startMarker: Boolean,
+    status: Status
+): HistoryTileType {
+    return when {
+        startMarker && status in listOf(Status.OUTAGE, Status.INACTIVE) -> HistoryTileType.OUTAGE_START
+        startMarker -> HistoryTileType.ACTIVE_START
+        status in listOf(Status.OUTAGE, Status.INACTIVE) -> HistoryTileType.OUTAGE
+        else -> HistoryTileType.ACTIVE
+    }
+}
+
+private fun GeoTagMarker.asDescription(): String {
+    return when {
+        metadata.containsValue(Constants.CLOCK_IN) -> "Clock In"
+        metadata.containsValue(Constants.CLOCK_OUT) -> "Clock Out"
+        metadata.containsValue(Constants.PICK_UP) -> "Pick Up"
+        metadata.containsValue(Constants.VISIT_MARKED_CANCELED) -> "Visit Marked Cancelled"
+        metadata.containsValue(Constants.VISIT_MARKED_COMPLETE) -> "Visit Marked Complete"
+        else -> "Geotag $metadata"
+    }
 }
 
 private fun filterMarkerLocations(
