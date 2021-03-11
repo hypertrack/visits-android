@@ -1,9 +1,9 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
@@ -49,7 +49,7 @@ class TimelineTileItemAdapter(
             holder.eventIcon.setImageResource(style.eventIcon())
             holder.activityIcon.visibility = View.INVISIBLE
             holder.statusStripe.visibility = View.VISIBLE
-            holder.activityTimeFrame.visibility = View.GONE
+            holder.activityTimeFrame.visibility = View.VISIBLE
         } else {
             holder.eventIcon.visibility = View.INVISIBLE
             holder.statusStripe.visibility  = View.VISIBLE
