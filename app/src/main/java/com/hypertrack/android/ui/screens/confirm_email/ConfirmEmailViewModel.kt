@@ -1,9 +1,7 @@
 package com.hypertrack.android.ui.screens.confirm_email
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.*
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
@@ -51,7 +49,7 @@ class ConfirmEmailViewModel(
                             )
                         )
                     }
-                    is OtpError -> {
+                    is OtpWrongCode -> {
                         //todo task
                         errorText.postValue(R.string.wrong_code.stringFromResource())
                     }
@@ -65,7 +63,7 @@ class ConfirmEmailViewModel(
     fun onResendClick() {
         loadingState.postValue(true)
         viewModelScope.launch {
-            loginInteractor.resendEmailConfirmation()
+            loginInteractor.resendEmailConfirmation(email)
             loadingState.postValue(false)
         }
     }

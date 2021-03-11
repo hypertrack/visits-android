@@ -4,6 +4,7 @@ import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedExcepti
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
 import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
@@ -11,7 +12,7 @@ import java.util.*
 interface LoginInteractor {
     suspend fun signIn(login: String, password: String): LoginResult
     suspend fun signUp(login: String, password: String): RegisterResult
-    suspend fun resendEmailConfirmation()
+    suspend fun resendEmailConfirmation(email: String)
     suspend fun verifyByOtpCode(email: String, code: String): OtpResult
 }
 
@@ -68,7 +69,7 @@ class LoginInteractorImpl(
     override suspend fun verifyByOtpCode(email: String, code: String): OtpResult {
         //todo task
         val res = liveAccountUrlService.verifyEmailViaOtpCode(
-            "token",
+            MyApplication.SERVICES_API_KEY.toBase64(),
             LiveAccountApi.OtpBody(
                 email = email,
                 code = code
@@ -77,12 +78,17 @@ class LoginInteractorImpl(
         if (res.isSuccessful) {
             return OtpSuccess
         } else {
-            return OtpError()
+            //todo task handle error
+            return OtpWrongCode
         }
     }
 
-    override suspend fun resendEmailConfirmation() {
+    override suspend fun resendEmailConfirmation(email: String) {
         //todo task
+        liveAccountUrlService.resendOtpCode(
+            MyApplication.SERVICES_API_KEY.toBase64(),
+            LiveAccountApi.ResendBody(email)
+        )
     }
 
     private suspend fun getPublishableKey(login: String, password: String): LoginResult {
@@ -150,5 +156,6 @@ class SignUpError(val exception: Exception) : RegisterResult()
 
 sealed class OtpResult
 object OtpSuccess : OtpResult()
-class OtpError : OtpResult()
+class OtpError(val exception: Exception) : OtpResult()
+object OtpWrongCode : OtpResult()
 

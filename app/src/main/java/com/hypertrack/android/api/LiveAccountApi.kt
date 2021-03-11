@@ -20,7 +20,7 @@ interface LiveAccountApi {
     )
 
     @POST("account/resend_verification")
-    suspend fun verifyEmailViaOtpCode(
+    suspend fun resendOtpCode(
         @Header("Authorization") token: String,
         @Body body: ResendBody
     ): Response<Void>
