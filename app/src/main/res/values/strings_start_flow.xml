@@ -1,49 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="default_notification_channel_id" translatable="false">4857</string>
-
-    <array name="debug_menu">
-        <item>Set tracking API</item>
-        <item>Set REST API</item>
-        <item>Set device meta (name|data)</item>
-        <item>Reset</item>
-    </array>
-
-    <string name="welcome_to_hypertrack_live">Welcome to HyperTrack Live!</string>
-    <string name="i_m_ready">I\'m ready!</string>
-    <string name="welcome_steps">
-        Step 1: Verify your publishable key\nStep 2: Allow use of your location
-    </string>
-    <string name="verify_your_publishable_key">Verify your publishable key</string>
-    <string name="this_will_help_us_link_your_device_to_your_hypertrack_account">This will help us link your device to your HyperTrack account</string>
-    <string name="you_can_copy_the_key_from_your_welcome_email_or_hypertrack_dashboard">You can copy the key from your welcome email or HyperTrack dashboard</string>
-    <string name="paste_key_here">Paste key here</string>
-    <string name="verify">Verify</string>
-    <string name="valid_publishable_key_required">Valid publishable key required</string>
-    <string name="publishable_key_you_entered_is_invalid">The publishable key you entered is invalid. Please enter a valid key.</string>
-    <string name="check_your_network_connection">Check your network connection. Probably it\'s disconnected.</string>
-    <string name="we_need_your_permission">We need your permission to access your Location to track and share your live location</string>
-    <string name="allow_access">Allow access</string>
-    <string name="open">Open</string>
-    <string name="app_settings">App settings</string>
-    <string name="wireless_settings">Wireless settings</string>
-    <string name="you_can_allow">You can allow HyperTrack Live to access this device\'s location in settings</string>
-    <string name="share_live">Share</string>
-    <string name="start_trip">Start trip</string>
-    <string name="end">End</string>
-    <string name="end_trip">End trip</string>
-    <string name="tap_to_restart_tracking">Tap to restart tracking</string>
-    <string name="tap_to_turn_location_settings">Tap to turn on location in settings</string>
-    <string name="search_for_the_destination">Search for the destination</string>
-    <string name="where_are_you_going">Where are you going?</string>
-    <string name="i_m_going_to">I’m going to</string>
-    <string name="set_on_map">Set on map</string>
-    <string name="share_eta">Share ETA</string>
-    <string name="share_trip">Share trip</string>
-    <string name="not_decided_yet">Not decided yet</string>
-    <string name="_min">%d min</string>
-    <string name="arriving_now">Arriving now</string>
-    <string name="arrived">Arrived</string>
-    <string name="miles_mins">%.2f miles • %d mins</string>
     <string name="sign_in_to_your_account">Sign in to your account</string>
     <string name="sign_in">Sign in</string>
     <string name="incorrect_username_or_pass">Incorrect username or password</string>
@@ -119,19 +74,5 @@
         <item>my_customers</item>
         <item>consumers</item>
     </array>
-
-    <string name="essential_service_worker">I am/represent an essential service worker in my region</string>
-    <string name="add_home_address">Add home address</string>
-    <string name="search_address">Search address</string>
-    <string name="username_phone">User Name / Phone # (+9111&#8230;)</string>
-    <string name="phone">Phone number</string>
-    <string name="name">Name</string>
-    <string name="phone_number_user_name">%s (%s)</string>
-    <string name="tracking_is_started">Tracking is started</string>
-    <string name="set_home_address">Set home address</string>
-    <string name="home">Home</string>
-    <string name="sign_out">Sign out</string>
-    <string name="no_connection">No connection</string>
-    <string name="invite">Invite</string>
 
 </resources>
