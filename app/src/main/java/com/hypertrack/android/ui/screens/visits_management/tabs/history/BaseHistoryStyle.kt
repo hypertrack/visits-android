@@ -35,6 +35,7 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
             Status.STOP -> asBitmap(R.drawable.ic_ht_bubble_activity_stop)
             Status.WALK -> asBitmap(R.drawable.ic_ht_bubble_activity_walk)
             Status.DRIVE -> asBitmap(R.drawable.ic_ht_bubble_activity_drive)
+            Status.OUTAGE, Status.INACTIVE  -> asBitmap(R.drawable.ic_ht_activity_inactive)
             else -> asBitmap(R.drawable.ic_ht_status_marker_boundary)
         }
 
