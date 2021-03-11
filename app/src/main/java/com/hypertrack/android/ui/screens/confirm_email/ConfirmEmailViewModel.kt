@@ -10,7 +10,6 @@ import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
-//todo task handle errors
 class ConfirmEmailViewModel(
     private val loginInteractor: LoginInteractor,
     private val osUtilsProvider: OsUtilsProvider,

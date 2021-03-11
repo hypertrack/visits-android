@@ -31,10 +31,9 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         )
     }
 
-    //todo task
-    private var company = "My company"
-    private var email: String? = "spqrta+a2@gmail.com"
-    private var password: String? = "qwerty123"
+    private var company: String? = null
+    private var email: String? = null
+    private var password: String? = null
 
     private val cognitoUserAttributes = mutableMapOf<String, String>()
 
@@ -107,7 +106,9 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                     showError(getString(R.string.email_password_fields_required))
                     return
                 }
-                cognitoUserAttributes.put(SignupInfoPage.CUSTOM_COMPANY, company)
+                company?.let {
+                    cognitoUserAttributes.put(SignupInfoPage.CUSTOM_COMPANY, it)
+                }
             }
             PAGE_INFO -> {
             }

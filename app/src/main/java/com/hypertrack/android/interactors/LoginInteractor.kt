@@ -79,7 +79,6 @@ class LoginInteractorImpl(
     }
 
     override suspend fun verifyByOtpCode(email: String, code: String): OtpResult {
-        //todo task
         val res = liveAccountUrlService.verifyEmailViaOtpCode(
             MyApplication.SERVICES_API_KEY.toBase64(),
             LiveAccountApi.OtpBody(
