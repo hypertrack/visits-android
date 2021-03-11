@@ -11,7 +11,12 @@ import java.util.*
 
 interface LoginInteractor {
     suspend fun signIn(login: String, password: String): LoginResult
-    suspend fun signUp(login: String, password: String): RegisterResult
+    suspend fun signUp(
+        login: String,
+        password: String,
+        userAttributes: Map<String, String>
+    ): RegisterResult
+
     suspend fun resendEmailConfirmation(email: String)
     suspend fun verifyByOtpCode(email: String, code: String): OtpResult
 }
@@ -41,7 +46,11 @@ class LoginInteractorImpl(
         }
     }
 
-    override suspend fun signUp(login: String, password: String): RegisterResult {
+    override suspend fun signUp(
+        login: String,
+        password: String,
+        userAttributes: Map<String, String>
+    ): RegisterResult {
         // get Cognito token
         val res = cognito.awsInitCallWrapper()
         if (res is AwsError) {
@@ -50,7 +59,11 @@ class LoginInteractorImpl(
 
         // Log.v(TAG, "Initialized with user State $userStateDetails")
         val signUpResult =
-            cognito.awsSignUpCallWrapper(login.toLowerCase(Locale.getDefault()), password)
+            cognito.awsSignUpCallWrapper(
+                login.toLowerCase(Locale.getDefault()),
+                password,
+                userAttributes
+            )
         when (signUpResult) {
             is AwsSignUpSuccess -> {
                 //todo

@@ -26,7 +26,12 @@ import retrofit2.http.Header
 interface CognitoAccountLoginProvider {
     suspend fun awsInitCallWrapper(): AwsInitResult
     suspend fun awsTokenCallWrapper(): AwsTokenResult
-    suspend fun awsSignUpCallWrapper(login: String, password: String): AwsSignUpResult
+    suspend fun awsSignUpCallWrapper(
+        login: String,
+        password: String,
+        userAttributes: Map<String, String>
+    ): AwsSignUpResult
+
     suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult
     fun signOut()
 }
@@ -92,12 +97,16 @@ class CognitoAccountLoginProviderImpl(private val ctx: Context, private val base
         }
     }
 
-    override suspend fun awsSignUpCallWrapper(login: String, password: String): AwsSignUpResult {
+    override suspend fun awsSignUpCallWrapper(
+        login: String,
+        password: String,
+        userAttributes: Map<String, String>
+    ): AwsSignUpResult {
         return suspendCancellableCoroutine {
             AWSMobileClient.getInstance().signUp(
                 login,
                 password,
-                emptyMap(),
+                userAttributes,
                 emptyMap(),
                 object : Callback<SignUpResult> {
                     override fun onResult(result: SignUpResult) {

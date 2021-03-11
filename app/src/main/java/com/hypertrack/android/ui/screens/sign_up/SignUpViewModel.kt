@@ -15,18 +15,21 @@ import kotlinx.coroutines.launch
 class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewModel() {
 
     val errorText = MutableLiveData<String?>()
+    val page = MutableLiveData<Int>(0)
 
-    fun onSignUpClicked(login: String, password: String) {
+    fun onSignUpClicked(login: String, password: String, userAttributes: Map<String, String>) {
         when {
             password.length < 8 -> {
+                page.postValue(SignUpFragment.PAGE_USER)
                 errorText.postValue(R.string.password_too_short.stringFromResource())
             }
             !Patterns.EMAIL_ADDRESS.matcher(login).matches() -> {
+                page.postValue(SignUpFragment.PAGE_USER)
                 errorText.postValue(R.string.invalid_email.stringFromResource())
             }
             else -> {
                 viewModelScope.launch {
-                    val res = loginInteractor.signUp(login, password)
+                    val res = loginInteractor.signUp(login, password, userAttributes)
                     when (res) {
                         ConfirmationRequired -> {
                             destination.postValue(

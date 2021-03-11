@@ -33,8 +33,10 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
 
     //todo task
     private var company = "My company"
-    private var email: String? = "spqrta+a1@gmail.com"
-    private var password: String? = "12345678"
+    private var email: String? = "spqrta+a2@gmail.com"
+    private var password: String? = "qwerty123"
+
+    private val cognitoUserAttributes = mutableMapOf<String, String>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,27 +65,30 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         }
 
         accept.setOnClickListener(View.OnClickListener {
-            //todo task
-//            if (!cognitoUserAttributes.keys.containsAll(
-//                    Arrays.asList(
-//                        SignupInfoPage.CUSTOM_USE_CASE,
-//                        SignupInfoPage.CUSTOM_SCALE,
-//                        SignupInfoPage.CUSTOM_STATE
-//                    )
-//                )
-//            ) {
-//                showError(getString(R.string.all_fields_required))
-//                return@OnClickListener
-//            }
-            showProgress()
-            vm.onSignUpClicked(email!!, password!!)
+            if (cognitoUserAttributes.keys.containsAll(
+                    Arrays.asList(
+                        SignupInfoPage.CUSTOM_USE_CASE,
+                        SignupInfoPage.CUSTOM_SCALE,
+                        SignupInfoPage.CUSTOM_STATE
+                    )
+                )
+            ) {
+                showProgress()
+                vm.onSignUpClicked(email!!, password!!, cognitoUserAttributes)
+            } else {
+                showError(getString(R.string.all_fields_required))
+                return@OnClickListener
+            }
         })
 
         vm.errorText.observe(viewLifecycleOwner, {
             dismissProgress()
             incorrect.setGoneState(it == null)
             incorrect.text = it
-            view_pager.currentItem = 0
+        })
+
+        vm.page.observe(viewLifecycleOwner, {
+            view_pager.currentItem = it
         })
 
         vm.destination.observe(viewLifecycleOwner, {
@@ -102,8 +107,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                     showError(getString(R.string.email_password_fields_required))
                     return
                 }
-                //todo task
-//                cognitoUserAttributes.put(SignupInfoPage.CUSTOM_COMPANY, company)
+                cognitoUserAttributes.put(SignupInfoPage.CUSTOM_COMPANY, company)
             }
             PAGE_INFO -> {
             }
@@ -173,9 +177,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                     inflater,
                     collection,
                     getResources(),
-                    //todo task
-//                    cognitoUserAttributes,
-                    mutableMapOf(),
+                    cognitoUserAttributes,
                     incorrect
                 )
             }

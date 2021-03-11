@@ -1,6 +1,7 @@
 package com.hypertrack.android.api
 
 import com.hypertrack.android.utils.PublishableKeyContainer
+import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -14,6 +15,7 @@ interface LiveAccountApi {
         @Body body: OtpBody
     ): Response<Void>
 
+    @JsonClass(generateAdapter = true)
     class OtpBody(
         val email: String,
         val code: String,
@@ -25,6 +27,7 @@ interface LiveAccountApi {
         @Body body: ResendBody
     ): Response<Void>
 
+    @JsonClass(generateAdapter = true)
     class ResendBody(
         val email: String,
     )
