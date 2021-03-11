@@ -33,16 +33,15 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     fun sendCompletionEvent(visit: Visit) {
         val payload = mapOf(
             visit.typeKey to visit._id,
-            "type" to if (visit.state == VisitStatus.COMPLETED) "CHECK_OUT" else "CANCEL",
+            "type" to if (visit.state == VisitStatus.COMPLETED) "VISIT_MARKED_COMPLETE" else "VISIT_MARKED_CANCELED",
             "visit_note" to visit.visitNote,
             "_visit_photos" to visit.photos.map { it.imageId }.toSet()
         )
-        // Log.d(TAG, "Completion event payload $payload")
         sdkInstance.addGeotag(payload, visit.expectedLocation)
     }
 
     fun createVisitStartEvent(id: String, typeKey: String) {
-        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "CHECK_IN"))
+        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to "VISIT_ADDED"))
     }
 
     fun sendPickedUp(id: String, typeKey: String) {
@@ -63,9 +62,6 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         sdkInstance.syncDeviceSettings()
     }
 
-    companion object {
-        private const val TAG = "HyperTrackAdapter"
-    }
 }
 
 
@@ -76,7 +72,6 @@ class TrackingState : TrackingStateObserver.OnTrackingStateChangeListener {
     override fun onTrackingStart() = state.postValue(TrackingStateValue.TRACKING)
 
     override fun onError(p0: TrackingError?) {
-        // Log.d(TAG, "onError $p0")
         when {
             p0?.code == TrackingError.AUTHORIZATION_ERROR && p0.message.contains("trial ended") -> state.postValue(TrackingStateValue.DEVICE_DELETED)
             else -> state.postValue(TrackingStateValue.ERROR)
