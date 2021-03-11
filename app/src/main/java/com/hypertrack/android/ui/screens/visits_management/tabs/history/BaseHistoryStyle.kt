@@ -57,7 +57,7 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
             HistoryTileType.ACTIVE ->  R.drawable.ic_ht_timeline_active
             HistoryTileType.ACTIVE_START ->  R.drawable.ic_ht_timeline_active_start
             HistoryTileType.OUTAGE ->  R.drawable.ic_ht_timeline_outage
-            HistoryTileType.OUTAGE_START ->  R.drawable.ic_ht_timeline_outage
+            HistoryTileType.OUTAGE_START ->  R.drawable.ic_ht_timeline_outage_start
             HistoryTileType.SUMMARY -> R.drawable.ic_ht_eta
     }
 
