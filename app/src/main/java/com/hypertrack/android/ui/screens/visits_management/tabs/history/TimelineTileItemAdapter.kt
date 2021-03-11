@@ -1,6 +1,5 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
