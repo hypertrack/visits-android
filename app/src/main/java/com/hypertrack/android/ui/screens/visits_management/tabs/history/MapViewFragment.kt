@@ -10,16 +10,13 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
-import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryTile
-import com.hypertrack.android.models.asHistory
-import com.hypertrack.android.models.asTiles
 import com.hypertrack.android.ui.base.AnimatedDialog
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.utils.Factory
@@ -50,27 +47,25 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             historyRenderer = rendererFactory.create(it)
         }
 
-        val items  = setupTimeline(historyRenderer)
+        setupTimeline(historyRenderer, historyViewModel.tiles)
+        historyViewModel.tiles.observe(viewLifecycleOwner) {
+            timeLineView.adapter?.notifyDataSetChanged()
+        }
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
             Log.d(TAG, "Updating history $history")
             historyRenderer?.let { map ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     map.showHistory(history)
-//                    map.showHistory(HistoryTile.MOCK_TILES.asHistory())
                     if (progress.isShowing) progress.dismiss()
                     mapLoaderCanvas.visibility = View.GONE
                     state = LoadingProgressState.DONE
                 }
             }
-            val asTiles = history.asTiles()
-            Log.d(TAG, "Creating timeline for tiles $asTiles")
-            items.postValue(asTiles)
-//            items.postValue(HistoryTile.MOCK_TILES)
         }
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
             Log.w(TAG, "History error $error")
-            SnackbarUtil.showErrorSnackbar(view, error.error?.message)
+            SnackbarUtil.showErrorSnackbar(view, error)
         })
 
     }
@@ -85,15 +80,16 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         if (progress.isShowing) progress.dismiss()
     }
 
-    private fun setupTimeline(historyNavigationHandler: HistoryMapRenderer?
-    )  : MutableLiveData<List<HistoryTile>> {
+    private fun setupTimeline(
+        historyNavigationHandler: HistoryMapRenderer?,
+        tiles: LiveData<List<HistoryTile>>
+    ) {
 
         val bottomSheetBehavior = BottomSheetBehavior.from(timeLineView)
         bottomSheetBehavior.peekHeight = 100
 
-        val items = MutableLiveData<List<HistoryTile>>(emptyList())
         val adapter = TimelineTileItemAdapter(
-            items,
+            tiles,
             BaseHistoryStyle(MyApplication.context)
         ) { historyNavigationHandler?.onTileSelected(it) }
         timeLineView.adapter = adapter
@@ -118,7 +114,6 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })
-        return items
     }
 
     companion object {

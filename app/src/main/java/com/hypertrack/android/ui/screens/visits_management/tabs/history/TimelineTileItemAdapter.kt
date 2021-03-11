@@ -20,6 +20,7 @@ class TimelineTileItemAdapter(
     private val style: TimelineStyle,
     private val onClick: (HistoryTile) -> Unit
 ) : RecyclerView.Adapter<TimeLineTile>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineTile {
         return TimeLineTile(LayoutInflater.from(parent.context)
             .inflate(R.layout.inflater_history_tile_item, parent, false))
