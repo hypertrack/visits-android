@@ -19,6 +19,7 @@ import com.hypertrack.android.ui.views.VerificationCodeView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_confirm.*
+import kotlinx.android.synthetic.main.fragment_login.*
 
 
 class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
@@ -51,6 +52,14 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
             findNavController().navigate(it)
         })
 
+        vm.clipboardCode.observe(viewLifecycleOwner, {
+            verificationCode.code = it
+            Toast.makeText(requireContext(), R.string.code_from_clipboard, LENGTH_SHORT).show()
+            Utils.hideKeyboard(mainActivity())
+        })
+
+        tvEmail.text = args.email
+
         verificationCode.listener = object : VerificationCodeView.VerificationCodeListener {
             override fun onCodeChanged(code: String, complete: Boolean) {
                 vm.onCodeChanged(complete)
@@ -65,15 +74,11 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
         verified.setOnClickListener {
             vm.onVerifiedClick(verificationCode.code, verificationCode.isCodeComplete)
         }
+
         resend.setOnClickListener {
             vm.onResendClick()
         }
 
-        vm.clipboardCode.observe(viewLifecycleOwner, {
-            verificationCode.code = it
-            Toast.makeText(requireContext(), R.string.code_from_clipboard, LENGTH_SHORT).show()
-            Utils.hideKeyboard(mainActivity())
-        })
     }
 
     override fun onResume() {

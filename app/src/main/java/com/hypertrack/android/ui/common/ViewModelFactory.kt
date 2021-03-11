@@ -9,7 +9,6 @@ import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.screens.background_permissions.BackgroundPermissionsViewModel
 import com.hypertrack.android.ui.screens.confirm_email.ConfirmEmailViewModel
 import com.hypertrack.android.utils.CrashReportsProvider
-import com.hypertrack.android.view_models.AccountLoginViewModel
 import com.hypertrack.android.ui.screens.sign_in.SignInViewModel
 import com.hypertrack.android.ui.screens.sign_up.SignUpViewModel
 import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
@@ -35,10 +34,6 @@ class ViewModelFactory(
             ) as T
             SignInViewModel::class.java -> SignInViewModel(loginInteractor) as T
             SignUpViewModel::class.java -> SignUpViewModel(loginInteractor) as T
-            AccountLoginViewModel::class.java -> AccountLoginViewModel(
-                loginInteractor,
-                accountRepository
-            ) as T
             SplashScreenViewModel::class.java -> SplashScreenViewModel(
                 driverRepository,
                 accountRepository,

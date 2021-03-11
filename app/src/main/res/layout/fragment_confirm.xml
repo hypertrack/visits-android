@@ -33,7 +33,28 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:lineSpacingExtra="4sp"
-            android:text="@string/we_have_sent_you_an_email"
+            android:text="@string/verification_code_sent"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:lineSpacingExtra="4sp"
+            tools:text="mail@a.com"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:lineSpacingExtra="4sp"
+            android:text="@string/please_enter_code"
             android:textSize="14sp" />
 
         <TextView
@@ -60,7 +81,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/i_have_verified" />
+            android:text="@string/continue_" />
 
     </LinearLayout>
 
