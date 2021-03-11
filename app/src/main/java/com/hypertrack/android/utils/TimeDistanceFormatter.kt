@@ -1,9 +1,7 @@
 package com.hypertrack.android.utils
 
-import android.util.Log
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
@@ -15,7 +13,9 @@ interface TimeDistanceFormatter {
     fun formatDistance(meters: Int) : String
 }
 
-class SimpleTimeDistanceFormatter : TimeDistanceFormatter {
+class SimpleTimeDistanceFormatter(
+    private val zoneId: ZoneId = ZoneId.systemDefault()
+) : TimeDistanceFormatter {
 
     private val format = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
 
@@ -23,11 +23,8 @@ class SimpleTimeDistanceFormatter : TimeDistanceFormatter {
 
     override fun formatTime(isoTimestamp: String): String {
         return try {
-            val time = ZonedDateTime.parse(isoTimestamp).toLocalTime()
-            Log.d(TAG, "Created time $time")
-            val result = time.format(format)
-            Log.d(TAG, "Created timestamp $result")
-            result.replace(" PM", "pm").replace(" AM", "am")
+            Instant.parse(isoTimestamp).atZone(zoneId).toLocalTime().format(format)
+                .replace(" PM", "pm").replace(" AM", "am")
         } catch (ignored: Exception) {
             ""
         }
