@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.adapters.VisitListAdapter
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
@@ -18,6 +17,7 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewF
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitListAdapter
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
@@ -43,7 +43,9 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         ProfileFragment()
     )
 
-    init { check(tabIcons.size == tabFragments.size) }
+    init {
+        check(tabIcons.size == tabFragments.size)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -94,7 +96,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
         sliding_tabs.setupWithViewPager(viewpager)
         for (i in 0 until sliding_tabs.tabCount) {
-            sliding_tabs.getTabAt(i)?.icon = ResourcesCompat.getDrawable(resources, tabIcons[i], requireContext().theme)
+            sliding_tabs.getTabAt(i)?.icon =
+                ResourcesCompat.getDrawable(resources, tabIcons[i], requireContext().theme)
         }
 
         visitsManagementViewModel.statusBarColor.observe(viewLifecycleOwner) { color ->

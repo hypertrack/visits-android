@@ -99,14 +99,16 @@ object Injector {
             userScope = UserScope(
                     historyRepository,
                     UserScopeViewModelFactory(
-                            getVisitsRepo(context),
-                            historyRepository,
-                            getDriverRepo(context),
-                            getAccountRepo(context),
-                            crashReportsProvider,
-                            hyperTrackService,
-                            getPermissionInteractor(),
-                            accessTokenRepository(MyApplication.context)                    ),
+                        getVisitsRepo(context),
+                        historyRepository,
+                        getDriverRepo(context),
+                        getAccountRepo(context),
+                        crashReportsProvider,
+                        hyperTrackService,
+                        getPermissionInteractor(),
+                        accessTokenRepository(MyApplication.context),
+                        getTimeLengthFormatter()
+                    ),
                     PhotoUploadInteractorImpl(
                             getVisitsRepo(context),
                             getFileRepository(),
@@ -214,6 +216,7 @@ object Injector {
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }
 
+    private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
 
 }
 

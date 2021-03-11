@@ -10,10 +10,12 @@ import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.asTiles
 import com.hypertrack.android.repository.HistoryRepository
+import com.hypertrack.android.utils.TimeDistanceFormatter
 import kotlinx.coroutines.launch
 
 class HistoryViewModel(
-        private val historyRepository: HistoryRepository
+    private val historyRepository: HistoryRepository,
+    private val timeDistanceFormatter: TimeDistanceFormatter
 ) : ViewModel() {
 
     val history = historyRepository.history
@@ -24,7 +26,7 @@ class HistoryViewModel(
         tiles.addSource(historyRepository.history) {
             if (it.locationTimePoints.isNotEmpty()) {
                 Log.d(TAG, "got new history $it")
-                val asTiles = it.asTiles()
+                val asTiles = it.asTiles(timeDistanceFormatter)
                 Log.d(TAG, "converted to tiles $asTiles")
                 tiles.postValue(asTiles)
             } else {

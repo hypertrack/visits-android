@@ -1,6 +1,7 @@
 package com.hypertrack.android.models
 
 import android.util.Log
+import com.hypertrack.android.utils.TimeDistanceFormatter
 
 data class History(
         val summary: Summary,
@@ -94,7 +95,7 @@ fun List<HistoryTile>.asHistory() = History(
     emptyList()
 )
 
-fun History.asTiles(): List<HistoryTile> {
+fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryTile> {
     val result = mutableListOf<HistoryTile>()
     val statusMarkers = markers.filterIsInstance<StatusMarker>().sortedBy {
         it.startTimestamp
@@ -105,7 +106,7 @@ fun History.asTiles(): List<HistoryTile> {
             marker.status,
             marker.asDescription(),
             marker.address,
-            marker.timeFrame(),
+            marker.timeFrame(timeDistanceFormatter),
             when {
                 startMarker && marker.status in listOf(Status.OUTAGE, Status.INACTIVE) -> {
                     startMarker = false; HistoryTileType.OUTAGE_START
@@ -172,9 +173,9 @@ private fun StatusMarker.formatWalkStats() =
     "${formatDuration(duration)}  • ${stepsCount?:0} steps"
 
 
-private fun StatusMarker.timeFrame(): String {
-    if (endTimestamp == null) return "XXam:XX"
-    return "XXam:XX YYpm:YY"
+private fun StatusMarker.timeFrame(timeFormatter: TimeDistanceFormatter): String {
+    if (endTimestamp == null) return timeFormatter.formatTime(startTimestamp)
+    return "${timeFormatter.formatTime(startTimestamp)} : ${timeFormatter.formatTime(endTimestamp)}"
 }
 
 private const val TAG = "History"
