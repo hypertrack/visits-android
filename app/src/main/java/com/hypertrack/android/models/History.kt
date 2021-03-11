@@ -224,6 +224,7 @@ fun History.asTiles(): List<HistoryTile> {
             },
             filterMarkerLocations(marker, locationTimePoints)
         )
+        result.add(tile)
     }
 
     return result
@@ -237,7 +238,7 @@ private fun filterMarkerLocations(
     val upTo = marker.endLocationTimestamp ?: return emptyList()
 
     return locationTimePoints
-        .filter { (_, time) -> time in upTo..from }
+        .filter { (_, time) -> time in from..upTo }
         .map { (loc, _) -> loc }
 }
 
@@ -253,7 +254,7 @@ private fun StatusMarker.formatDuration() = when {
     else -> "${duration / 3600} hours ${duration % 3600 / 60} min"
 }
 private fun StatusMarker.formatDriveStats() =
-    "${formatDuration()} • ${distance ?:0 / 1000} km"
+    "${formatDuration()} • ${(distance ?:0) / 1000} km"
 
 private fun StatusMarker.formatWalkStats() =
     "${formatDuration()}  • ${stepsCount?:0} steps"

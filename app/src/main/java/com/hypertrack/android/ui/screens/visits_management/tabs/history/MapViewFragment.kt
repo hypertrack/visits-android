@@ -62,7 +62,9 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
                     state = LoadingProgressState.DONE
                 }
             }
-            items.postValue(history.asTiles())
+            val asTiles = history.asTiles()
+            Log.d(TAG, "Creating timeline for tiles $asTiles")
+            items.postValue(asTiles)
 //            items.postValue(HistoryTile.MOCK_TILES)
         }
 

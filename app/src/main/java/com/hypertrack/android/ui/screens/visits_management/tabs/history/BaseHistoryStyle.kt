@@ -48,8 +48,8 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
             Status.DRIVE -> R.drawable.ic_ht_drive
             Status.WALK -> R.drawable.ic_ht_walk
             Status.STOP -> R.drawable.ic_ht_stop
-            Status.OUTAGE  -> R.drawable.ic_ht_activity_inactive
-            else -> throw IllegalArgumentException("Status not supported")
+            Status.OUTAGE, Status.INACTIVE  -> R.drawable.ic_ht_activity_inactive
+            Status.UNKNOWN -> R.drawable.ic_ht_status_marker_boundary
         }
 
     override fun statusImageForTile(type: HistoryTileType): Int =
