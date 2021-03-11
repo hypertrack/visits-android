@@ -289,11 +289,15 @@ data class HistoryGeofenceMarker(
 data class HistoryGeofenceMarkerData(
         @field:Json(name = "duration") val duration: Int,
         @field:Json(name = "arrival") val arrival: HistoryGeofenceMarkerArrival,
+        @field:Json(name = "exit") val exit: HistoryGeofenceMarkerArrival,
         @field:Json(name = "geofence") val geofence: HistoryGeofenceMarkerGeofence,
 )
 
 @JsonClass(generateAdapter = true)
-data class HistoryGeofenceMarkerGeofence(@field:Json(name = "geofence_id") val geofenceId: String)
+data class HistoryGeofenceMarkerGeofence(
+    @field:Json(name = "geofence_id") val geofenceId: String,
+    @field:Json(name = "metadata") val metadata: Map<String, Any>?,
+)
 
 @JsonClass(generateAdapter = true)
 data class HistoryGeofenceMarkerArrival(@field:Json(name = "location") val location: HistoryGeofenceArrivalLocation)

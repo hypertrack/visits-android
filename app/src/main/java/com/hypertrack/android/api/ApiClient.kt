@@ -139,10 +139,22 @@ private fun HistoryMarker.asMarker(): Marker {
         is HistoryStatusMarker -> asStatusMarker()
         is HistoryTripMarker ->
             GeoTagMarker(MarkerType.GEOTAG, data.recordedAt, data.location?.asLocation(), data.metadata?: emptyMap())
-        is HistoryGeofenceMarker ->
-            GenericMarker(MarkerType.GEOFENCE_ENTRY, data.arrival.location.recordedAt, data.arrival.location.geometry.asLocation())
+        is HistoryGeofenceMarker -> asGeofenceMarker()
         else -> throw IllegalArgumentException("Unknown marker type $type")
     }
+}
+
+private fun HistoryGeofenceMarker.asGeofenceMarker(): Marker {
+    return GeofenceMarker(
+        MarkerType.GEOFENCE_ENTRY,
+        data.arrival.location.recordedAt,
+        data.arrival.location.geometry.asLocation(),
+        data.geofence.metadata?: emptyMap(),
+        data.arrival.location.geometry.asLocation(),
+        data.exit.location.geometry.asLocation(),
+        data.arrival.location.recordedAt,
+        data.exit.location.recordedAt
+    )
 }
 
 

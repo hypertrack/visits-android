@@ -5,24 +5,24 @@ import com.hypertrack.android.utils.Constants
 import com.hypertrack.android.utils.TimeDistanceFormatter
 
 data class History(
-        val summary: Summary,
-        val locationTimePoints: List<Pair<Location, String>>,
-        val markers: List<Marker>,
+    val summary: Summary,
+    val locationTimePoints: List<Pair<Location, String>>,
+    val markers: List<Marker>,
 ) : HistoryResult()
 
 data class Summary(
-        val totalDistance: Int,
-        val totalDuration: Int,
-        val totalDriveDistance: Int,
-        val totalDriveDuration: Int,
-        val stepsCount: Int,
-        val totalWalkDuration: Int,
-        val totalStopDuration: Int,
+    val totalDistance: Int,
+    val totalDuration: Int,
+    val totalDriveDistance: Int,
+    val totalDriveDuration: Int,
+    val stepsCount: Int,
+    val totalWalkDuration: Int,
+    val totalStopDuration: Int,
 )
 
 data class Location(
-        val longitude: Double,
-        val latitude: Double
+    val longitude: Double,
+    val latitude: Double
 )
 
 interface Marker {
@@ -48,10 +48,15 @@ data class StatusMarker(
     val address: String?,
 ) : Marker
 
-data class GenericMarker(
+data class GeofenceMarker(
     override val type: MarkerType,
     override val timestamp: String,
     override val location: Location?,
+    val metadata: Map<String, Any>,
+    val arrivalLocation: Location?,
+    val exitLocation: Location?,
+    val arrivalTimestamp: String?,
+    val exitTimestamp: String?,
 ) : Marker
 
 data class GeoTagMarker(
@@ -117,7 +122,11 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
                     marker.address,
                     marker.timeFrame(timeDistanceFormatter),
                     historyTileType(startMarker, marker.status),
-                    filterMarkerLocations(marker, locationTimePoints)
+                    filterMarkerLocations(
+                        marker.startLocationTimestamp ?: marker.startTimestamp,
+                        marker.endLocationTimestamp ?: marker.endTimestamp ?: marker.startTimestamp,
+                        locationTimePoints
+                    )
                 )
                 ongoingStatus = marker.status
                 result.add(tile)
@@ -125,23 +134,36 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
             is GeoTagMarker -> {
                 val tile = HistoryTile(
                     ongoingStatus,
-                    marker.asDescription(),null,
+                    marker.asDescription(), null,
                     timeDistanceFormatter.formatTime(marker.timestamp),
                     historyTileType(startMarker, ongoingStatus),
                     listOf(marker.location!!), false
                 )
                 result.add(tile)
             }
-            else -> {/* noop */}
+            is GeofenceMarker -> {
+                val tile = HistoryTile(
+                    ongoingStatus,
+                    marker.asDescription(), null,
+                    marker.asTimeFrame(timeDistanceFormatter),
+                    historyTileType(startMarker, ongoingStatus),
+                    filterMarkerLocations(
+                        marker.arrivalTimestamp?:marker.timestamp,
+                        marker.exitTimestamp?:marker.timestamp,
+                        locationTimePoints
+                    ), false
+                )
+                result.add(tile)
+            }
         }
         startMarker = result.isEmpty()
     }
 
-    val summaryTile  = HistoryTile (
+    val summaryTile = HistoryTile(
         Status.UNKNOWN,
         "${formatDuration(summary.totalDuration)} • ${summary.totalDistance / 1000} km",
-    null, "", HistoryTileType.SUMMARY
-            )
+        null, "", HistoryTileType.SUMMARY
+    )
 
     return result.apply { add(0, summaryTile) }
 }
@@ -151,32 +173,42 @@ private fun historyTileType(
     status: Status
 ): HistoryTileType {
     return when {
-        startMarker && status in listOf(Status.OUTAGE, Status.INACTIVE) -> HistoryTileType.OUTAGE_START
+        startMarker && status in listOf(
+            Status.OUTAGE,
+            Status.INACTIVE
+        ) -> HistoryTileType.OUTAGE_START
         startMarker -> HistoryTileType.ACTIVE_START
         status in listOf(Status.OUTAGE, Status.INACTIVE) -> HistoryTileType.OUTAGE
         else -> HistoryTileType.ACTIVE
     }
 }
 
-private fun GeoTagMarker.asDescription(): String {
-    return when {
-        metadata.containsValue(Constants.CLOCK_IN) -> "Clock In"
-        metadata.containsValue(Constants.CLOCK_OUT) -> "Clock Out"
-        metadata.containsValue(Constants.PICK_UP) -> "Pick Up"
-        metadata.containsValue(Constants.VISIT_MARKED_CANCELED) -> "Visit Marked Cancelled"
-        metadata.containsValue(Constants.VISIT_MARKED_COMPLETE) -> "Visit Marked Complete"
-        else -> "Geotag $metadata"
-    }
+private fun GeoTagMarker.asDescription(): String = when {
+    metadata.containsValue(Constants.CLOCK_IN) -> "Clock In"
+    metadata.containsValue(Constants.CLOCK_OUT) -> "Clock Out"
+    metadata.containsValue(Constants.PICK_UP) -> "Pick Up"
+    metadata.containsValue(Constants.VISIT_MARKED_CANCELED) -> "Visit Marked Cancelled"
+    metadata.containsValue(Constants.VISIT_MARKED_COMPLETE) -> "Visit Marked Complete"
+    else -> "Geotag $metadata"
+}
+
+private fun GeofenceMarker.asDescription(): String = when {
+    metadata.containsKey("name") -> "Geofence ${metadata["name"]}"
+    else -> "Geofence $metadata"
+}
+
+private fun StatusMarker.asDescription(): String = when (status) {
+    Status.DRIVE -> formatDriveStats()
+    Status.WALK -> formatWalkStats()
+    else -> formatDuration(duration)
 }
 
 private fun filterMarkerLocations(
-    marker: StatusMarker,
+    from: String,
+    upTo: String,
     locationTimePoints: List<Pair<Location, String>>
 ): List<Location> {
-    val from = marker.startLocationTimestamp ?: marker.startTimestamp
-    val upTo = marker.endLocationTimestamp ?: marker.endTimestamp ?: marker.startTimestamp
 
-    Log.v(TAG, "filterMarkerLocations from $from to $upTo for marker $marker")
     check(locationTimePoints.isNotEmpty()) { "locations should not be empty for the timeline" }
     val innerLocations = locationTimePoints
         .filter { (_, time) -> time in from..upTo }
@@ -184,7 +216,7 @@ private fun filterMarkerLocations(
     if (innerLocations.isNotEmpty()) return innerLocations
 
     // Snap to adjacent
-    val sorted =  locationTimePoints.sortedBy { it.second }
+    val sorted = locationTimePoints.sortedBy { it.second }
     Log.v(TAG, "Got sorted $sorted")
     val startLocation = sorted.lastOrNull { (_, time) -> time < from }
     val endLocation = sorted.firstOrNull { (_, time) -> time > upTo }
@@ -193,27 +225,32 @@ private fun filterMarkerLocations(
 
 }
 
-private fun StatusMarker.asDescription(): String = when(status) {
-        Status.DRIVE -> formatDriveStats()
-        Status.WALK -> formatWalkStats()
-        else -> formatDuration(duration)
-    }
 
 private fun formatDuration(duration: Int) = when {
     duration / 3600 < 1 -> "${duration / 60} min"
     duration / 3600 == 1 -> "1 hour ${duration % 3600 / 60} min"
     else -> "${duration / 3600} hours ${duration % 3600 / 60} min"
 }
+
 private fun StatusMarker.formatDriveStats() =
-    "${formatDuration(duration)} • ${(distance ?:0) / 1000} km"
+    "${formatDuration(duration)} • ${(distance ?: 0) / 1000} km"
 
 private fun StatusMarker.formatWalkStats() =
-    "${formatDuration(duration)}  • ${stepsCount?:0} steps"
+    "${formatDuration(duration)}  • ${stepsCount ?: 0} steps"
 
 
 private fun StatusMarker.timeFrame(timeFormatter: TimeDistanceFormatter): String {
     if (endTimestamp == null) return timeFormatter.formatTime(startTimestamp)
     return "${timeFormatter.formatTime(startTimestamp)} : ${timeFormatter.formatTime(endTimestamp)}"
+}
+
+private fun GeofenceMarker.asTimeFrame(formatter: TimeDistanceFormatter): String {
+    val from = timestamp
+    val upTo = exitTimestamp ?: timestamp
+    return if (from == upTo)
+        formatter.formatTime(timestamp)
+    else
+        "${formatter.formatTime(from)} : ${formatter.formatTime(upTo)}"
 }
 
 private const val TAG = "History"
