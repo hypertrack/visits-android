@@ -24,7 +24,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -49,7 +49,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -74,7 +74,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -99,7 +99,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -124,7 +124,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val visitPictures = setOf(
             VisitPhoto("1", "", "", VisitPhotoState.UPLOADED),
             VisitPhoto("2", "", "", VisitPhotoState.NOT_UPLOADED),
@@ -152,7 +152,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val expectedLat = 42.0
         val expectedLong = 3.14
         val visit = Visit(
@@ -177,7 +177,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -202,7 +202,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -226,7 +226,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val expectedLat = 42.0
         val expectedLong = 3.14
         val visit = Visit(
@@ -251,7 +251,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -276,7 +276,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk)
+        val hyperTrackService = HyperTrackService(listener, sdk,)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(

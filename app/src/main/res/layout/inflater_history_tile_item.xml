@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite">
+
+
+    <ImageView
+        android:id="@+id/ivStatusStripe"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="12dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_ht_timeline_active"
+        tools:ignore="ContentDescription" />
+    <ImageView
+        android:id="@+id/ivEventIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/ivStatusStripe"
+        app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
+        app:layout_constraintEnd_toEndOf="@id/ivStatusStripe"
+        app:layout_constraintBottom_toBottomOf="@id/ivStatusStripe"
+        android:src="@drawable/ic_ht_geofence_visited_active"
+        tools:ignore="ContentDescription" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivActivityIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:paddingTop="6dp"
+        android:layout_marginStart="12dp"
+        app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
+        app:layout_constraintTop_toTopOf="@id/tvActivitySummary"
+        app:layout_constraintBottom_toBottomOf="@id/tvActivitySummary"
+        app:srcCompat="@drawable/ic_ht_stop" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvActivitySummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/regular"
+        android:padding="5dp"
+        android:text="5 min • 400 steps"
+        android:textColor="@color/colorBlack"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/ivActivityIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvTimeframe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvActivitySummary"
+        android:fontFamily="@font/light"
+        android:text="9:18 am - 10:06 am"
+        android:textColor="@color/colorDescription"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvActivityPlace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/light"
+        android:text="1906 Mission, San Francisco, CA"
+        android:textColor="@color/colorDescription"
+        android:textSize="12sp"
+        android:paddingBottom="5dp"
+        app:layout_constraintStart_toStartOf="@id/tvActivitySummary"
+        app:layout_constraintTop_toBottomOf="@id/tvActivitySummary"
+        tools:ignore="HardcodedText" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

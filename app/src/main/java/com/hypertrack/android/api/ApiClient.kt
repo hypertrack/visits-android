@@ -136,17 +136,54 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
 
 private fun HistoryMarker.asMarker(): Marker {
     return when (this) {
-        is HistoryStatusMarker ->
-            Marker(MarkerType.STATUS, data.start.recordedAt, data.start.location?.geometry?.asLocation())
+        is HistoryStatusMarker -> asStatusMarker()
         is HistoryTripMarker ->
-            Marker(MarkerType.GEOTAG, data.recordedAt, data.location?.asLocation())
-        is HistoryGeofenceMarker ->
-            Marker(MarkerType.GEOFENCE_ENTRY, data.arrival.location.recordedAt, data.arrival.location.geometry.asLocation())
+            GeoTagMarker(MarkerType.GEOTAG, data.recordedAt, data.location?.asLocation(), data.metadata?: emptyMap())
+        is HistoryGeofenceMarker -> asGeofenceMarker()
         else -> throw IllegalArgumentException("Unknown marker type $type")
     }
+}
+
+private fun HistoryGeofenceMarker.asGeofenceMarker(): Marker {
+    return GeofenceMarker(
+        MarkerType.GEOFENCE_ENTRY,
+        data.arrival.location.recordedAt,
+        data.arrival.location.geometry.asLocation(),
+        data.geofence.metadata?: emptyMap(),
+        data.arrival.location.geometry.asLocation(),
+        data.exit.location.geometry.asLocation(),
+        data.arrival.location.recordedAt,
+        data.exit.location.recordedAt
+    )
 }
 
 
 private fun HistoryTripMarkerLocation.asLocation() = Location(coordinates[0], coordinates[1])
 private fun Geometry.asLocation() = Location(longitude, latitude)
 
+private fun HistoryStatusMarker.asStatusMarker() = StatusMarker(
+    MarkerType.STATUS,
+    data.start.recordedAt,
+    data.start.location?.geometry?.asLocation(),
+    data.start.location?.geometry?.asLocation(),
+    data.end.location?.geometry?.asLocation(),
+    data.start.recordedAt,
+    data.end.recordedAt,
+    data.start.location?.recordedAt,
+    data.end.location?.recordedAt,
+    when (data.value) {
+        "inactive" -> Status.INACTIVE
+        "active" -> when (data.activity) {
+            "stop" -> Status.STOP
+            "drive" -> Status.DRIVE
+            "walk" -> Status.WALK
+            else -> Status.UNKNOWN
+        }
+        else -> Status.UNKNOWN
+
+    },
+    data.duration,
+    data.distance,
+    data.steps,
+    data.address
+)

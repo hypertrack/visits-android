@@ -8,6 +8,7 @@ import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHistoryStyle
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.view_models.VisitDetailsViewModel
@@ -98,14 +99,16 @@ object Injector {
             userScope = UserScope(
                     historyRepository,
                     UserScopeViewModelFactory(
-                            getVisitsRepo(context),
-                            historyRepository,
-                            getDriverRepo(context),
-                            getAccountRepo(context),
-                            crashReportsProvider,
-                            hyperTrackService,
-                            getPermissionInteractor(),
-                            accessTokenRepository(MyApplication.context)                    ),
+                        getVisitsRepo(context),
+                        historyRepository,
+                        getDriverRepo(context),
+                        getAccountRepo(context),
+                        crashReportsProvider,
+                        hyperTrackService,
+                        getPermissionInteractor(),
+                        accessTokenRepository(MyApplication.context),
+                        getTimeLengthFormatter()
+                    ),
                     PhotoUploadInteractorImpl(
                             getVisitsRepo(context),
                             getFileRepository(),
@@ -208,11 +211,12 @@ object Injector {
         CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
-        GoogleMapHistoryRenderer(supportMapFragment)
+        GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context))
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }
 
+    private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
 
 }
 

@@ -9,6 +9,7 @@
     <color name="colorRed">#EB5B64</color>
     <color name="tertiary_2_xdark">#4c4b5d</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorTimelineBackground">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGrey">#F4F4F4</color>
 
@@ -25,5 +26,14 @@
     <color name="colorTrackingError">@color/colorRed</color>
     <color name="colorTrackingStopped">#A0A0A0</color>
 
+    <!--    History Polyline theme -->
+    <color name="colorHistorySelectedSegmentStop">#921828</color>
+    <color name="colorHistorySelectedSegmentDrive">#ffa800</color>
+    <color name="colorHistorySelectedSegmentWalk">#6ba876</color>
+    <color name="colorHistoryOutageSegment">#ea023e</color>
+    <color name="colorHistoryActiveSegment">#00c94b</color>
+
+    <color name="textOutage">#fe4d5f</color>
+    <color name="textNormal">#4c4b5d</color>
 
 </resources>

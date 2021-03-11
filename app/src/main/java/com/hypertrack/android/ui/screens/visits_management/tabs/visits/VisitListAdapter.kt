@@ -1,4 +1,4 @@
-package com.hypertrack.android.adapters
+package com.hypertrack.android.ui.screens.visits_management.tabs.visits
 
 import android.view.LayoutInflater
 import android.view.View

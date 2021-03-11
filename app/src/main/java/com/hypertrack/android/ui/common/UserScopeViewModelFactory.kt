@@ -11,6 +11,7 @@ import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.ui.screens.driver_id_input.DriverLoginViewModel
 import com.hypertrack.android.ui.screens.permission_request.PermissionRequestViewModel
+import com.hypertrack.android.utils.TimeDistanceFormatter
 import com.hypertrack.android.view_models.HistoryViewModel
 
 @Suppress("UNCHECKED_CAST")
@@ -22,7 +23,8 @@ class UserScopeViewModelFactory(
     private val crashReportsProvider: CrashReportsProvider,
     private val hyperTrackService: HyperTrackService,
     private val permissionsInteractor: PermissionsInteractor,
-    private val accessTokenRepository: AccessTokenRepository
+    private val accessTokenRepository: AccessTokenRepository,
+    private val timeLengthFormatter: TimeDistanceFormatter
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -32,7 +34,7 @@ class UserScopeViewModelFactory(
                     hyperTrackService
             ) as T
             SummaryViewModel::class.java -> SummaryViewModel(historyRepository) as T
-            HistoryViewModel::class.java -> HistoryViewModel(historyRepository) as T
+            HistoryViewModel::class.java -> HistoryViewModel(historyRepository, timeLengthFormatter) as T
             DriverLoginViewModel::class.java -> DriverLoginViewModel(
                     driverRepository,
                     hyperTrackService,
