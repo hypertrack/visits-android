@@ -32,7 +32,6 @@ class LoginInteractorImpl(
                 if (pkValid) {
                     res
                 } else {
-                    //todo task
                     LoginError(Exception("Invalid Publishable Key"))
                 }
             }

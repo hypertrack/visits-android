@@ -69,7 +69,6 @@ class SignInViewModel(
                             )
                         }
                         is LoginError -> {
-                            Log.e(TAG, res.exception.message.toString())
                             errorText.postValue(MyApplication.context.getString(R.string.unknown_error))
                         }
                         is PublishableKey -> throw IllegalStateException()

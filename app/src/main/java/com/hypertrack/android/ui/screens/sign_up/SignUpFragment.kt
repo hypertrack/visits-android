@@ -33,8 +33,8 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
 
     //todo task
     private var company = "My company"
-    private var email: String? = "spqrta+b1@gmail.com"
-    private var password: String? = "qwerty123"
+    private var email: String? = "spqrta+a1@gmail.com"
+    private var password: String? = "12345678"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,8 +42,6 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         view_pager.setAdapter(MyPagerAdapter())
         view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                view_pager.setVisibility(View.VISIBLE)
-                incorrect.setVisibility(View.INVISIBLE)
                 when (view_pager.getCurrentItem()) {
                     PAGE_USER -> {
                         accept.setVisibility(View.INVISIBLE)
@@ -85,6 +83,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
             dismissProgress()
             incorrect.setGoneState(it == null)
             incorrect.text = it
+            view_pager.currentItem = 0
         })
 
         vm.destination.observe(viewLifecycleOwner, {
