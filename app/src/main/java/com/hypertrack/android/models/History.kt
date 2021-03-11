@@ -121,7 +121,13 @@ fun History.asTiles(): List<HistoryTile> {
         result.add(tile)
     }
 
-    return result
+    val summaryTile  = HistoryTile (
+        Status.UNKNOWN,
+        "${formatDuration(summary.totalDuration)} • ${summary.totalDistance / 1000} km",
+    null, "", HistoryTileType.SUMMARY
+            )
+
+    return result.apply { add(0, summaryTile) }
 }
 
 private fun filterMarkerLocations(
@@ -151,19 +157,19 @@ private fun filterMarkerLocations(
 private fun StatusMarker.asDescription(): String = when(status) {
         Status.DRIVE -> formatDriveStats()
         Status.WALK -> formatWalkStats()
-        else -> formatDuration()
+        else -> formatDuration(duration)
     }
 
-private fun StatusMarker.formatDuration() = when {
+private fun formatDuration(duration: Int) = when {
     duration / 3600 < 1 -> "${duration / 60} min"
     duration / 3600 == 1 -> "1 hour ${duration % 3600 / 60} min"
     else -> "${duration / 3600} hours ${duration % 3600 / 60} min"
 }
 private fun StatusMarker.formatDriveStats() =
-    "${formatDuration()} • ${(distance ?:0) / 1000} km"
+    "${formatDuration(duration)} • ${(distance ?:0) / 1000} km"
 
 private fun StatusMarker.formatWalkStats() =
-    "${formatDuration()}  • ${stepsCount?:0} steps"
+    "${formatDuration(duration)}  • ${stepsCount?:0} steps"
 
 
 private fun StatusMarker.timeFrame(): String {
