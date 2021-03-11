@@ -1,5 +1,7 @@
 package com.hypertrack.android.models
 
+import android.util.Log
+
 data class History(
         val summary: Summary,
         val locationTimePoints: List<Pair<Location, String>>,
@@ -234,12 +236,24 @@ private fun filterMarkerLocations(
     marker: StatusMarker,
     locationTimePoints: List<Pair<Location, String>>
 ): List<Location> {
-    val from = marker.startLocationTimestamp ?: return emptyList()
-    val upTo = marker.endLocationTimestamp ?: return emptyList()
+    val from = marker.startLocationTimestamp ?: marker.startTimestamp
+    val upTo = marker.endLocationTimestamp ?: marker.endTimestamp ?: marker.startTimestamp
 
-    return locationTimePoints
+    Log.v(TAG, "filterMarkerLocations from $from to $upTo for marker $marker")
+    check(locationTimePoints.isNotEmpty()) { "locations should not be empty for the timeline" }
+    val innerLocations = locationTimePoints
         .filter { (_, time) -> time in from..upTo }
         .map { (loc, _) -> loc }
+    if (innerLocations.isNotEmpty()) return innerLocations
+
+    // Snap to adjacent
+    val sorted =  locationTimePoints.sortedBy { it.second }
+    Log.v(TAG, "Got sorted $sorted")
+    val startLocation = sorted.lastOrNull { (_, time) -> time < from }
+    val endLocation = sorted.firstOrNull { (_, time) -> time > upTo }
+    Log.v(TAG, "Got start $startLocation, end $endLocation")
+    return listOfNotNull(startLocation?.first, endLocation?.first)
+
 }
 
 private fun StatusMarker.asDescription(): String = when(status) {
@@ -264,3 +278,5 @@ private fun StatusMarker.timeFrame(): String {
     if (endTimestamp == null) return "XXam:XX"
     return "XXam:XX YYpm:YY"
 }
+
+private const val TAG = "History"
