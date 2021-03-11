@@ -15,7 +15,7 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
 
     val errorText = MutableLiveData<String?>()
 
-    fun signUp(login: String, password: String) {
+    fun onSignUpClicked(login: String, password: String) {
         viewModelScope.launch {
             val res = loginInteractor.signUp(login, password)
             when (res) {

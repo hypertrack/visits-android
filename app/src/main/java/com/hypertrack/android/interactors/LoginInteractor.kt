@@ -84,7 +84,6 @@ class LoginInteractorImpl(
     }
 
     override suspend fun resendEmailConfirmation(email: String) {
-        //todo task
         liveAccountUrlService.resendOtpCode(
             MyApplication.SERVICES_API_KEY.toBase64(),
             LiveAccountApi.ResendBody(email)

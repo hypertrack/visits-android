@@ -48,15 +48,8 @@ class SignInViewModel(
             val res = loginInteractor.signIn(login, password)
             when (res) {
                 is PublishableKey -> {
-                    if (res.key.isNotBlank()) {
-                        showProgress.postValue(false)
-                        destination.postValue(SignInFragmentDirections.actionSignInFragmentToDriverIdInputFragment())
-                    } else {
-                        //todo task
-                        Log.w(TAG, "Can't login with $login account")
-                        errorText.postValue(MyApplication.context.getString(R.string.valid_publishable_key_required))
-                        enableButtonIfInputNonEmpty()
-                    }
+                    showProgress.postValue(false)
+                    destination.postValue(SignInFragmentDirections.actionSignInFragmentToDriverIdInputFragment())
                 }
                 else -> {
                     enableButtonIfInputNonEmpty()

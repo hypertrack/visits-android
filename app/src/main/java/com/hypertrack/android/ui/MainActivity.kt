@@ -42,8 +42,6 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
 
     override fun onDestinationChanged(destination: NavDestination) {
         super.onDestinationChanged(destination)
-        //todo task
-        Log.e("cutag", destination.displayName)
     }
 
     override fun onStart() {

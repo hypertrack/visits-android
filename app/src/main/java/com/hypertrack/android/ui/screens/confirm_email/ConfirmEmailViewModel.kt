@@ -55,8 +55,6 @@ class ConfirmEmailViewModel(
                     }
                 }
             }
-        } else {
-            //todo task
         }
     }
 

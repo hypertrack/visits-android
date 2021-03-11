@@ -16,10 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.hypertrack.android.live.HTTextWatcher
-import com.hypertrack.android.ui.MainActivity
-import com.hypertrack.android.ui.base.BaseFragment
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
@@ -81,9 +78,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
 //                return@OnClickListener
 //            }
             showProgress()
-            //todo task
-            vm.signUp(email!!, password!!)
-            //                CognitoClient.getInstance(getContext()).signUp(email, password, cognitoUserAttributes, SignUpFragment.this);
+            vm.onSignUpClicked(email!!, password!!)
         })
 
         vm.errorText.observe(viewLifecycleOwner, {
