@@ -304,7 +304,7 @@ data class HistoryGeofenceMarkerArrival(@field:Json(name = "location") val locat
 
 @JsonClass(generateAdapter = true)
 data class HistoryGeofenceArrivalLocation(
-        @field:Json(name = "geometry") val geometry: Geometry,
+        @field:Json(name = "geometry") val geometry: Geometry?,
         @field:Json(name = "recorded_at") val recordedAt: String,
 )
 
