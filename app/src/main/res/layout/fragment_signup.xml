@@ -104,7 +104,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/bg_button_light"
             android:text="@string/sign_in"
-            android:textColor="@color/colorHyperTrack"
+            android:textColor="@color/colorHyperTrackGreen"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
