@@ -9,6 +9,8 @@ import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.lang.Exception
 
 class ConfirmEmailViewModel(
     private val loginInteractor: LoginInteractor,
@@ -49,8 +51,10 @@ class ConfirmEmailViewModel(
                         )
                     }
                     is OtpWrongCode -> {
-                        //todo task
                         errorText.postValue(R.string.wrong_code.stringFromResource())
+                    }
+                    is OtpError -> {
+                        errorText.postValue(res.exception.message)
                     }
                 }
             }
@@ -60,7 +64,11 @@ class ConfirmEmailViewModel(
     fun onResendClick() {
         loadingState.postValue(true)
         viewModelScope.launch {
-            loginInteractor.resendEmailConfirmation(email)
+            try {
+                loginInteractor.resendEmailConfirmation(email)
+            } catch (e: Exception) {
+                errorText.postValue(R.string.unknown_error.stringFromResource())
+            }
             loadingState.postValue(false)
         }
     }

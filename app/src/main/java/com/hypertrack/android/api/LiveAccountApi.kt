@@ -11,7 +11,7 @@ import retrofit2.http.POST
 interface LiveAccountApi {
     @POST("account/verify")
     suspend fun verifyEmailViaOtpCode(
-        @Header("Authorization") token: String,
+        @Header("Authorization") authHeader: String,
         @Body body: OtpBody
     ): Response<Void>
 

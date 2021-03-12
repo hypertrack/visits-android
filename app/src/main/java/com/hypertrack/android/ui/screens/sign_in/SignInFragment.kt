@@ -13,8 +13,6 @@ import kotlinx.android.synthetic.main.fragment_signin.*
 
 class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
 
-    //todo deeplinkHint
-
     private val vm: SignInViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
     }

@@ -2,11 +2,13 @@ package com.hypertrack.android.interactors
 
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
+import com.hypertrack.android.api.BackendException
 import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import retrofit2.HttpException
 import java.util.*
 
 interface LoginInteractor {
@@ -33,11 +35,15 @@ class LoginInteractorImpl(
         val res = getPublishableKey(login.toLowerCase(Locale.getDefault()), password)
         return when (res) {
             is PublishableKey -> {
-                val pkValid = accountRepository.onKeyReceived(res.key, "true")
-                if (pkValid) {
-                    res
-                } else {
-                    LoginError(Exception("Invalid Publishable Key"))
+                try {
+                    val pkValid = accountRepository.onKeyReceived(res.key, "true")
+                    if (pkValid) {
+                        res
+                    } else {
+                        LoginError(Exception("Invalid Publishable Key"))
+                    }
+                } catch (e: Exception) {
+                    LoginError(e)
                 }
             }
             else -> {
@@ -80,7 +86,7 @@ class LoginInteractorImpl(
 
     override suspend fun verifyByOtpCode(email: String, code: String): OtpResult {
         val res = liveAccountUrlService.verifyEmailViaOtpCode(
-            MyApplication.SERVICES_API_KEY.toBase64(),
+            "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
             LiveAccountApi.OtpBody(
                 email = email,
                 code = code
@@ -89,16 +95,24 @@ class LoginInteractorImpl(
         if (res.isSuccessful) {
             return OtpSuccess
         } else {
-            //todo task handle error
-            return OtpWrongCode
+            BackendException(res).let {
+                if (it.statusCode == "CodeMismatchException") {
+                    return OtpWrongCode
+                } else {
+                    return OtpError(it)
+                }
+            }
         }
     }
 
     override suspend fun resendEmailConfirmation(email: String) {
-        liveAccountUrlService.resendOtpCode(
-            MyApplication.SERVICES_API_KEY.toBase64(),
+        val res = liveAccountUrlService.resendOtpCode(
+            "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
             LiveAccountApi.ResendBody(email)
         )
+        if (!res.isSuccessful) {
+            throw HttpException(res)
+        }
     }
 
     private suspend fun getPublishableKey(login: String, password: String): LoginResult {
