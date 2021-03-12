@@ -42,6 +42,8 @@ class MyApplication : Application() {
     companion object {
         const val TAG = "MyApplication"
         const val CHANNEL_ID = "default_notification_channel"
+        const val SERVICES_API_KEY = "hWmZq4t7w9z\$C&F)J@NcRfUjXn2r5u8x"
+
 
         val injector: Injector = Injector
 

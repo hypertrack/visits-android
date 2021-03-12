@@ -7,6 +7,7 @@ import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.screens.visit_details.VisitPhotoItem
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
@@ -14,10 +15,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class VisitDetailsViewModel(
-        private val visitsRepository: VisitsRepository,
-        private val visitsInteractor: VisitsInteractor,
-        private val id: String
-) : ViewModel() {
+    private val visitsRepository: VisitsRepository,
+    private val visitsInteractor: VisitsInteractor,
+    private val id: String
+) : BaseViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
 

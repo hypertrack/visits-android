@@ -19,6 +19,9 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 
 class ServiceLocator {
@@ -73,10 +76,12 @@ object Injector {
             getAccountRepo(context),
             getDriverRepo(context),
             crashReportsProvider,
-            getLoginProvider(context),
-            getPermissionInteractor()
+            getPermissionInteractor(),
+            getLoginInteractor(),
+            getOsUtilsProvider(MyApplication.context),
         )
     }
+
 
     fun provideUserScopeViewModelFactory(): UserScopeViewModelFactory {
         return getUserScope().userScopeViewModelFactory
@@ -136,6 +141,32 @@ object Injector {
     private fun getPermissionInteractor(): PermissionsInteractor {
         return PermissionsInteractorImpl(
             getAccountRepo(MyApplication.context)
+        )
+    }
+
+    private val tokenForPublishableKeyExchangeService by lazy {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(LIVE_API_URL_BASE)
+            .addConverterFactory(MoshiConverterFactory.create(getMoshi()))
+            .build()
+        return@lazy retrofit.create(TokenForPublishableKeyExchangeService::class.java)
+    }
+
+    private val liveAccountUrlService by lazy {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(LIVE_ACCOUNT_URL_BASE)
+            .addConverterFactory(MoshiConverterFactory.create(getMoshi()))
+            .build()
+        return@lazy retrofit.create(LiveAccountApi::class.java)
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun getLoginInteractor(): LoginInteractor {
+        return LoginInteractorImpl(
+            getCognitoLoginProvider(MyApplication.context),
+            getAccountRepo(MyApplication.context),
+            tokenForPublishableKeyExchangeService,
+            liveAccountUrlService
         )
     }
 
@@ -207,8 +238,8 @@ object Injector {
 
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
-    private fun getLoginProvider(context: Context): AccountLoginProvider =
-        CognitoAccountLoginProvider(context, LIVE_API_URL_BASE)
+    private fun getCognitoLoginProvider(context: Context): CognitoAccountLoginProvider =
+        CognitoAccountLoginProviderImpl(context, LIVE_API_URL_BASE)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
         GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context))
@@ -242,3 +273,5 @@ const val BASE_URL = "https://live-app-backend.htprod.hypertrack.com/"
 const val LIVE_API_URL_BASE = "https://live-api.htprod.hypertrack.com/"
 const val AUTH_URL = LIVE_API_URL_BASE + "authenticate"
 const val MAX_IMAGE_SIDE_LENGTH_PX = 1024
+
+const val LIVE_ACCOUNT_URL_BASE = "https://live-account.htprod.hypertrack.com"

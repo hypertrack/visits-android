@@ -3,29 +3,36 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.profile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hypertrack.android.repository.DriverRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 
 class ProfileViewModel(
-        driverRepository: DriverRepository,
-        hyperTrackService: HyperTrackService,
-) : ViewModel() {
+    driverRepository: DriverRepository,
+    hyperTrackService: HyperTrackService,
+) : BaseViewModel() {
 
     val profile = MutableLiveData<List<ProfileItem>>(mutableListOf<ProfileItem>().apply {
-        add(ProfileItem(
+        add(
+            ProfileItem(
                 R.string.driver_id,
                 driverRepository.driverId
-        ))
-        add(ProfileItem(
+            )
+        )
+        add(
+            ProfileItem(
                 R.string.device_id,
                 hyperTrackService.deviceId ?: ""
-        ))
+            )
+        )
         getBuildVersion()?.let {
-            add(ProfileItem(
+            add(
+                ProfileItem(
                     R.string.app_version,
                     it
-            ))
+                )
+            )
         }
     })
 

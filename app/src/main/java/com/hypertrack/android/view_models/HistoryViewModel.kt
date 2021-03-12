@@ -10,13 +10,14 @@ import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.asTiles
 import com.hypertrack.android.repository.HistoryRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.TimeDistanceFormatter
 import kotlinx.coroutines.launch
 
 class HistoryViewModel(
     private val historyRepository: HistoryRepository,
     private val timeDistanceFormatter: TimeDistanceFormatter
-) : ViewModel() {
+) : BaseViewModel() {
 
     val history = historyRepository.history
 

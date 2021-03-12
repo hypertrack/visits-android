@@ -28,6 +28,12 @@ fun Bitmap.toBase64(): String {
     return result
 }
 
+fun String.toBase64(): String {
+    val result = Base64.encodeToString(toByteArray(), Base64.NO_WRAP)
+    // Log.v(TAG, "Encoded image $result")
+    return result
+}
+
 fun String.decodeBase64Bitmap(): Bitmap {
     // Log.v(TAG, "decoding image $this")
     val decodedBytes = Base64.decode(this, Base64.NO_WRAP)
@@ -36,9 +42,9 @@ fun String.decodeBase64Bitmap(): Bitmap {
 
 // Retry policy is defined below and implemented at application level. Applied to image upload only.
 suspend fun <T> retryWithBackoff(
-        retryParams: RetryParams = RetryParams(),
-        block: suspend () -> T,
-        shouldRetry: ((Exception) -> Boolean)? = null
+    retryParams: RetryParams = RetryParams(),
+    block: suspend () -> T,
+    shouldRetry: ((Exception) -> Boolean)? = null
 ): T {
     var currentDelay = retryParams.initialDelay
     repeat(retryParams.retryTimes) {

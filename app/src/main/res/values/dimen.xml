@@ -6,4 +6,9 @@
     <dimen name="visit_list_subicon_size">24dp</dimen>
     <dimen name="visit_list_subicon_left">42dp</dimen>
     <dimen name="visit_list_subicon_top">0dp</dimen>
+
+    <dimen name="verification_code_font_size">24dp</dimen>
+    <dimen name="verification_code_item_height">70dp</dimen>
+    <dimen name="verification_code_item_width">44dp</dimen>
+    <dimen name="verification_code_margin">8dp</dimen>
 </resources>

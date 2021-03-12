@@ -2,32 +2,38 @@ package com.hypertrack.android.ui.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.screens.background_permissions.BackgroundPermissionsViewModel
-import com.hypertrack.android.utils.AccountLoginProvider
+import com.hypertrack.android.ui.screens.confirm_email.ConfirmEmailViewModel
 import com.hypertrack.android.utils.CrashReportsProvider
-import com.hypertrack.android.view_models.AccountLoginViewModel
-import com.hypertrack.android.ui.screens.permission_request.PermissionRequestViewModel
+import com.hypertrack.android.ui.screens.sign_in.SignInViewModel
+import com.hypertrack.android.ui.screens.sign_up.SignUpViewModel
 import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
-import com.hypertrack.android.utils.HyperTrackService
+import com.hypertrack.android.utils.OsUtilsProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Suppress("UNCHECKED_CAST")
+@ExperimentalCoroutinesApi
 class ViewModelFactory(
-        private val accountRepository: AccountRepository,
-        private val driverRepository: DriverRepository,
-        private val crashReportsProvider: CrashReportsProvider,
-        private val accountLoginProvider: AccountLoginProvider,
-        private val permissionsInteractor: PermissionsInteractor
+    private val accountRepository: AccountRepository,
+    private val driverRepository: DriverRepository,
+    private val crashReportsProvider: CrashReportsProvider,
+    private val permissionsInteractor: PermissionsInteractor,
+    private val loginInteractor: LoginInteractor,
+    private val osUtilsProvider: OsUtilsProvider,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
-            AccountLoginViewModel::class.java -> AccountLoginViewModel(
-                accountLoginProvider,
-                accountRepository
+            ConfirmEmailViewModel::class.java -> ConfirmEmailViewModel(
+                loginInteractor,
+                osUtilsProvider
             ) as T
+            SignInViewModel::class.java -> SignInViewModel(loginInteractor) as T
+            SignUpViewModel::class.java -> SignUpViewModel(loginInteractor) as T
             SplashScreenViewModel::class.java -> SplashScreenViewModel(
                 driverRepository,
                 accountRepository,

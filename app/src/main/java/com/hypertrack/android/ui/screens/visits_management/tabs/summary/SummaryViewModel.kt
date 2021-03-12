@@ -6,11 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.repository.HistoryRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 
 class SummaryViewModel(
-        private val historyRepository: HistoryRepository
-) : ViewModel() {
+    private val historyRepository: HistoryRepository
+) : BaseViewModel() {
 
     val summary = Transformations.map(historyRepository.history) {
         it.summary

@@ -10,17 +10,16 @@ import com.hypertrack.android.interactors.PermissionDestination
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
+import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.CrashReportsProvider
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
-        private val driverRepository: DriverRepository,
-        private val accountRepository: AccountRepository,
-        private val crashReportsProvider: CrashReportsProvider,
-        private val permissionsInteractor: PermissionsInteractor
-) : ViewModel() {
-
-    val destination = MutableLiveData<NavDirections>()
+    private val driverRepository: DriverRepository,
+    private val accountRepository: AccountRepository,
+    private val crashReportsProvider: CrashReportsProvider,
+    private val permissionsInteractor: PermissionsInteractor
+) : BaseViewModel() {
 
     val loadingState = MutableLiveData<Boolean>()
 
@@ -35,7 +34,11 @@ class SplashScreenViewModel(
         }
         else -> {
             // Log.d(TAG, "No publishable key found")
-            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToLoginFragment())
+            destination.postValue(
+                SplashScreenFragmentDirections.actionSplashScreenFragmentToSignInFragment(
+                    null
+                )
+            )
         }
     }
 
