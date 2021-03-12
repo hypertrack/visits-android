@@ -1,4 +1,4 @@
-package com.hypertrack.android.live;
+package com.hypertrack.android.ui.screens.sign_up;
 
 
 import android.text.Editable;

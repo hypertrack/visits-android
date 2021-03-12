@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
-import com.hypertrack.android.live.HTTextWatcher
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
