@@ -92,11 +92,6 @@ public class SignupInfoPage {
             }
         });
 
-        //todo task
-        stateSelector.setSelection(1);
-        scaleSelector.setSelection(1);
-        useCaseSelector.setSelection(1);
-
         return view;
     }
 }
