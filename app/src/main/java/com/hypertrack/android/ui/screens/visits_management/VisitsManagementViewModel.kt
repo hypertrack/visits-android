@@ -47,19 +47,19 @@ class VisitsManagementViewModel(
     val clockInButtonText: LiveData<CharSequence>
         get() = _clockInButtonText
 
-    private val _checkInButtonText = MediatorLiveData<CharSequence>()
+    private val _checkInButtonText = MediatorLiveData<LocalVisitCtaLabel>()
 
     init {
         if (accountRepository.isManualCheckInAllowed) {
             _checkInButtonText.addSource(visitsRepository.hasOngoingLocalVisit) { hasVisit ->
-                _checkInButtonText.postValue(if (hasVisit) "CheckOut" else "CheckIn")
+                _checkInButtonText.postValue(if (hasVisit) LocalVisitCtaLabel.CHECK_OUT else LocalVisitCtaLabel.CHECK_IN)
             }
         }
     }
 
     val deviceHistoryWebUrl = accessTokenRepository.deviceHistoryWebViewUrl
 
-    val checkInButtonText: LiveData<CharSequence>
+    val checkInButtonText: LiveData<LocalVisitCtaLabel>
         get() = _checkInButtonText
 
     private val _showSpinner = MutableLiveData(false)
@@ -122,7 +122,7 @@ class VisitsManagementViewModel(
         _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
             when (_statusBarMessage.value) {
                 is StatusString -> {
-                } // Log.v(TAG, "Not updating message as it shows tracking info")
+                }
                 else -> _statusBarMessage.postValue(visits.asStats())
             }
 
@@ -137,7 +137,6 @@ class VisitsManagementViewModel(
     val error = MutableLiveData<String>()
 
     fun refreshVisits(block: () -> Unit) {
-        // Log.v(TAG, "Refresh visits")
 
         if (_showSync.value == true) return block()
         _showSync.postValue(true)
@@ -178,7 +177,6 @@ class VisitsManagementViewModel(
     }
 
     fun switchTracking() {
-        // Log.v(TAG, "switchTracking")
         _showSpinner.postValue(true)
         viewModelScope.launch {
             visitsRepository.switchTracking()
@@ -206,3 +204,7 @@ fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
 sealed class StatusMessage
 class StatusString(val stringId: Int) : StatusMessage()
 class VisitsStats(val stats: Map<VisitStatusGroup, Int>) : StatusMessage()
+
+enum class LocalVisitCtaLabel {
+    CHECK_IN, CHECK_OUT
+}
