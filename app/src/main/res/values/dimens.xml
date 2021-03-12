@@ -4,4 +4,6 @@
     <!--BottomAppBar-->
     <dimen name="bottom_app_bar_height">56dp</dimen>
     <dimen name="bottom_app_bar_logo_size">32dp</dimen>
+    <dimen name="content_padding">16dp</dimen>
+
 </resources>
