@@ -27,6 +27,7 @@ android {
         resValue "string", "awsLoginTestUserName", rootProject.properties.awsLoginTestUserName
         resValue "string", "awsLoginTestUserPwd", rootProject.properties.awsLoginTestUserPwd
         resValue "string", "awsLoginTestExpectedPk", rootProject.properties.awsLoginTestExpectedPk
+        buildConfigField("String", "SERVICES_API_KEY", "\"${rootProject.properties.servicesApiKey}\"")
     }
     signingConfigs {
         release {
