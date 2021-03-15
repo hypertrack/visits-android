@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.sign_in
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +17,8 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
 class SignInViewModel(
-    private val loginInteractor: LoginInteractor
+    private val loginInteractor: LoginInteractor,
+    private val permissionsInteractor: PermissionsInteractor,
 ) : BaseViewModel() {
 
     private var login = ""
@@ -38,7 +40,7 @@ class SignInViewModel(
         enableButtonIfInputNonEmpty()
     }
 
-    fun onLoginClick() {
+    fun onLoginClick(activity: Activity) {
         errorText.postValue("")
         // Log.v(TAG, "onLoginClick")
         isLoginButtonClickable.postValue(false)
@@ -49,7 +51,7 @@ class SignInViewModel(
             when (res) {
                 is PublishableKey -> {
                     showProgress.postValue(false)
-                    destination.postValue(SignInFragmentDirections.actionSignInFragmentToDriverIdInputFragment())
+                    proceed(activity)
                 }
                 else -> {
                     enableButtonIfInputNonEmpty()
@@ -74,6 +76,20 @@ class SignInViewModel(
                         is PublishableKey -> throw IllegalStateException()
                     }
                 }
+            }
+        }
+    }
+
+    private fun proceed(activity: Activity) {
+        when (permissionsInteractor.checkPermissionsState(activity).getNextPermissionRequest()) {
+            PermissionDestination.PASS -> {
+                destination.postValue(SignInFragmentDirections.actionGlobalVisitManagementFragment())
+            }
+            PermissionDestination.FOREGROUND_AND_TRACKING -> {
+                destination.postValue(SignInFragmentDirections.actionGlobalPermissionRequestFragment())
+            }
+            PermissionDestination.BACKGROUND -> {
+                destination.postValue(SignInFragmentDirections.actionGlobalBackgroundPermissionsFragment())
             }
         }
     }

@@ -30,9 +30,13 @@ class ViewModelFactory(
         return when (modelClass) {
             ConfirmEmailViewModel::class.java -> ConfirmEmailViewModel(
                 loginInteractor,
+                permissionsInteractor,
                 osUtilsProvider
             ) as T
-            SignInViewModel::class.java -> SignInViewModel(loginInteractor) as T
+            SignInViewModel::class.java -> SignInViewModel(
+                loginInteractor,
+                permissionsInteractor,
+            ) as T
             SignUpViewModel::class.java -> SignUpViewModel(loginInteractor) as T
             SplashScreenViewModel::class.java -> SplashScreenViewModel(
                 driverRepository,

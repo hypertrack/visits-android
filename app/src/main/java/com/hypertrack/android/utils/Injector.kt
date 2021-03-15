@@ -165,6 +165,7 @@ object Injector {
         return LoginInteractorImpl(
             getCognitoLoginProvider(MyApplication.context),
             getAccountRepo(MyApplication.context),
+            getDriverRepo(MyApplication.context),
             tokenForPublishableKeyExchangeService,
             liveAccountUrlService
         )

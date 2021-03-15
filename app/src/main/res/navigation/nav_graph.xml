@@ -12,43 +12,17 @@
             android:id="@+id/action_splashScreenFragment_to_driverIdInputFragment"
             app:destination="@id/driverIdInputFragment" />
         <action
-            android:id="@+id/action_splashScreenFragment_to_permissionRequestFragment"
-            app:destination="@id/permissionRequestFragment" />
-        <action
-            android:id="@+id/action_splashScreenFragment_to_visitManagementFragment"
-            app:destination="@id/visitManagementFragment" />
-        <action
-            android:id="@+id/action_splashScreenFragment_to_backgroundPermissionsFragment"
-            app:destination="@id/backgroundPermissionsFragment" />
-        <action
-            android:id="@+id/action_splashScreenFragment_to_signInFragment"
-            app:destination="@id/signInFragment" />
+            android:id="@+id/action_splashScreenFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/driverIdInputFragment"
         android:name="com.hypertrack.android.ui.screens.driver_id_input.DriverIdInputFragment"
-        android:label="DriverIdInputFragment">
-        <action
-            android:id="@+id/action_driverIdInputFragment_to_permissionRequestFragment"
-            app:destination="@id/permissionRequestFragment" />
-        <action
-            android:id="@+id/action_driverIdInputFragment_to_visitManagementFragment"
-            app:destination="@id/visitManagementFragment" />
-        <action
-            android:id="@+id/action_driverIdInputFragment_to_backgroundPermissionsFragment"
-            app:destination="@id/backgroundPermissionsFragment" />
-    </fragment>
+        android:label="DriverIdInputFragment" />
     <fragment
         android:id="@+id/permissionRequestFragment"
         android:name="com.hypertrack.android.ui.screens.permission_request.PermissionRequestFragment"
-        android:label="PermissionRequestFragment">
-        <action
-            android:id="@+id/action_permissionRequestFragment_to_visitManagementFragment"
-            app:destination="@id/visitManagementFragment" />
-        <action
-            android:id="@+id/action_permissionRequestFragment_to_backgroundPermissionsFragment"
-            app:destination="@id/backgroundPermissionsFragment" />
-    </fragment>
+        android:label="PermissionRequestFragment" />
     <fragment
         android:id="@+id/visitManagementFragment"
         android:name="com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment"
@@ -73,14 +47,7 @@
     <fragment
         android:id="@+id/backgroundPermissionsFragment"
         android:name="com.hypertrack.android.ui.screens.background_permissions.BackgroundPermissionsFragment"
-        android:label="BackgroundPermissionsFragment">
-        <action
-            android:id="@+id/action_backgroundPermissionsFragment_to_visitManagementFragment"
-            app:destination="@id/visitManagementFragment" />
-        <action
-            android:id="@+id/action_backgroundPermissionsFragment_to_permissionRequestFragment"
-            app:destination="@id/permissionRequestFragment" />
-    </fragment>
+        android:label="BackgroundPermissionsFragment" />
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.hypertrack.android.ui.screens.sign_in.SignInFragment"
@@ -95,9 +62,6 @@
             android:name="email"
             app:argType="string"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_signInFragment_to_driverIdInputFragment"
-            app:destination="@id/driverIdInputFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -106,6 +70,9 @@
         <action
             android:id="@+id/action_signUpFragment_to_confirmFragment"
             app:destination="@id/confirmFragment" />
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
     <fragment
         android:id="@+id/confirmFragment"
@@ -117,8 +84,11 @@
         <argument
             android:name="email"
             app:argType="string" />
-        <action
-            android:id="@+id/action_confirmFragment_to_driverIdInputFragment"
-            app:destination="@id/driverIdInputFragment" />
     </fragment>
+    <action
+        android:id="@+id/action_global_backgroundPermissionsFragment"
+        app:destination="@id/backgroundPermissionsFragment" />
+    <action
+        android:id="@+id/action_global_permissionRequestFragment"
+        app:destination="@id/permissionRequestFragment" />
 </navigation>

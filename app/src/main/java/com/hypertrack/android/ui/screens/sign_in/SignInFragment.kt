@@ -6,12 +6,15 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_signin.*
 
 class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
+
+    private val args: SignInFragmentArgs by navArgs()
 
     private val vm: SignInViewModel by viewModels {
         MyApplication.injector.provideViewModelFactory(MyApplication.context)
@@ -40,6 +43,10 @@ class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
             }
         })
 
+        args.email?.let {
+            email_address.setText(it)
+        }
+
         sign_up.setOnClickListener {
             vm.onSignUpClick()
         }
@@ -53,7 +60,7 @@ class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
         })
 
 
-        sign_in.setOnClickListener { vm.onLoginClick() }
+        sign_in.setOnClickListener { vm.onLoginClick(mainActivity()) }
 
         vm.showProgress.observe(viewLifecycleOwner) { show ->
             if (show) showProgress() else dismissProgress()

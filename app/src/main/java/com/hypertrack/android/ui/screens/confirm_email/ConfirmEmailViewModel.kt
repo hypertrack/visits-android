@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.confirm_email
 
+import android.app.Activity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.interactors.*
@@ -14,6 +15,7 @@ import java.lang.Exception
 
 class ConfirmEmailViewModel(
     private val loginInteractor: LoginInteractor,
+    private val permissionsInteractor: PermissionsInteractor,
     private val osUtilsProvider: OsUtilsProvider,
 ) : BaseViewModel() {
 
@@ -36,7 +38,7 @@ class ConfirmEmailViewModel(
         }
     }
 
-    fun onVerifiedClick(code: String, complete: Boolean) {
+    fun onVerifiedClick(code: String, complete: Boolean, activity: Activity) {
         if (complete) {
             loadingState.postValue(true)
             viewModelScope.launch {
@@ -44,6 +46,20 @@ class ConfirmEmailViewModel(
                 loadingState.postValue(false)
                 when (res) {
                     is OtpSuccess -> {
+                        when (permissionsInteractor.checkPermissionsState(activity)
+                            .getNextPermissionRequest()) {
+                            PermissionDestination.PASS -> {
+                                destination.postValue(ConfirmFragmentDirections.actionGlobalVisitManagementFragment())
+                            }
+                            PermissionDestination.FOREGROUND_AND_TRACKING -> {
+                                destination.postValue(ConfirmFragmentDirections.actionGlobalPermissionRequestFragment())
+                            }
+                            PermissionDestination.BACKGROUND -> {
+                                destination.postValue(ConfirmFragmentDirections.actionGlobalBackgroundPermissionsFragment())
+                            }
+                        }
+                    }
+                    is OtpSignInRequired -> {
                         destination.postValue(
                             ConfirmFragmentDirections.actionConfirmFragmentToSignInFragment(
                                 email
@@ -64,12 +80,24 @@ class ConfirmEmailViewModel(
     fun onResendClick() {
         loadingState.postValue(true)
         viewModelScope.launch {
-            try {
-                loginInteractor.resendEmailConfirmation(email)
-            } catch (e: Exception) {
-                errorText.postValue(R.string.unknown_error.stringFromResource())
-            }
+            val res = loginInteractor.resendEmailConfirmation(email)
             loadingState.postValue(false)
+            when (res) {
+                ResendNoAction -> {
+                    return@launch
+                }
+                ResendAlreadyConfirmed -> {
+                    destination.postValue(
+                        ConfirmFragmentDirections.actionConfirmFragmentToSignInFragment(
+                            email
+                        )
+                    )
+                }
+                is ResendError -> {
+                    errorText.postValue(res.exception.message)
+                }
+            }
+
         }
     }
 

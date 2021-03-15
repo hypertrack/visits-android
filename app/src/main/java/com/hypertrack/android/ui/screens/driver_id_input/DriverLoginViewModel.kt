@@ -27,11 +27,13 @@ class DriverLoginViewModel(
             when (permissionsInteractor.checkPermissionsState(activity)
                 .getNextPermissionRequest()) {
                 PermissionDestination.PASS -> {
-                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToVisitManagementFragment())
+                    destination.postValue(DriverIdInputFragmentDirections.actionGlobalVisitManagementFragment())
                 }
-                PermissionDestination.FOREGROUND_AND_TRACKING,
+                PermissionDestination.FOREGROUND_AND_TRACKING -> {
+                    destination.postValue(DriverIdInputFragmentDirections.actionGlobalPermissionRequestFragment())
+                }
                 PermissionDestination.BACKGROUND -> {
-                    destination.postValue(DriverIdInputFragmentDirections.actionDriverIdInputFragmentToPermissionRequestFragment())
+                    destination.postValue(DriverIdInputFragmentDirections.actionGlobalBackgroundPermissionsFragment())
                 }
             }
 

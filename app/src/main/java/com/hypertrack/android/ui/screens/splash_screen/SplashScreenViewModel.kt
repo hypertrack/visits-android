@@ -35,9 +35,7 @@ class SplashScreenViewModel(
         else -> {
             // Log.d(TAG, "No publishable key found")
             destination.postValue(
-                SplashScreenFragmentDirections.actionSplashScreenFragmentToSignInFragment(
-                    null
-                )
+                SplashScreenFragmentDirections.actionSplashScreenFragmentToSignUpFragment()
             )
         }
     }
@@ -98,9 +96,11 @@ class SplashScreenViewModel(
             PermissionDestination.PASS -> {
                 destination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
             }
-            PermissionDestination.FOREGROUND_AND_TRACKING,
+            PermissionDestination.FOREGROUND_AND_TRACKING -> {
+                destination.postValue(SplashScreenFragmentDirections.actionGlobalPermissionRequestFragment())
+            }
             PermissionDestination.BACKGROUND -> {
-                destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToPermissionRequestFragment())
+                destination.postValue(SplashScreenFragmentDirections.actionGlobalBackgroundPermissionsFragment())
             }
         }
     }

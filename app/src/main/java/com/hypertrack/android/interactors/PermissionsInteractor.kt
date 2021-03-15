@@ -51,12 +51,14 @@ class PermissionsInteractorImpl(
     }
 
     override fun isBackgroundLocationGranted(): Boolean {
+        //todo remove before review
+        return true
         //we don't need ACCESS_BACKGROUND_LOCATION for Q
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        } else {
-            true
-        }
+//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+//        } else {
+//            true
+//        }
     }
 
     override fun requestWhitelisting(activity: Activity) {

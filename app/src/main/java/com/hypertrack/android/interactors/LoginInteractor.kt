@@ -5,6 +5,7 @@ import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundExceptio
 import com.hypertrack.android.api.BackendException
 import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,43 +13,67 @@ import retrofit2.HttpException
 import java.util.*
 
 interface LoginInteractor {
-    suspend fun signIn(login: String, password: String): LoginResult
+    suspend fun signIn(email: String, password: String): LoginResult
     suspend fun signUp(
         login: String,
         password: String,
         userAttributes: Map<String, String>
     ): RegisterResult
 
-    suspend fun resendEmailConfirmation(email: String)
+    suspend fun resendEmailConfirmation(email: String): ResendResult
     suspend fun verifyByOtpCode(email: String, code: String): OtpResult
+
+    companion object UserAttrs {
+        const val COMPANY_KEY = "custom:company"
+
+        const val USE_CASE_KEY = "custom:use_case"
+        const val USE_CASE_DELIVERIES = "deliveries"
+        const val USE_CASE_VISITS = "visits"
+        const val USE_CASE_RIDES = "rides"
+
+        const val STATE_KEY = "custom:state"
+        const val STATE_MY_FLEET = "my_workforce"
+        const val STATE_MY_CUSTOMERS_FLEET = "my_customer"
+    }
 }
 
 @ExperimentalCoroutinesApi
 class LoginInteractorImpl(
     private val cognito: CognitoAccountLoginProvider,
     private val accountRepository: AccountRepository,
+    private val driverRepository: DriverRepository,
     private val tokenService: TokenForPublishableKeyExchangeService,
     private val liveAccountUrlService: LiveAccountApi
 ) : LoginInteractor {
 
-    override suspend fun signIn(login: String, password: String): LoginResult {
-        val res = getPublishableKey(login.toLowerCase(Locale.getDefault()), password)
-        return when (res) {
+    override suspend fun signIn(email: String, password: String): LoginResult {
+        val res = getPublishableKey(email.toLowerCase(Locale.getDefault()), password)
+        when (res) {
             is PublishableKey -> {
-                try {
-                    val pkValid = accountRepository.onKeyReceived(res.key, "true")
-                    if (pkValid) {
+                return try {
+                    val success = loginWithPublishableKey(res.key, email)
+                    if (success) {
                         res
                     } else {
-                        LoginError(Exception("Invalid Publishable Key"))
+                        LoginError(Exception("Invalid publishable key"))
                     }
                 } catch (e: Exception) {
                     LoginError(e)
                 }
             }
             else -> {
-                res
+                return res
             }
+        }
+    }
+
+    private suspend fun loginWithPublishableKey(key: String, email: String): Boolean {
+        val pkValid = accountRepository.onKeyReceived(key, "true")
+        if (pkValid) {
+            driverRepository.driverId = email
+            return true
+        } else {
+            return false
         }
     }
 
@@ -93,25 +118,60 @@ class LoginInteractorImpl(
             )
         )
         if (res.isSuccessful) {
-            return OtpSuccess
+            return try {
+                val pk = res.body()!!.publishableKey
+                val success = loginWithPublishableKey(pk, email)
+                if (success) {
+                    OtpSuccess
+                } else {
+                    OtpError(Exception("Invalid publishable key"))
+                }
+            } catch (e: Exception) {
+                OtpError(e)
+            }
         } else {
             BackendException(res).let {
-                if (it.statusCode == "CodeMismatchException") {
-                    return OtpWrongCode
-                } else {
-                    return OtpError(it)
+                return when (it.statusCode) {
+                    "CodeMismatchException" -> {
+                        OtpWrongCode
+                    }
+                    "NotAuthorizedException" -> {
+                        if (it.message == "User cannot be confirmed. Current status is CONFIRMED") {
+                            OtpSignInRequired
+                        } else {
+                            OtpError(it)
+                        }
+                    }
+                    else -> {
+                        OtpError(it)
+                    }
                 }
             }
         }
     }
 
-    override suspend fun resendEmailConfirmation(email: String) {
+    override suspend fun resendEmailConfirmation(email: String): ResendResult {
         val res = liveAccountUrlService.resendOtpCode(
             "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
             LiveAccountApi.ResendBody(email)
         )
-        if (!res.isSuccessful) {
-            throw HttpException(res)
+        if (res.isSuccessful) {
+            return ResendNoAction
+        } else {
+            BackendException(res).let {
+                return when (it.statusCode) {
+                    "InvalidParameterException" -> {
+                        if (it.message == "User is already confirmed.") {
+                            ResendAlreadyConfirmed
+                        } else {
+                            ResendError(it)
+                        }
+                    }
+                    else -> {
+                        ResendError(it)
+                    }
+                }
+            }
         }
     }
 
@@ -180,6 +240,13 @@ class SignUpError(val exception: Exception) : RegisterResult()
 
 sealed class OtpResult
 object OtpSuccess : OtpResult()
+object OtpSignInRequired : OtpResult()
 class OtpError(val exception: Exception) : OtpResult()
 object OtpWrongCode : OtpResult()
+
+sealed class ResendResult
+object ResendNoAction : ResendResult()
+object ResendAlreadyConfirmed : ResendResult()
+class ResendError(val exception: Exception) : ResendResult()
+
 

@@ -33,12 +33,12 @@ class PermissionRequestViewModel(
                 }
                 PermissionDestination.BACKGROUND -> {
                     syncDeviceSettings()
-                    destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToBackgroundPermissionsFragment())
+                    destination.postValue(PermissionRequestFragmentDirections.actionGlobalBackgroundPermissionsFragment())
                 }
                 PermissionDestination.PASS -> {
                     syncDeviceSettings()
                     if (permissionsInteractor.isWhitelistingGranted()) {
-                        destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToVisitManagementFragment())
+                        destination.postValue(PermissionRequestFragmentDirections.actionGlobalVisitManagementFragment())
                     }
                 }
             }
@@ -53,7 +53,7 @@ class PermissionRequestViewModel(
         if (permissionsInteractor.isBackgroundLocationGranted()) {
             destination.postValue(PermissionRequestFragmentDirections.actionGlobalVisitManagementFragment())
         } else {
-            destination.postValue(PermissionRequestFragmentDirections.actionPermissionRequestFragmentToBackgroundPermissionsFragment())
+            destination.postValue(PermissionRequestFragmentDirections.actionGlobalBackgroundPermissionsFragment())
         }
     }
 
