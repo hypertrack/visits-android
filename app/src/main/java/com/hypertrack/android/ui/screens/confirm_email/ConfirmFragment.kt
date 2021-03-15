@@ -66,13 +66,17 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
             }
 
             override fun onEnterPressed(complete: Boolean) {
-                vm.onVerifiedClick(verificationCode.code, complete)
+                vm.onVerifiedClick(verificationCode.code, complete, mainActivity())
             }
         }
         Utils.showKeyboard(mainActivity(), verificationCode.etCode)
 
         verified.setOnClickListener {
-            vm.onVerifiedClick(verificationCode.code, verificationCode.isCodeComplete)
+            vm.onVerifiedClick(
+                verificationCode.code,
+                verificationCode.isCodeComplete,
+                mainActivity()
+            )
         }
 
         resend.setOnClickListener {

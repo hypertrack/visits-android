@@ -1,6 +1,7 @@
 package com.hypertrack.android.api
 
 import com.hypertrack.android.utils.PublishableKeyContainer
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.Body
@@ -13,12 +14,17 @@ interface LiveAccountApi {
     suspend fun verifyEmailViaOtpCode(
         @Header("Authorization") authHeader: String,
         @Body body: OtpBody
-    ): Response<Void>
+    ): Response<PublishableKeyResponse>
 
     @JsonClass(generateAdapter = true)
     class OtpBody(
         val email: String,
         val code: String,
+    )
+
+    @JsonClass(generateAdapter = true)
+    class PublishableKeyResponse(
+        @field:Json(name = "publishable_key") val publishableKey: String,
     )
 
     @POST("account/resend_verification")

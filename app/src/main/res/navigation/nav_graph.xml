@@ -124,7 +124,13 @@
             android:name="email"
             app:argType="string" />
         <action
-            android:id="@+id/action_confirmFragment_to_driverIdInputFragment"
-            app:destination="@id/driverIdInputFragment" />
+            android:id="@+id/action_confirmFragment_to_permissionRequestFragment"
+            app:destination="@id/permissionRequestFragment" />
+        <action
+            android:id="@+id/action_confirmFragment_to_backgroundPermissionsFragment"
+            app:destination="@id/backgroundPermissionsFragment" />
+        <action
+            android:id="@+id/action_confirmFragment_to_visitManagementFragment"
+            app:destination="@id/visitManagementFragment" />
     </fragment>
 </navigation>

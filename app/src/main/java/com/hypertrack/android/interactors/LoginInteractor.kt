@@ -50,21 +50,30 @@ class LoginInteractorImpl(
         val res = getPublishableKey(email.toLowerCase(Locale.getDefault()), password)
         when (res) {
             is PublishableKey -> {
-                try {
-                    val pkValid = accountRepository.onKeyReceived(res.key, "true")
-                    if (pkValid) {
-                        driverRepository.driverId = email
-                        return res
+                return try {
+                    val success = loginWithPublishableKey(res.key, email)
+                    if (success) {
+                        res
                     } else {
-                        return LoginError(Exception("Invalid Publishable Key"))
+                        LoginError(Exception("Invalid publishable key"))
                     }
                 } catch (e: Exception) {
-                    return LoginError(e)
+                    LoginError(e)
                 }
             }
             else -> {
                 return res
             }
+        }
+    }
+
+    private suspend fun loginWithPublishableKey(key: String, email: String): Boolean {
+        val pkValid = accountRepository.onKeyReceived(key, "true")
+        if (pkValid) {
+            driverRepository.driverId = email
+            return true
+        } else {
+            return false
         }
     }
 
@@ -109,13 +118,23 @@ class LoginInteractorImpl(
             )
         )
         if (res.isSuccessful) {
-            return OtpSuccess
+            return try {
+                val pk = res.body()!!.publishableKey
+                val success = loginWithPublishableKey(pk, email)
+                if (success) {
+                    OtpSuccess
+                } else {
+                    OtpError(Exception("Invalid publishable key"))
+                }
+            } catch (e: Exception) {
+                OtpError(e)
+            }
         } else {
             BackendException(res).let {
-                if (it.statusCode == "CodeMismatchException") {
-                    return OtpWrongCode
+                return if (it.statusCode == "CodeMismatchException") {
+                    OtpWrongCode
                 } else {
-                    return OtpError(it)
+                    OtpError(it)
                 }
             }
         }
