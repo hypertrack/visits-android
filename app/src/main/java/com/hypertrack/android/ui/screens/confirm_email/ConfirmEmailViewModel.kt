@@ -59,6 +59,13 @@ class ConfirmEmailViewModel(
                             }
                         }
                     }
+                    is OtpSignInRequired -> {
+                        destination.postValue(
+                            ConfirmFragmentDirections.actionConfirmFragmentToSignInFragment(
+                                email
+                            )
+                        )
+                    }
                     is OtpWrongCode -> {
                         errorText.postValue(R.string.wrong_code.stringFromResource())
                     }

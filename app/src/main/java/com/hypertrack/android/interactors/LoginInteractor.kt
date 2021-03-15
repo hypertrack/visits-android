@@ -131,10 +131,20 @@ class LoginInteractorImpl(
             }
         } else {
             BackendException(res).let {
-                return if (it.statusCode == "CodeMismatchException") {
-                    OtpWrongCode
-                } else {
-                    OtpError(it)
+                return when (it.statusCode) {
+                    "CodeMismatchException" -> {
+                        OtpWrongCode
+                    }
+                    "NotAuthorizedException" -> {
+                        if (it.message == "User cannot be confirmed. Current status is CONFIRMED") {
+                            OtpSignInRequired
+                        } else {
+                            OtpError(it)
+                        }
+                    }
+                    else -> {
+                        OtpError(it)
+                    }
                 }
             }
         }
@@ -215,6 +225,7 @@ class SignUpError(val exception: Exception) : RegisterResult()
 
 sealed class OtpResult
 object OtpSuccess : OtpResult()
+object OtpSignInRequired : OtpResult()
 class OtpError(val exception: Exception) : OtpResult()
 object OtpWrongCode : OtpResult()
 
