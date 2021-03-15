@@ -80,12 +80,24 @@ class ConfirmEmailViewModel(
     fun onResendClick() {
         loadingState.postValue(true)
         viewModelScope.launch {
-            try {
-                loginInteractor.resendEmailConfirmation(email)
-            } catch (e: Exception) {
-                errorText.postValue(R.string.unknown_error.stringFromResource())
-            }
+            val res = loginInteractor.resendEmailConfirmation(email)
             loadingState.postValue(false)
+            when (res) {
+                ResendNoAction -> {
+                    return@launch
+                }
+                ResendAlreadyConfirmed -> {
+                    destination.postValue(
+                        ConfirmFragmentDirections.actionConfirmFragmentToSignInFragment(
+                            email
+                        )
+                    )
+                }
+                is ResendError -> {
+                    errorText.postValue(res.exception.message)
+                }
+            }
+
         }
     }
 

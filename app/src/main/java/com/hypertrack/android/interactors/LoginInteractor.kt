@@ -20,7 +20,7 @@ interface LoginInteractor {
         userAttributes: Map<String, String>
     ): RegisterResult
 
-    suspend fun resendEmailConfirmation(email: String)
+    suspend fun resendEmailConfirmation(email: String): ResendResult
     suspend fun verifyByOtpCode(email: String, code: String): OtpResult
 
     companion object UserAttrs {
@@ -150,13 +150,28 @@ class LoginInteractorImpl(
         }
     }
 
-    override suspend fun resendEmailConfirmation(email: String) {
+    override suspend fun resendEmailConfirmation(email: String): ResendResult {
         val res = liveAccountUrlService.resendOtpCode(
             "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
             LiveAccountApi.ResendBody(email)
         )
-        if (!res.isSuccessful) {
-            throw HttpException(res)
+        if (res.isSuccessful) {
+            return ResendNoAction
+        } else {
+            BackendException(res).let {
+                return when (it.statusCode) {
+                    "InvalidParameterException" -> {
+                        if (it.message == "User is already confirmed.") {
+                            ResendAlreadyConfirmed
+                        } else {
+                            ResendError(it)
+                        }
+                    }
+                    else -> {
+                        ResendError(it)
+                    }
+                }
+            }
         }
     }
 
@@ -228,4 +243,10 @@ object OtpSuccess : OtpResult()
 object OtpSignInRequired : OtpResult()
 class OtpError(val exception: Exception) : OtpResult()
 object OtpWrongCode : OtpResult()
+
+sealed class ResendResult
+object ResendNoAction : ResendResult()
+object ResendAlreadyConfirmed : ResendResult()
+class ResendError(val exception: Exception) : ResendResult()
+
 
