@@ -83,13 +83,13 @@ class SignInViewModel(
     private fun proceed(activity: Activity) {
         when (permissionsInteractor.checkPermissionsState(activity).getNextPermissionRequest()) {
             PermissionDestination.PASS -> {
-                destination.postValue(SignInFragmentDirections.actionSignInFragmentToVisitManagementFragment())
+                destination.postValue(SignInFragmentDirections.actionGlobalVisitManagementFragment())
             }
             PermissionDestination.FOREGROUND_AND_TRACKING -> {
-                destination.postValue(SignInFragmentDirections.actionSignInFragmentToPermissionRequestFragment())
+                destination.postValue(SignInFragmentDirections.actionGlobalPermissionRequestFragment())
             }
             PermissionDestination.BACKGROUND -> {
-                destination.postValue(SignInFragmentDirections.actionSignInFragmentToBackgroundPermissionsFragment())
+                destination.postValue(SignInFragmentDirections.actionGlobalBackgroundPermissionsFragment())
             }
         }
     }

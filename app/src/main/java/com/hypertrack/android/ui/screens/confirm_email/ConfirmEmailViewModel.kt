@@ -49,13 +49,13 @@ class ConfirmEmailViewModel(
                         when (permissionsInteractor.checkPermissionsState(activity)
                             .getNextPermissionRequest()) {
                             PermissionDestination.PASS -> {
-                                destination.postValue(ConfirmFragmentDirections.actionConfirmFragmentToVisitManagementFragment())
+                                destination.postValue(ConfirmFragmentDirections.actionGlobalVisitManagementFragment())
                             }
                             PermissionDestination.FOREGROUND_AND_TRACKING -> {
-                                destination.postValue(ConfirmFragmentDirections.actionConfirmFragmentToPermissionRequestFragment())
+                                destination.postValue(ConfirmFragmentDirections.actionGlobalPermissionRequestFragment())
                             }
                             PermissionDestination.BACKGROUND -> {
-                                destination.postValue(ConfirmFragmentDirections.actionConfirmFragmentToBackgroundPermissionsFragment())
+                                destination.postValue(ConfirmFragmentDirections.actionGlobalBackgroundPermissionsFragment())
                             }
                         }
                     }

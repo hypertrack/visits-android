@@ -19,13 +19,13 @@ class BackgroundPermissionsViewModel(
     fun onPermissionResult(activity: Activity) {
         when (permissionsInteractor.checkPermissionsState(activity).getNextPermissionRequest()) {
             PermissionDestination.PASS -> {
-                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToVisitManagementFragment())
+                destination.postValue(BackgroundPermissionsFragmentDirections.actionGlobalVisitManagementFragment())
             }
             PermissionDestination.FOREGROUND_AND_TRACKING -> {
-                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToPermissionRequestFragment())
+                destination.postValue(BackgroundPermissionsFragmentDirections.actionGlobalPermissionRequestFragment())
             }
             PermissionDestination.BACKGROUND -> {
-                destination.postValue(BackgroundPermissionsFragmentDirections.actionBackgroundPermissionsFragmentToVisitManagementFragment())
+                destination.postValue(BackgroundPermissionsFragmentDirections.actionGlobalVisitManagementFragment())
             }
         }
 
