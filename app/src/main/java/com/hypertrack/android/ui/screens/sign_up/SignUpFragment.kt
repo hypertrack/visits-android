@@ -94,7 +94,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         })
 
         sign_in.setOnClickListener {
-            findNavController().popBackStack()
+            vm.onSignInClicked()
         }
     }
 

@@ -55,4 +55,8 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
         }
     }
 
+    fun onSignInClicked() {
+        destination.postValue(SignUpFragmentDirections.actionSignUpFragmentToSignInFragment(null))
+    }
+
 }

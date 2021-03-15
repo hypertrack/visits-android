@@ -21,8 +21,8 @@
             android:id="@+id/action_splashScreenFragment_to_backgroundPermissionsFragment"
             app:destination="@id/backgroundPermissionsFragment" />
         <action
-            android:id="@+id/action_splashScreenFragment_to_signInFragment"
-            app:destination="@id/signInFragment" />
+            android:id="@+id/action_splashScreenFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/driverIdInputFragment"
@@ -112,6 +112,9 @@
         <action
             android:id="@+id/action_signUpFragment_to_confirmFragment"
             app:destination="@id/confirmFragment" />
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
     <fragment
         android:id="@+id/confirmFragment"
