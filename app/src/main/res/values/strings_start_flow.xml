@@ -1,4 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="sign_up_my_app_manages">My app manages:</string>
+    <string name="sign_up_for">for:</string>
+    <string name="sign_up_visits">Visits</string>
+    <string name="sign_up_deliveries">Deliveries</string>
+    <string name="sign_up_rides">Rides</string>
+    <string name="sign_up_my_fleet">My fleet</string>
+    <string name="sign_up_customer_fleet">My customer\'s fleet</string>
+    <string name="sign_up_not_selected">not selected</string>
+
     <string name="sign_in_to_your_account">Sign in to your account</string>
     <string name="sign_in">Sign in</string>
     <string name="incorrect_username_or_pass">Incorrect username or password</string>
@@ -14,8 +23,7 @@
     <string name="i_agree_to_terms_of_service"><![CDATA[By clicking on the Accept & Continue button I agree to <a href="https://www.hypertrack.com/terms">Terms of Service</a> and <a href="https://www.hypertrack.com/agreement">HyperTrack SaaS Agreement</a>]]></string>
     <string name="all_fields_required">All fields required</string>
     <string name="email_password_fields_required">Email and password fields are required</string>
-    <string name="my_app_manages">My app manages</string>
-    <string name="my_app_would_track">My app would track</string>
+
     <string name="my_app_is_for">My app is for</string>
     <string name="verify_your_email">Verify your email</string>
     <string name="verification_code_sent">We have sent verification code to</string>
@@ -25,54 +33,5 @@
     <string name="user_does_not_exist" tools:ignore="PrivateResource">User does not exist</string>
     <string name="user_is_not_confirmed">User is not confirmed</string>
     <string name="an_account_exists">An account with the given email already exists</string>
-
-    <array name="categories">
-        <item>not selected</item>
-        <item name="workforce">Workforce</item>
-        <item name="logistics">Logistics</item>
-        <item name="gig_work">Gig Work</item>
-        <item name="on_demand_delivery">On-Demand Delivery</item>
-        <item name="ridesharing">Ridesharing</item>
-        <item name="other">Other</item>
-    </array>
-    <array name="category_names">
-        <item>not selected</item>
-        <item>workforce</item>
-        <item>logistics</item>
-        <item>gig_work</item>
-        <item>on_demand_delivery</item>
-        <item>ridesharing</item>
-        <item>other</item>
-    </array>
-
-    <array name="scale">
-        <item>not selected</item>
-        <item>Commercial use</item>
-        <item>COVID-19 response</item>
-        <item>Personal use</item>
-        <item>Public good</item>
-    </array>
-
-    <array name="scale_names">
-        <item>not selected</item>
-        <item>commercial_use</item>
-        <item>covid_response</item>
-        <item>personal_use</item>
-        <item>public_good</item>
-    </array>
-
-    <array name="state">
-        <item>not selected</item>
-        <item>My workforce</item>
-        <item>My customer\'s workforce</item>
-        <item>Consumers</item>
-    </array>
-
-    <array name="state_names">
-        <item>not selected</item>
-        <item>my_workforce</item>
-        <item>my_customers</item>
-        <item>consumers</item>
-    </array>
 
 </resources>

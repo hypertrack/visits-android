@@ -22,6 +22,19 @@ interface LoginInteractor {
 
     suspend fun resendEmailConfirmation(email: String)
     suspend fun verifyByOtpCode(email: String, code: String): OtpResult
+
+    companion object UserAttrs {
+        const val COMPANY_KEY = "custom:company"
+
+        const val USE_CASE_KEY = "custom:use_case"
+        const val USE_CASE_DELIVERIES = "deliveries"
+        const val USE_CASE_VISITS = "visits"
+        const val USE_CASE_RIDES = "rides"
+
+        const val STATE_KEY = "custom:state"
+        const val STATE_MY_FLEET = "my_workforce"
+        const val STATE_MY_CUSTOMERS_FLEET = "my_customer"
+    }
 }
 
 @ExperimentalCoroutinesApi

@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.MyApplication
@@ -65,9 +66,8 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         accept.setOnClickListener(View.OnClickListener {
             if (cognitoUserAttributes.keys.containsAll(
                     Arrays.asList(
-                        SignupInfoPage.CUSTOM_USE_CASE,
-                        SignupInfoPage.CUSTOM_SCALE,
-                        SignupInfoPage.CUSTOM_STATE
+                        LoginInteractor.UserAttrs.USE_CASE_KEY,
+                        LoginInteractor.UserAttrs.STATE_KEY
                     )
                 )
             ) {
@@ -106,7 +106,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                     return
                 }
                 company?.let {
-                    cognitoUserAttributes.put(SignupInfoPage.CUSTOM_COMPANY, it)
+                    cognitoUserAttributes.put(LoginInteractor.UserAttrs.COMPANY_KEY, it)
                 }
             }
             PAGE_INFO -> {
@@ -173,10 +173,9 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                     })
                     passwordClear.setOnClickListener { passwordEditText.setText("") }
                 }
-                PAGE_INFO -> view = SignupInfoPage.getSignupInfoPageView(
-                    inflater,
+                PAGE_INFO -> view = SignUpInfoPage.getSignUpInfoPageView(
+                    mainActivity(),
                     collection,
-                    getResources(),
                     cognitoUserAttributes,
                     incorrect
                 )
