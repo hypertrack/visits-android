@@ -5,6 +5,7 @@ import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundExceptio
 import com.hypertrack.android.api.BackendException
 import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,7 +13,7 @@ import retrofit2.HttpException
 import java.util.*
 
 interface LoginInteractor {
-    suspend fun signIn(login: String, password: String): LoginResult
+    suspend fun signIn(email: String, password: String): LoginResult
     suspend fun signUp(
         login: String,
         password: String,
@@ -27,27 +28,29 @@ interface LoginInteractor {
 class LoginInteractorImpl(
     private val cognito: CognitoAccountLoginProvider,
     private val accountRepository: AccountRepository,
+    private val driverRepository: DriverRepository,
     private val tokenService: TokenForPublishableKeyExchangeService,
     private val liveAccountUrlService: LiveAccountApi
 ) : LoginInteractor {
 
-    override suspend fun signIn(login: String, password: String): LoginResult {
-        val res = getPublishableKey(login.toLowerCase(Locale.getDefault()), password)
-        return when (res) {
+    override suspend fun signIn(email: String, password: String): LoginResult {
+        val res = getPublishableKey(email.toLowerCase(Locale.getDefault()), password)
+        when (res) {
             is PublishableKey -> {
                 try {
                     val pkValid = accountRepository.onKeyReceived(res.key, "true")
                     if (pkValid) {
-                        res
+                        driverRepository.driverId = email
+                        return res
                     } else {
-                        LoginError(Exception("Invalid Publishable Key"))
+                        return LoginError(Exception("Invalid Publishable Key"))
                     }
                 } catch (e: Exception) {
-                    LoginError(e)
+                    return LoginError(e)
                 }
             }
             else -> {
-                res
+                return res
             }
         }
     }

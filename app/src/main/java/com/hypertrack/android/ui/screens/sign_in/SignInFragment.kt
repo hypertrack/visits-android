@@ -53,7 +53,7 @@ class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
         })
 
 
-        sign_in.setOnClickListener { vm.onLoginClick() }
+        sign_in.setOnClickListener { vm.onLoginClick(mainActivity()) }
 
         vm.showProgress.observe(viewLifecycleOwner) { show ->
             if (show) showProgress() else dismissProgress()
