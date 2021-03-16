@@ -3,6 +3,7 @@ package com.hypertrack.android.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
+import com.hypertrack.android.models.EMPTY_HISTORY
 import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.HistoryResult
@@ -32,6 +33,7 @@ class HistoryRepository(
             }
             is HistoryError -> {
                 result.error?.let { crashReportsProvider.logException(it) }
+                _history.postValue(_history.value?: EMPTY_HISTORY)
                 result
             }
         }
