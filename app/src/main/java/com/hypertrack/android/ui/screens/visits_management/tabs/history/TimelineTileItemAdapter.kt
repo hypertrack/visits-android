@@ -43,18 +43,21 @@ class TimelineTileItemAdapter(
             holder.activityIcon.visibility  = View.INVISIBLE
             holder.statusStripe.visibility  = View.INVISIBLE
             holder.activityTimeFrame.visibility = View.GONE
+            holder.notch.visibility = View.VISIBLE
         } else if (!tile.isStatusTile) {
             holder.eventIcon.visibility = View.VISIBLE
             holder.eventIcon.setImageResource(style.eventIcon())
             holder.activityIcon.visibility = View.INVISIBLE
             holder.statusStripe.visibility = View.VISIBLE
             holder.activityTimeFrame.visibility = View.VISIBLE
+            holder.notch.visibility = View.INVISIBLE
         } else {
             holder.eventIcon.visibility = View.INVISIBLE
             holder.statusStripe.visibility  = View.VISIBLE
             holder.activityIcon.visibility  = View.VISIBLE
             holder.activityTimeFrame.visibility = View.VISIBLE
             holder.statusStripe.setImageResource(style.statusImageForTile(tile.tileType))
+            holder.notch.visibility = View.INVISIBLE
         }
         holder.itemView.setOnClickListener { onClick(tile) }
     }
@@ -69,6 +72,7 @@ class TimeLineTile(holder: View) : RecyclerView.ViewHolder(holder) {
     val activityTimeFrame: AppCompatTextView  = holder.findViewById(R.id.tvTimeframe)
     val statusStripe: AppCompatImageView  = holder.findViewById(R.id.ivStatusStripe)
     val eventIcon: AppCompatImageView  = holder.findViewById(R.id.ivEventIcon)
+    val notch: View = holder.findViewById(R.id.notch)
 }
 
 interface TimelineStyle {

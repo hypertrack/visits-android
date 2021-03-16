@@ -10,6 +10,12 @@ data class History(
     val markers: List<Marker>,
 ) : HistoryResult()
 
+val EMPTY_HISTORY: History = History(
+    Summary(0, 0, 0, 0, 0, 0, 0),
+    emptyList(),
+    emptyList()
+)
+
 data class Summary(
     val totalDistance: Int,
     val totalDuration: Int,

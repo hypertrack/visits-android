@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,6 +24,7 @@ interface HistoryStyle {
     val walkSelectionColor: Int
     val stopSelectionColor: Int
     val outageSelectionColor: Int
+    val mapPadding: Int
     fun colorForStatus(status: Status): Int
     fun markerForStatus(status: Status): Bitmap
 }
@@ -39,6 +41,7 @@ class GoogleMapHistoryRenderer(
     private val activeMarkers = mutableListOf<Marker>()
 
 
+    @SuppressLint("MissingPermission")
     @ExperimentalCoroutinesApi
     override suspend fun showHistory(history: History) = suspendCancellableCoroutine<Boolean> { continuation ->
         Log.d(TAG, "Showing history $history")
@@ -46,7 +49,7 @@ class GoogleMapHistoryRenderer(
             Log.d(TAG, "Map haven't been yet initialized")
             mapFragment.getMapAsync { googleMap ->
                 Log.d(TAG,  "google map async callback")
-                googleMap.uiSettings.isMyLocationButtonEnabled = true
+                googleMap.isMyLocationEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
                 polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
@@ -55,7 +58,7 @@ class GoogleMapHistoryRenderer(
                     map?.animateCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
                 } else {
                     viewBounds = history.locationTimePoints.map { it.first }.boundRect()
-                    map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, VIEW_PADDING))
+                    map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, style.mapPadding))
 
                 }
                 continuation.resume(true, null)
@@ -94,7 +97,7 @@ class GoogleMapHistoryRenderer(
             tile.locations.lastOrNull()?.let {
                 activeMarkers.add(addMarker(it, googleMap, tile.address, tile.status))
             }
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), VIEW_PADDING))
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), style.mapPadding))
             googleMap.setOnMapClickListener {
                 Log.d(TAG, "onMapClicked")
                 selectedSegment?.remove()
@@ -102,7 +105,7 @@ class GoogleMapHistoryRenderer(
                 activeMarkers.clear()
                 selectedSegment = null
                 viewBounds?.let { bounds ->
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, VIEW_PADDING))
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, style.mapPadding))
                 }
 
             }
@@ -139,5 +142,3 @@ private fun Iterable<Location>.boundRect() : LatLngBounds {
     val southWest = LatLng(this.map {it.latitude}.minOrNull()!!, this.map {it.longitude}.minOrNull()!!)
     return LatLngBounds(southWest, northEast)
 }
-
-private const val VIEW_PADDING = 32
