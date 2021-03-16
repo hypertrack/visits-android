@@ -167,7 +167,8 @@ object Injector {
             getAccountRepo(MyApplication.context),
             getDriverRepo(MyApplication.context),
             tokenForPublishableKeyExchangeService,
-            liveAccountUrlService
+            liveAccountUrlService,
+            MyApplication.SERVICES_API_KEY
         )
     }
 

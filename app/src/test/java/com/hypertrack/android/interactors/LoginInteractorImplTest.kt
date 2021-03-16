@@ -4,10 +4,9 @@ import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedExcepti
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
 import com.hypertrack.android.api.LiveAccountApi
 import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.utils.*
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,7 +40,13 @@ class LoginInteractorImplTest {
             NotAuthorizedException("")
         )
 
-        coEvery { awsSignUpCallWrapper("login", "password") } returns AwsSignUpConfirmationRequired
+        coEvery {
+            awsSignUpCallWrapper(
+                "login",
+                "password",
+                mapOf()
+            )
+        } returns AwsSignUpConfirmationRequired
 
         coEvery { awsTokenCallWrapper() } returns CognitoToken("cognito token")
 
@@ -50,13 +55,27 @@ class LoginInteractorImplTest {
     private var accountRepository: AccountRepository = mockk {
         coEvery { onKeyReceived("pk", any(), any()) } returns true
     }
+    private var driverRepository: DriverRepository = mockk {
+        coEvery { driverId = any() } returns Unit
+    }
     private var tokenService = mockk<TokenForPublishableKeyExchangeService> {
         coEvery { getPublishableKey("cognito token") } returns Response.success(
             PublishableKeyContainer("pk")
         )
     }
     private var liveAccountUrlService = mockk<LiveAccountApi> {
+        coEvery {
+            verifyEmailViaOtpCode(
+                any(),
+                respMatch(LiveAccountApi.OtpBody("email", "123456"))
+            )
+        } returns Response.success(LiveAccountApi.PublishableKeyResponse("pk"))
     }
+
+    fun MockKMatcherScope.respMatch(e: LiveAccountApi.OtpBody) =
+        match<LiveAccountApi.OtpBody> { e1 ->
+            e.email == e1.email && e.code == e1.code
+        }
 
     private lateinit var loginInteractor: LoginInteractor
 
@@ -65,8 +84,10 @@ class LoginInteractorImplTest {
         loginInteractor = LoginInteractorImpl(
             accountLoginProvider,
             accountRepository,
+            driverRepository,
             tokenService,
-            liveAccountUrlService
+            liveAccountUrlService,
+            "services api key"
         )
     }
 
@@ -75,6 +96,7 @@ class LoginInteractorImplTest {
         runBlocking {
             val res = loginInteractor.signIn("login", "password")
             assertEquals("pk", (res as PublishableKey).key)
+            verify { driverRepository.driverId = "login" }
         }
     }
 
@@ -83,6 +105,7 @@ class LoginInteractorImplTest {
         runBlocking {
             val res = loginInteractor.signIn("login", "wrong password")
             assertTrue(res is InvalidLoginOrPassword)
+            verify(exactly = 0) { driverRepository.driverId = any() }
         }
     }
 
@@ -91,6 +114,7 @@ class LoginInteractorImplTest {
         runBlocking {
             val res = loginInteractor.signIn("wrong login", "password")
             assertTrue(res is NoSuchUser)
+            verify(exactly = 0) { driverRepository.driverId = any() }
         }
     }
 
@@ -99,14 +123,25 @@ class LoginInteractorImplTest {
         runBlocking {
             val res = loginInteractor.signIn("login needs confirmation", "password")
             assertEquals(EmailConfirmationRequired::class.java, res::class.java)
+            verify(exactly = 0) { driverRepository.driverId = any() }
         }
     }
 
     @Test
     fun `sign up success flow`() {
         runBlocking {
-            val res = loginInteractor.signUp("login", "password")
+            val res = loginInteractor.signUp("login", "password", mapOf())
             assertEquals(ConfirmationRequired::class.java, res::class.java)
+            verify(exactly = 0) { driverRepository.driverId = any() }
+        }
+    }
+
+    @Test
+    fun `login after email confirmation`() {
+        runBlocking {
+            val res = loginInteractor.verifyByOtpCode("email", "123456")
+            assertEquals(OtpSuccess::class.java, res::class.java)
+            verify { driverRepository.driverId = "email" }
         }
     }
 
