@@ -2,6 +2,7 @@ package com.hypertrack.android.repository
 
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.ServiceLocator
+import kotlin.IllegalStateException
 
 class AccountRepository(
         private val serviceLocator: ServiceLocator,
@@ -9,6 +10,12 @@ class AccountRepository(
         private val accountDataStorage: AccountDataStorage,
         private val clearLoginAction: () -> Unit
 ) : AccountPreferencesProvider {
+
+    val publishableKey: String
+        get() {
+            return accountDataStorage.getAccountData().publishableKey
+                ?: throw IllegalStateException("No publishable key")
+        }
 
     val isVerifiedAccount: Boolean
         get() = accountData.lastToken != null
