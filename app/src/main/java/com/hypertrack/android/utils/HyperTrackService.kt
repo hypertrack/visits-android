@@ -22,6 +22,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         get() = throw NotImplementedError()
         set(value) {
             sdkInstance.setDeviceMetadata(mapOf("driver_id" to value))
+            sdkInstance.setDeviceName(value)
         }
 
     val deviceId: String
