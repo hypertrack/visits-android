@@ -63,10 +63,10 @@ class GoogleMapHistoryRenderer(
                         Log.d(TAG, "getCurrentLocation $it")
                         if (it != null) {
                             Log.d(TAG, "Creating newLanLng for $it")
-                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 13.0f))
+                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, CITY_LEVEL_ZOOM))
                         } else {
                             Log.d(TAG, "No latlng, zooming in")
-                            map?.animateCamera(CameraUpdateFactory.zoomBy(13.0f)) // City level
+                            map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
 
                         }
                     }
@@ -84,7 +84,7 @@ class GoogleMapHistoryRenderer(
             polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
             map?.let { map ->
                 history.locationTimePoints.firstOrNull()?.let { point ->
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), CITY_LEVEL_ZOOM))
                 }
             }
 
@@ -140,7 +140,10 @@ class GoogleMapHistoryRenderer(
         return map.addMarker(markerOptions)
     }
 
-    companion object { const val TAG = "HistoryMapRenderer" }
+    companion object {
+        const val TAG = "HistoryMapRenderer"
+        const val CITY_LEVEL_ZOOM = 13.0f
+    }
 }
 
 private fun Location.asLatLng(): LatLng = LatLng(latitude, longitude)
