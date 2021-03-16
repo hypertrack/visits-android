@@ -132,14 +132,16 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
                 result.add(tile)
             }
             is GeoTagMarker -> {
-                val tile = HistoryTile(
-                    ongoingStatus,
-                    marker.asDescription(), null,
-                    timeDistanceFormatter.formatTime(marker.timestamp),
-                    historyTileType(startMarker, ongoingStatus),
-                    listOf(marker.location!!), false
-                )
-                result.add(tile)
+                marker.location?.let { geotagLocation ->
+                    val tile = HistoryTile(
+                        ongoingStatus,
+                        marker.asDescription(), null,
+                        timeDistanceFormatter.formatTime(marker.timestamp),
+                        historyTileType(startMarker, ongoingStatus),
+                        listOf(geotagLocation), false
+                    )
+                    result.add(tile)
+                }
             }
             is GeofenceMarker -> {
                 val tile = HistoryTile(
