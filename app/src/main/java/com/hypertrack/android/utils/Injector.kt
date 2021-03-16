@@ -250,7 +250,7 @@ object Injector {
         CognitoAccountLoginProviderImpl(context, LIVE_API_URL_BASE)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
-        GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context))
+        GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context), FusedDeviceLocationProvider(MyApplication.context))
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }

@@ -29,9 +29,14 @@ interface HistoryStyle {
     fun markerForStatus(status: Status): Bitmap
 }
 
+interface DeviceLocationProvider {
+    fun getCurrentLocation(block: (l: LatLng?) -> Unit)
+}
+
 class GoogleMapHistoryRenderer(
     private val mapFragment: SupportMapFragment,
     private val style: HistoryStyle,
+    private val locationProvider: DeviceLocationProvider,
     ) : HistoryMapRenderer{
 
     private var map: GoogleMap? = null
@@ -52,11 +57,21 @@ class GoogleMapHistoryRenderer(
                 googleMap.isMyLocationEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
-                polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
 
                 if (history.locationTimePoints.isEmpty()) {
-                    map?.animateCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
+                    locationProvider.getCurrentLocation {
+                        Log.d(TAG, "getCurrentLocation $it")
+                        if (it != null) {
+                            Log.d(TAG, "Creating newLanLng for $it")
+                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 13.0f))
+                        } else {
+                            Log.d(TAG, "No latlng, zooming in")
+                            map?.animateCamera(CameraUpdateFactory.zoomBy(13.0f)) // City level
+
+                        }
+                    }
                 } else {
+                    polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
                     viewBounds = history.locationTimePoints.map { it.first }.boundRect()
                     map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, style.mapPadding))
 
