@@ -7,6 +7,7 @@
     <dimen name="visit_list_subicon_left">42dp</dimen>
     <dimen name="visit_list_subicon_top">0dp</dimen>
     <dimen name="map_padding">60dp</dimen>
+    <dimen name="summary_peek_height">30dp</dimen>
 
     <dimen name="verification_code_font_size">24dp</dimen>
     <dimen name="verification_code_item_height">70dp</dimen>
