@@ -34,11 +34,9 @@
         android:id="@+id/ivActivityIcon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:paddingTop="6dp"
         android:layout_marginStart="12dp"
         app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
         app:layout_constraintTop_toTopOf="@id/tvActivitySummary"
-        app:layout_constraintBottom_toBottomOf="@id/tvActivitySummary"
         app:srcCompat="@drawable/ic_ht_stop" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -75,11 +73,18 @@
         android:text="1906 Mission, San Francisco, CA"
         android:textColor="@color/colorDescription"
         android:textSize="12sp"
-        android:paddingBottom="5dp"
         app:layout_constraintStart_toStartOf="@id/tvActivitySummary"
         app:layout_constraintTop_toBottomOf="@id/tvActivitySummary"
         tools:ignore="HardcodedText" />
 
+    <View
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/notch"
+        android:layout_width="140dp"
+        android:layout_height="2dp"
+        android:background="@color/tertiary_2_xdark"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
