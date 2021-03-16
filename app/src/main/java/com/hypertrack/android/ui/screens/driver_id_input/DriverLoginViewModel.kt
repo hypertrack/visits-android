@@ -22,7 +22,6 @@ class DriverLoginViewModel(
         driverId?.let {
             loadingState.postValue(true)
             // Log.d(TAG, "Proceeding with Driver Id $driverId")
-            hyperTrackService.driverId = driverId
             driverRepository.driverId = driverId
             when (permissionsInteractor.checkPermissionsState(activity)
                 .getNextPermissionRequest()) {

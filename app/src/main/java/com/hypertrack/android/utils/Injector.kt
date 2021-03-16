@@ -24,7 +24,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 
-class ServiceLocator {
+object ServiceLocator {
 
     fun getAccessTokenRepository(deviceId: String, userName: String) =
         BasicAuthAccessTokenRepository(
@@ -179,9 +179,15 @@ object Injector {
 
     private fun getDriverRepo(context: Context) = DriverRepository(
         getDriver(context),
+        getAccountRepo(MyApplication.context),
+        getServiceLocator(),
         getMyPreferences(context),
-        crashReportsProvider
+        crashReportsProvider,
     )
+
+    private fun getServiceLocator(): ServiceLocator {
+        return ServiceLocator
+    }
 
     private fun getVisitsApiClient(context: Context): ApiClient {
         val accessTokenRepository = accessTokenRepository(context)
@@ -204,7 +210,7 @@ object Injector {
             ?: throw IllegalStateException("No access token repository was saved"))
 
     private fun getAccountRepo(context: Context) =
-        AccountRepository(ServiceLocator(), getAccountData(context), getMyPreferences(context))
+        AccountRepository(getServiceLocator(), getAccountData(context), getMyPreferences(context))
         { userScope = null }
 
     private fun getAccountData(context: Context): AccountData =
@@ -218,7 +224,7 @@ object Injector {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        return ServiceLocator().getHyperTrackService(publishableKey)
+        return getServiceLocator().getHyperTrackService(publishableKey)
     }
 
     private fun getVisitsRepo(context: Context): VisitsRepository {
