@@ -31,7 +31,7 @@ fun Bitmap.toBase64(): String {
 fun String.toBase64(): String {
     val result = Base64.encodeToString(toByteArray(), Base64.NO_WRAP)
     // Log.v(TAG, "Encoded image $result")
-    return result
+    return result.orEmpty()
 }
 
 fun String.decodeBase64Bitmap(): Bitmap {

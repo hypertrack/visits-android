@@ -43,7 +43,8 @@ class LoginInteractorImpl(
     private val accountRepository: AccountRepository,
     private val driverRepository: DriverRepository,
     private val tokenService: TokenForPublishableKeyExchangeService,
-    private val liveAccountUrlService: LiveAccountApi
+    private val liveAccountUrlService: LiveAccountApi,
+    private val servicesApiKey: String,
 ) : LoginInteractor {
 
     override suspend fun signIn(email: String, password: String): LoginResult {
@@ -111,7 +112,7 @@ class LoginInteractorImpl(
 
     override suspend fun verifyByOtpCode(email: String, code: String): OtpResult {
         val res = liveAccountUrlService.verifyEmailViaOtpCode(
-            "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
+            "Basic ${servicesApiKey.toBase64()}",
             LiveAccountApi.OtpBody(
                 email = email,
                 code = code
