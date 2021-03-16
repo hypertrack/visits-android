@@ -29,9 +29,14 @@ interface HistoryStyle {
     fun markerForStatus(status: Status): Bitmap
 }
 
+interface DeviceLocationProvider {
+    fun getCurrentLocation(block: (l: LatLng?) -> Unit)
+}
+
 class GoogleMapHistoryRenderer(
     private val mapFragment: SupportMapFragment,
     private val style: HistoryStyle,
+    private val locationProvider: DeviceLocationProvider,
     ) : HistoryMapRenderer{
 
     private var map: GoogleMap? = null
@@ -52,11 +57,21 @@ class GoogleMapHistoryRenderer(
                 googleMap.isMyLocationEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
-                polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
 
                 if (history.locationTimePoints.isEmpty()) {
-                    map?.animateCamera(CameraUpdateFactory.zoomTo(13.0f)) // City level
+                    locationProvider.getCurrentLocation {
+                        Log.d(TAG, "getCurrentLocation $it")
+                        if (it != null) {
+                            Log.d(TAG, "Creating newLanLng for $it")
+                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, CITY_LEVEL_ZOOM))
+                        } else {
+                            Log.d(TAG, "No latlng, zooming in")
+                            map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
+
+                        }
+                    }
                 } else {
+                    polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
                     viewBounds = history.locationTimePoints.map { it.first }.boundRect()
                     map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, style.mapPadding))
 
@@ -69,7 +84,7 @@ class GoogleMapHistoryRenderer(
             polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
             map?.let { map ->
                 history.locationTimePoints.firstOrNull()?.let { point ->
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), 13.0f))
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), CITY_LEVEL_ZOOM))
                 }
             }
 
@@ -125,7 +140,10 @@ class GoogleMapHistoryRenderer(
         return map.addMarker(markerOptions)
     }
 
-    companion object { const val TAG = "HistoryMapRenderer" }
+    companion object {
+        const val TAG = "HistoryMapRenderer"
+        const val CITY_LEVEL_ZOOM = 13.0f
+    }
 }
 
 private fun Location.asLatLng(): LatLng = LatLng(latitude, longitude)
