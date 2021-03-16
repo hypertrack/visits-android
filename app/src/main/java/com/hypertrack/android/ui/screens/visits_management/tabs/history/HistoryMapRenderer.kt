@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.util.Log
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -39,6 +40,7 @@ class GoogleMapHistoryRenderer(
     private val activeMarkers = mutableListOf<Marker>()
 
 
+    @SuppressLint("MissingPermission")
     @ExperimentalCoroutinesApi
     override suspend fun showHistory(history: History) = suspendCancellableCoroutine<Boolean> { continuation ->
         Log.d(TAG, "Showing history $history")
@@ -46,7 +48,7 @@ class GoogleMapHistoryRenderer(
             Log.d(TAG, "Map haven't been yet initialized")
             mapFragment.getMapAsync { googleMap ->
                 Log.d(TAG,  "google map async callback")
-                googleMap.uiSettings.isMyLocationButtonEnabled = true
+                googleMap.isMyLocationEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
                 map = googleMap
                 polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
