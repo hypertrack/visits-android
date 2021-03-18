@@ -11,7 +11,7 @@ class FusedDeviceLocationProvider(private val context: Context) : DeviceLocation
     override fun getCurrentLocation(block: (l:LatLng?) -> Unit) {
         LocationServices.getFusedLocationProviderClient(context).lastLocation
             .addOnCompleteListener {
-                if (it.isSuccessful)
+                if (it.isSuccessful && it.result != null)
                     block(LatLng(it.result.latitude, it.result.longitude))
                 else
                     block(null)
