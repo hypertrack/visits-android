@@ -65,7 +65,9 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
             Log.w(TAG, "History error $error")
-            SnackbarUtil.showErrorSnackbar(view, error)
+            error?.let {
+                SnackbarUtil.showErrorSnackbar(view, it)
+            }
         })
 
     }
