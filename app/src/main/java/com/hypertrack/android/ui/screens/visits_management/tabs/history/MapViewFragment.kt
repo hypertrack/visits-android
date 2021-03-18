@@ -75,6 +75,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
     override fun onResume() {
         super.onResume()
         if (state == LoadingProgressState.LOADING) progress.show()
+        historyViewModel.getHistory()
     }
 
     override fun onPause() {
