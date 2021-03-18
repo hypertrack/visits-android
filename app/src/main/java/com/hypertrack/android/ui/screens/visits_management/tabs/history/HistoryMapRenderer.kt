@@ -30,7 +30,7 @@ interface HistoryStyle {
 }
 
 interface DeviceLocationProvider {
-    fun getCurrentLocation(block: (l: LatLng?) -> Unit)
+    fun getCurrentLocation(block: (l: Location?) -> Unit)
 }
 
 class GoogleMapHistoryRenderer(
@@ -63,7 +63,7 @@ class GoogleMapHistoryRenderer(
                         Log.d(TAG, "getCurrentLocation $it")
                         if (it != null) {
                             Log.d(TAG, "Creating newLanLng for $it")
-                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, CITY_LEVEL_ZOOM))
+                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), CITY_LEVEL_ZOOM))
                         } else {
                             Log.d(TAG, "No latlng, zooming in")
                             map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
