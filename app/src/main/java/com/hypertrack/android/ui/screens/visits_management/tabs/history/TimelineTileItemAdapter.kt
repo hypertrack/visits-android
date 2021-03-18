@@ -81,4 +81,5 @@ interface TimelineStyle {
     @DrawableRes fun iconForStatus(status: Status):  Int
     @DrawableRes fun statusImageForTile(type: HistoryTileType): Int
     @ColorInt fun textColorForType(tileType: HistoryTileType): Int
+    val summaryPeekHeight: Int
 }

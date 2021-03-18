@@ -25,6 +25,7 @@ interface HistoryStyle {
     val stopSelectionColor: Int
     val outageSelectionColor: Int
     val mapPadding: Int
+    val summaryPeekHeight: Int
     fun colorForStatus(status: Status): Int
     fun markerForStatus(status: Status): Bitmap
 }
@@ -49,25 +50,19 @@ class GoogleMapHistoryRenderer(
     @SuppressLint("MissingPermission")
     @ExperimentalCoroutinesApi
     override suspend fun showHistory(history: History) = suspendCancellableCoroutine<Boolean> { continuation ->
-        Log.d(TAG, "Showing history $history")
         if (map == null) {
-            Log.d(TAG, "Map haven't been yet initialized")
             mapFragment.getMapAsync { googleMap ->
-                Log.d(TAG,  "google map async callback")
                 googleMap.isMyLocationEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = true
+                googleMap.setPadding(0, 0, 0, style.summaryPeekHeight )
                 map = googleMap
 
                 if (history.locationTimePoints.isEmpty()) {
                     locationProvider.getCurrentLocation {
-                        Log.d(TAG, "getCurrentLocation $it")
                         if (it != null) {
-                            Log.d(TAG, "Creating newLanLng for $it")
                             map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), CITY_LEVEL_ZOOM))
                         } else {
-                            Log.d(TAG, "No latlng, zooming in")
                             map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
-
                         }
                     }
                 } else {
@@ -79,7 +74,6 @@ class GoogleMapHistoryRenderer(
                 continuation.resume(true, null)
             }
         } else {
-            Log.d(TAG, "Adding polyline to existing map")
             polyLine?.remove()
             polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
             map?.let { map ->

@@ -22,7 +22,7 @@ class BaseHistoryStyle(private val context: Context) : HistoryStyle, TimelineSty
         get() = context.resources.getColor(R.color.colorHistoryOutageSegment, context.theme)
     override val mapPadding: Int
         get() = context.resources.getDimension(R.dimen.map_padding).toInt()
-    val summaryPeekHeight: Int by lazy { context.resources.getDimension(R.dimen.summary_peek_height).toInt() }
+    override val summaryPeekHeight: Int by lazy { context.resources.getDimension(R.dimen.summary_peek_height).toInt() }
 
     override fun colorForStatus(status: Status): Int =
         when (status) {
