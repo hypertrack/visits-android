@@ -33,7 +33,7 @@ interface LoginInteractor {
 
         const val STATE_KEY = "custom:state"
         const val STATE_MY_FLEET = "my_workforce"
-        const val STATE_MY_CUSTOMERS_FLEET = "my_customer"
+        const val STATE_MY_CUSTOMERS_FLEET = "my_customers"
     }
 }
 
