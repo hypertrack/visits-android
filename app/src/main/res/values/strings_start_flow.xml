@@ -16,7 +16,7 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_up_a_new_account">Create a new account</string>
     <string name="_14_day_free_trial_no_credit_card_required">Free 100k events per month. No credit card required.</string>
-    <string name="company_or_product_name">Company or product name(Optional)</string>
+    <string name="company_or_product_name">Business name</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="accept_continue"><![CDATA[Accept & Continue]]></string>

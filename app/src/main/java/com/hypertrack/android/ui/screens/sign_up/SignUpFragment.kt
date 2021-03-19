@@ -18,6 +18,7 @@ import androidx.viewpager.widget.ViewPager
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
+import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_signup.*
@@ -39,6 +40,8 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        toolbar.title = R.string.sign_up.stringFromResource()
 
         view_pager.setAdapter(MyPagerAdapter())
         view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
@@ -101,7 +104,10 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
     private fun nextPage() {
         when (view_pager.getCurrentItem()) {
             PAGE_USER -> {
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(
+                        company
+                    )
+                ) {
                     showError(getString(R.string.email_password_fields_required))
                     return
                 }

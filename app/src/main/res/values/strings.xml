@@ -50,7 +50,7 @@
     <string name="splashscreenlogo">splashScreenLogo</string>
     <string name="account_login_header_text">Sign into your account</string>
     <string name="login_hint">Cannot get login from the deeplink. Sign in or contact your manager to get the link.</string>
-    <string name="email_address">Email Address</string>
+    <string name="email_address">Business Email</string>
     <string name="log_in">Log In</string>
     <string name="password">Password</string>
     <string name="account_login_error_message">Can\'t login with provided credentials</string>
