@@ -59,4 +59,19 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
         destination.postValue(SignUpFragmentDirections.actionSignUpFragmentToSignInFragment(null))
     }
 
+    fun onBackPressed(): Boolean {
+        if (page.value == SignUpFragment.PAGE_INFO) {
+            page.postValue(SignUpFragment.PAGE_USER)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fun onNextClicked() {
+        if (page.value == SignUpFragment.PAGE_USER) {
+            page.postValue(SignUpFragment.PAGE_INFO)
+        }
+    }
+
 }

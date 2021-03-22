@@ -54,11 +54,17 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         getCurrentFragment().onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onBackPressed() {
+        if (getCurrentBaseFragment()?.onBackPressed() == false) {
+            super.onBackPressed()
+        }
     }
 }
