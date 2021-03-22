@@ -108,7 +108,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                         company
                     )
                 ) {
-                    showError(getString(R.string.email_password_fields_required))
+                    showError(getString(R.string.all_fields_required))
                     return
                 }
                 company?.let {
