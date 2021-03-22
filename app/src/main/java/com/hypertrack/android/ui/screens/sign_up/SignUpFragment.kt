@@ -120,7 +120,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                 requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
-        vm.onNextClicked()
+        vm.onNextClicked(email.orEmpty(), password.orEmpty())
     }
 
     private fun showError(msg: String) {
