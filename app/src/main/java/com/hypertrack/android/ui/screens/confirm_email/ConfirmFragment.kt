@@ -61,7 +61,7 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
 
         verificationCode.listener = object : VerificationCodeView.VerificationCodeListener {
             override fun onCodeChanged(code: String, complete: Boolean) {
-                vm.onCodeChanged(complete)
+                vm.onCodeChanged(code, complete, mainActivity())
             }
 
             override fun onEnterPressed(complete: Boolean) {

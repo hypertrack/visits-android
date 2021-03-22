@@ -101,7 +101,10 @@ class ConfirmEmailViewModel(
         }
     }
 
-    fun onCodeChanged(complete: Boolean) {
+    fun onCodeChanged(code: String, complete: Boolean, activity: Activity) {
+        if (complete) {
+            onVerifiedClick(code, complete, activity)
+        }
         proceedButtonEnabled.postValue(complete)
     }
 
