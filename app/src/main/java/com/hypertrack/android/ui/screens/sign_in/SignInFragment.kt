@@ -68,14 +68,8 @@ class SignInFragment : ProgressDialogFragment(R.layout.fragment_signin) {
 
         //todo rounded corners
         vm.isLoginButtonClickable.observe(viewLifecycleOwner) { isClickable ->
-            // Log.d(TAG, "Setting login button clickability $isClickable")
             sign_in.isEnabled = isClickable
-            sign_in.setBackgroundColor(
-                if (isClickable)
-                    requireContext().getColor(R.color.colorHyperTrackGreen)
-                else
-                    requireContext().getColor(R.color.colorBtnDisable)
-            )
+            sign_in.isSelected = isClickable
         }
 
     }

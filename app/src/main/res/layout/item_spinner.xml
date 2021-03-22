@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:gravity="center_vertical"
-    android:padding="16dp"
-    tools:text="Item"
-    android:textColor="@color/tertiary_2_xdark">
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:textColor="@color/tertiary_2_xdark"
+    tools:text="My fleet g">
 
 </TextView>
