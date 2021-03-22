@@ -1,14 +1,10 @@
 package com.hypertrack.android.ui.screens.confirm_email
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -19,7 +15,6 @@ import com.hypertrack.android.ui.views.VerificationCodeView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_confirm.*
-import kotlinx.android.synthetic.main.fragment_login.*
 
 
 class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
@@ -58,6 +53,10 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
             Utils.hideKeyboard(mainActivity())
         })
 
+        view.doOnLayout {
+            vm.onClipboardReady()
+        }
+
         tvEmail.text = args.email
 
         verificationCode.listener = object : VerificationCodeView.VerificationCodeListener {
@@ -85,8 +84,4 @@ class ConfirmFragment : ProgressDialogFragment(R.layout.fragment_confirm) {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
 }

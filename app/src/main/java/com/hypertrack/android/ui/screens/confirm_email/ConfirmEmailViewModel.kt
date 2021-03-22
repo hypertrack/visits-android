@@ -30,7 +30,7 @@ class ConfirmEmailViewModel(
         this.email = email
     }
 
-    fun onResume() {
+    fun onClipboardReady() {
         osUtilsProvider.getClipboardContents()?.let {
             if (it.matches(Regex("^[0-9]{6}\$"))) {
                 clipboardCode.postValue(it)

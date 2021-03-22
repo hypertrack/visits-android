@@ -70,8 +70,9 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
     fun getClipboardContents(): String? {
         val manager =
             MyApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//        Log.e(TAG, manager.primaryClip?.getItemAt(0)?.text.toString())
-//        Log.e(TAG, manager.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN).toString())
+        Log.e(TAG, manager.hasPrimaryClip().toString())
+        Log.e(TAG, manager.primaryClip?.getItemAt(0)?.text.toString())
+        Log.e(TAG, manager.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN).toString())
         if (manager.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
             return manager.primaryClip?.getItemAt(0)?.text?.toString()
         } else {
