@@ -18,6 +18,7 @@ import androidx.viewpager.widget.ViewPager
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.setGoneState
+import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_signup.*
@@ -40,6 +41,8 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toolbar.title = R.string.sign_up.stringFromResource()
+
         view_pager.setAdapter(MyPagerAdapter())
         view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
@@ -60,7 +63,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         })
 
         next.setOnClickListener {
-            nextPage()
+            onNextClicked()
         }
 
         accept.setOnClickListener(View.OnClickListener {
@@ -86,7 +89,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         })
 
         vm.page.observe(viewLifecycleOwner, {
-            view_pager.currentItem = it
+            view_pager.setCurrentItem(it, true)
         })
 
         vm.destination.observe(viewLifecycleOwner, {
@@ -98,19 +101,18 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
         }
     }
 
-    private fun nextPage() {
-        when (view_pager.getCurrentItem()) {
-            PAGE_USER -> {
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    showError(getString(R.string.email_password_fields_required))
-                    return
-                }
-                company?.let {
-                    cognitoUserAttributes.put(LoginInteractor.UserAttrs.COMPANY_KEY, it)
-                }
-            }
-            PAGE_INFO -> {
-            }
+    private fun onNextClicked() {
+        if (
+            TextUtils.isEmpty(email)
+            || TextUtils.isEmpty(password)
+            || TextUtils.isEmpty(company)
+        ) {
+            showError(getString(R.string.all_fields_required))
+            return
+        }
+
+        company?.let {
+            cognitoUserAttributes.put(LoginInteractor.UserAttrs.COMPANY_KEY, it)
         }
         val view = requireActivity().currentFocus
         if (view != null) {
@@ -118,7 +120,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                 requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
-        view_pager.setCurrentItem(view_pager.getCurrentItem() + 1, true)
+        vm.onNextClicked(email.orEmpty(), password.orEmpty())
     }
 
     private fun showError(msg: String) {
@@ -165,7 +167,7 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
                     })
                     passwordEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
                         if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                            nextPage()
+                            onNextClicked()
                             v.clearFocus()
                             return@OnEditorActionListener true
                         }
@@ -194,6 +196,14 @@ class SignUpFragment : ProgressDialogFragment(R.layout.fragment_signup) {
 
         override fun isViewFromObject(view: View, `object`: Any): Boolean {
             return view === `object`
+        }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return if (vm.onBackPressed()) {
+            true
+        } else {
+            super.onBackPressed()
         }
     }
 }

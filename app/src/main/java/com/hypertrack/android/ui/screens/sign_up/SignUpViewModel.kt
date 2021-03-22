@@ -23,7 +23,7 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
                 page.postValue(SignUpFragment.PAGE_USER)
                 errorText.postValue(R.string.password_too_short.stringFromResource())
             }
-            !Patterns.EMAIL_ADDRESS.matcher(login).matches() -> {
+            !isEmail(login) -> {
                 page.postValue(SignUpFragment.PAGE_USER)
                 errorText.postValue(R.string.invalid_email.stringFromResource())
             }
@@ -57,6 +57,28 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
 
     fun onSignInClicked() {
         destination.postValue(SignUpFragmentDirections.actionSignUpFragmentToSignInFragment(null))
+    }
+
+    fun onBackPressed(): Boolean {
+        if (page.value == SignUpFragment.PAGE_INFO) {
+            page.postValue(SignUpFragment.PAGE_USER)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fun onNextClicked(email: String, password: String) {
+        if (isEmail(email)) {
+            page.postValue(SignUpFragment.PAGE_INFO)
+        } else {
+            page.postValue(SignUpFragment.PAGE_USER)
+            errorText.postValue(R.string.invalid_email.stringFromResource())
+        }
+    }
+
+    private fun isEmail(s: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(s).matches()
     }
 
 }

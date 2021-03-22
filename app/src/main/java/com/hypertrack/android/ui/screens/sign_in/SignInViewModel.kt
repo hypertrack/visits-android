@@ -99,6 +99,8 @@ class SignInViewModel(
         if (login.isNotBlank() && password.isNotBlank()) {
             // Log.v(TAG, "enabling Button")
             isLoginButtonClickable.postValue(true)
+        } else {
+            isLoginButtonClickable.postValue(false)
         }
     }
 
