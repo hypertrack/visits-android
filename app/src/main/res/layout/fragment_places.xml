@@ -17,6 +17,7 @@
             android:layout_height="0dp"
             android:gravity="center"
             android:text="@string/places_no_places"
+            android:textSize="16dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

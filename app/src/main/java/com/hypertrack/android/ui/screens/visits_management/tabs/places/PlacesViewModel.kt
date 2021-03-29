@@ -19,7 +19,8 @@ class PlacesViewModel(
 
     val places: LiveData<List<PlaceItem>> =
         Transformations.map(placesRepository.geofences) { fences ->
-            fences.map { PlaceItem(it) }
+//            fences.map { PlaceItem(it) }
+            listOf()
         }
 
     init {
