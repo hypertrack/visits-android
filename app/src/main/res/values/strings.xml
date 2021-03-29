@@ -92,4 +92,6 @@
     <string name="code_from_clipboard">Code have pasted from clipboard</string>
     <string name="password_too_short">Password length must be 8 characters or more </string>
     <string name="invalid_email">Invalid email</string>
+
+    <string name="places_no_places">You don\'t have Places yet</string>
 </resources>

@@ -102,33 +102,35 @@ object Injector {
             val scope = CoroutineScope(Dispatchers.IO)
             val hyperTrackService = getHyperTrackService(context)
             userScope = UserScope(
+                historyRepository,
+                UserScopeViewModelFactory(
+                    getVisitsRepo(context),
+                    getPlacesRepository(),
                     historyRepository,
-                    UserScopeViewModelFactory(
-                        getVisitsRepo(context),
-                        historyRepository,
-                        getDriverRepo(context),
-                        getAccountRepo(context),
-                        crashReportsProvider,
-                        hyperTrackService,
-                        getPermissionInteractor(),
-                        accessTokenRepository(MyApplication.context),
-                        getTimeLengthFormatter()
-                    ),
-                    PhotoUploadInteractorImpl(
-                            getVisitsRepo(context),
-                            getFileRepository(),
-                            crashReportsProvider,
-                            getImageDecoder(),
-                            getVisitsApiClient(MyApplication.context),
-                            scope,
-                            RetryParams(
-                                    retryTimes = 3,
-                                    initialDelay = 1000,
-                                    factor = 10.0,
-                                    maxDelay = 30 * 1000
-                            )
-                    ),
-                    hyperTrackService
+                    getDriverRepo(context),
+                    getAccountRepo(context),
+                    crashReportsProvider,
+                    hyperTrackService,
+                    getPermissionInteractor(),
+                    accessTokenRepository(MyApplication.context),
+                    getTimeLengthFormatter(),
+                    getVisitsApiClient(MyApplication.context)
+                ),
+                PhotoUploadInteractorImpl(
+                    getVisitsRepo(context),
+                    getFileRepository(),
+                    crashReportsProvider,
+                    getImageDecoder(),
+                    getVisitsApiClient(MyApplication.context),
+                    scope,
+                    RetryParams(
+                        retryTimes = 3,
+                        initialDelay = 1000,
+                        factor = 10.0,
+                        maxDelay = 30 * 1000
+                    )
+                ),
+                hyperTrackService
             )
         }
         return userScope!!
@@ -136,6 +138,10 @@ object Injector {
 
     private fun getFileRepository(): FileRepository {
         return FileRepositoryImpl()
+    }
+
+    private fun getPlacesRepository(): PlacesRepository {
+        return PlacesRepository(getVisitsApiClient(MyApplication.context))
     }
 
     private fun getPermissionInteractor(): PermissionsInteractor {
