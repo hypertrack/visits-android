@@ -289,7 +289,7 @@ data class HistoryGeofenceMarker(
 data class HistoryGeofenceMarkerData(
         @field:Json(name = "duration") val duration: Int?,
         @field:Json(name = "arrival") val arrival: HistoryGeofenceMarkerArrival,
-        @field:Json(name = "exit") val exit: HistoryGeofenceMarkerArrival,
+        @field:Json(name = "exit") val exit: HistoryGeofenceMarkerArrival?,
         @field:Json(name = "geofence") val geofence: HistoryGeofenceMarkerGeofence,
 )
 
