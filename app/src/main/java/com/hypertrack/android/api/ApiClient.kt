@@ -151,9 +151,9 @@ private fun HistoryGeofenceMarker.asGeofenceMarker(): Marker {
         data.arrival.location.geometry?.asLocation(),
         data.geofence.metadata?: emptyMap(),
         data.arrival.location.geometry?.asLocation(),
-        data.exit.location.geometry?.asLocation(),
+        data.exit?.location?.geometry?.asLocation(),
         data.arrival.location.recordedAt,
-        data.exit.location.recordedAt
+        data.exit?.location?.recordedAt
     )
 }
 
