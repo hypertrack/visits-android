@@ -94,4 +94,5 @@
     <string name="invalid_email">Invalid email</string>
 
     <string name="places_no_places">You don\'t have Places yet</string>
+    <string name="places_visited">Visited %s times</string>
 </resources>
