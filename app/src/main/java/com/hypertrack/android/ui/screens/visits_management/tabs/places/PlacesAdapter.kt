@@ -1,16 +1,15 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.places
 
 import android.view.View
-import android.view.ViewGroup
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.ui.base.BaseAdapter
-import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.ui.common.toView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_place.view.*
 import kotlinx.android.synthetic.main.item_spinner.view.*
+
 
 class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
     BaseAdapter<PlaceItem, BaseAdapter.BaseVh<PlaceItem>>() {
@@ -24,8 +23,20 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
         return object : BaseContainerVh<PlaceItem>(view, baseClickListener) {
             override fun bind(item: PlaceItem) {
                 (item.geofence.marker?.markers?.count() ?: 0).let {
-                    MyApplication.context.getString(R.string.places_visited, it.toString())
-                        .toView(containerView.tvVisited)
+                    if (it > 0) {
+                        val timesString =
+                            MyApplication.context.resources.getQuantityString(R.plurals.time, it)
+
+                        "${
+                            MyApplication.context.getString(
+                                R.string.places_visited,
+                                it.toString()
+                            )
+                        } $timesString"
+                            .toView(containerView.tvVisited)
+                    } else {
+                        containerView.tvVisited.setText(null)
+                    }
                 }
                 ((item.geofence.metadata?.get("name")
                     ?: item.geofence.geofence_id) as String).toView(containerView.tvTitle)
