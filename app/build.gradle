@@ -14,18 +14,6 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 
 android {
-    def versionPropsFile = file('version.properties')
-    def code = 1
-
-    if (versionPropsFile.canRead()) {
-        def Properties versionProps = new Properties()
-        versionProps.load(new FileInputStream(versionPropsFile))
-        code = versionProps['VERSION_CODE'].toInteger() + 1
-        versionProps['VERSION_CODE']=code.toString()
-        versionProps.store(versionPropsFile.newWriter(), null)
-    } else {
-        versionPropsFile.text = "VERSION_CODE=1"
-    }
 
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
@@ -33,8 +21,8 @@ android {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode code
         versionName "0.6.0-SNAPSHOT"
+        versionCode codeFromVersionString(versionName)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "branch_io_api_key", rootProject.properties.logisticsBranchKey
         resValue "string", "awsLoginTestUserName", rootProject.properties.awsLoginTestUserName
@@ -42,6 +30,7 @@ android {
         resValue "string", "awsLoginTestExpectedPk", rootProject.properties.awsLoginTestExpectedPk
         if(rootProject.properties.servicesApiKey == null) throw new Exception("SERVICES_API_KEY = null")
         buildConfigField("String", "SERVICES_API_KEY", "\"${rootProject.properties.servicesApiKey}\"")
+
     }
     signingConfigs {
         release {
@@ -149,4 +138,28 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
+
+def codeFromVersionString(versionString) {
+
+    def match = (versionString =~ /(\d+)\.(\d+)\.(\d+)(?:(?<snapshot>-SNAPSHOT)|(?<alpha>-alpha(?<alphaVersion>\d?))|(?<beta>-beta(?<betaVersion>\d?))|(?<rc>-rc(?<rcVersion>\d?)))?/)
+    if (match) {
+        def versionMajor = match.group(1).toInteger()
+        def versionMinor = match.group(2).toInteger()
+        def versionPatch = match.group(3).toInteger()
+        def featureSuffix = 0
+        if (match.group('rc')) {
+            featureSuffice += 30
+            featureSuffix += (match.group('rcVersion')?:"0").toInteger()
+        } else if (match.group('beta')) {
+            featureSuffix += 20
+            featureSuffix += (match.group('betaVersion')?:"0").toInteger()
+        } else if (match.group('alpha')) {
+            featureSuffix += 10
+            featureSuffix += (match.group('alphaVersion')?:"0").toInteger()
+        } else if (match.group('snapshot'))
+            featureSuffix = 5
+        return versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + featureSuffix
+
+    }
 }
