@@ -30,7 +30,7 @@ android {
         resValue "string", "awsLoginTestExpectedPk", rootProject.properties.awsLoginTestExpectedPk
         if(rootProject.properties.servicesApiKey == null) throw new Exception("SERVICES_API_KEY = null")
         buildConfigField("String", "SERVICES_API_KEY", "\"${rootProject.properties.servicesApiKey}\"")
-        println "Code $versionCode for name $versionName"
+
     }
     signingConfigs {
         release {
@@ -142,12 +142,23 @@ dependencies {
 
 def codeFromVersionString(versionString) {
 
-    def match = (versionString =~ /(\d+)\.(\d+)\.(\d+)(-SNAPSHOT)?/)
+    def match = (versionString =~ /(\d+)\.(\d+)\.(\d+)(?:(?<snapshot>-SNAPSHOT)|(?<alpha>-alpha(?<alphaVersion>\d?))|(?<beta>-beta(?<betaVersion>\d?))|(?<rc>-rc(?<rcVersion>\d?)))?/)
     if (match) {
         def versionMajor = match.group(1).toInteger()
         def versionMinor = match.group(2).toInteger()
-        def isSnapshot = match.group(4) ? 0 : 1
         def versionPatch = match.group(3).toInteger()
-        return versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 10 + isSnapshot
-    }
-}
+        def featureSuffix = 0
+        if (match.group('rc')) {
+            featureSuffice += 30
+            featureSuffix += (match.group('rcVersion')?:"0").toInteger()
+        } else if (match.group('beta')) {
+            featureSuffix += 20
+            featureSuffix += (match.group('betaVersion')?:"0").toInteger()
+        } else if (match.group('alpha')) {
+            featureSuffix += 10
+            featureSuffix += (match.group('alphaVersion')?:"0").toInteger()
+        } else if (match.group('snapshot'))
+            featureSuffix = 5
+        return versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + featureSuffix
+
+    }}
