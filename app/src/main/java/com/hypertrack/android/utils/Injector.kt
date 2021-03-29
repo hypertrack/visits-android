@@ -114,7 +114,8 @@ object Injector {
                     getPermissionInteractor(),
                     accessTokenRepository(MyApplication.context),
                     getTimeLengthFormatter(),
-                    getVisitsApiClient(MyApplication.context)
+                    getVisitsApiClient(MyApplication.context),
+                    getOsUtilsProvider(MyApplication.context)
                 ),
                 PhotoUploadInteractorImpl(
                     getVisitsRepo(context),

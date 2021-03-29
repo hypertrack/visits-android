@@ -14,12 +14,13 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
 
     private val vm: PlacesViewModel by viewModels { Injector.provideUserScopeViewModelFactory() }
 
-    private val adapter = PlacesAdapter()
+    private lateinit var adapter: PlacesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         rvPlaces.setLinearLayoutManager(requireContext())
+        adapter = vm.createPlacesAdapter()
         rvPlaces.adapter = adapter
 
         vm.places.observe(viewLifecycleOwner, {

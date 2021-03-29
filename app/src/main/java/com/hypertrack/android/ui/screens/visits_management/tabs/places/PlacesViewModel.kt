@@ -7,10 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.utils.OsUtilsProvider
 import kotlinx.coroutines.launch
 
 class PlacesViewModel(
-    private val placesRepository: PlacesRepository
+    private val placesRepository: PlacesRepository,
+    private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
     val loadingState = MutableLiveData<Boolean>()
@@ -30,6 +32,10 @@ class PlacesViewModel(
             placesRepository.refreshGeofences()
             loadingState.postValue(false)
         }
+    }
+
+    fun createPlacesAdapter(): PlacesAdapter {
+        return PlacesAdapter(osUtilsProvider)
     }
 
 }

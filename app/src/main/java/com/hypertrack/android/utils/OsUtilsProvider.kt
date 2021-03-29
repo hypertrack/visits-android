@@ -51,11 +51,19 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
             }
         }
         return Address(
-                street = stubStreet(latitude, longitude),
-                postalCode = null,
-                city = null,
-                country = null
+            street = stubStreet(latitude, longitude),
+            postalCode = null,
+            city = null,
+            country = null
         )
+    }
+
+    fun getPlaceFromCoordinates(latitude: Double, longitude: Double): android.location.Address? {
+        return try {
+            Geocoder(context).let { it.getFromLocation(latitude, longitude, 1)?.get(0) }
+        } catch (t: Throwable) {
+            null
+        }
     }
 
     fun getLocalDate(): LocalDate = LocalDate.now()

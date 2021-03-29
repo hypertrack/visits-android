@@ -13,6 +13,7 @@ import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.ui.screens.driver_id_input.DriverLoginViewModel
 import com.hypertrack.android.ui.screens.permission_request.PermissionRequestViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesViewModel
+import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TimeDistanceFormatter
 import com.hypertrack.android.view_models.HistoryViewModel
 
@@ -28,13 +29,15 @@ class UserScopeViewModelFactory(
     private val permissionsInteractor: PermissionsInteractor,
     private val accessTokenRepository: AccessTokenRepository,
     private val timeLengthFormatter: TimeDistanceFormatter,
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    private val osUtilsProvider: OsUtilsProvider,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             PlacesViewModel::class.java -> PlacesViewModel(
-                placesRepository
+                placesRepository,
+                osUtilsProvider
             ) as T
             PermissionRequestViewModel::class.java -> PermissionRequestViewModel(
                 permissionsInteractor,
