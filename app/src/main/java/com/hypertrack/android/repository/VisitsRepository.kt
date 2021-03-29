@@ -58,11 +58,11 @@ class VisitsRepository(
 
     suspend fun refreshVisits() {
         // Log.v(TAG, "Refreshing visits")
-        val geofences = apiClient.getGeofences()
+//        val geofences = apiClient.getGeofences()
         // Log.v(TAG, "Got geofences $geofences")
         val trips = apiClient.getTrips()
         // Log.v(TAG, "Got trips $trips")
-        val prototypes: Set<VisitDataSource> = trips.union(geofences)
+        val prototypes: Set<VisitDataSource> = trips.toSet()/*.union(geofences)*/
         // Log.d(TAG, "Total prototypes $prototypes")
         prototypes.forEach { prototype ->
             // Log.v(TAG, "Processing prototype $prototype")
