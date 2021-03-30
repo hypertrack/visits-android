@@ -1,4 +1,4 @@
-name: Android CI
+name: Latest Build
 
 on:
   push:
@@ -35,5 +35,5 @@ jobs:
     # Release artifact  
     - uses: actions/upload-artifact@v1
       with:
-        name: visits-app-release-latest.apk
+        name: visits-app-latest.apk
         path: app/build/outputs/apk/release/app-release.apk
