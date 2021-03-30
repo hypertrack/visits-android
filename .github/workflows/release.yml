@@ -19,6 +19,9 @@ jobs:
         with:
           path: ~/.gradle/wrapper/dists/
           key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      # Get the version from the tag
+      - name: Release Name
+        run: echo "Version name is $GITHUB_REF"
       # Build itself
       - name: Build with Gradle
         run: ./gradlew assembleRelease
