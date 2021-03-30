@@ -24,7 +24,7 @@ jobs:
     - name: Decode release keystore
       env:
           APP_KEYSTORE: ${{ secrets.APP_KEYSTORE }}
-      run: echo $APP_KEYSTORE | base64 --decode > app/keystore.jks
+      run: echo $APP_KEYSTORE | base64 --decode > app/logistics.keystore
     - name: Keystore credentials
       env:
           KEYSTORE_CREDENTIALS: ${{ secrets.KEYSTORE_CREDENTIALS }}
@@ -35,5 +35,5 @@ jobs:
     # Release artifact  
     - uses: actions/upload-artifact@v1
       with:
-        name: live-app-release-latest.apk
+        name: visits-app-release-latest.apk
         path: app/build/outputs/apk/release/app-release.apk
