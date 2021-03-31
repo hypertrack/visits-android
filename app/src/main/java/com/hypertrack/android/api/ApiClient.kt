@@ -99,13 +99,15 @@ class ApiClient(
             with(api.getHistory(deviceId, day.format(DateTimeFormatter.ISO_LOCAL_DATE), timezone.id)) {
                 if (isSuccessful) {
                     return body().asHistory()
+                } else {
+                    return HistoryError(HttpException(this))
                 }
             }
         } catch (e: Throwable) {
             Log.w(TAG, "Got exception $e fetching device history")
             return HistoryError(e)
         }
-        return HistoryError(null)
+
     }
 
     companion object {
