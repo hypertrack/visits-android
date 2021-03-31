@@ -8,6 +8,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
@@ -19,16 +20,19 @@ import com.google.android.material.math.MathUtils
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.ui.base.AnimatedDialog
 import com.hypertrack.android.ui.common.SnackbarUtil
+import com.hypertrack.android.ui.common.hide
+import com.hypertrack.android.ui.common.setGoneState
+import com.hypertrack.android.ui.common.show
 import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_map_webview.*
+import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.coroutines.launch
 
 class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
-    private val progress: AnimatedDialog by lazy { AnimatedDialog(requireContext()) }
     private var state: LoadingProgressState = LoadingProgressState.LOADING
 
     private val historyViewModel: HistoryViewModel by viewModels {
@@ -56,7 +60,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             historyRenderer?.let { map ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     map.showHistory(history)
-                    if (progress.isShowing) progress.dismiss()
+                    displayLoadingState(false)
                     mapLoaderCanvas.visibility = View.GONE
                     state = LoadingProgressState.DONE
                 }
@@ -74,13 +78,13 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
 
     override fun onResume() {
         super.onResume()
-        if (state == LoadingProgressState.LOADING) progress.show()
-        historyViewModel.getHistory()
+        if (state == LoadingProgressState.LOADING) displayLoadingState(true)
+        historyViewModel.refreshHistory()
     }
 
     override fun onPause() {
         super.onPause()
-        if (progress.isShowing) progress.dismiss()
+        if (progress.isVisible) displayLoadingState(false)
     }
 
     private fun setupTimeline(
@@ -106,18 +110,27 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         }
 
         scrim.setOnClickListener { bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED }
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 val baseColor = Color.BLACK
-                val baseAlpha = ResourcesCompat.getFloat(resources, R.dimen.material_emphasis_medium)
+                val baseAlpha =
+                    ResourcesCompat.getFloat(resources, R.dimen.material_emphasis_medium)
                 val alpha = MathUtils.lerp(0f, 255f, slideOffset * baseAlpha).toInt()
                 val color = Color.argb(alpha, baseColor.red, baseColor.green, baseColor.blue)
                 scrim.setBackgroundColor(color)
                 scrim.visibility = if (slideOffset > 0) View.VISIBLE else View.GONE
             }
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })
+    }
+
+    private fun displayLoadingState(isLoading: Boolean) {
+        progress.setGoneState(!isLoading)
+        progress.background = null
+        if (isLoading) loader.playAnimation() else loader.cancelAnimation()
     }
 
     companion object {

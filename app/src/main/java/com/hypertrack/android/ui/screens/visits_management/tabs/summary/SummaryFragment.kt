@@ -5,13 +5,11 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import com.hypertrack.android.models.Summary
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.common.DateTimeUtils
-import com.hypertrack.android.ui.common.DistanceUtils
-import com.hypertrack.android.ui.common.SnackbarUtil
-import com.hypertrack.android.ui.common.setLinearLayoutManager
+import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_summary.*
+import kotlinx.android.synthetic.main.progress_bar.*
 
 class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
 
@@ -27,9 +25,11 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
         rvSummary.setLinearLayoutManager(requireContext())
         rvSummary.adapter = adapter
 
+        displayLoadingState(true)
+
         vm.summary.observe(viewLifecycleOwner, { summary ->
-            srlSummary.isRefreshing = false
             displaySummary(summary)
+            displayLoadingState(false)
         })
 
         vm.error.observe(viewLifecycleOwner, { error ->
@@ -48,29 +48,33 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
 
     private fun displaySummary(summary: Summary) {
         val items = listOf(
-                SummaryItem(
-                        R.drawable.ic_ht_eta,
-                        getString(R.string.summary_total_tracking_time),
-                        DateTimeUtils.secondsToLocalizedString(summary.totalDuration)
-                ),
-                SummaryItem(
-                        R.drawable.ic_ht_drive,
-                        getString(R.string.summary_drive),
-                        DateTimeUtils.secondsToLocalizedString(summary.totalDriveDuration),
-                        DistanceUtils.metersToDistanceString(summary.totalDriveDistance)
-                ),
-                SummaryItem(
-                        R.drawable.ic_ht_walk, getString(R.string.summary_walk),
-                        DateTimeUtils.secondsToLocalizedString(summary.totalWalkDuration),
-                        resources.getString(R.string.steps, summary.stepsCount)
-                ),
-                SummaryItem(
-                        R.drawable.ic_ht_stop,
-                        getString(R.string.summary_stop),
-                        DateTimeUtils.secondsToLocalizedString(summary.totalStopDuration)
-                ),
+            SummaryItem(
+                R.drawable.ic_ht_eta,
+                getString(R.string.summary_total_tracking_time),
+                DateTimeUtils.secondsToLocalizedString(summary.totalDuration)
+            ),
+            SummaryItem(
+                R.drawable.ic_ht_drive,
+                getString(R.string.summary_drive),
+                DateTimeUtils.secondsToLocalizedString(summary.totalDriveDuration),
+                DistanceUtils.metersToDistanceString(summary.totalDriveDistance)
+            ),
+            SummaryItem(
+                R.drawable.ic_ht_walk, getString(R.string.summary_walk),
+                DateTimeUtils.secondsToLocalizedString(summary.totalWalkDuration),
+                resources.getString(R.string.steps, summary.stepsCount)
+            ),
+            SummaryItem(
+                R.drawable.ic_ht_stop,
+                getString(R.string.summary_stop),
+                DateTimeUtils.secondsToLocalizedString(summary.totalStopDuration)
+            ),
         )
         adapter.updateItems(items)
+    }
+
+    private fun displayLoadingState(isLoading: Boolean) {
+        srlSummary.isRefreshing = isLoading
     }
 
     companion object {
