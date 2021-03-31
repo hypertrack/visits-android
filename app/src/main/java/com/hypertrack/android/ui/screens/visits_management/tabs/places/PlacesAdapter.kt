@@ -22,7 +22,7 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
     ): BaseAdapter.BaseVh<PlaceItem> {
         return object : BaseContainerVh<PlaceItem>(view, baseClickListener) {
             override fun bind(item: PlaceItem) {
-                (item.geofence.marker?.markers?.count() ?: 0).let {
+                (item.geofence.visitsCount).let {
                     if (it > 0) {
                         val timesString =
                             MyApplication.context.resources.getQuantityString(R.plurals.time, it)

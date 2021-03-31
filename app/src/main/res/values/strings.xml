@@ -95,6 +95,7 @@
 
     <string name="places_no_places">You don\'t have Places yet</string>
     <string name="places_visited">Visited %s</string>
+    <string name="places_directions_button">Show in Maps app</string>
     <string name="places_not_visited">Not visited</string>
 
     <plurals name="time">

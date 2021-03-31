@@ -68,27 +68,6 @@
                 android:paddingBottom="16dp">
 
 
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/map"
-                    android:name="com.google.android.gms.maps.SupportMapFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_marginBottom="2dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:context=".MapsActivity" />
-
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/ivLocation"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/map"
-                    app:srcCompat="@drawable/ic_location" />
-
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTitleLocation"
                     android:layout_width="0dp"
@@ -104,6 +83,23 @@
                     app:layout_constraintStart_toEndOf="@id/ivLocation"
                     app:layout_constraintTop_toTopOf="@+id/ivLocation" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMetadata"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAddress"
+                    tools:layout_editor_absoluteX="0dp" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:context=".MapsActivity" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvAddress"
                     android:layout_width="0dp"
@@ -116,13 +112,32 @@
                     app:layout_constraintStart_toStartOf="@id/tvTitleLocation"
                     app:layout_constraintTop_toBottomOf="@id/tvTitleLocation" />
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivLocation"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/map"
+                    app:srcCompat="@drawable/ic_location" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMetadata"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/bDirections"
+                    style="@style/ActionButtonStyle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAddress"
-                    tools:layout_editor_absoluteX="0dp" />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/medium"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="@string/places_directions_button"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvMetadata" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

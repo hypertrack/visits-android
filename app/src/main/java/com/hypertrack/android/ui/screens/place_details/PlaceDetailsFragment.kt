@@ -43,8 +43,16 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
             metadataAdapter.updateItems(it)
         })
 
+        vm.externalMapsIntent.observe(viewLifecycleOwner, {
+            mainActivity().startActivity(it)
+        })
+
         ivBack.setOnClickListener {
             mainActivity().onBackPressed()
+        }
+
+        bDirections.setOnClickListener {
+            vm.onDirectionsClick()
         }
     }
 

@@ -174,6 +174,9 @@ data class Geofence(
         get() = metadata?.get("name").let {
             if (it is String) it else null
         }
+
+    val visitsCount: Int
+        get() = marker?.markers?.count() ?: 0
 }
 
 class Point(
