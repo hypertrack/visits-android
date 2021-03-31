@@ -6,6 +6,7 @@ import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
 import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.ui.common.ParamViewModelFactory
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHistoryStyle
@@ -82,6 +83,13 @@ object Injector {
         )
     }
 
+    fun <T> provideParamVmFactory(param: T): ParamViewModelFactory<T> {
+        return ParamViewModelFactory(
+            param,
+            getUserScope().placesRepository,
+            getOsUtilsProvider(MyApplication.context)
+        )
+    }
 
     fun provideUserScopeViewModelFactory(): UserScopeViewModelFactory {
         return getUserScope().userScopeViewModelFactory
@@ -100,12 +108,14 @@ object Injector {
                 getOsUtilsProvider(MyApplication.context)
             )
             val scope = CoroutineScope(Dispatchers.IO)
+            val placesRepository = getPlacesRepository()
             val hyperTrackService = getHyperTrackService(context)
             userScope = UserScope(
                 historyRepository,
+                placesRepository,
                 UserScopeViewModelFactory(
                     getVisitsRepo(context),
-                    getPlacesRepository(),
+                    placesRepository,
                     historyRepository,
                     getDriverRepo(context),
                     getAccountRepo(context),
@@ -267,10 +277,11 @@ object Injector {
 }
 
 private class UserScope(
-        val historyRepository: HistoryRepository,
-        val userScopeViewModelFactory: UserScopeViewModelFactory,
-        val photoUploadInteractor: PhotoUploadInteractor,
-        val hyperTrackService: HyperTrackService
+    val historyRepository: HistoryRepository,
+    val placesRepository: PlacesRepository,
+    val userScopeViewModelFactory: UserScopeViewModelFactory,
+    val photoUploadInteractor: PhotoUploadInteractor,
+    val hyperTrackService: HyperTrackService
 )
 
 fun interface Factory<A, T> {

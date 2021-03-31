@@ -15,4 +15,9 @@ class PlacesRepository(
         val res = apiClient.getGeofences()
         geofences.postValue(res)
     }
+
+    fun getGeofence(geofenceId: String): Geofence {
+        //todo handle null
+        return geofences.value?.filter { it._id == geofenceId }?.firstOrNull()!!
+    }
 }
