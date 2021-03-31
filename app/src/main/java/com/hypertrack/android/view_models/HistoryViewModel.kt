@@ -11,6 +11,7 @@ import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.asTiles
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.utils.TimeDistanceFormatter
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,7 @@ class HistoryViewModel(
         }
     }
 
-    val error = MutableLiveData<String?>(null)
+    val error = SingleLiveEvent<String?>()
 
     fun refreshHistory() {
         viewModelScope.launch {

@@ -169,8 +169,9 @@ class VisitsManagementViewModel(
         MainScope().launch {
             historyRepository.getHistory().also {
                 if (it is HistoryError) {
-                    //todo
-                    error.postValue(/*it.error?.message*/ MyApplication.context.getString(R.string.history_error))
+                    error.postValue(
+                        it.error?.message ?: MyApplication.context.getString(R.string.history_error)
+                    )
                 }
             }
         }
