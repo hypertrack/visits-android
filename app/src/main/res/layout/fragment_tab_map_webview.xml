@@ -18,7 +18,16 @@
         android:id="@+id/mapLoaderCanvas"
         android:elevation="10dp"
         android:background="@color/colorWhite"
-        android:visibility="visible"/>
+        android:visibility="visible">
+
+        <include
+            android:id="@+id/progress"
+            layout="@layout/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="visible" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/scrim"

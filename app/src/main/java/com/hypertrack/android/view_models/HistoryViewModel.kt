@@ -39,7 +39,7 @@ class HistoryViewModel(
 
     val error = MutableLiveData<String?>(null)
 
-    fun getHistory() {
+    fun refreshHistory() {
         viewModelScope.launch {
             when (val res = historyRepository.getHistory()) {
                 is HistoryError -> {
@@ -49,7 +49,6 @@ class HistoryViewModel(
                     if (res.locationTimePoints.isEmpty()) {
                         error.postValue("No history is available.")
                     }
-
                 }
             }
         }
