@@ -32,6 +32,9 @@
         <action
             android:id="@+id/action_visitManagementFragment_to_visitDetailsFragment"
             app:destination="@id/visitDetailsFragment" />
+        <action
+            android:id="@+id/action_visitManagementFragment_to_placeDetailsFragment"
+            app:destination="@id/placeDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/visitDetailsFragment"
@@ -93,4 +96,12 @@
     <action
         android:id="@+id/action_global_permissionRequestFragment"
         app:destination="@id/permissionRequestFragment" />
+    <fragment
+        android:id="@+id/placeDetailsFragment"
+        android:name="com.hypertrack.android.ui.screens.place_details.PlaceDetailsFragment"
+        android:label="PlaceDetailsFragment">
+        <argument
+            android:name="geofenceId"
+            app:argType="string" />
+    </fragment>
 </navigation>

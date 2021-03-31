@@ -1,6 +1,7 @@
 package com.hypertrack.android.api
 
 import android.graphics.Bitmap
+import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
@@ -120,9 +121,9 @@ data class Trip(
 
 @JsonClass(generateAdapter = true)
 data class TripDestination(
-        @field:Json(name = "address") val address: String?,
-        @field:Json(name = "geometry") val geometry: Geometry,
-        @field:Json(name = "arrived_at") val arrivedAt: String?
+    @field:Json(name = "address") val address: String?,
+    @field:Json(name = "geometry") val geometry: Geometry,
+    @field:Json(name = "arrived_at") val arrivedAt: String?
 )
 
 @JsonClass(generateAdapter = true)
@@ -162,6 +163,20 @@ data class Geofence(
         get() = if (address == null) "[$longitude, $latitude]" else "$address"
     val type: String
         get() = geometry.type
+
+    val fullAddress: String?
+        get() = address?.let { "${it.city}, ${it.street}" }
+
+    val latLng: LatLng
+        get() = LatLng(latitude, longitude)
+
+    val name: String?
+        get() = metadata?.get("name").let {
+            if (it is String) it else null
+        }
+
+    val visitsCount: Int
+        get() = marker?.markers?.count() ?: 0
 }
 
 class Point(

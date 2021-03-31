@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragmentDirections
 import com.hypertrack.android.utils.OsUtilsProvider
 import kotlinx.coroutines.launch
 
@@ -20,7 +21,6 @@ class PlacesViewModel(
     val places: LiveData<List<PlaceItem>> =
         Transformations.map(placesRepository.geofences) { fences ->
             fences.map { PlaceItem(it) }
-//            listOf()
         }
 
     init {
@@ -37,6 +37,14 @@ class PlacesViewModel(
 
     fun createPlacesAdapter(): PlacesAdapter {
         return PlacesAdapter(osUtilsProvider)
+    }
+
+    fun onPlaceClick(placeItem: PlaceItem) {
+        destination.postValue(
+            VisitsManagementFragmentDirections.actionVisitManagementFragmentToPlaceDetailsFragment(
+                placeItem.geofence._id
+            )
+        )
     }
 
 }
