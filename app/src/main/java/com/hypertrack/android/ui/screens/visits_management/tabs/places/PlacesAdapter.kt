@@ -35,7 +35,7 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                         } $timesString"
                             .toView(containerView.tvVisited)
                     } else {
-                        containerView.tvVisited.setText(null)
+                        containerView.tvVisited.setText(R.string.places_not_visited)
                     }
                 }
                 ((item.geofence.metadata?.get("name")
