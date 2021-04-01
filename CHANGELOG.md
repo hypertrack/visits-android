@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.0] - 2021-03-31
+- Added Places tab
+- Added Place details
+
 ## [0.5.3] - 2021-03-26
 - Minor Sign Up changes
 
