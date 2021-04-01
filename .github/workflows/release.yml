@@ -23,6 +23,19 @@ jobs:
       # Get the version from the tag
       - name: Release Name
         run: echo "Version name is $GITHUB_REF"
+      # Env and temp files setup
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_CONFIG: ${{ secrets.GOOGLE_SERVICES_CONFIG }}
+        run: echo $GOOGLE_SERVICES_CONFIG > app/google-services.json
+      - name: Decode release keystore
+        env:
+          APP_KEYSTORE: ${{ secrets.APP_KEYSTORE }}
+        run: echo $APP_KEYSTORE | base64 --decode > app/logistics.keystore
+      - name: Keystore credentials
+        env:
+          KEYSTORE_CREDENTIALS: ${{ secrets.KEYSTORE_CREDENTIALS }}
+        run: echo $KEYSTORE_CREDENTIALS | base64 --decode >> gradle.properties      
       # Build itself
       - name: Build with Gradle
         run: ./gradlew assembleRelease
