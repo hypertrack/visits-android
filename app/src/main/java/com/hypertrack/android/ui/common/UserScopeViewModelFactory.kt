@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.ui.screens.add_place.AddPlaceViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModel
@@ -35,6 +36,11 @@ class UserScopeViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
+            AddPlaceViewModel::class.java -> AddPlaceViewModel(
+                placesRepository,
+                historyRepository,
+                osUtilsProvider
+            ) as T
             PlacesViewModel::class.java -> PlacesViewModel(
                 placesRepository,
                 osUtilsProvider

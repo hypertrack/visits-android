@@ -47,4 +47,8 @@ class PlacesViewModel(
         )
     }
 
+    fun onAddPlaceClicked() {
+        destination.postValue(VisitsManagementFragmentDirections.actionVisitManagementFragmentToAddPlaceFragment())
+    }
+
 }

@@ -93,7 +93,9 @@ dependencies {
     // ViewModel and LiveData
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
     implementation 'com.squareup.okhttp3:okhttp:4.4.0'

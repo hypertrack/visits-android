@@ -98,6 +98,10 @@
     <string name="places_directions_button">Show in Maps app</string>
     <string name="places_not_visited">Not visited</string>
 
+    <string name="add_place_confirm">Confirm</string>
+    <string name="add_place_set_on_map">Set on map</string>
+    <string name="add_place">Add place</string>
+
     <plurals name="time">
         <item quantity="one">time</item>
         <item quantity="other">times</item>
