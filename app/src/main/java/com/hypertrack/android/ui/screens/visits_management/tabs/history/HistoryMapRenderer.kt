@@ -62,7 +62,7 @@ class GoogleMapHistoryRenderer(
                         if (it != null) {
                             map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), CITY_LEVEL_ZOOM))
                         } else {
-                            map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
+//                            map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
                         }
                     }
                 } else {
