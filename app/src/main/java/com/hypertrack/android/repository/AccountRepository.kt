@@ -46,11 +46,10 @@ class AccountRepository(
         }
 
     suspend fun onKeyReceived(
-            key: String,
-            checkInEnabled: String = "false",
-            pickUpAllowed: String = "true"
+        key: String,
+        checkInEnabled: Boolean? = null,
+        pickUpAllowed: Boolean? = null
     ): Boolean {
-
         val sdk = serviceLocator.getHyperTrackService(key)
         // Log.d(TAG, "HyperTrack deviceId ${sdk.deviceId}")
 
@@ -69,20 +68,17 @@ class AccountRepository(
             Suspended -> {
             } // Log.d(TAG, "Account is suspended or device was deleted")
         }
-        if (checkInEnabled in listOf("true", "True")) {
-            isManualCheckInAllowed = true
-        }
-        if (pickUpAllowed in listOf("false", "False")) {
-            isPickUpAllowed = false
-        }
+
+        isManualCheckInAllowed = checkInEnabled ?: true
+        isPickUpAllowed = pickUpAllowed ?: false
 
         accountDataStorage.saveAccountData(
-                AccountData(
-                        publishableKey = key,
-                        lastToken = token,
-                        isManualVisitEnabled = isManualCheckInAllowed,
-                        _pickUpAllowed = isPickUpAllowed
-                )
+            AccountData(
+                publishableKey = key,
+                lastToken = token,
+                isManualVisitEnabled = isManualCheckInAllowed,
+                _pickUpAllowed = isPickUpAllowed
+            )
         )
         accountDataStorage.persistRepository(accessTokenRepository)
         clearLoginAction()

@@ -47,11 +47,12 @@ class SplashScreenViewModel(
         // as well as configuration parameters:
         //                  show_manual_visits (default false)
         //                  auto_check_in (default true)
+
         val key = parameters["publishable_key"] as String?
         val email = parameters["email"] as String?
         val driverId = parameters["driver_id"] as String?
-        val showCheckIn = parameters["show_manual_visits"] as String? ?: ""
-        val pickUpAllowed = parameters["pick_up_allowed"] as String? ?: ""
+        val showCheckIn = (parameters["show_manual_visits"] as String?).toBoolean()
+        val pickUpAllowed = (parameters["pick_up_allowed"] as String?).toBoolean()
         // Log.v(TAG, "Got email $email, pk $key, driverId, $driverId, showCheckIn $showCheckIn, auto checking $autoCheckIn pickUp allowed $pickUpAllowed")
         if (key != null) {
             // Log.d(TAG, "Got key $key")
@@ -109,4 +110,12 @@ class SplashScreenViewModel(
         const val TAG = "SplashScreenVM"
     }
 
+    fun String?.toBoolean(): Boolean? {
+        return when (this) {
+            "False", "false" -> false
+            "true", "True" -> true
+            "", null -> null
+            else -> null
+        }
+    }
 }

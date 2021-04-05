@@ -69,7 +69,7 @@ class LoginInteractorImpl(
     }
 
     private suspend fun loginWithPublishableKey(key: String, email: String): Boolean {
-        val pkValid = accountRepository.onKeyReceived(key, "true")
+        val pkValid = accountRepository.onKeyReceived(key = key, checkInEnabled = true)
         if (pkValid) {
             driverRepository.driverId = email
             return true
