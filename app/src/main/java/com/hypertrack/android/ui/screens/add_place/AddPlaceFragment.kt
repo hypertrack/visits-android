@@ -5,12 +5,10 @@ import android.text.Editable
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.view_models.HistoryViewModel
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_add_place.*
 
@@ -31,6 +29,9 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
 
         locations.setLinearLayoutManager(requireContext())
         locations.adapter = adapter
+        adapter.setOnItemClickListener { adapter, view, position ->
+            vm.onPlaceItemClick(this.adapter.getItem(position))
+        }
 
         val watcher = object : DisablableTextWatcher() {
             override fun afterChanged(text: String) {
@@ -40,9 +41,14 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         search.addTextChangedListener(watcher)
         Utils.showKeyboard(mainActivity(), search)
 
+        search.setOnFocusChangeListener { v, hasFocus ->
+            vm.onSearchViewFocus()
+        }
+
         vm.places.observe(viewLifecycleOwner, {
             adapter.clear()
             adapter.addAll(it)
+            adapter.notifyDataSetChanged()
         })
 
         vm.error.observe(viewLifecycleOwner, {
@@ -65,7 +71,7 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
 
         set_on_map.hide()
         vm.showSetOnMapButton.observe(viewLifecycleOwner, {
-//            set_on_map.setGoneState(!it)
+            set_on_map.setGoneState(!it)
         })
 
         vm.showPlacesList.observe(viewLifecycleOwner, {
@@ -85,7 +91,9 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         })
 
         set_on_map.setOnClickListener {
+            Utils.hideKeyboard(mainActivity())
             vm.onSetOnMapClicked()
+            search.clearFocus()
         }
 
         confirm.setOnClickListener {

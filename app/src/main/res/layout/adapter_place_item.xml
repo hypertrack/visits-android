@@ -10,7 +10,7 @@
         android:id="@+id/icon"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:background="@drawable/ic_refresh"
+        android:background="@drawable/ic_places"
         android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

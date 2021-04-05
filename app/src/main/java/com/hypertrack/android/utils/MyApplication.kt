@@ -25,7 +25,7 @@ class MyApplication : Application() {
 
         Places.initialize(
             applicationContext,
-            getString(R.string.google_api_key),
+            getString(R.string.google_places_api_key),
             Locale.getDefault()
         );
 

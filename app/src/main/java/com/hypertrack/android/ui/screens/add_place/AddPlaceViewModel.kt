@@ -1,16 +1,20 @@
 package com.hypertrack.android.ui.screens.add_place
 
 import android.annotation.SuppressLint
-import android.location.Address
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.repository.HistoryRepository
@@ -21,6 +25,8 @@ import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
 import kotlinx.coroutines.launch
+import java.util.*
+
 
 class AddPlaceViewModel(
     private val placesRepository: PlacesRepository,
@@ -68,11 +74,6 @@ class AddPlaceViewModel(
     //todo change context?
     private val placesClient: PlacesClient by lazy { Places.createClient(MyApplication.context) }
 
-    init {
-        setOnMap.postValue(true)
-        showSetOnMapButton.postValue(false)
-    }
-
     @SuppressLint("MissingPermission")
     fun onMapReady(googleMap: GoogleMap) {
         showSetOnMapButton.postValue(true)
@@ -94,49 +95,81 @@ class AddPlaceViewModel(
     }
 
     fun onSearchQueryChanged(query: String) {
-//        if (setOnMap.value == false) {
-//            // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
-//            // and once again when the user makes a selection (for example when calling selectPlace()).
-//
-//            // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
-//            // and once again when the user makes a selection (for example when calling selectPlace()).
-//            if (token == null) {
-//                token = AutocompleteSessionToken.newInstance()
-//            }
-//
-//            // Use the builder to create a FindAutocompletePredictionsRequest.
-//
-//            // Use the builder to create a FindAutocompletePredictionsRequest.
-//            val request = FindAutocompletePredictionsRequest.builder()
-//                .setTypeFilter(TypeFilter.GEOCODE)
-//                .setSessionToken(token)
-//                .setQuery(query)
-//                .build()
-//
-//            placesClient.findAutocompletePredictions(request)
-//                .addOnSuccessListener { response ->
-//                    places.postValue(PlaceModel.from(response.autocompletePredictions))
+        if (setOnMap.value == false) {
+            // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
+            // and once again when the user makes a selection (for example when calling selectPlace()).
+
+            // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
+            // and once again when the user makes a selection (for example when calling selectPlace()).
+            if (token == null) {
+                token = AutocompleteSessionToken.newInstance()
+            }
+
+            // Use the builder to create a FindAutocompletePredictionsRequest.
+
+            // Use the builder to create a FindAutocompletePredictionsRequest.
+            val request = FindAutocompletePredictionsRequest.builder()
+                .setTypeFilter(TypeFilter.GEOCODE)
+                .setSessionToken(token)
+                .setQuery(query)
+                .build()
+
+            placesClient.findAutocompletePredictions(request)
+                .addOnSuccessListener { response ->
+                    Log.d("cutag", "found ${response.autocompletePredictions.firstOrNull()}")
+                    places.postValue(PlaceModel.from(response.autocompletePredictions))
+                }
+                .addOnFailureListener { e ->
+                    error.postValue(e.message)
+//                if (e is ApiException) {
 //                }
-//                .addOnFailureListener { e ->
-//                    error.postValue(e.message)
-////                if (e is ApiException) {
-////                }
-//                }
-//        }
+                }
+        }
     }
 
     fun onSetOnMapClicked() {
-        showSetOnMapButton.postValue(false)
-        setOnMap.postValue(true)
+        places.postValue(listOf())
+        changeSetOnMapState(true)
         displayAddress()
     }
 
     fun onConfirmClicked(address: String) {
+        proceedWithPlace(
+            address,
+            map.value!!.cameraPosition.target.latitude,
+            map.value!!.cameraPosition.target.longitude
+        )
+    }
+
+    fun onSearchViewFocus() {
+        if (setOnMap.value == true) {
+            changeSetOnMapState(false)
+        }
+    }
+
+    fun onPlaceItemClick(item: PlaceModel) {
+        val placeFields: List<Place.Field> =
+            listOf(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+        val request = FetchPlaceRequest.newInstance(item.placeId, placeFields)
+
+        placesClient.fetchPlace(request)
+            .addOnSuccessListener { response: FetchPlaceResponse ->
+                val place = response.place
+                place.latLng?.let {
+                    proceedWithPlace(place.address, it.latitude, it.longitude)
+                }
+            }
+            .addOnFailureListener { exception: java.lang.Exception ->
+                //todo handle error
+            }
+    }
+
+    private fun proceedWithPlace(address: String?, latitude: Double, longitude: Double) {
         viewModelScope.launch {
             loadingState.postValue(true)
             placesRepository.createGeofence(
-                map.value!!.cameraPosition.target.latitude,
-                map.value!!.cameraPosition.target.longitude,
+                latitude,
+                longitude,
                 address
             )
             loadingState.postValue(false)
@@ -152,6 +185,11 @@ class AddPlaceViewModel(
             ).let { "${it.city}, ${it.street}" })
         }
 
+    }
+
+    private fun changeSetOnMapState(state: Boolean) {
+        setOnMap.postValue(state)
+        showSetOnMapButton.postValue(!state)
     }
 
 }

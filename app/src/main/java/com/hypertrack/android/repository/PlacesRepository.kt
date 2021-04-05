@@ -22,12 +22,14 @@ class PlacesRepository(
         return geofences.value?.filter { it._id == geofenceId }?.firstOrNull()!!
     }
 
-    suspend fun createGeofence(latitude: Double, longitude: Double, name: String) {
+    suspend fun createGeofence(latitude: Double, longitude: Double, name: String?) {
         //todo handle error
         val res = apiClient.createGeofence(
-            latitude, longitude, mapOf(
-                "name" to name
-            )
+            latitude, longitude, name?.let {
+                mapOf(
+                    "name" to name
+                )
+            } ?: mapOf()
         )
         if (res.isSuccessful) {
             geofences.postValue(
