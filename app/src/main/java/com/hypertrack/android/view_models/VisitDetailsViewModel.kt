@@ -114,9 +114,13 @@ class VisitDetailsViewModel(
     }
 
     fun onPhotoClicked(visitPhotoItem: VisitPhotoItem) {
-        if(visitPhotoItem.visitPhoto.state == VisitPhotoState.ERROR) {
+        if (visitPhotoItem.visitPhoto.state == VisitPhotoState.ERROR) {
             visitsInteractor.retryVisitPhotoUpload(id, visitPhotoItem.visitPhoto)
         }
+    }
+
+    fun requestVisitNoteUpdate() {
+        updateNote()
     }
 
     companion object {

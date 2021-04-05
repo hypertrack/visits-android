@@ -167,6 +167,7 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         })
 
         tvTakePicture.setOnClickListener {
+            viewModel.requestVisitNoteUpdate()
             dispatchTakePictureIntent()
         }
 
