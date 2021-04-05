@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.1] - 2021-03-31
+- Enabled adding new Place
+- Manual Visit creation enabled by default
+- Bugfix
+
 ## [0.6.0] - 2021-03-31
 - Added Places tab
 - Added Place details
