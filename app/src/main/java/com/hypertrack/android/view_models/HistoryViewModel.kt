@@ -47,9 +47,9 @@ class HistoryViewModel(
                     error.postValue(res.error?.message)
                 }
                 is History -> {
-                    if (res.locationTimePoints.isEmpty()) {
-                        error.postValue("No history is available.")
-                    }
+//                    if (res.locationTimePoints.isEmpty()) {
+//                        error.postValue("No history is available.")
+//                    }
                 }
             }
         }

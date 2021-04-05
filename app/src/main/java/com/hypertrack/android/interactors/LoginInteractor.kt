@@ -69,7 +69,7 @@ class LoginInteractorImpl(
     }
 
     private suspend fun loginWithPublishableKey(key: String, email: String): Boolean {
-        val pkValid = accountRepository.onKeyReceived(key, "true")
+        val pkValid = accountRepository.onKeyReceived(key = key, checkInEnabled = true)
         if (pkValid) {
             driverRepository.driverId = email
             return true
@@ -111,68 +111,76 @@ class LoginInteractorImpl(
     }
 
     override suspend fun verifyByOtpCode(email: String, code: String): OtpResult {
-        val res = liveAccountUrlService.verifyEmailViaOtpCode(
-            "Basic ${servicesApiKey.toBase64()}",
-            LiveAccountApi.OtpBody(
-                email = email,
-                code = code
+        try {
+            val res = liveAccountUrlService.verifyEmailViaOtpCode(
+                "Basic ${servicesApiKey.toBase64()}",
+                LiveAccountApi.OtpBody(
+                    email = email,
+                    code = code
+                )
             )
-        )
-        if (res.isSuccessful) {
-            return try {
-                val pk = res.body()!!.publishableKey
-                val success = loginWithPublishableKey(pk, email)
-                if (success) {
-                    OtpSuccess
-                } else {
-                    OtpError(Exception("Invalid publishable key"))
-                }
-            } catch (e: Exception) {
-                OtpError(e)
-            }
-        } else {
-            BackendException(res).let {
-                return when (it.statusCode) {
-                    "CodeMismatchException" -> {
-                        OtpWrongCode
+            if (res.isSuccessful) {
+                return try {
+                    val pk = res.body()!!.publishableKey
+                    val success = loginWithPublishableKey(pk, email)
+                    if (success) {
+                        OtpSuccess
+                    } else {
+                        OtpError(Exception("Invalid publishable key"))
                     }
-                    "NotAuthorizedException" -> {
-                        if (it.message == "User cannot be confirmed. Current status is CONFIRMED") {
-                            OtpSignInRequired
-                        } else {
+                } catch (e: Exception) {
+                    OtpError(e)
+                }
+            } else {
+                BackendException(res).let {
+                    return when (it.statusCode) {
+                        "CodeMismatchException" -> {
+                            OtpWrongCode
+                        }
+                        "NotAuthorizedException" -> {
+                            if (it.message == "User cannot be confirmed. Current status is CONFIRMED") {
+                                OtpSignInRequired
+                            } else {
+                                OtpError(it)
+                            }
+                        }
+                        else -> {
                             OtpError(it)
                         }
                     }
-                    else -> {
-                        OtpError(it)
-                    }
                 }
             }
+        } catch (e: Exception) {
+            return OtpError(e)
         }
     }
 
     override suspend fun resendEmailConfirmation(email: String): ResendResult {
-        val res = liveAccountUrlService.resendOtpCode(
-            "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
-            LiveAccountApi.ResendBody(email)
-        )
-        if (res.isSuccessful) {
-            return ResendNoAction
-        } else {
-            BackendException(res).let {
-                return when (it.statusCode) {
-                    "InvalidParameterException" -> {
-                        if (it.message == "User is already confirmed.") {
-                            ResendAlreadyConfirmed
-                        } else {
+        try {
+            val res = liveAccountUrlService.resendOtpCode(
+                "Basic ${MyApplication.SERVICES_API_KEY.toBase64()}",
+                LiveAccountApi.ResendBody(email)
+            )
+            if (res.isSuccessful) {
+                return ResendNoAction
+            } else {
+                BackendException(res).let {
+                    return when (it.statusCode) {
+                        "InvalidParameterException" -> {
+                            if (it.message == "User is already confirmed.") {
+                                ResendAlreadyConfirmed
+                            } else {
+                                ResendError(it)
+                            }
+                        }
+                        else -> {
                             ResendError(it)
                         }
                     }
-                    else -> {
-                        ResendError(it)
-                    }
                 }
             }
+        } catch (e: Exception) {
+            return ResendError(e)
         }
     }
 
@@ -222,9 +230,13 @@ class LoginInteractorImpl(
     }
 
     private suspend fun getPublishableKeyFromToken(token: String): String {
-        val response = tokenService.getPublishableKey(token)
-        if (response.isSuccessful) return response.body()?.publishableKey ?: ""
-        return ""
+        try {
+            val response = tokenService.getPublishableKey(token)
+            if (response.isSuccessful) return response.body()?.publishableKey ?: ""
+            return ""
+        } catch (e: Exception) {
+            return ""
+        }
     }
 }
 
