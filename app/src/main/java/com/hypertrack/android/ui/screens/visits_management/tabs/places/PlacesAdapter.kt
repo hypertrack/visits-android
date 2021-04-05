@@ -56,8 +56,10 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                     address = osUtilsProvider.getPlaceFromCoordinates(
                         item.geofence.geometry.latitude,
                         item.geofence.geometry.longitude,
-                    )?.let {
-                        "${it.locality}, ${it.thoroughfare ?: "${item.geofence.geometry.latitude}, ${item.geofence.geometry.longitude}"}"
+                    )?.let { addr ->
+                        (addr.locality?.let { "$it, " } ?: "") +
+                                (addr.thoroughfare
+                                    ?: "${item.geofence.geometry.latitude}, ${item.geofence.geometry.longitude}")
                     }
                 }
                 (address
