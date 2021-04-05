@@ -9,6 +9,11 @@ import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_place.view.*
 import kotlinx.android.synthetic.main.item_spinner.view.*
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 
 class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
@@ -38,8 +43,12 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                         containerView.tvVisited.setText(R.string.places_not_visited)
                     }
                 }
-                ((item.geofence.metadata?.get("name")
-                    ?: item.geofence.geofence_id) as String).toView(containerView.tvTitle)
+                (item.geofence.name
+                    ?: item.geofence.address?.street
+                    ?: item.geofence.created_at.let {
+                        ZonedDateTime.parse(it)
+                            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+                    }).toView(containerView.tvTitle)
 
                 var address: String? = null
                 item.geofence.metadata?.get("address").let {
