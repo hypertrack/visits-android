@@ -9,25 +9,28 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.hypertrack.android.models.Location
 import com.hypertrack.android.repository.HistoryRepository
-import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.ZipLiveData
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 
 
 class AddPlaceViewModel(
-    private val historyRepository: HistoryRepository,
     private val osUtilsProvider: OsUtilsProvider,
-    private val placesClient: PlacesClient
+    private val placesClient: PlacesClient,
+    private val deviceLocationProvider: DeviceLocationProvider,
 ) : BaseViewModel() {
 
+    private val currentLocation = MutableLiveData<Location>()
     val places = MutableLiveData<List<PlaceModel>>()
     val setOnMap = MutableLiveData<Boolean>(false)
     val loadingState = MutableLiveData<Boolean>(false)
@@ -39,21 +42,38 @@ class AddPlaceViewModel(
     val searchText = MutableLiveData<String>()
     val error = SingleLiveEvent<String>()
 
+    //todo persist token?
+    private var token: AutocompleteSessionToken? = null
+    private var bias: RectangularBounds? = null
+
     init {
-        ZipLiveData(historyRepository.history, map).apply {
+        deviceLocationProvider.getCurrentLocation {
+            Log.e("cutag", "location")
+            currentLocation.postValue(it)
+        }
+    }
+
+    init {
+        ZipLiveData(currentLocation, map).apply {
             //todo check leak
             observeForever { pair ->
+                Log.e("cutag", "zip")
                 if (map.value!!.cameraPosition.target.latitude
                     < 0.1 && map.value!!.cameraPosition.target.longitude < 0.1
                 ) {
-                    pair.first.locationTimePoints.lastOrNull()?.let {
+                    pair.first.let { location ->
                         map.value!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
                                 LatLng(
-                                    it.first.latitude,
-                                    it.first.longitude
+                                    location.latitude,
+                                    location.longitude
                                 ), 13f
                             )
+                        )
+
+                        bias = RectangularBounds.newInstance(
+                            LatLng(location.latitude - 0.1, location.longitude + 0.1),  // SW
+                            LatLng(location.latitude + 0.1, location.longitude - 0.1) // NE
                         )
                     }
 
@@ -62,8 +82,6 @@ class AddPlaceViewModel(
         }
     }
 
-    //todo persist token?
-    private var token: AutocompleteSessionToken? = null
 
     @SuppressLint("MissingPermission")
     fun onMapReady(googleMap: GoogleMap) {
@@ -97,12 +115,12 @@ class AddPlaceViewModel(
             }
 
             // Use the builder to create a FindAutocompletePredictionsRequest.
-
-            // Use the builder to create a FindAutocompletePredictionsRequest.
+            Log.e("cutag", bias.toString())
             val request = FindAutocompletePredictionsRequest.builder()
-                .setTypeFilter(TypeFilter.GEOCODE)
+                .setTypeFilter(TypeFilter.ADDRESS)
                 .setSessionToken(token)
                 .setQuery(query)
+                .setLocationBias(bias)
                 .build()
 
             placesClient.findAutocompletePredictions(request)

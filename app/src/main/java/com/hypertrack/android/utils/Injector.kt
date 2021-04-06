@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
@@ -16,8 +15,8 @@ import com.hypertrack.android.ui.common.ParamViewModelFactory
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoViewModel
-import com.hypertrack.android.ui.screens.place_details.PlaceDetailsViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHistoryStyle
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.view_models.VisitDetailsViewModel
@@ -96,7 +95,7 @@ object Injector {
             param,
             getUserScope().placesRepository,
             getOsUtilsProvider(MyApplication.context),
-            placesClient
+            placesClient,
         )
     }
 
@@ -110,7 +109,7 @@ object Injector {
                     latLng,
                     address,
                     getUserScope().placesRepository,
-                    getOsUtilsProvider(MyApplication.context)
+                    getOsUtilsProvider(MyApplication.context),
                 ) as T
             }
         }
@@ -151,7 +150,8 @@ object Injector {
                     getTimeLengthFormatter(),
                     getVisitsApiClient(MyApplication.context),
                     getOsUtilsProvider(MyApplication.context),
-                    placesClient
+                    placesClient,
+                    getDeviceLocationProvider()
                 ),
                 PhotoUploadInteractorImpl(
                     getVisitsRepo(context),
@@ -297,7 +297,15 @@ object Injector {
         CognitoAccountLoginProviderImpl(context, LIVE_API_URL_BASE)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
-        GoogleMapHistoryRenderer(supportMapFragment, BaseHistoryStyle(MyApplication.context), FusedDeviceLocationProvider(MyApplication.context))
+        GoogleMapHistoryRenderer(
+            supportMapFragment,
+            BaseHistoryStyle(MyApplication.context),
+            getDeviceLocationProvider()
+        )
+
+    private fun getDeviceLocationProvider(): DeviceLocationProvider {
+        return FusedDeviceLocationProvider(MyApplication.context)
+    }
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }

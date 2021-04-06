@@ -1,23 +1,12 @@
 package com.hypertrack.android.ui.screens.add_place_info
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.TypeFilter
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FetchPlaceResponse
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.repository.CreateGeofenceError
 import com.hypertrack.android.repository.CreateGeofenceSuccess
 import com.hypertrack.android.repository.HistoryRepository
@@ -28,6 +17,7 @@ import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.ui.screens.add_place.AddPlaceFragmentDirections
 import com.hypertrack.android.ui.screens.add_place.PlaceModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
@@ -39,7 +29,7 @@ class AddPlaceInfoViewModel(
     private val latLng: LatLng,
     private val _address: String?,
     private val placesRepository: PlacesRepository,
-    private val osUtilsProvider: OsUtilsProvider
+    private val osUtilsProvider: OsUtilsProvider,
 ) : BaseViewModel() {
 
     val loadingState = MutableLiveData<Boolean>(false)

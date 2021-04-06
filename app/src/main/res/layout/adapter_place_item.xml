@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:padding="@dimen/content_padding">
+    android:paddingLeft="@dimen/content_padding"
+    android:paddingTop="@dimen/content_padding"
+    android:paddingRight="@dimen/content_padding">
 
     <ImageView
         android:id="@+id/icon"

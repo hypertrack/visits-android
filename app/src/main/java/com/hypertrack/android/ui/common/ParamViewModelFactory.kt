@@ -2,11 +2,10 @@ package com.hypertrack.android.ui.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.repository.PlacesRepository
-import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoViewModel
 import com.hypertrack.android.ui.screens.place_details.PlaceDetailsViewModel
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 
 @Suppress("UNCHECKED_CAST")
