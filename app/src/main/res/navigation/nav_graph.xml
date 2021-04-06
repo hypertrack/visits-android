@@ -38,6 +38,10 @@
         <action
             android:id="@+id/action_visitManagementFragment_to_addPlaceFragment"
             app:destination="@id/addPlaceFragment" />
+        <argument
+            android:name="tab"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/visitDetailsFragment"

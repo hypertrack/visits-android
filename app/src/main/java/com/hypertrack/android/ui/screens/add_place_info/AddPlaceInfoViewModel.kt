@@ -27,8 +27,10 @@ import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.ui.screens.add_place.AddPlaceFragmentDirections
 import com.hypertrack.android.ui.screens.add_place.PlaceModel
+import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -75,7 +77,14 @@ class AddPlaceInfoViewModel(
             loadingState.postValue(false)
             when (res) {
                 CreateGeofenceSuccess -> {
-                    destination.postValue(AddPlaceFragmentDirections.actionGlobalVisitManagementFragment())
+                    //todo
+                    destination.postValue(
+                        AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
+                            VisitsManagementFragment.tabIcons.indexOf(
+                                R.drawable.ic_places
+                            )
+                        )
+                    )
                 }
                 is CreateGeofenceError -> {
                     error.postValue(res.e.message)
