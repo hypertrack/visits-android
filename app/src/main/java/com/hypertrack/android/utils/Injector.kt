@@ -1,7 +1,13 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
 import com.hypertrack.android.interactors.*
@@ -9,6 +15,8 @@ import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.ParamViewModelFactory
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
+import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoViewModel
+import com.hypertrack.android.ui.screens.place_details.PlaceDetailsViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHistoryStyle
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
@@ -87,8 +95,25 @@ object Injector {
         return ParamViewModelFactory(
             param,
             getUserScope().placesRepository,
-            getOsUtilsProvider(MyApplication.context)
+            getOsUtilsProvider(MyApplication.context),
+            placesClient
         )
+    }
+
+    fun provideAddPlaceInfoVmFactory(
+        latLng: LatLng,
+        address: String?
+    ): ViewModelProvider.Factory {
+        return object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return AddPlaceInfoViewModel(
+                    latLng,
+                    address,
+                    getUserScope().placesRepository,
+                    getOsUtilsProvider(MyApplication.context)
+                ) as T
+            }
+        }
     }
 
     fun provideUserScopeViewModelFactory(): UserScopeViewModelFactory {
@@ -125,7 +150,8 @@ object Injector {
                     accessTokenRepository(MyApplication.context),
                     getTimeLengthFormatter(),
                     getVisitsApiClient(MyApplication.context),
-                    getOsUtilsProvider(MyApplication.context)
+                    getOsUtilsProvider(MyApplication.context),
+                    placesClient
                 ),
                 PhotoUploadInteractorImpl(
                     getVisitsRepo(context),
@@ -145,6 +171,10 @@ object Injector {
             )
         }
         return userScope!!
+    }
+
+    private val placesClient: PlacesClient by lazy {
+        Places.createClient(MyApplication.context)
     }
 
     private fun getFileRepository(): FileRepository {

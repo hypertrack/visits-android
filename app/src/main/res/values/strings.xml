@@ -99,8 +99,11 @@
     <string name="places_not_visited">Not visited</string>
 
     <string name="add_place_confirm">Confirm</string>
+    <string name="add_place_create">Create geofence</string>
     <string name="add_place_set_on_map">Set on map</string>
     <string name="add_place">Add place</string>
+    <string name="add_place_address">Address</string>
+    <string name="add_place_geofence_name">Geofence name</string>
 
     <plurals name="time">
         <item quantity="one">time</item>

@@ -4,12 +4,9 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
@@ -22,16 +19,13 @@ import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.ZipLiveData
-import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
-import kotlinx.coroutines.launch
-import java.util.*
 
 
 class AddPlaceViewModel(
-    private val placesRepository: PlacesRepository,
     private val historyRepository: HistoryRepository,
-    private val osUtilsProvider: OsUtilsProvider
+    private val osUtilsProvider: OsUtilsProvider,
+    private val placesClient: PlacesClient
 ) : BaseViewModel() {
 
     val places = MutableLiveData<List<PlaceModel>>()
@@ -53,7 +47,7 @@ class AddPlaceViewModel(
                     < 0.1 && map.value!!.cameraPosition.target.longitude < 0.1
                 ) {
                     pair.first.locationTimePoints.lastOrNull()?.let {
-                        map.value!!.animateCamera(
+                        map.value!!.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(
                                 LatLng(
                                     it.first.latitude,
@@ -70,9 +64,6 @@ class AddPlaceViewModel(
 
     //todo persist token?
     private var token: AutocompleteSessionToken? = null
-
-    //todo change context?
-    private val placesClient: PlacesClient by lazy { Places.createClient(MyApplication.context) }
 
     @SuppressLint("MissingPermission")
     fun onMapReady(googleMap: GoogleMap) {
@@ -134,11 +125,7 @@ class AddPlaceViewModel(
     }
 
     fun onConfirmClicked(address: String) {
-        proceedWithPlace(
-            address,
-            map.value!!.cameraPosition.target.latitude,
-            map.value!!.cameraPosition.target.longitude
-        )
+        proceed(map.value!!.cameraPosition.target, address)
     }
 
     fun onSearchViewFocus() {
@@ -156,7 +143,7 @@ class AddPlaceViewModel(
             .addOnSuccessListener { response: FetchPlaceResponse ->
                 val place = response.place
                 place.latLng?.let {
-                    proceedWithPlace(place.address, it.latitude, it.longitude)
+                    proceed(place.latLng!!, place.address)
                 }
             }
             .addOnFailureListener { exception: java.lang.Exception ->
@@ -164,17 +151,13 @@ class AddPlaceViewModel(
             }
     }
 
-    private fun proceedWithPlace(address: String?, latitude: Double, longitude: Double) {
-        viewModelScope.launch {
-            loadingState.postValue(true)
-            placesRepository.createGeofence(
-                latitude,
-                longitude,
+    private fun proceed(latLng: LatLng, address: String?) {
+        destination.postValue(
+            AddPlaceFragmentDirections.actionAddPlaceFragmentToAddPlaceInfoFragment(
+                latLng,
                 address
             )
-            loadingState.postValue(false)
-            popBackStack.postValue(true)
-        }
+        )
     }
 
     private fun displayAddress() {

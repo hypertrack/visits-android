@@ -2,10 +2,12 @@ package com.hypertrack.android.ui.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.screens.add_place.AddPlaceViewModel
+import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryViewModel
@@ -32,14 +34,16 @@ class UserScopeViewModelFactory(
     private val timeLengthFormatter: TimeDistanceFormatter,
     private val apiClient: ApiClient,
     private val osUtilsProvider: OsUtilsProvider,
+    private val placesClient: PlacesClient,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             AddPlaceViewModel::class.java -> AddPlaceViewModel(
-                placesRepository,
+                //todo change to location provider
                 historyRepository,
-                osUtilsProvider
+                osUtilsProvider,
+                placesClient
             ) as T
             PlacesViewModel::class.java -> PlacesViewModel(
                 placesRepository,

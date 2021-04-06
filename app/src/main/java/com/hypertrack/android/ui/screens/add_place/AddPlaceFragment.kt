@@ -26,6 +26,9 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         }
 
         toolbar.title = getString(R.string.add_place)
+        mainActivity().setSupportActionBar(toolbar)
+        mainActivity().supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        mainActivity().supportActionBar!!.setHomeButtonEnabled(true)
 
         locations.setLinearLayoutManager(requireContext())
         locations.adapter = adapter
@@ -86,8 +89,8 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             if (it) showProgress() else dismissProgress()
         })
 
-        vm.popBackStack.observe(viewLifecycleOwner, {
-            findNavController().popBackStack()
+        vm.destination.observe(viewLifecycleOwner, {
+            findNavController().navigate(it)
         })
 
         set_on_map.setOnClickListener {

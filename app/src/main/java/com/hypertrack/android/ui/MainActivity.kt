@@ -1,16 +1,14 @@
 package com.hypertrack.android.ui
 
 import android.content.Intent
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.hypertrack.android.ui.base.NavActivity
-import com.hypertrack.android.ui.screens.permission_request.PermissionRequestFragment
+import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.DeeplinkResultListener
 import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
 import com.hypertrack.logistics.android.github.NavGraphDirections
 import com.hypertrack.logistics.android.github.R
 
@@ -66,5 +64,10 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         if (getCurrentBaseFragment()?.onBackPressed() == false) {
             super.onBackPressed()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }
