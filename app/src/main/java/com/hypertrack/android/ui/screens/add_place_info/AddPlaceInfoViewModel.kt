@@ -67,12 +67,9 @@ class AddPlaceInfoViewModel(
             loadingState.postValue(false)
             when (res) {
                 CreateGeofenceSuccess -> {
-                    //todo
                     destination.postValue(
                         AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
-                            VisitsManagementFragment.tabIcons.indexOf(
-                                R.drawable.ic_places
-                            )
+                            VisitsManagementFragment.Tab.PLACES.ordinal
                         )
                     )
                 }

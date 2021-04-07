@@ -3,6 +3,7 @@ package com.hypertrack.android.ui.screens.visits_management
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -34,18 +35,14 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
     }
-    private val tabFragments = listOf(
-//        MapViewFragmentOld(),
-        MapViewFragment(),
-        PlacesFragment.getInstance(),
-        VisitsListFragment.newInstance(),
-        SummaryFragment.newInstance(),
-        ProfileFragment()
-    )
 
-    init {
-        check(tabIcons.size == tabFragments.size)
-    }
+    private val tabs = mapOf(
+        Tab.MAP to MapViewFragment(),
+        Tab.ORDERS to VisitsListFragment.newInstance(),
+        Tab.PLACES to PlacesFragment.getInstance(),
+        Tab.SUMMARY to SummaryFragment.newInstance(),
+        Tab.PROFILE to ProfileFragment()
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,10 +74,10 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         viewpager.adapter = object :
             FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-            override fun getCount(): Int = tabFragments.size
+            override fun getCount(): Int = tabs.size
 
             override fun getItem(position: Int): Fragment {
-                val fragment = tabFragments[position]
+                val fragment = tabs.getValue(Tab.values()[position])
                 if (fragment is MapViewFragmentOld) {
                     fragment.arguments = Bundle().apply {
                         putString(
@@ -91,13 +88,16 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
                 }
                 return fragment
             }
-
         }
 
         sliding_tabs.setupWithViewPager(viewpager)
         for (i in 0 until sliding_tabs.tabCount) {
             sliding_tabs.getTabAt(i)?.icon =
-                ResourcesCompat.getDrawable(resources, tabIcons[i], requireContext().theme)
+                ResourcesCompat.getDrawable(
+                    resources,
+                    Tab.values()[i].iconRes,
+                    requireContext().theme
+                )
         }
 
         visitsManagementViewModel.statusBarColor.observe(viewLifecycleOwner) { color ->
@@ -213,15 +213,16 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
     companion object {
         const val TAG = "VisitsManagementAct"
 
-        //todo change to enum
-        val tabIcons = listOf(
-            R.drawable.ic_map_tab,
-            R.drawable.ic_places,
-            R.drawable.ic_visits_list_tab,
-            R.drawable.ic_insights_tab,
-            R.drawable.ic_profile_tab
-        )
     }
 
+    enum class Tab(@DrawableRes val iconRes: Int) {
+        MAP(R.drawable.ic_map_tab),
+        ORDERS(R.drawable.ic_visits_list_tab),
+        PLACES(R.drawable.ic_places),
+
+        //        TIMELINE(R.drawable.,
+        SUMMARY(R.drawable.ic_insights_tab),
+        PROFILE(R.drawable.ic_profile_tab),
+    }
 }
 
