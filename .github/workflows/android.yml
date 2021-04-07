@@ -32,7 +32,8 @@ jobs:
     - name: Google Places API key
       env:
           PLACES_API_KEY: ${{secrets.PLACES_API_KEY}}
-      run: echo $PLACES_API_KEY >> gradle.properties    # Build itself  
+      run: echo $PLACES_API_KEY >> gradle.properties    
+    # Build itself  
     - name: Build with Gradle
       run: ./gradlew assembleRelease
     # Release artifact  

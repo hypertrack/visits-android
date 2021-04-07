@@ -29,6 +29,10 @@ jobs:
         env:
           KEYSTORE_CREDENTIALS: ${{ secrets.KEYSTORE_CREDENTIALS }}
         run: echo $KEYSTORE_CREDENTIALS | base64 --decode >> gradle.properties
+      - name: Google Places API key
+        env:
+          PLACES_API_KEY: ${{secrets.PLACES_API_KEY}}
+        run: echo $PLACES_API_KEY >> gradle.properties     
       # Build itself
       - name: Build with Gradle
         run: ./gradlew build
