@@ -14,6 +14,7 @@ import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.ZipLiveData
+import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.screens.add_place.AddPlaceFragmentDirections
 import com.hypertrack.android.ui.screens.add_place.PlaceModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
@@ -40,11 +41,9 @@ class AddPlaceInfoViewModel(
         if (_address != null) {
             postValue(_address)
         } else {
-            postValue(
-                osUtilsProvider.getPlaceFromCoordinates(latLng.latitude, latLng.longitude)?.let {
-                    (it.locality?.let { "$it, " } ?: "") + it.thoroughfare
-                        ?: "${it.latitude}, ${it.longitude}"
-                })
+            osUtilsProvider.getPlaceFromCoordinates(latLng.latitude, latLng.longitude)?.let {
+                postValue(it.toAddressString())
+            }
         }
     }
 

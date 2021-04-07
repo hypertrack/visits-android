@@ -13,6 +13,7 @@ import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.ui.common.KeyValueItem
+import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.utils.OsUtilsProvider
 
 class PlaceDetailsViewModel(
@@ -33,9 +34,10 @@ class PlaceDetailsViewModel(
     }
 
     val address = Transformations.map(geofence) { geofence ->
-        geofence.fullAddress ?: osUtilsProvider
-            .getPlaceFromCoordinates(geofence.latitude, geofence.longitude)
-            ?.let { "${it.locality}, ${it.thoroughfare ?: "${it.latitude}, ${it.longitude}"}" }
+        geofence.fullAddress ?: osUtilsProvider.getPlaceFromCoordinates(
+            geofence.latitude,
+            geofence.longitude
+        )?.toAddressString()
     }
     val metadata: LiveData<List<KeyValueItem>> = Transformations.map(geofence) { geofence ->
         (geofence.metadata?.filter { it.value is String } ?: mapOf())

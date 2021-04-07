@@ -3,6 +3,7 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.places
 import android.view.View
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.ui.base.BaseAdapter
+import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.common.toView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -65,11 +66,7 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                     address = osUtilsProvider.getPlaceFromCoordinates(
                         item.geofence.geometry.latitude,
                         item.geofence.geometry.longitude,
-                    )?.let { addr ->
-                        (addr.locality?.let { "$it, " } ?: "") +
-                                (addr.thoroughfare
-                                    ?: "${item.geofence.geometry.latitude}, ${item.geofence.geometry.longitude}")
-                    }
+                    )?.toAddressString()
                 }
                 (address
                     ?: "${item.geofence.geometry.latitude} ${item.geofence.geometry.longitude}").toView(
