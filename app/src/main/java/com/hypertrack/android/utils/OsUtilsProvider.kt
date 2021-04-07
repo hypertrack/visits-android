@@ -6,6 +6,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.location.Geocoder
 import android.util.Log
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import com.hypertrack.android.models.Address
 import com.hypertrack.logistics.android.github.R
 import java.text.SimpleDateFormat
@@ -85,6 +87,15 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
             return manager.primaryClip?.getItemAt(0)?.text?.toString()
         } else {
             return null
+        }
+    }
+
+    fun copyToClipboard(str: String) {
+        val manager =
+            MyApplication.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        manager.setPrimaryClip(ClipData.newPlainText(str, str))
+        MyApplication.context.let {
+            Toast.makeText(it, it.getString(R.string.copied_to_clipboard), LENGTH_SHORT).show()
         }
     }
 

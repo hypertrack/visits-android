@@ -85,8 +85,15 @@ class PlaceDetailsViewModel(
 //        mapIntent.setPackage("com.google.android.apps.maps")
     }
 
-    override fun onCleared() {
+    fun onAddressClick() {
+        if (!address.value.isNullOrEmpty()) {
+            osUtilsProvider.copyToClipboard(address.value!!)
+        }
+    }
 
-        super.onCleared()
+    fun onCopyValue(value: String) {
+        if (value.isNotEmpty()) {
+            osUtilsProvider.copyToClipboard(value)
+        }
     }
 }
