@@ -44,6 +44,10 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         srlPlaces.setOnRefreshListener {
             vm.refresh()
         }
+
+        fbAddPlace.setOnClickListener {
+            vm.onAddPlaceClicked()
+        }
     }
 
     companion object {

@@ -9,6 +9,7 @@ import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -61,6 +62,24 @@ class ApiClient(
         }
     }
 
+    suspend fun createGeofence(
+        latitude: Double,
+        longitude: Double,
+        metadata: Map<String, String>
+    ): Response<List<Geofence>> {
+        return api.createGeofences(
+            deviceId,
+            GeofenceParams(
+                setOf(
+                    GeofenceProperties(
+                        Point(listOf(longitude, latitude)),
+                        metadata, 100
+                    )
+                ), deviceId
+            )
+        )
+    }
+
     suspend fun getTrips(page: String = ""): List<Trip> {
         try {
             val response = api.getTrips(deviceId, page)
@@ -69,7 +88,7 @@ class ApiClient(
                 return response.body()?.trips?.filterNot {
                     it.destination == null || it.tripId.isEmpty()
                 }
-                        ?: emptyList()
+                    ?: emptyList()
             }
         } catch (e: Exception) {
             Log.w(TAG, "Got exception while trying to refresh trips $e")

@@ -35,6 +35,13 @@
         <action
             android:id="@+id/action_visitManagementFragment_to_placeDetailsFragment"
             app:destination="@id/placeDetailsFragment" />
+        <action
+            android:id="@+id/action_visitManagementFragment_to_addPlaceFragment"
+            app:destination="@id/addPlaceFragment" />
+        <argument
+            android:name="tab"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/visitDetailsFragment"
@@ -103,5 +110,26 @@
         <argument
             android:name="geofenceId"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPlaceFragment"
+        android:name="com.hypertrack.android.ui.screens.add_place.AddPlaceFragment"
+        android:label="AddPlaceFragment">
+        <action
+            android:id="@+id/action_addPlaceFragment_to_addPlaceInfoFragment"
+            app:destination="@id/addPlaceInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPlaceInfoFragment"
+        android:name="com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoFragment"
+        android:label="AddPlaceInfoFragment">
+        <argument
+            android:name="latLng"
+            app:argType="com.google.android.gms.maps.model.LatLng" />
+        <argument
+            android:name="address"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>

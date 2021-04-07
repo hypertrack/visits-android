@@ -6,5 +6,6 @@ import androidx.navigation.NavDirections
 open class BaseViewModel : ViewModel() {
 
     val destination = SingleLiveEvent<NavDirections>()
+    val popBackStack = SingleLiveEvent<Boolean>()
 
 }

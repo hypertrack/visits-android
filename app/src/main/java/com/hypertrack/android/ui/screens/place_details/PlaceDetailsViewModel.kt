@@ -46,6 +46,7 @@ class PlaceDetailsViewModel(
     val externalMapsIntent = MutableLiveData<Intent>()
 
     init {
+        //todo check leak
         ZipLiveData(geofence, map).apply {
             observeForever {
                 displayGeofenceLocation(it.first, it.second)
@@ -82,4 +83,8 @@ class PlaceDetailsViewModel(
 //        mapIntent.setPackage("com.google.android.apps.maps")
     }
 
+    override fun onCleared() {
+
+        super.onCleared()
+    }
 }

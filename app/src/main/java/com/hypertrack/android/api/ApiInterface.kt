@@ -2,6 +2,7 @@ package com.hypertrack.android.api
 
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.annotations.SerializedName
 import com.hypertrack.android.models.Address
 import com.hypertrack.android.models.VisitDataSource
 import com.hypertrack.android.models.VisitType
@@ -29,20 +30,32 @@ interface ApiInterface {
 
     @GET("client/geofences?include_archived=false&include_markers=true")
     suspend fun getGeofences(
-            @Query("device_id") deviceId: String,
-            @Query("pagination_token") paginationToken: String
+        @Query("device_id") deviceId: String,
+        @Query("pagination_token") paginationToken: String
     ): Response<GeofenceResponse>
 
     @GET("client/geofences/markers")
     suspend fun getGeofenceMarkers(
-            @Query("device_id") deviceId: String,
-            @Query("pagination_token") paginationToken: String
+        @Query("device_id") deviceId: String,
+        @Query("pagination_token") paginationToken: String
     ): Response<GeofenceMarkersResponse>
+
+    @GET("client/devices/{device_id}/geofences")
+    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Set<Geofence>
+
+    @POST("client/devices/{device_id}/geofences")
+    suspend fun createGeofences(
+        @Path("device_id") deviceId: String,
+        @Body params: GeofenceParams
+    ): Response<List<Geofence>>
+
+    @DELETE("client/geofences/{geofence_id}")
+    suspend fun deleteGeofence(@Path("geofence_id") geofence_id: String): Response<Unit>
 
     @GET("client/trips")
     suspend fun getTrips(
-            @Query("device_id") deviceId: String,
-            @Query("pagination_token") paginationToken: String
+        @Query("device_id") deviceId: String,
+        @Query("pagination_token") paginationToken: String
     ): Response<TripResponse>
 
     /**
@@ -50,21 +63,34 @@ interface ApiInterface {
      */
     @GET("client/devices/{device_id}/history/{day}")
     suspend fun getHistory(
-            @Path("device_id") deviceId: String,
-            @Path("day") day: String,
-            @Query("timezone") timezone: String
+        @Path("device_id") deviceId: String,
+        @Path("day") day: String,
+        @Query("timezone") timezone: String
     ): Response<HistoryResponse>
 
 }
 
 @JsonClass(generateAdapter = true)
+data class GeofenceParams(
+    @SerializedName("geofences") val geofences: Set<GeofenceProperties>,
+    @SerializedName("device_id") val deviceId: String
+)
+
+@JsonClass(generateAdapter = true)
+data class GeofenceProperties(
+    @SerializedName("geometry") val geometry: Geometry,
+    @SerializedName("metadata") val metadata: Map<String, Any>,
+    @SerializedName("radius") val radius: Int?
+)
+
+@JsonClass(generateAdapter = true)
 data class EncodedImage(
-        @field:Json(name = "file_name") val filename: String,
-        @field:Json(name = "data") val data: String
+    @field:Json(name = "file_name") val filename: String,
+    @field:Json(name = "data") val data: String
 ) {
     constructor(filename: String, bitmap: Bitmap) : this(
-            filename=filename,
-            data=bitmap.toBase64()
+        filename = filename,
+        data = bitmap.toBase64()
     )
 }
 

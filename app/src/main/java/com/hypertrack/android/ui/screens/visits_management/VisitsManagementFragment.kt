@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
@@ -23,20 +24,16 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsLis
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
+import kotlinx.android.synthetic.main.fragment_signup.*
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
 class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
+    private val args: VisitsManagementFragmentArgs by navArgs()
+
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
     }
-    private val tabIcons = listOf(
-        R.drawable.ic_map_tab,
-        R.drawable.ic_places,
-        R.drawable.ic_visits_list_tab,
-        R.drawable.ic_insights_tab,
-        R.drawable.ic_profile_tab
-    )
     private val tabFragments = listOf(
 //        MapViewFragmentOld(),
         MapViewFragment(),
@@ -176,6 +173,10 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         visitsManagementViewModel.possibleLocalVisitCompletion()
 
         visitsManagementViewModel.refreshHistory()
+
+        if (args.tab != -1 && args.tab < viewpager.adapter!!.count) {
+            viewpager.currentItem = args.tab
+        }
     }
 
     lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -211,6 +212,15 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
     companion object {
         const val TAG = "VisitsManagementAct"
+
+        //todo change to enum
+        val tabIcons = listOf(
+            R.drawable.ic_map_tab,
+            R.drawable.ic_places,
+            R.drawable.ic_visits_list_tab,
+            R.drawable.ic_insights_tab,
+            R.drawable.ic_profile_tab
+        )
     }
 
 }

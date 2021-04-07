@@ -5,8 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import com.google.android.libraries.places.api.Places
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
+import java.util.*
 
 class MyApplication : Application() {
 
@@ -17,9 +19,15 @@ class MyApplication : Application() {
 
         injector.deeplinkProcessor.appOnCreate(this)
 
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
 //            HyperTrack.enableDebugLogging()
         }
+
+        Places.initialize(
+            applicationContext,
+            getString(R.string.google_places_api_key),
+            Locale.getDefault()
+        );
 
         buildNotificationChannel()
     }
