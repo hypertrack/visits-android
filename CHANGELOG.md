@@ -1,10 +1,14 @@
 # Changelog
+
+## [0.6.3] - 2021-04-06
+### Added
+- Added Place creation screen
+
 ## [0.6.2] - 2021-04-06
 ### Updated
 - HyperTrack SDK was updated to v4.11.0
 
 ## [0.6.1] - 2021-03-31
-- Enabled adding new Place
 - Manual Visit creation enabled by default
 - Bugfix
 
