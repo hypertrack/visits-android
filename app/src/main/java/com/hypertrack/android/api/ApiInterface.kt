@@ -193,6 +193,16 @@ data class Geofence(
     val fullAddress: String?
         get() = address?.let { "${it.city}, ${it.street}" }
 
+    val metadataAddress: String?
+        get() = metadata?.get("address").let {
+            if (it is String) {
+                if (it.isNotBlank()) {
+                    return@let it
+                }
+            }
+            null
+        }
+
     val latLng: LatLng
         get() = LatLng(latitude, longitude)
 
