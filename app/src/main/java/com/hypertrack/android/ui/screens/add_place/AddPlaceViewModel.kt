@@ -49,7 +49,6 @@ class AddPlaceViewModel(
 
     init {
         deviceLocationProvider.getCurrentLocation {
-            Log.e("cutag", "location")
             currentLocation.postValue(it)
         }
     }
@@ -58,7 +57,6 @@ class AddPlaceViewModel(
         ZipLiveData(currentLocation, map).apply {
             //todo check leak
             observeForever { pair ->
-                Log.e("cutag", "zip")
                 if (map.value!!.cameraPosition.target.latitude
                     < 0.1 && map.value!!.cameraPosition.target.longitude < 0.1
                 ) {
@@ -116,7 +114,6 @@ class AddPlaceViewModel(
             }
 
             // Use the builder to create a FindAutocompletePredictionsRequest.
-            Log.e("cutag", bias.toString())
             val request = FindAutocompletePredictionsRequest.builder()
                 .setTypeFilter(TypeFilter.ADDRESS)
                 .setSessionToken(token)
@@ -126,7 +123,6 @@ class AddPlaceViewModel(
 
             placesClient.findAutocompletePredictions(request)
                 .addOnSuccessListener { response ->
-                    Log.d("cutag", "found ${response.autocompletePredictions.firstOrNull()}")
                     places.postValue(PlaceModel.from(response.autocompletePredictions))
                 }
                 .addOnFailureListener { e ->

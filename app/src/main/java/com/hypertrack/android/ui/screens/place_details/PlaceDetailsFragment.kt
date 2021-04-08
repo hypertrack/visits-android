@@ -24,6 +24,7 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
     private lateinit var map: GoogleMap
 
     private val metadataAdapter = KeyValueAdapter(true)
+    private val visitsAdapter = KeyValueAdapter(itemLayoutResource = R.layout.item_visit)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,6 +39,13 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
             vm.onCopyValue(it)
         }
 
+        rvVisits.setLinearLayoutManager(requireContext())
+        rvVisits.adapter = visitsAdapter
+
+        vm.loadingState.observe(viewLifecycleOwner, {
+            srlPlaces.isRefreshing = it
+        })
+
         vm.address.observe(viewLifecycleOwner, {
             tvAddress.text = it
         })
@@ -46,9 +54,17 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
             metadataAdapter.updateItems(it)
         })
 
+        vm.visits.observe(viewLifecycleOwner, {
+            visitsAdapter.updateItems(it)
+        })
+
         vm.externalMapsIntent.observe(viewLifecycleOwner, {
             mainActivity().startActivity(it)
         })
+
+        srlPlaces.setOnRefreshListener {
+            vm.onRefresh()
+        }
 
         ivBack.setOnClickListener {
             mainActivity().onBackPressed()

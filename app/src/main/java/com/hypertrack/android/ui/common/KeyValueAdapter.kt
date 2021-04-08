@@ -6,12 +6,13 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_key_value.view.*
 import java.util.*
 
-class KeyValueAdapter(val showCopyButton: Boolean = false) :
+class KeyValueAdapter(
+    private val showCopyButton: Boolean = false,
+    override val itemLayoutResource: Int = R.layout.item_key_value
+) :
     BaseAdapter<KeyValueItem, BaseAdapter.BaseVh<KeyValueItem>>() {
 
     var onCopyClickListener: ((String) -> Unit)? = null
-
-    override val itemLayoutResource: Int = R.layout.item_key_value
 
     override fun createViewHolder(
         view: View,
