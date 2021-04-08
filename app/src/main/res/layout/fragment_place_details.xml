@@ -68,27 +68,70 @@
                 android:paddingBottom="16dp">
 
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvTitleLocation"
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/lAddress"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:fontFamily="@font/medium"
-                    android:text="@string/location"
-                    android:textColor="@color/colorTitle"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/ivLocation"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/ivLocation"
-                    app:layout_constraintTop_toTopOf="@+id/ivLocation" />
+                    app:layout_constraintTop_toBottomOf="@+id/map">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvAddress"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:fontFamily="@font/regular"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="18sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvTitleLocation"
+                        app:layout_constraintStart_toStartOf="@id/tvTitleLocation"
+                        app:layout_constraintTop_toBottomOf="@id/tvTitleLocation" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivLocation"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_location" />
+
+                    <ImageView
+                        android:id="@+id/ivCopy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvTitleLocation"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvTitleLocation"
+                        app:srcCompat="@drawable/ic_copy" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvTitleLocation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/medium"
+                        android:text="@string/location"
+                        android:textColor="@color/colorTitle"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/ivLocation"
+                        app:layout_constraintEnd_toStartOf="@+id/ivCopy"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@id/ivLocation"
+                        app:layout_constraintTop_toTopOf="@+id/ivLocation"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMetadata"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAddress"
+                    app:layout_constraintTop_toBottomOf="@+id/lAddress"
                     tools:layout_editor_absoluteX="0dp" />
 
                 <androidx.fragment.app.FragmentContainerView
@@ -100,27 +143,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:context=".MapsActivity" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvAddress"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:fontFamily="@font/regular"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="@+id/tvTitleLocation"
-                    app:layout_constraintStart_toStartOf="@id/tvTitleLocation"
-                    app:layout_constraintTop_toBottomOf="@id/tvTitleLocation" />
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/ivLocation"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/map"
-                    app:srcCompat="@drawable/ic_location" />
 
                 <TextView
                     android:id="@+id/bDirections"

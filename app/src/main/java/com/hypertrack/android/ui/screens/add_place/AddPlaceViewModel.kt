@@ -20,6 +20,7 @@ import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.ZipLiveData
+import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 
@@ -180,10 +181,12 @@ class AddPlaceViewModel(
 
     private fun displayAddress() {
         map.value?.cameraPosition?.target?.let {
-            searchText.postValue(osUtilsProvider.getAddressFromCoordinates(
-                it.latitude,
-                it.longitude,
-            ).let { "${it.city}, ${it.street}" })
+            searchText.postValue(
+                osUtilsProvider.getPlaceFromCoordinates(
+                    it.latitude,
+                    it.longitude,
+                )?.toAddressString()
+            )
         }
 
     }

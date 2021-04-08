@@ -104,6 +104,7 @@
     <string name="add_place">Add place</string>
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 
     <plurals name="time">
         <item quantity="one">time</item>

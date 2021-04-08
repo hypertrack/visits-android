@@ -1,8 +1,11 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.places
 
+import android.location.Address
 import android.view.View
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.ui.base.BaseAdapter
+import com.hypertrack.android.ui.common.toAddressString
+import com.hypertrack.android.ui.common.toShortAddressString
 import com.hypertrack.android.ui.common.toView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -43,38 +46,42 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                         containerView.tvVisited.setText(R.string.places_not_visited)
                     }
                 }
-                (item.geofence.name
+
+                var placeAddress: Address? = null
+
+                val name = (item.geofence.name
                     ?: item.geofence.address?.street
+                    ?: osUtilsProvider.getPlaceFromCoordinates(
+                        item.geofence.latitude,
+                        item.geofence.longitude
+                    )?.let {
+                        placeAddress = it
+                        it.toShortAddressString()
+                    }
+                    ?: item.geofence.metadataAddress
                     ?: item.geofence.created_at.let {
                         ZonedDateTime.parse(it)
                             .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
-                    }).toView(containerView.tvTitle)
+                    })
+                name.toView(containerView.tvTitle)
 
-                var address: String? = null
-                item.geofence.metadata?.get("address").let {
-                    if (it is String && it.isNotBlank()) {
-                        address = it
-                    }
-                }
-                if (address == null) {
-                    address = item.geofence.address?.let {
-                        "${it.city}, ${it.street}"
-                    }
-                }
-                if (address == null) {
-                    address = osUtilsProvider.getPlaceFromCoordinates(
-                        item.geofence.geometry.latitude,
-                        item.geofence.geometry.longitude,
-                    )?.let { addr ->
-                        (addr.locality?.let { "$it, " } ?: "") +
-                                (addr.thoroughfare
-                                    ?: "${item.geofence.geometry.latitude}, ${item.geofence.geometry.longitude}")
-                    }
-                }
-                (address
-                    ?: "${item.geofence.geometry.latitude} ${item.geofence.geometry.longitude}").toView(
-                    containerView.tvAddress
-                )
+                val address =
+                    item.geofence.metadataAddress
+                        ?: item.geofence.address?.let {
+                            "${it.city}, ${it.street}"
+                        }
+                        ?: (placeAddress ?: osUtilsProvider.getPlaceFromCoordinates(
+                            item.geofence.geometry.latitude,
+                            item.geofence.geometry.longitude,
+                        ))?.let {
+                            if (it.thoroughfare == null) {
+                                it.toShortAddressString()
+                            } else {
+                                null
+                            }
+                        }
+                        ?: "${item.geofence.geometry.latitude} ${item.geofence.geometry.longitude}"
+                address.toView(containerView.tvAddress)
             }
         }
     }

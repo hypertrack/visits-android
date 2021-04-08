@@ -23,7 +23,7 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
     }
     private lateinit var map: GoogleMap
 
-    private val metadataAdapter = KeyValueAdapter()
+    private val metadataAdapter = KeyValueAdapter(true)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,6 +34,9 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
 
         rvMetadata.setLinearLayoutManager(requireContext())
         rvMetadata.adapter = metadataAdapter
+        metadataAdapter.onCopyClickListener = {
+            vm.onCopyValue(it)
+        }
 
         vm.address.observe(viewLifecycleOwner, {
             tvAddress.text = it
@@ -53,6 +56,10 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
 
         bDirections.setOnClickListener {
             vm.onDirectionsClick()
+        }
+
+        lAddress.setOnClickListener {
+            vm.onAddressClick()
         }
     }
 
