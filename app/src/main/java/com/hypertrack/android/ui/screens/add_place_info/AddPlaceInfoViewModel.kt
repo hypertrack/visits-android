@@ -29,6 +29,7 @@ import java.util.*
 class AddPlaceInfoViewModel(
     private val latLng: LatLng,
     private val _address: String?,
+    private val _name: String?,
     private val placesRepository: PlacesRepository,
     private val osUtilsProvider: OsUtilsProvider,
 ) : BaseViewModel() {
@@ -44,6 +45,11 @@ class AddPlaceInfoViewModel(
             osUtilsProvider.getPlaceFromCoordinates(latLng.latitude, latLng.longitude)?.let {
                 postValue(it.toAddressString())
             }
+        }
+    }
+    val name = MutableLiveData<String>().apply {
+        _name?.let {
+            postValue(_name)
         }
     }
 

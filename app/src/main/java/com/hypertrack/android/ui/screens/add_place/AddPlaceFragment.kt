@@ -44,10 +44,6 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         search.addTextChangedListener(watcher)
         Utils.showKeyboard(mainActivity(), search)
 
-        search.setOnFocusChangeListener { v, hasFocus ->
-            vm.onSearchViewFocus()
-        }
-
         vm.places.observe(viewLifecycleOwner, {
             adapter.clear()
             adapter.addAll(it)
@@ -59,30 +55,11 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             SnackbarUtil.showErrorSnackbar(view, it)
         })
 
-        vm.showMapDestination.observe(viewLifecycleOwner, {
-            if (it) {
-                Utils.hideKeyboard(mainActivity())
-            }
-            destination_on_map.setGoneState(!it)
-        })
-
         vm.searchText.observe(viewLifecycleOwner, {
             watcher.disabled = true
             search.setText(it)
             watcher.disabled = false
-        })
-
-        set_on_map.hide()
-        vm.showSetOnMapButton.observe(viewLifecycleOwner, {
-            set_on_map.setGoneState(!it)
-        })
-
-        vm.showPlacesList.observe(viewLifecycleOwner, {
-            locations.setGoneState(!it)
-        })
-
-        vm.showConfirmButton.observe(viewLifecycleOwner, {
-            confirm.setGoneState(!it)
+            Utils.hideKeyboard(mainActivity())
         })
 
         vm.loadingState.observe(viewLifecycleOwner, {
@@ -93,11 +70,9 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             findNavController().navigate(it)
         })
 
-        set_on_map.setOnClickListener {
-            Utils.hideKeyboard(mainActivity())
-            vm.onSetOnMapClicked()
-            search.clearFocus()
-        }
+        set_on_map.hide()
+        destination_on_map.show()
+        confirm.show()
 
         confirm.setOnClickListener {
             vm.onConfirmClicked(search.textString())

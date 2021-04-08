@@ -22,7 +22,8 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
     private val vm: AddPlaceInfoViewModel by viewModels {
         MyApplication.injector.provideAddPlaceInfoVmFactory(
             args.latLng,
-            args.address
+            address = args.address,
+            name = args.name,
         )
     }
 
@@ -40,6 +41,10 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
 
         vm.address.observe(viewLifecycleOwner, {
             etAddress.setText(it)
+        })
+
+        vm.name.observe(viewLifecycleOwner, {
+            etGeofenceName.setText(it)
         })
 
         vm.error.observe(viewLifecycleOwner, {
