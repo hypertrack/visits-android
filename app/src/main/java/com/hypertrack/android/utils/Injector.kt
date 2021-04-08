@@ -101,13 +101,15 @@ object Injector {
 
     fun provideAddPlaceInfoVmFactory(
         latLng: LatLng,
-        address: String?
+        address: String?,
+        name: String?,
     ): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return AddPlaceInfoViewModel(
                     latLng,
-                    address,
+                    _address = address,
+                    _name = name,
                     getUserScope().placesRepository,
                     getOsUtilsProvider(MyApplication.context),
                 ) as T

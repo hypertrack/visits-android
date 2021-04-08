@@ -248,39 +248,44 @@ abstract class Geometry {
 
 @JsonClass(generateAdapter = true)
 data class GeofenceMarker(
-        @field:Json(name = "geofence_id") val geofenceId: String,
-        @field:Json(name = "arrival") val arrival: Arrival?
+    @field:Json(name = "geofence_id") val geofenceId: String,
+    @field:Json(name = "arrival") val arrival: Arrival?,
+    @field:Json(name = "exit") val exit: Exit?,
+//        @field:Json(name = "value") val value: String
 )
 
 @JsonClass(generateAdapter = true)
 data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = "")
 
 @JsonClass(generateAdapter = true)
+data class Exit(@field:Json(name = "recorded_at") val recordedAt: String = "")
+
+@JsonClass(generateAdapter = true)
 data class HistoryResponse(
-        @field:Json(name = "locations") val locations: Locations,
-        @field:Json(name = "markers") val markers: List<HistoryMarker>,
-        @field:Json(name = "active_duration") val activeDuration: Int,
-        @field:Json(name = "distance") val distance: Int,
-        @field:Json(name = "duration") val duration: Int,
-        @field:Json(name = "geofences_visited") val geofencesCount: Int,
-        @field:Json(name = "geotags") val geotagsCount: Int,
-        @field:Json(name = "inactive_duration") val inactiveDuration: Int,
-        // Skip reasons for now as constants aren't deserialized automatically but their usage is questionable
+    @field:Json(name = "locations") val locations: Locations,
+    @field:Json(name = "markers") val markers: List<HistoryMarker>,
+    @field:Json(name = "active_duration") val activeDuration: Int,
+    @field:Json(name = "distance") val distance: Int,
+    @field:Json(name = "duration") val duration: Int,
+    @field:Json(name = "geofences_visited") val geofencesCount: Int,
+    @field:Json(name = "geotags") val geotagsCount: Int,
+    @field:Json(name = "inactive_duration") val inactiveDuration: Int,
+    // Skip reasons for now as constants aren't deserialized automatically but their usage is questionable
 //    @field:Json(name = "inactive_reasons") val inactiveReasons: List<String>,
-        @field:Json(name = "stop_duration") val stopDuration: Int,
-        @field:Json(name = "tracking_rate") val trackingRate: Double,
-        @field:Json(name = "trips") val tripsCount: Int,
-        @field:Json(name = "walk_duration") val walkDuration: Int,
-        @field:Json(name = "drive_duration") val driveDuration: Int?,
-        @field:Json(name = "steps") val stepsCount: Int?,
-        @field:Json(name = "trips_destinations_visited") val tripsDestinationsVisited: Int?,
-        @field:Json(name = "trips_destinations_visited_duration") val tripsDestinationsVisitedDuration: Int?,
-        @field:Json(name = "trips_on_time") val tripsOnTime: Int?,
-        @field:Json(name = "trips_estimated_distance") val tripsEstimatedDistance: Int?,
-        @field:Json(name = "geotags_route_to_duration") val geotagsRouteToDuration: Int?,
-        @field:Json(name = "geofences_visited_duration") val geofecesVisitedDuration: Int?,
-        @field:Json(name = "geofences_route_to_duration") val geofecesRouteToDuration: Int?,
-        @field:Json(name = "geofences_route_to_idle_duration") val geofecesRouteToIdleDuration: Int?,
+    @field:Json(name = "stop_duration") val stopDuration: Int,
+    @field:Json(name = "tracking_rate") val trackingRate: Double,
+    @field:Json(name = "trips") val tripsCount: Int,
+    @field:Json(name = "walk_duration") val walkDuration: Int,
+    @field:Json(name = "drive_duration") val driveDuration: Int?,
+    @field:Json(name = "steps") val stepsCount: Int?,
+    @field:Json(name = "trips_destinations_visited") val tripsDestinationsVisited: Int?,
+    @field:Json(name = "trips_destinations_visited_duration") val tripsDestinationsVisitedDuration: Int?,
+    @field:Json(name = "trips_on_time") val tripsOnTime: Int?,
+    @field:Json(name = "trips_estimated_distance") val tripsEstimatedDistance: Int?,
+    @field:Json(name = "geotags_route_to_duration") val geotagsRouteToDuration: Int?,
+    @field:Json(name = "geofences_visited_duration") val geofecesVisitedDuration: Int?,
+    @field:Json(name = "geofences_route_to_duration") val geofecesRouteToDuration: Int?,
+    @field:Json(name = "geofences_route_to_idle_duration") val geofecesRouteToIdleDuration: Int?,
 )
 
 interface HistoryMarker {

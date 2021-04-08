@@ -105,6 +105,9 @@
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="places_exit">Exit</string>
+    <string name="places_enter">Enter</string>
+    <string name="place_deatils_visits_history">Visits history</string>
 
     <plurals name="time">
         <item quantity="one">time</item>
