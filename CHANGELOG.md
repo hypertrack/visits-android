@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.6.3] - 2021-04-06
+## [0.6.4] - 2021-04-08
+### Added
+- Added Place visits timeline
+
+### Changed
+- Changed Select location UX
+
+### Fixed
+- Fixed missing street number in address when creating geofence
+
+## [0.6.3] - 2021-04-07
 ### Added
 - Added Place creation screen
 
