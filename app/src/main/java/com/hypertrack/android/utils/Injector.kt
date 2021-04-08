@@ -50,7 +50,6 @@ object ServiceLocator {
                     .setSmallIcon(R.drawable.ic_notif_logo_small)
                     .build()
             )
-            .allowMockLocations()
 
         return HyperTrackService(listener, sdkInstance)
     }
