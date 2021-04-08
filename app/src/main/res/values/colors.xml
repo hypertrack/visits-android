@@ -39,4 +39,7 @@
     <color name="textColorSecondary">#94929d</color>
     <color name="colorTips">#e60a84ff</color>
 
+    <color name="colorAction">#fe4d5f</color>
+
+
 </resources>

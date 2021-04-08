@@ -13,4 +13,8 @@
     <dimen name="verification_code_item_height">70dp</dimen>
     <dimen name="verification_code_item_width">44dp</dimen>
     <dimen name="verification_code_margin">8dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="elevation">6dp</dimen>
+
 </resources>
