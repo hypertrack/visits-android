@@ -44,7 +44,7 @@
     <string name="item_plural">Items</string>
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
-    <string name="no_planned_visits">No planned visits</string>
+    <string name="no_planned_visits">"No planned visits"</string>
     <string name="device_deleted">"Device Deleted"</string>
     <string name="generic_tracking_error">"Tracking Failure"</string>
     <string name="splashscreenlogo">splashScreenLogo</string>
@@ -107,7 +107,11 @@
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
-
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="disabled">Disabled</string>
+    <string name="unknown">Unknown</string>
+    <string name="tracking_is">Tracking is %s</string>
     <string name="place_details_visits_history">Visits history</string>
     <string name="place_details_no_visits">No visits</string>
 

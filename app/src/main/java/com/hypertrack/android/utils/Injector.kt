@@ -1,10 +1,12 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.RetryParams
@@ -19,6 +21,8 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHist
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
+import com.hypertrack.android.ui.screens.visits_management.tabs.map.SharedHelper
+import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
@@ -313,6 +317,13 @@ object Injector {
         Factory { a -> getHistoryMapRenderer(a) }
 
     private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
+    fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {
+        return CustomFragmentFactory(
+            SharedHelper.getInstance(applicationContext),
+            MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
+            MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
+        )
+    }
 
 }
 

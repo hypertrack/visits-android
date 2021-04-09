@@ -24,6 +24,7 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileF
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitListAdapter
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
@@ -39,7 +40,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
     }
 
     private val tabs = mapOf(
-        Tab.MAP to LiveMapFragment(),
+        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context).instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
         Tab.HISTORY to MapViewFragment(),
         Tab.ORDERS to VisitsListFragment.newInstance(),
         Tab.PLACES to PlacesFragment.getInstance(),
