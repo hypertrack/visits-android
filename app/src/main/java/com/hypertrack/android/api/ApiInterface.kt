@@ -31,7 +31,7 @@ interface ApiInterface {
     @GET("client/geofences?include_archived=false&include_markers=true")
     suspend fun getGeofences(
         @Query("device_id") deviceId: String,
-        @Query("pagination_token") paginationToken: String
+        @Query("pagination_token") paginationToken: String?
     ): Response<GeofenceResponse>
 
     @GET("client/geofences/markers")

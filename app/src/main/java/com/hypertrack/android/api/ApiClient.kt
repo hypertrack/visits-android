@@ -50,18 +50,20 @@ class ApiClient(
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getGeofences(page: String = ""): List<Geofence> {
+    suspend fun getGeofences(): List<Geofence> {
         val res = mutableListOf<Geofence>()
         var paginationToken: String? = null
         try {
             do {
-                val response = api.getGeofences(deviceId, page)
+                val response = api.getGeofences(deviceId, paginationToken ?: "null")
                 if (response.isSuccessful) {
                     response.body()?.geofences?.let {
                         res.addAll(it)
                     }
                     paginationToken = response.body()?.paginationToken
-                } else return emptyList()
+                } else {
+                    return emptyList()
+                }
                 //todo handle error
             } while (paginationToken != null)
             return res
