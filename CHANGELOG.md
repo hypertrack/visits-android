@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.5] - 2021-04-09
+### Fixed
+- Mock locations were disallowed
+
 ## [0.6.4] - 2021-04-08
 ### Added
 - Added Place visits timeline
