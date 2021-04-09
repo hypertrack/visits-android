@@ -322,6 +322,7 @@ object Injector {
             SharedHelper.getInstance(applicationContext),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
+            getUserScope().hyperTrackService
         )
     }
 

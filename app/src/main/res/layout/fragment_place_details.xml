@@ -71,7 +71,7 @@
 
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/map"
+                    android:id="@+id/liveMap"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
@@ -83,7 +83,7 @@
                     android:id="@+id/lAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/map">
+                    app:layout_constraintTop_toBottomOf="@+id/liveMap">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvAddress"
