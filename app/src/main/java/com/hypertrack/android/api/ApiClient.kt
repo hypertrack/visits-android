@@ -50,12 +50,23 @@ class ApiClient(
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getGeofences(page: String = ""): List<Geofence> {
+    suspend fun getGeofences(): List<Geofence> {
+        val res = mutableListOf<Geofence>()
+        var paginationToken: String? = null
         try {
-            val response = api.getGeofences(deviceId, page)
-            return if (response.isSuccessful) {
-                response.body()?.geofences?.toList() ?: emptyList()
-            } else return emptyList()
+            do {
+                val response = api.getGeofences(deviceId, paginationToken ?: "null")
+                if (response.isSuccessful) {
+                    response.body()?.geofences?.let {
+                        res.addAll(it)
+                    }
+                    paginationToken = response.body()?.paginationToken
+                } else {
+                    return emptyList()
+                }
+                //todo handle error
+            } while (paginationToken != null)
+            return res
         } catch (e: Exception) {
             Log.e(TAG, "Got exception while fetching geofences $e")
             throw e
@@ -95,8 +106,6 @@ class ApiClient(
             throw e
         }
         return emptyList()
-
-
     }
 
     suspend fun uploadImage(filename: String, image: Bitmap) {
