@@ -40,6 +40,9 @@
     <color name="colorTips">#e60a84ff</color>
 
     <color name="colorAction">#fe4d5f</color>
+    <color name="colorFAButtonSecondary">#ffffff</color>
+    <color name="cover">#6694929d</color>
+    <color name="highlight">#14000000</color>
 
 
 </resources>

@@ -21,9 +21,10 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHist
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
-import com.hypertrack.android.ui.screens.visits_management.tabs.map.SharedHelper
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SharedHelper
 import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
+import com.hypertrack.backend.HybridBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
@@ -318,11 +319,13 @@ object Injector {
 
     private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
     fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {
+        val hyperTrackService = getUserScope().hyperTrackService
         return CustomFragmentFactory(
             SharedHelper.getInstance(applicationContext),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
-            getUserScope().hyperTrackService
+            hyperTrackService,
+            HybridBackendProvider.getInstance(applicationContext, getAccountRepo(applicationContext).publishableKey, hyperTrackService.deviceId)
         )
     }
 

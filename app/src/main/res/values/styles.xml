@@ -67,4 +67,32 @@
         <item name="android:background">@drawable/bg_disableable_button</item>
     </style>
 
+    <style name="FloatingActionButtonSmall">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="backgroundTint">@color/colorFAButtonSecondary</item>
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">6dp</item>
+        <item name="fabSize">mini</item>
+        <item name="maxImageSize">16dp</item>
+        <item name="rippleColor">@null</item>
+        <item name="srcCompat">@null</item>
+    </style>
+    <style name="OfflineViewStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:text">@string/no_connection</item>
+        <item name="android:background">@drawable/bg_offline</item>
+        <item name="android:drawableStart">@drawable/ic_offline</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
 </resources>

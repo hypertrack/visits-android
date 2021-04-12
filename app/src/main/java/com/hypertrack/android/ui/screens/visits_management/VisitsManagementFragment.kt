@@ -11,14 +11,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.MapFragment
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
-import com.hypertrack.android.ui.screens.visits_management.tabs.map.LiveMapFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
@@ -28,7 +27,6 @@ import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.fragment_signup.*
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
 class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
