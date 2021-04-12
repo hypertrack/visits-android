@@ -41,6 +41,7 @@ object ServiceLocator {
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         val listener = TrackingState()
+        HyperTrack.enableDebugLogging()
         val sdkInstance = HyperTrack
             .getInstance(publishableKey)
             .addTrackingListener(listener)
