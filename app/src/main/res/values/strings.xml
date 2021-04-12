@@ -145,6 +145,8 @@
     <string name="place_details_visits_history">Visits history</string>
     <string name="place_details_no_visits">No visits</string>
 
+    <string name="tap_to_turn_location_settings">Tap to turn on location in settings</string>
+    <string name="app_settings">App settings</string>
     <plurals name="time">
         <item quantity="one">time</item>
         <item quantity="other">times</item>

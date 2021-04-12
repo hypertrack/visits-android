@@ -11,9 +11,9 @@ import com.google.android.material.snackbar.ContentViewCallback
 import com.hypertrack.logistics.android.github.R
 
 class SnackbarContentLayout : FrameLayout, ContentViewCallback {
-    lateinit var contentView: View
+    var contentView: View? = null
         private set
-    lateinit var actionView: Button
+    var actionView: Button? = null
         private set
 
     constructor(context: Context) : super(context)
@@ -40,40 +40,51 @@ class SnackbarContentLayout : FrameLayout, ContentViewCallback {
     }
 
     override fun animateContentIn(delay: Int, duration: Int) {
-        contentView.alpha = 0.0f
-        contentView
-            .animate()
-            .alpha(1.0f)
-            .setDuration(duration.toLong())
-            .setStartDelay(delay.toLong())
-            .start()
-        if (actionView.visibility == VISIBLE) {
-            actionView.alpha = 0.0f
-            actionView
+        contentView?.let {
+            it.alpha = 0.0f
+            it
                 .animate()
                 .alpha(1.0f)
                 .setDuration(duration.toLong())
                 .setStartDelay(delay.toLong())
                 .start()
+            actionView?.let { view ->
+                if (view.visibility == VISIBLE) {
+                    view.alpha = 0.0f
+                    view
+                        .animate()
+                        .alpha(1.0f)
+                        .setDuration(duration.toLong())
+                        .setStartDelay(delay.toLong())
+                        .start()
+                }
+
+            }
         }
     }
 
     override fun animateContentOut(delay: Int, duration: Int) {
-        contentView.alpha = 1.0f
-        contentView
+        contentView?.let {
+            it.alpha = 1.0f
+            it
             .animate()
             .alpha(0.0f)
             .setDuration(duration.toLong())
             .setStartDelay(delay.toLong())
             .start()
-        if (actionView.visibility == VISIBLE) {
-            actionView.alpha = 1.0f
-            actionView
-                .animate()
-                .alpha(0.0f)
-                .setDuration(duration.toLong())
-                .setStartDelay(delay.toLong())
-                .start()
+
+        }
+        actionView?.let { btn ->
+            if (btn.visibility == VISIBLE) {
+                btn.alpha = 1.0f
+                btn
+                    .animate()
+                    .alpha(0.0f)
+                    .setDuration(duration.toLong())
+                    .setStartDelay(delay.toLong())
+                    .start()
+            }
+
         }
     }
 }

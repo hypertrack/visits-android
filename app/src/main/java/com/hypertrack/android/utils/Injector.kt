@@ -28,6 +28,7 @@ import com.hypertrack.backend.HybridBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
+import com.hypertrack.sdk.views.HyperTrackViews
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
@@ -320,12 +321,15 @@ object Injector {
     private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
     fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {
         val hyperTrackService = getUserScope().hyperTrackService
+        val publishableKey = getAccountRepo(applicationContext).publishableKey
+        val viewsSdk = HyperTrackViews.getInstance(applicationContext, publishableKey)
         return CustomFragmentFactory(
             SharedHelper.getInstance(applicationContext),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
             hyperTrackService,
-            HybridBackendProvider.getInstance(applicationContext, getAccountRepo(applicationContext).publishableKey, hyperTrackService.deviceId)
+            HybridBackendProvider.getInstance(applicationContext, publishableKey, hyperTrackService.deviceId),
+            viewsSdk
         )
     }
 

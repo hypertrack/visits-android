@@ -35,7 +35,7 @@ class Snackbar private constructor(
 
     fun setAction(listener: View.OnClickListener?): Snackbar {
         val contentLayout = view.getChildAt(0) as SnackbarContentLayout
-        val view: View = contentLayout.actionView
+        val view: View = contentLayout.actionView as View
         if (listener != null) {
             hasAction = true
             view.visibility = View.VISIBLE

@@ -26,10 +26,12 @@ import java.util.concurrent.TimeUnit
 
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener;
 import com.hypertrack.android.utils.HyperTrackService
+import com.hypertrack.sdk.views.HyperTrackViews
 
 class TrackingFragment(
     private val mBackendProvider: AbstractBackendProvider,
-    private val hyperTrackService: HyperTrackService
+    private val hyperTrackService: HyperTrackService,
+    private val realTimeUpdatesService: HyperTrackViews
 ) : Fragment(),
     OnMapReadyCallback, TrackingPresenter.View {
     private var tripConfirmSnackbar: Snackbar? = null
@@ -65,7 +67,13 @@ class TrackingFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter = TrackingPresenter(view.context, this, mBackendProvider, hyperTrackService)
+        presenter = TrackingPresenter(
+            view.context,
+            this,
+            mBackendProvider,
+            hyperTrackService,
+            realTimeUpdatesService
+        )
         blockingView = view.findViewById(R.id.blocking_view)
         locationButton = view.findViewById(R.id.location_button)
         locationButton.setOnClickListener {
@@ -139,7 +147,7 @@ class TrackingFragment(
 
     override fun onResume() {
         super.onResume()
-        (parentFragment as LiveMapFragment?)!!.getMapAsync(this)
+        (parentFragment as LiveMapFragment).getMapAsync(this)
     }
 
     override fun onPause() {

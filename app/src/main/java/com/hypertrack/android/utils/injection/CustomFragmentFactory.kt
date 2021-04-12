@@ -8,6 +8,7 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SharedHe
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingFragment
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.backend.AbstractBackendProvider
+import com.hypertrack.sdk.views.HyperTrackViews
 
 
 class CustomFragmentFactory(
@@ -16,6 +17,7 @@ class CustomFragmentFactory(
     private val mapStyleOptionsSilver: MapStyleOptions,
     private val hyperTrackService: HyperTrackService,
     private val backendProvider: AbstractBackendProvider,
+    private val realTimeUpdatesService: HyperTrackViews,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         if (className == LiveMapFragment::class.java.name) {
@@ -27,7 +29,7 @@ class CustomFragmentFactory(
             )
         }
         if (className == TrackingFragment::class.java.name) {
-            return TrackingFragment(backendProvider, hyperTrackService)
+            return TrackingFragment(backendProvider, hyperTrackService, realTimeUpdatesService)
         }
         return super.instantiate(classLoader, className)
     }

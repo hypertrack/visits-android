@@ -17,7 +17,6 @@ import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.backend.ResultHandler
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.maps.google.widget.GoogleMapAdapter
-import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.views.DeviceUpdatesHandler
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Location
@@ -31,16 +30,16 @@ internal class TrackingPresenter(
     private val context: Context,
     private val view: View,
     private val backendProvider: AbstractBackendProvider,
-    private val hyperTrackService: HyperTrackService
+    private val hyperTrackService: HyperTrackService,
+    private val realTimeUpdatesService: HyperTrackViews
 ) : DeviceUpdatesHandler {
     private val handler = Handler()
     private val state: TrackingState  = TrackingState(context)
-    private val hyperTrackViews: HyperTrackViews = HyperTrackViews.getInstance(context, state.hyperTrackPubKey)
     private var hyperTrackMap: HyperTrackMap? = null
     private val connectivityReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             view.updateConnectionStatus(false)
-            hyperTrackViews.subscribeToDeviceUpdates(
+            realTimeUpdatesService.subscribeToDeviceUpdates(
                 hyperTrackService.deviceId,
                 this@TrackingPresenter
             )
@@ -62,8 +61,8 @@ internal class TrackingPresenter(
             hyperTrackMap = HyperTrackMap.getInstance(context, mapAdapter)
                 .bind(GpsLocationProvider(context))
         }
-        hyperTrackMap!!.bind(hyperTrackViews, hyperTrackService.deviceId)
-        hyperTrackViews.subscribeToDeviceUpdates(hyperTrackService.deviceId, this)
+        hyperTrackMap!!.bind(realTimeUpdatesService, hyperTrackService.deviceId)
+        realTimeUpdatesService.subscribeToDeviceUpdates(hyperTrackService.deviceId, this)
         hyperTrackService.syncDeviceSettings()
         val selectedTrip = state.trips[state.selectedTripId]
         if (selectedTrip == null) {
@@ -79,7 +78,7 @@ internal class TrackingPresenter(
 
     fun pause() {
         hyperTrackMap!!.unbindHyperTrackViews()
-        hyperTrackViews.unsubscribeFromDeviceUpdates(this)
+        realTimeUpdatesService.unsubscribeFromDeviceUpdates(this)
     }
 
     fun setCameraFixedEnabled(enabled: Boolean) {
@@ -155,7 +154,7 @@ internal class TrackingPresenter(
             hyperTrackMap!!.destroy()
             hyperTrackMap = null
         }
-        hyperTrackViews.unsubscribeFromDeviceUpdates(this)
+        realTimeUpdatesService.unsubscribeFromDeviceUpdates(this)
         context.unregisterReceiver(connectivityReceiver)
     }
 

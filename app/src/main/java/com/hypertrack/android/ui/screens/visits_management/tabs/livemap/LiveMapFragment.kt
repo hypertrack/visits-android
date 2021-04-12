@@ -164,7 +164,7 @@ class LiveMapFragment(
     }
 
     fun beginFragmentTransaction(fragment: Fragment): FragmentTransaction {
-        val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
         transaction.replace(R.id.fragment_frame, fragment, fragment.javaClass.simpleName)
         return transaction
     }
