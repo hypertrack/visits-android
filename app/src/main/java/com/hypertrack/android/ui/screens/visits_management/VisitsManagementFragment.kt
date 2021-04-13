@@ -69,6 +69,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
         visitsManagementViewModel.visits.observe(viewLifecycleOwner, {
             viewAdapter.notifyDataSetChanged()
+            viewAdapter.placeholderListener?.invoke(it.isEmpty())
         })
 
         viewpager.adapter = object :
@@ -179,7 +180,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         }
     }
 
-    lateinit var viewAdapter: RecyclerView.Adapter<*>
+    lateinit var viewAdapter: VisitListAdapter
 
     override fun onResume() {
         super.onResume()

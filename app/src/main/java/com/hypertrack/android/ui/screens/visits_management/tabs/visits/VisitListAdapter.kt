@@ -22,6 +22,7 @@ class VisitListAdapter(
 
     private var onItemClick: OnListAdapterClick = onclick
 
+    var placeholderListener: ((Boolean) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
@@ -71,7 +72,11 @@ class VisitListAdapter(
         holder.itemView.setOnClickListener { onItemClick.onJobItemClick(holder.layoutPosition) }
     }
 
-    override fun getItemCount(): Int = visits.value?.size ?: 0
+    override fun getItemCount(): Int {
+        val count = visits.value?.size ?: 0
+        placeholderListener?.invoke(count == 0)
+        return count
+    }
 
     override fun getItemViewType(position: Int): Int {
         return if (visits.value?.get(position) is HeaderVisitItem)

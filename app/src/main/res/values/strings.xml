@@ -44,7 +44,7 @@
     <string name="item_plural">Items</string>
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
-    <string name="no_planned_visits">"No planned visits"</string>
+    <string name="no_planned_visits">No planned visits</string>
     <string name="device_deleted">"Device Deleted"</string>
     <string name="generic_tracking_error">"Tracking Failure"</string>
     <string name="splashscreenlogo">splashScreenLogo</string>
@@ -97,6 +97,8 @@
     <string name="places_visited">Visited %s</string>
     <string name="places_directions_button">Show in Maps app</string>
     <string name="places_not_visited">Not visited</string>
+    <string name="places_exit">Exit</string>
+    <string name="places_enter">Enter</string>
 
     <string name="add_place_confirm">Confirm</string>
     <string name="add_place_create">Create geofence</string>
@@ -105,9 +107,9 @@
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
-    <string name="places_exit">Exit</string>
-    <string name="places_enter">Enter</string>
-    <string name="place_deatils_visits_history">Visits history</string>
+
+    <string name="place_details_visits_history">Visits history</string>
+    <string name="place_details_no_visits">No visits</string>
 
     <plurals name="time">
         <item quantity="one">time</item>

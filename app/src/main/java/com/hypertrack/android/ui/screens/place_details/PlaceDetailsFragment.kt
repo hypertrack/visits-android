@@ -8,6 +8,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.KeyValueAdapter
+import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.ui.common.setLinearLayoutManager
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
@@ -56,6 +57,7 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
 
         vm.visits.observe(viewLifecycleOwner, {
             visitsAdapter.updateItems(it)
+            tvNoVisits.setGoneState(it.isNotEmpty())
         })
 
         vm.externalMapsIntent.observe(viewLifecycleOwner, {
