@@ -9,6 +9,7 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.lang.Exception
 import java.net.HttpURLConnection
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -52,18 +53,22 @@ class BasicAuthAccessTokenRepository(
     override fun refreshToken(): String {
         // Log.v(TAG, "Refreshing token $token for user $userName for deviceId $deviceId")
 
-        val result = okHttpClient
+        try {
+            val result = okHttpClient
                 .newCall(request)
                 .execute()
                 .use { response -> getTokenFromResponse(response) }
 
-        return when (result) {
-            is Active -> {
-                // Log.v(TAG, "Updated bearer token $result.token" )
-                token = result.token
-                result.token
+            return when (result) {
+                is Active -> {
+                    // Log.v(TAG, "Updated bearer token $result.token" )
+                    token = result.token
+                    result.token
+                }
+                else -> ""
             }
-            else -> ""
+        } catch (e: Exception) {
+            return ""
         }
     }
 

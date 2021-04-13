@@ -186,7 +186,19 @@ class VisitsManagementViewModel(
         }
     }
 
-    fun checkIn() = visitsRepository.processLocalVisit()
+    fun checkIn() {
+        visitsRepository.getLocalVisit().let {
+            if (it != null) {
+                destination.postValue(
+                    VisitsManagementFragmentDirections.actionVisitManagementFragmentToVisitDetailsFragment(
+                        it._id
+                    )
+                )
+            } else {
+                visitsRepository.processLocalVisit()
+            }
+        }
+    }
 
     fun possibleLocalVisitCompletion() = visitsRepository.checkLocalVisitCompleted()
 

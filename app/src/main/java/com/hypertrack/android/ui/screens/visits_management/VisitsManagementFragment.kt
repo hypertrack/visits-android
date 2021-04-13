@@ -49,6 +49,10 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
         checkInvariants()
 
+        visitsManagementViewModel.destination.observe(viewLifecycleOwner, {
+            findNavController().navigate(it)
+        })
+
         viewAdapter = VisitListAdapter(
             visitsManagementViewModel.visits,
             object : VisitListAdapter.OnListAdapterClick {
@@ -69,6 +73,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
 
         visitsManagementViewModel.visits.observe(viewLifecycleOwner, {
             viewAdapter.notifyDataSetChanged()
+            viewAdapter.placeholderListener?.invoke(it.isEmpty())
         })
 
         viewpager.adapter = object :
@@ -113,10 +118,10 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
                         tvTrackerStatus.setText(R.string.no_planned_visits)
                     else {
                         val groupNames = resources.getStringArray(R.array.visit_state_group_names)
-                        val messageText = msg.stats.entries.filter { it.value > 0 }
-                            .fold(getString(R.string.empty_string)) { acc, entry ->
-                                acc + "${entry.value} ${groupNames[entry.key.ordinal]} "
-                            }
+                        val messageText = msg.stats.entries
+                            .filter { it.value > 0 }
+                            .map { entry -> "${entry.value} ${groupNames[entry.key.ordinal]}" }
+                            .joinToString(", ")
                         tvTrackerStatus.text = messageText
                     }
 
@@ -179,7 +184,7 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
         }
     }
 
-    lateinit var viewAdapter: RecyclerView.Adapter<*>
+    lateinit var viewAdapter: VisitListAdapter
 
     override fun onResume() {
         super.onResume()

@@ -14,7 +14,7 @@
     <string name="visit_picture">Proof of Visit</string>
     <string name="take_picture">Take Picture</string>
     <string name="mark_completed">Mark Completed</string>
-    <string name="completed">Completed</string>
+    <string name="completed">Completed or Canceled</string>
     <string name="use_the_link_to_login">Please use the link to login or contact your manager to get one</string>
     <string name="visits">Visits</string>
     <string name="permission_rational">We need your permission to access location and activity data</string>
@@ -44,7 +44,7 @@
     <string name="item_plural">Items</string>
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
-    <string name="no_planned_visits">"No planned visits"</string>
+    <string name="no_planned_visits">No planned visits</string>
     <string name="device_deleted">"Device Deleted"</string>
     <string name="generic_tracking_error">"Tracking Failure"</string>
     <string name="splashscreenlogo">splashScreenLogo</string>
@@ -97,6 +97,8 @@
     <string name="places_visited">Visited %s</string>
     <string name="places_directions_button">Show in Maps app</string>
     <string name="places_not_visited">Not visited</string>
+    <string name="places_exit">Exit</string>
+    <string name="places_enter">Enter</string>
 
     <string name="add_place_confirm">Confirm</string>
     <string name="add_place_create">Create geofence</string>
@@ -105,9 +107,9 @@
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
-    <string name="places_exit">Exit</string>
-    <string name="places_enter">Enter</string>
-    <string name="place_deatils_visits_history">Visits history</string>
+
+    <string name="place_details_visits_history">Visits history</string>
+    <string name="place_details_no_visits">No visits</string>
 
     <plurals name="time">
         <item quantity="one">time</item>

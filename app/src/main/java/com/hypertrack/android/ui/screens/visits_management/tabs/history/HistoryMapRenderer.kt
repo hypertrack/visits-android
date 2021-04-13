@@ -77,9 +77,15 @@ class GoogleMapHistoryRenderer(
             polyLine?.remove()
             polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
             map?.let { map ->
-                history.locationTimePoints.firstOrNull()?.let { point ->
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(point.first.asLatLng(), CITY_LEVEL_ZOOM))
-                }
+                history.locationTimePoints.sortedByDescending { it.second }.firstOrNull()
+                    ?.let { point ->
+                        map.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                point.first.asLatLng(),
+                                CITY_LEVEL_ZOOM
+                            )
+                        )
+                    }
             }
 
             continuation.resume(true, null)

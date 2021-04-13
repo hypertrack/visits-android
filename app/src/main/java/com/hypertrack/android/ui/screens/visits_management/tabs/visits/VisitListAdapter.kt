@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.visits
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ class VisitListAdapter(
 
     private var onItemClick: OnListAdapterClick = onclick
 
+    var placeholderListener: ((Boolean) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
@@ -39,17 +41,18 @@ class VisitListAdapter(
     }
 
 
+    @SuppressLint("DefaultLocale")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = visits.value?.get(holder.adapterPosition)) {
             is HeaderVisitItem -> {
                 val headerView = holder as HeaderViewHolder
                 headerView.tvHeaderText.text = holder.itemView.context.resources
-                        .getStringArray(R.array.visit_state_group_names)[item.status.ordinal]
+                    .getStringArray(R.array.visit_state_group_names)[item.status.ordinal]
                 headerView.itemView.divider.setGoneState(position == 0)
             }
             is Visit -> {
                 val visitView = holder as VisitViewHolder
-                visitView.tvDescription.text = "" // createAddress(item.address)
+                visitView.tvDescription.text = item.state.toString().toLowerCase().capitalize()
                 visitView.tvTitle.text = item.visit_id
                 visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.GONE
                 visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.GONE
@@ -71,7 +74,11 @@ class VisitListAdapter(
         holder.itemView.setOnClickListener { onItemClick.onJobItemClick(holder.layoutPosition) }
     }
 
-    override fun getItemCount(): Int = visits.value?.size ?: 0
+    override fun getItemCount(): Int {
+        val count = visits.value?.size ?: 0
+        placeholderListener?.invoke(count == 0)
+        return count
+    }
 
     override fun getItemViewType(position: Int): Int {
         return if (visits.value?.get(position) is HeaderVisitItem)
