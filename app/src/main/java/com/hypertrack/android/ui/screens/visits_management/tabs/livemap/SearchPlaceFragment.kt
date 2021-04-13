@@ -89,8 +89,8 @@ class SearchPlaceFragment private constructor(
         setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            (parentFragment as LiveMapFragment)
-                .beginFragmentTransaction(newInstance(Config.HOME_ADDRESS, mBackendProvider))
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_frame, newInstance(Config.HOME_ADDRESS, mBackendProvider), SearchPlaceFragment::class.java.simpleName)
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
@@ -223,17 +223,15 @@ class SearchPlaceFragment private constructor(
     }
 
     override fun addShareTripFragment(tripId: String?, shareUrl: String?) {
-        if (activity != null) {
-            (parentFragment as LiveMapFragment).beginFragmentTransaction(
-                ShareTripFragment.newInstance(
-                    tripId,
-                    shareUrl,
-                    mBackendProvider
-                )
+        requireParentFragment()
+            .childFragmentManager
+            .beginTransaction().replace(
+                R.id.fragment_frame,
+                ShareTripFragment.newInstance(tripId, shareUrl, mBackendProvider),
+                ShareTripFragment::class.java.simpleName
             )
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
-        }
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
     }
 
     override fun finish() { activity?.onBackPressed() }

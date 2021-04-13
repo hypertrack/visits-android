@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener;
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.sdk.views.HyperTrackViews
 
@@ -161,39 +161,39 @@ class TrackingFragment(
 
     override fun updateConnectionStatus(offline: Boolean) {
         if (offline) {
-            bottomHolderSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+            bottomHolderSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             offlineView!!.visibility = View.VISIBLE
-            bottomHolderCover!!.visibility = View.VISIBLE
+            bottomHolderCover.visibility = View.VISIBLE
         } else {
             offlineView!!.visibility = View.GONE
-            bottomHolderCover!!.visibility = View.GONE
+            bottomHolderCover.visibility = View.GONE
         }
     }
 
     override fun onStatusUpdateReceived(statusText: String) {}
     override fun showSearch() {
-        whereAreYouGoing!!.visibility = View.VISIBLE
-        bottomHolder!!.visibility = View.INVISIBLE
+        whereAreYouGoing.visibility = View.VISIBLE
+        bottomHolder.visibility = View.INVISIBLE
     }
 
     override fun updateTripsMenu(trips: List<Trip>, selectedTripIndex: Int) {
         if (activity != null) {
             if (trips.isEmpty()) {
-                if (bottomHolder!!.visibility == View.VISIBLE) {
-                    bottomHolder!!.visibility = View.INVISIBLE
-                    whereAreYouGoing!!.visibility = View.VISIBLE
+                if (bottomHolder.visibility == View.VISIBLE) {
+                    bottomHolder.visibility = View.INVISIBLE
+                    whereAreYouGoing.visibility = View.VISIBLE
                 }
                 presenter.stopTripInfoUpdating()
             } else {
-                whereAreYouGoing!!.visibility = View.INVISIBLE
-                bottomHolder!!.visibility = View.VISIBLE
+                whereAreYouGoing.visibility = View.INVISIBLE
+                bottomHolder.visibility = View.VISIBLE
                 val text = getString(R.string.you_have_ongoing_trips)
                 val tripValue =
                     if (trips.size == 1) getString(R.string.trip).toLowerCase() else getString(R.string.trips).toLowerCase()
                 val tripsCountText = String.format(text, trips.size, tripValue)
                 tripsCount!!.text = tripsCountText
-                tripsAdapter!!.update(trips)
-                tripsAdapter!!.setSelection(selectedTripIndex)
+                tripsAdapter.update(trips)
+                tripsAdapter.setSelection(selectedTripIndex)
             }
         }
     }
@@ -205,9 +205,8 @@ class TrackingFragment(
             if (trip.destination == null) {
                 tripTo!!.setText(R.string.trip_started_from)
                 var valueText: String? = getString(R.string.unknown)
-                if (trip.startDate != null) {
-                    valueText = DATE_FORMAT.format(trip.startDate)
-                }
+                trip.startDate?.let { valueText = DATE_FORMAT.format(it) }
+
                 destinationIcon!!.setImageResource(origin)
                 destinationAddress!!.text = valueText
                 val arrivalText = if (trip.summary == null) "-" else String.format(
@@ -256,7 +255,7 @@ class TrackingFragment(
                     destinationArrivalTitle!!.setText(R.string.arrival)
                 } else {
                     destinationArrival!!.text = DATE_FORMAT.format(
-                        trip.destination!!.arrivedDate
+                        trip.destination!!.arrivedDate!!
                     )
                     destinationAway!!.text = ""
                     destinationArrivalTitle!!.setText(R.string.arrived)
@@ -304,16 +303,14 @@ class TrackingFragment(
     }
 
     override fun addSearchPlaceFragment(config: SearchPlaceFragment.Config?) {
-        if (activity != null) {
-            (parentFragment as LiveMapFragment?)!!.beginFragmentTransaction(
-                SearchPlaceFragment.newInstance(
-                    config,
-                    mBackendProvider
-                )
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.fragment_frame,
+                SearchPlaceFragment.newInstance(config, mBackendProvider),
+                SearchPlaceFragment::class.java.simpleName
             )
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
-        }
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
     }
 
     override fun onDestroyView() {
