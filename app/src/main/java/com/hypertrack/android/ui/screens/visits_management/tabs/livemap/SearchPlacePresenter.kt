@@ -27,7 +27,6 @@ import com.hypertrack.backend.ResultHandler
 import com.hypertrack.backend.models.ShareableTrip
 import com.hypertrack.backend.models.TripConfig
 import com.hypertrack.logistics.android.github.R
-import com.hypertrack.sdk.HyperTrack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -37,10 +36,11 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     private val context: Context,
     mode: String?,
     private val view: View,
-    private val backendProvider: AbstractBackendProvider
+    private val backendProvider: AbstractBackendProvider,
+    deviceId: String
 ) {
     private val state = SearchPlaceState(context, mode ?: "config", backendProvider)
-    private val mHyperTrackDeviceId: String  = HyperTrack.getInstance(state.hyperTrackPubKey).deviceID
+    private val mHyperTrackDeviceId: String  = deviceId
     private val placesClient: PlacesClient  = Places.createClient(context)
     private var bias: RectangularBounds? = null
     private val handler = Handler()
@@ -76,14 +76,17 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
                     googleMap?.let { map ->
                         state.destination = null
                         view.updateAddress(context.getString(R.string.searching_))
+                        val target = map.cameraPosition.target
                         GlobalScope.launch(Dispatchers.Default) {
-                            val detectedAddress = MapUtils.getLocationAddress(context, map.cameraPosition.target)
+                            val detectedAddress = MapUtils.getLocationAddress(context, target)
                             val destination = PlaceModel().apply {
                                 address = detectedAddress
-                                latLng = map.cameraPosition.target
+                                latLng = target
                             }
-                            state.destination = destination
-                            view.updateAddress(detectedAddress)
+                            GlobalScope.launch(Dispatchers.Main){
+                                state.destination = destination
+                                view.updateAddress(detectedAddress)
+                            }
                         }
                     }
                 }
@@ -150,7 +153,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         if (!placeModel.isRecent) {
             state.addPlaceToRecent(placeModel)
         }
-        val fields = Arrays.asList(
+        val fields = listOf(
             Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS
         )
         val request = FetchPlaceRequest.builder(placeModel.placeId, fields)

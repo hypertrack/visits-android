@@ -2,6 +2,7 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -60,6 +61,7 @@ class TrackingFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "Creating view")
         presenter = TrackingPresenter(
             view.context,
             this,
@@ -140,14 +142,17 @@ class TrackingFragment(
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "Resuming tracking fragment")
         GlobalScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
-            presenter.subscribeUpdates(map)
+            Log.d(TAG, "got google map from VM $map")
+            GlobalScope.launch(Dispatchers.Main) { presenter.subscribeUpdates(map) }
         }
     }
 
     override fun onPause() {
         super.onPause()
+        Log.d(TAG, "Pausing...")
         presenter.pause()
     }
 
@@ -298,7 +303,7 @@ class TrackingFragment(
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_frame,
-                SearchPlaceFragment.newInstance(config, mBackendProvider),
+                SearchPlaceFragment.newInstance(config, mBackendProvider, hyperTrackService.deviceId),
                 SearchPlaceFragment::class.java.simpleName
             )
             .addToBackStack(null)
@@ -312,5 +317,6 @@ class TrackingFragment(
 
     companion object {
         private val DATE_FORMAT = SimpleDateFormat.getTimeInstance(DateFormat.SHORT)
+        const val TAG = "TrackingFragment"
     }
 }

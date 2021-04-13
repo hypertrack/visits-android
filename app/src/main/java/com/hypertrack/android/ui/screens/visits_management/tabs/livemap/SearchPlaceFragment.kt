@@ -24,8 +24,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class SearchPlaceFragment private constructor(
-    private val mBackendProvider: AbstractBackendProvider
-    ) : Fragment(), SearchPlacePresenter.View {
+    private val mBackendProvider: AbstractBackendProvider,
+    val deviceId: String
+) : Fragment(), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
     private lateinit var search: EditText
@@ -44,7 +45,13 @@ class SearchPlaceFragment private constructor(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         config = arguments?.getParcelable("config") ?: Config("")
-        presenter = SearchPlacePresenter(requireContext(), config.key, this, mBackendProvider)    }
+        presenter = SearchPlacePresenter(
+            requireContext(),
+            config.key,
+            this,
+            mBackendProvider,
+            deviceId
+        )    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -92,7 +99,7 @@ class SearchPlaceFragment private constructor(
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_frame, newInstance(Config.HOME_ADDRESS, mBackendProvider), SearchPlaceFragment::class.java.simpleName)
+                .replace(R.id.fragment_frame, newInstance(Config.HOME_ADDRESS, mBackendProvider, deviceId), SearchPlaceFragment::class.java.simpleName)
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
@@ -135,7 +142,7 @@ class SearchPlaceFragment private constructor(
 
         GlobalScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
-            presenter.initMap(map)
+            GlobalScope.launch(Dispatchers.Main) { presenter.initMap(map) }
         }
     }
 
@@ -321,9 +328,10 @@ class SearchPlaceFragment private constructor(
     companion object {
         fun newInstance(
             config: Config?,
-            backendProvider: AbstractBackendProvider
+            backendProvider: AbstractBackendProvider,
+            deviceId: String
         ): SearchPlaceFragment {
-            val fragment = SearchPlaceFragment(backendProvider)
+            val fragment = SearchPlaceFragment(backendProvider, deviceId)
             val bundle = Bundle()
             bundle.putParcelable("config", config)
             fragment.arguments = bundle

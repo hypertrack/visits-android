@@ -55,6 +55,7 @@ internal class TrackingPresenter(
     }
 
     fun subscribeUpdates(googleMap: GoogleMap) {
+        Log.d(TAG, "Subscribing to map updates")
         if (hyperTrackMap == null) {
             val mapAdapter = GoogleMapAdapter(googleMap, getBuilder(context).build())
             mapAdapter.addTripFilter { trip -> trip.tripId == state.selectedTripId }
@@ -66,6 +67,7 @@ internal class TrackingPresenter(
         hyperTrackService.syncDeviceSettings()
         val selectedTrip = state.trips[state.selectedTripId]
         if (selectedTrip == null) {
+            Log.d(TAG, "showing search as no trip selected")
             view.showSearch()
             hyperTrackMap!!.moveToMyLocation()
         } else {
@@ -77,7 +79,7 @@ internal class TrackingPresenter(
     }
 
     fun pause() {
-        hyperTrackMap!!.unbindHyperTrackViews()
+        hyperTrackMap?.unbindHyperTrackViews()
         realTimeUpdatesService.unsubscribeFromDeviceUpdates(this)
     }
 

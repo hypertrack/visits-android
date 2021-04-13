@@ -33,7 +33,7 @@ class LiveMapFragment(
     private var currentMapStyle = mapStyleOptions
     private var gMap: GoogleMap? = null
 
-    private val liveMapViewModel: LiveMapViewModel by viewModels()
+    private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
 
     private val shareBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -59,6 +59,7 @@ class LiveMapFragment(
         }
         (childFragmentManager.findFragmentById(R.id.liveMap) as SupportMapFragment)
             .getMapAsync {
+                Log.d(TAG, "Got googleMap, updating VM")
                 gMap = it
                 liveMapViewModel.googleMap = it
                 state = LoadingProgressState.DONE
@@ -71,6 +72,7 @@ class LiveMapFragment(
                 }
             }
 
+        Log.d(TAG, "Attaching TrackingFragment")
         parentFragmentManager
             .beginTransaction()
             .replace(
@@ -86,6 +88,7 @@ class LiveMapFragment(
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "Resuming...")
         if (state == LoadingProgressState.LOADING) displayLoadingState(true)
         activity?.apply {
             registerReceiver(shareBroadcastReceiver, IntentFilter(SHARE_BROADCAST_ACTION))
@@ -96,6 +99,7 @@ class LiveMapFragment(
 
     override fun onPause() {
         super.onPause()
+        Log.d(TAG, "Pausing...")
         if (progress.isVisible) displayLoadingState(false)
     }
 
@@ -155,7 +159,7 @@ class LiveMapFragment(
     }
 
     companion object {
-        const val TAG = "MapFragment"
+        const val TAG = "LiveMapFragment"
         const val SHARE_BROADCAST_ACTION = "com.hypertrack.visits.SHARE_BROADCAST_ACTION"
     }
 }
