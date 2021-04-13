@@ -7,14 +7,12 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_map_view.*
@@ -23,7 +21,6 @@ import kotlinx.android.synthetic.main.progress_bar.*
 import java.util.*
 
 class LiveMapFragment(
-    private val sharedHelper: SharedHelper,
     private val mapStyleOptions: MapStyleOptions,
     private val mapStyleOptionsSilver: MapStyleOptions,
     private val hyperTrackService: HyperTrackService,
@@ -68,13 +65,16 @@ class LiveMapFragment(
                 }
             }
 
-        beginFragmentTransaction(
-                Injector.getCustomFragmentFactory(requireContext())
-                    .instantiate(
-                        ClassLoader.getSystemClassLoader(),
-                        TrackingFragment::class.java.name
-                    )
-        ).commitAllowingStateLoss()
+        parentFragmentManager
+            .beginTransaction()
+            .replace(
+                R.id.fragment_frame,
+                parentFragmentManager.fragmentFactory.instantiate(
+                    ClassLoader.getSystemClassLoader(), TrackingFragment::class.java.name
+                ),
+                TrackingFragment::class.java.name
+            )
+            .commitAllowingStateLoss()
 
     }
 
@@ -161,12 +161,6 @@ class LiveMapFragment(
         progress.setGoneState(!isLoading)
         progress.background = null
         if (isLoading) loader.playAnimation() else loader.cancelAnimation()
-    }
-
-    fun beginFragmentTransaction(fragment: Fragment): FragmentTransaction {
-        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.fragment_frame, fragment, fragment.javaClass.simpleName)
-        return transaction
     }
 
     companion object {

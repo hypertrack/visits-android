@@ -21,7 +21,6 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHist
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
-import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SharedHelper
 import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.backend.HybridBackendProvider
@@ -324,7 +323,6 @@ object Injector {
         val publishableKey = getAccountRepo(applicationContext).publishableKey
         val viewsSdk = HyperTrackViews.getInstance(applicationContext, publishableKey)
         return CustomFragmentFactory(
-            SharedHelper.getInstance(applicationContext),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
             hyperTrackService,

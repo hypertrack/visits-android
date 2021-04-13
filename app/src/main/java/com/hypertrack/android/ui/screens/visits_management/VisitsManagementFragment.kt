@@ -29,7 +29,7 @@ import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
-class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
+class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     private val args: VisitsManagementFragmentArgs by navArgs()
 

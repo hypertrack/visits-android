@@ -2,9 +2,7 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,23 +14,22 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
+import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
+import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
-import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.sdk.views.HyperTrackViews
-
 class TrackingFragment(
     private val mBackendProvider: AbstractBackendProvider,
     private val hyperTrackService: HyperTrackService,
     private val realTimeUpdatesService: HyperTrackViews
-) : Fragment(),
+) : Fragment(R.layout.fragment_tracking),
     OnMapReadyCallback, TrackingPresenter.View {
     private var tripConfirmSnackbar: Snackbar? = null
     private lateinit var blockingView: View
@@ -57,13 +54,6 @@ class TrackingFragment(
     private var loader: LoaderDecorator? = null
     private lateinit var presenter: TrackingPresenter
     private var tripsAdapter = TripsAdapter()
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_tracking, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
