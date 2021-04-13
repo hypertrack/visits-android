@@ -286,6 +286,7 @@ object Injector {
             getMyPreferences(context),
             getHyperTrackService(context),
             getAccountRepo(context),
+            getDeviceLocationProvider()
         )
         visitsRepository = result
 

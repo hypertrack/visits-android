@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.visits
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,17 +41,18 @@ class VisitListAdapter(
     }
 
 
+    @SuppressLint("DefaultLocale")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = visits.value?.get(holder.adapterPosition)) {
             is HeaderVisitItem -> {
                 val headerView = holder as HeaderViewHolder
                 headerView.tvHeaderText.text = holder.itemView.context.resources
-                        .getStringArray(R.array.visit_state_group_names)[item.status.ordinal]
+                    .getStringArray(R.array.visit_state_group_names)[item.status.ordinal]
                 headerView.itemView.divider.setGoneState(position == 0)
             }
             is Visit -> {
                 val visitView = holder as VisitViewHolder
-                visitView.tvDescription.text = "" // createAddress(item.address)
+                visitView.tvDescription.text = item.state.toString().toLowerCase().capitalize()
                 visitView.tvTitle.text = item.visit_id
                 visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.GONE
                 visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.GONE

@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.*
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -20,6 +21,7 @@ class VisitsRepository(
     private val visitsStorage: VisitsStorage,
     private val hyperTrackService: HyperTrackService,
     private val accountPreferences: AccountPreferencesProvider,
+    private val deviceLocationProvider: DeviceLocationProvider
 ) {
 
     private val _visitsMap: MutableMap<String, Visit>
@@ -180,6 +182,10 @@ class VisitsRepository(
         hyperTrackService.clockIn()
     }
 
+    fun getLocalVisit(): Visit? {
+        return _visitsMap.getLocalVisit()
+    }
+
     fun processLocalVisit() {
         // Log.d(TAG, "processLocalVisit")
         val localVisit = _visitsMap.getLocalVisit()
@@ -189,22 +195,26 @@ class VisitsRepository(
             return
         }
 
-        val createdAt = osUtilsProvider.getCurrentTimestamp()
-        val newLocalVisit = Visit(
+        deviceLocationProvider.getCurrentLocation {
+            val createdAt = osUtilsProvider.getCurrentTimestamp()
+            val newLocalVisit = Visit(
                 _id = UUID.randomUUID().toString(),
                 visit_id = osUtilsProvider.getString(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
                 createdAt = createdAt,
                 visitedAt = createdAt,
                 visitType = VisitType.LOCAL,
-                _state = VisitStatus.VISITED
-        )
-        val id = newLocalVisit._id
-        _visitsMap[id] = newLocalVisit
-        hyperTrackService.createVisitStartEvent(id, newLocalVisit.typeKey)
-        visitsStorage.saveVisits(_visitsMap.values.toList())
-        _visitItemsById[id] = MutableLiveData(newLocalVisit)
-        _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
-        _hasOngoingLocalVisit.postValue(true)
+                _state = VisitStatus.VISITED,
+                latitude = it?.latitude,
+                longitude = it?.longitude
+            )
+            val id = newLocalVisit._id
+            _visitsMap[id] = newLocalVisit
+            hyperTrackService.createVisitStartEvent(id, newLocalVisit.typeKey)
+            visitsStorage.saveVisits(_visitsMap.values.toList())
+            _visitItemsById[id] = MutableLiveData(newLocalVisit)
+            _visitListItems.postValue(_visitsMap.values.sortedWithHeaders())
+            _hasOngoingLocalVisit.postValue(true)
+        }
     }
 
     fun checkLocalVisitCompleted() = _hasOngoingLocalVisit.postValue(
