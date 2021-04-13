@@ -10,7 +10,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.wrappers.InstantApps
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
@@ -94,7 +93,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
                     handler.postDelayed(runnable, 500)
                 }
                 runnable.run()
-                view.updateList(emptyList<PlaceModel>())
+                view.updateList(emptyList())
                 view.showSetOnMap()
             } else {
                 googleMap!!.setOnCameraMoveListener(null)
@@ -220,11 +219,9 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     }
 
     private fun actionLocationSourceSettings() {
-        if (!InstantApps.isInstantApp(context)) {
-            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     fun destroy() {

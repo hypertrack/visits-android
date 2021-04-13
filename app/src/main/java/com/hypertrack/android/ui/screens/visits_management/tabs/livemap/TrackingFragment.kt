@@ -303,7 +303,7 @@ class TrackingFragment(
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_frame,
-                SearchPlaceFragment.newInstance(config, mBackendProvider, hyperTrackService.deviceId),
+                SearchPlaceFragment.newInstance(config, mBackendProvider, hyperTrackService.deviceId, realTimeUpdatesService),
                 SearchPlaceFragment::class.java.simpleName
             )
             .addToBackStack(null)

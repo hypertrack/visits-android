@@ -15,37 +15,27 @@ import kotlin.coroutines.suspendCoroutine
 
 class LiveMapViewModel : ViewModel() {
 
-
-
     private val mapLock = Mutex()
+    private var _googleMap:GoogleMap? = null
     private var callbacks: MutableSet<Continuation<GoogleMap>> = CopyOnWriteArraySet()
+
     suspend fun getMap(): GoogleMap = suspendCoroutine { continuation ->
-        Log.d(TAG, "Get Map on $this")
         GlobalScope.launch(Dispatchers.Default) {
             mapLock.withLock {
                 _googleMap
-                    ?.let {
-                        Log.d(TAG, "Map already loaded")
-                        GlobalScope.launch(Dispatchers.Main) { continuation.resume(it) }
-                    }
-                    ?: { Log.d(TAG, "Saving continuation to callbacks $continuation")
-                        callbacks.add(continuation)
-                        Unit
-                    }()
+                    ?.let { GlobalScope.launch(Dispatchers.Main) { continuation.resume(it) } }
+                    ?: callbacks.add(continuation)
             }
         }
     }
 
-    private var _googleMap:GoogleMap? = null
     var googleMap: GoogleMap?
         get() = _googleMap
         set(value) {
-            Log.d(TAG, "Received GoogleMap $value in $this")
             GlobalScope.launch(Dispatchers.Default) {
                 mapLock.withLock {
                     _googleMap = value
                     value?.let {
-                        Log.d(TAG, "Notifying callbacks $callbacks")
                         callbacks.forEach { GlobalScope.launch(Dispatchers.Main) { it.resume(value) } }
                         callbacks.clear()
                     }
@@ -54,5 +44,4 @@ class LiveMapViewModel : ViewModel() {
             }
         }
 
-    companion object { const val TAG = "LiveMapViewModel"}
 }

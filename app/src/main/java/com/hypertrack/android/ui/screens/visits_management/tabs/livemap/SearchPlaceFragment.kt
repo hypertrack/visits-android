@@ -19,13 +19,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
+import com.hypertrack.sdk.views.HyperTrackViews
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class SearchPlaceFragment private constructor(
+class SearchPlaceFragment(
     private val mBackendProvider: AbstractBackendProvider,
-    val deviceId: String
+    private val deviceId: String,
+    private val realTimeUpdatesProvider: HyperTrackViews
 ) : Fragment(), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
@@ -44,7 +46,7 @@ class SearchPlaceFragment private constructor(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        config = arguments?.getParcelable("config") ?: Config("")
+        config = arguments?.getParcelable("config") ?: Config.SEARCH_PLACE
         presenter = SearchPlacePresenter(
             requireContext(),
             config.key,
@@ -99,7 +101,16 @@ class SearchPlaceFragment private constructor(
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_frame, newInstance(Config.HOME_ADDRESS, mBackendProvider, deviceId), SearchPlaceFragment::class.java.simpleName)
+                .replace(
+                    R.id.fragment_frame,
+                    newInstance(
+                        Config.HOME_ADDRESS,
+                        mBackendProvider,
+                        deviceId,
+                        realTimeUpdatesProvider
+                    ),
+                    SearchPlaceFragment::class.java.simpleName
+                )
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
@@ -236,7 +247,13 @@ class SearchPlaceFragment private constructor(
             .childFragmentManager
             .beginTransaction().replace(
                 R.id.fragment_frame,
-                ShareTripFragment.newInstance(tripId, shareUrl, mBackendProvider, deviceId),
+                ShareTripFragment.newInstance(
+                    tripId,
+                    shareUrl,
+                    mBackendProvider,
+                    deviceId,
+                    realTimeUpdatesProvider
+                ),
                 ShareTripFragment::class.java.simpleName
             )
             .addToBackStack(null)
@@ -329,9 +346,10 @@ class SearchPlaceFragment private constructor(
         fun newInstance(
             config: Config?,
             backendProvider: AbstractBackendProvider,
-            deviceId: String
+            deviceId: String,
+            realTimeUpdatesProvider: HyperTrackViews
         ): SearchPlaceFragment {
-            val fragment = SearchPlaceFragment(backendProvider, deviceId)
+            val fragment = SearchPlaceFragment(backendProvider, deviceId, realTimeUpdatesProvider)
             val bundle = Bundle()
             bundle.putParcelable("config", config)
             fragment.arguments = bundle

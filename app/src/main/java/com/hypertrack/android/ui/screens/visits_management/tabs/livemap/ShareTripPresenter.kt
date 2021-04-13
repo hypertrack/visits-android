@@ -21,11 +21,12 @@ internal class ShareTripPresenter(
     private val view: View,
     url: String,
     private val backendProvider: AbstractBackendProvider,
-    deviceId: String
+    deviceId: String,
+    realTimeUpdatesProvider: HyperTrackViews
 ) : DeviceUpdatesHandler {
     private val state: ShareTripState = ShareTripState(context, url)
     private val hyperTrackDeviceId: String  = deviceId
-    private val hyperTrackViews: HyperTrackViews = HyperTrackViews.getInstance(context, state.hyperTrackPubKey)
+    private val hyperTrackViews: HyperTrackViews = realTimeUpdatesProvider
     private var hyperTrackMap: HyperTrackMap? = null
 
     fun subscribeTripUpdates(googleMap: GoogleMap?, tripId: String?) {

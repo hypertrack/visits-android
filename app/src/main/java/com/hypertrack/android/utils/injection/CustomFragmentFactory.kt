@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SearchPlaceFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingFragment
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.backend.AbstractBackendProvider
@@ -26,6 +27,12 @@ class CustomFragmentFactory(
             )
             TrackingFragment::class.java.name ->
                 TrackingFragment(backendProvider, hyperTrackService, realTimeUpdatesService)
+            SearchPlaceFragment::class.java.name ->
+                SearchPlaceFragment(
+                    backendProvider,
+                    hyperTrackService.deviceId,
+                    realTimeUpdatesService
+                )
             else -> super.instantiate(classLoader, className)
         }
     }

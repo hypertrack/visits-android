@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
+import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class ShareTripFragment private constructor(
     private val mBackendProvider: AbstractBackendProvider,
-    private val deviceId: String
+    private val deviceId: String,
+    private val realTimeUpdatesProvider: HyperTrackViews
 ) :
     Fragment(), ShareTripPresenter.View, OnBackPressedListener {
     private var presenter: ShareTripPresenter? = null
@@ -50,12 +52,19 @@ class ShareTripFragment private constructor(
 
     override fun onResume() {
         super.onResume()
-        presenter = ShareTripPresenter(requireContext(), this, shareUrl, mBackendProvider, deviceId)
+        presenter = ShareTripPresenter(
+            requireContext(),
+            this,
+            shareUrl,
+            mBackendProvider,
+            deviceId,
+            realTimeUpdatesProvider
+        )
         share.setOnClickListener { presenter!!.shareTrackMessage() }
 
         GlobalScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
-            presenter?.subscribeTripUpdates(map, tripId)
+            GlobalScope.launch(Dispatchers.Main) { presenter?.subscribeTripUpdates(map, tripId) }
         }
     }
 
@@ -97,9 +106,10 @@ class ShareTripFragment private constructor(
             tripId: String?,
             shareUrl: String?,
             backendProvider: AbstractBackendProvider,
-            deviceId: String
+            deviceId: String,
+            realTimeUpdatesProvider: HyperTrackViews
         ): Fragment {
-            val fragment = ShareTripFragment(backendProvider, deviceId)
+            val fragment = ShareTripFragment(backendProvider, deviceId, realTimeUpdatesProvider)
             val bundle = Bundle()
             bundle.putString(TRIP_ID_KEY, tripId)
             bundle.putString(SHARE_URL_KEY, shareUrl)
