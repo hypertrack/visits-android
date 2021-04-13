@@ -7,11 +7,10 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
@@ -20,6 +19,9 @@ import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,8 +31,7 @@ class TrackingFragment(
     private val mBackendProvider: AbstractBackendProvider,
     private val hyperTrackService: HyperTrackService,
     private val realTimeUpdatesService: HyperTrackViews
-) : Fragment(R.layout.fragment_tracking),
-    OnMapReadyCallback, TrackingPresenter.View {
+) : Fragment(R.layout.fragment_tracking), TrackingPresenter.View {
     private var tripConfirmSnackbar: Snackbar? = null
     private lateinit var blockingView: View
     private var offlineView: View? = null
@@ -54,6 +55,8 @@ class TrackingFragment(
     private var loader: LoaderDecorator? = null
     private lateinit var presenter: TrackingPresenter
     private var tripsAdapter = TripsAdapter()
+
+    private val liveMapViewModel: LiveMapViewModel by viewModels({ requireParentFragment() })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -137,16 +140,15 @@ class TrackingFragment(
 
     override fun onResume() {
         super.onResume()
-        (parentFragment as LiveMapFragment).getMapAsync(this)
+        GlobalScope.launch(Dispatchers.Default) {
+            val map = liveMapViewModel.getMap()
+            presenter.subscribeUpdates(map)
+        }
     }
 
     override fun onPause() {
         super.onPause()
         presenter.pause()
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        presenter.subscribeUpdates(googleMap)
     }
 
     override fun updateConnectionStatus(offline: Boolean) {

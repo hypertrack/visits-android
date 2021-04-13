@@ -1,14 +1,17 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.hypertrack.android.ui.common.setGoneState
@@ -29,6 +32,8 @@ class LiveMapFragment(
     private var state: LoadingProgressState = LoadingProgressState.LOADING
     private var currentMapStyle = mapStyleOptions
     private var gMap: GoogleMap? = null
+
+    private val liveMapViewModel: LiveMapViewModel by viewModels()
 
     private val shareBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -55,6 +60,7 @@ class LiveMapFragment(
         (childFragmentManager.findFragmentById(R.id.liveMap) as SupportMapFragment)
             .getMapAsync {
                 gMap = it
+                liveMapViewModel.googleMap = it
                 state = LoadingProgressState.DONE
                 displayLoadingState(false)
                 hyperTrackService.state.value?.let { state ->
@@ -141,21 +147,6 @@ class LiveMapFragment(
         }
     }
 
-
-    fun getMapAsync(onMapReadyCallback: OnMapReadyCallback) {
-        if (gMap == null) {
-            val mapFragment = parentFragmentManager
-                .findFragmentById(R.id.liveMap) as SupportMapFragment
-            mapFragment.getMapAsync { googleMap ->
-                gMap = googleMap
-                val uiSettings = googleMap.uiSettings
-                uiSettings.isMapToolbarEnabled = false
-                onMapReadyCallback.onMapReady(googleMap)
-            }
-        } else {
-            onMapReadyCallback.onMapReady(gMap)
-        }
-    }
 
     private fun displayLoadingState(isLoading: Boolean) {
         progress.setGoneState(!isLoading)

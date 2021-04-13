@@ -5,10 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.dao.Trip
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class ShareTripFragment private constructor(private val mBackendProvider: AbstractBackendProvider) :
     Fragment(), ShareTripPresenter.View, OnBackPressedListener {
@@ -17,6 +22,7 @@ class ShareTripFragment private constructor(private val mBackendProvider: Abstra
     private lateinit var share: View
     private lateinit var tripId: String
     private lateinit var shareUrl: String
+    private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,11 +51,10 @@ class ShareTripFragment private constructor(private val mBackendProvider: Abstra
         super.onResume()
         presenter = ShareTripPresenter(requireContext(), this, shareUrl, mBackendProvider)
         share.setOnClickListener { presenter!!.shareTrackMessage() }
-        (parentFragment as LiveMapFragment?)!!.getMapAsync { googleMap: GoogleMap? ->
-            presenter!!.subscribeTripUpdates(
-                googleMap,
-                tripId
-            )
+
+        GlobalScope.launch(Dispatchers.Default) {
+            val map = liveMapViewModel.getMap()
+            presenter?.subscribeTripUpdates(map, tripId)
         }
     }
 

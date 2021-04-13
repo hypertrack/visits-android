@@ -12,18 +12,20 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class SearchPlaceFragment private constructor(
     private val mBackendProvider: AbstractBackendProvider
-    ) : Fragment(), OnMapReadyCallback, SearchPlacePresenter.View {
+    ) : Fragment(), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
     private lateinit var search: EditText
@@ -35,8 +37,8 @@ class SearchPlaceFragment private constructor(
     private lateinit var setOnMap: View
     private lateinit var confirm: View
     private var placesAdapter = PlacesAdapter()
-
     private var loader: LoaderDecorator? = null
+    private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,11 +132,11 @@ class SearchPlaceFragment private constructor(
         locationsRecyclerView.setOnTouchListener(hideSoftInputOnTouchListener)
         loader = LoaderDecorator(context)
         presenter.search(null)
-        (parentFragment as LiveMapFragment?)!!.getMapAsync(this)
-    }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        presenter.initMap(googleMap)
+        GlobalScope.launch(Dispatchers.Default) {
+            val map = liveMapViewModel.getMap()
+            presenter.initMap(map)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
