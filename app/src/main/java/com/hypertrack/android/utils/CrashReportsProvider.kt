@@ -7,18 +7,21 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 interface CrashReportsProvider {
-    fun logException(e: Throwable)
+    fun logException(e: Throwable, metadata: Map<String, String> = mapOf())
     fun setUserIdentifier(id: String)
 }
 
 class FirebaseCrashReportsProvider : CrashReportsProvider {
-    override fun logException(e: Throwable) {
+    override fun logException(e: Throwable, metadata: Map<String, String>) {
         if (
             e !is HttpException
             && e !is SocketTimeoutException
             && e !is UnknownHostException
             && e !is ConnectException
         ) {
+            metadata.forEach {
+                FirebaseCrashlytics.getInstance().setCustomKey(it.key, it.value)
+            }
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }

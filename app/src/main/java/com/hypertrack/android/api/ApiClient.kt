@@ -69,7 +69,7 @@ class ApiClient(
             return res
         } catch (e: Exception) {
             Log.e(TAG, "Got exception while fetching geofences $e")
-            throw e
+            return listOf()
         }
     }
 

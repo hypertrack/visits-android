@@ -7,6 +7,7 @@ import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.*
 import okhttp3.internal.userAgent
+import java.lang.Exception
 
 const val TAG = "AccessToken"
 
@@ -27,12 +28,17 @@ class UserAgentInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val networkingLibrary = userAgent
         val request = chain.request().newBuilder()
-                .addHeader("User-Agent",
-                        "VisitsApp/${BuildConfig.VERSION_NAME} $networkingLibrary Android/${Build.VERSION.RELEASE}"
-                )
-                .build()
-        return chain.proceed(request)
-
+            .addHeader(
+                "User-Agent",
+                "VisitsApp/${BuildConfig.VERSION_NAME} $networkingLibrary Android/${Build.VERSION.RELEASE}"
+            )
+            .build()
+        try {
+            return chain.proceed(request)
+        } catch (e: Exception) {
+            val url = request.url.toString()
+            throw e
+        }
     }
 
 }
