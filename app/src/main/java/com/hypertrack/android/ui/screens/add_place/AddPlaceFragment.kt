@@ -42,7 +42,6 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             }
         }
         search.addTextChangedListener(watcher)
-        Utils.showKeyboard(mainActivity(), search)
 
         vm.places.observe(viewLifecycleOwner, {
             adapter.clear()
