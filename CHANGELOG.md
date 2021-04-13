@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.6] - 2021-04-13
+### Fixed
+- Visits list text changes
+- Local visit UX changes and fixes
+
 ## [0.6.5] - 2021-04-09
 ### Fixed
 - Mock locations were disallowed
