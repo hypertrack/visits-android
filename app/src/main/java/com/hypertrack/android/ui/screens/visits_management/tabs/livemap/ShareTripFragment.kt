@@ -6,8 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.dao.Trip
@@ -15,7 +13,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class ShareTripFragment private constructor(private val mBackendProvider: AbstractBackendProvider) :
+class ShareTripFragment private constructor(
+    private val mBackendProvider: AbstractBackendProvider,
+    private val deviceId: String
+) :
     Fragment(), ShareTripPresenter.View, OnBackPressedListener {
     private var presenter: ShareTripPresenter? = null
     private var loader: LoaderDecorator? = null
@@ -49,7 +50,7 @@ class ShareTripFragment private constructor(private val mBackendProvider: Abstra
 
     override fun onResume() {
         super.onResume()
-        presenter = ShareTripPresenter(requireContext(), this, shareUrl, mBackendProvider)
+        presenter = ShareTripPresenter(requireContext(), this, shareUrl, mBackendProvider, deviceId)
         share.setOnClickListener { presenter!!.shareTrackMessage() }
 
         GlobalScope.launch(Dispatchers.Default) {
@@ -95,9 +96,10 @@ class ShareTripFragment private constructor(private val mBackendProvider: Abstra
         fun newInstance(
             tripId: String?,
             shareUrl: String?,
-            backendProvider: AbstractBackendProvider
+            backendProvider: AbstractBackendProvider,
+            deviceId: String
         ): Fragment {
-            val fragment = ShareTripFragment(backendProvider)
+            val fragment = ShareTripFragment(backendProvider, deviceId)
             val bundle = Bundle()
             bundle.putString(TRIP_ID_KEY, tripId)
             bundle.putString(SHARE_URL_KEY, shareUrl)

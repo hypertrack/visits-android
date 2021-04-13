@@ -9,7 +9,6 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.Tracking
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.backend.ResultHandler
 import com.hypertrack.maps.google.widget.GoogleMapAdapter
-import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.views.DeviceUpdatesHandler
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Location
@@ -21,10 +20,11 @@ internal class ShareTripPresenter(
     private val context: Context,
     private val view: View,
     url: String,
-    private val backendProvider: AbstractBackendProvider
+    private val backendProvider: AbstractBackendProvider,
+    deviceId: String
 ) : DeviceUpdatesHandler {
     private val state: ShareTripState = ShareTripState(context, url)
-    private val hyperTrackDeviceId: String  = HyperTrack.getInstance(state.hyperTrackPubKey).deviceID
+    private val hyperTrackDeviceId: String  = deviceId
     private val hyperTrackViews: HyperTrackViews = HyperTrackViews.getInstance(context, state.hyperTrackPubKey)
     private var hyperTrackMap: HyperTrackMap? = null
 

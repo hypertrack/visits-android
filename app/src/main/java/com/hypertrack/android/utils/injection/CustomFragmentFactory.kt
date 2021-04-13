@@ -18,16 +18,15 @@ class CustomFragmentFactory(
     private val realTimeUpdatesService: HyperTrackViews,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-        if (className == LiveMapFragment::class.java.name) {
-            return LiveMapFragment(
+        return when (className) {
+            LiveMapFragment::class.java.name -> LiveMapFragment(
                 mapStyleOptions,
                 mapStyleOptionsSilver,
                 hyperTrackService
             )
+            TrackingFragment::class.java.name ->
+                TrackingFragment(backendProvider, hyperTrackService, realTimeUpdatesService)
+            else -> super.instantiate(classLoader, className)
         }
-        if (className == TrackingFragment::class.java.name) {
-            return TrackingFragment(backendProvider, hyperTrackService, realTimeUpdatesService)
-        }
-        return super.instantiate(classLoader, className)
     }
 }

@@ -236,7 +236,7 @@ class SearchPlaceFragment private constructor(
             .childFragmentManager
             .beginTransaction().replace(
                 R.id.fragment_frame,
-                ShareTripFragment.newInstance(tripId, shareUrl, mBackendProvider),
+                ShareTripFragment.newInstance(tripId, shareUrl, mBackendProvider, deviceId),
                 ShareTripFragment::class.java.simpleName
             )
             .addToBackStack(null)

@@ -30,7 +30,6 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
 
 internal class SearchPlacePresenter @SuppressLint("MissingPermission") constructor(
     private val context: Context,
