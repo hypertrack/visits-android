@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.7] - 2021-04-13
+### Fixed
+- Crash in case if there no internet connection fixed
+
 ## [0.6.6] - 2021-04-13
 ### Fixed
 - Visits list text changes
