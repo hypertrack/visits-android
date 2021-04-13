@@ -74,16 +74,21 @@ class BasicAuthAccessTokenRepository(
 
     override suspend fun refreshTokenAsync(): AccountState =
             suspendCoroutine { cont ->
-                okHttpClient.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        Log.e(TAG, "Failed to get ")
-                        cont.resume(Unknown)
-                    }
+                try {
+                    okHttpClient.newCall(request).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            Log.e(TAG, "Failed to get ")
+                            cont.resume(Unknown)
+                        }
 
-                    override fun onResponse(call: Call, response: Response) {
-                        cont.resume(getTokenFromResponse(response))
-                    }
-                })
+                        override fun onResponse(call: Call, response: Response) {
+                            cont.resume(getTokenFromResponse(response))
+                        }
+                    })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    cont.resume(Unknown)
+                }
             }
 
     private fun getTokenFromResponse(response: Response): AccountState {
