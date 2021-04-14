@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ShareTripFragment private constructor(
@@ -62,9 +62,9 @@ class ShareTripFragment private constructor(
         )
         share.setOnClickListener { presenter!!.shareTrackMessage() }
 
-        GlobalScope.launch(Dispatchers.Default) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
-            GlobalScope.launch(Dispatchers.Main) { presenter?.subscribeTripUpdates(map, tripId) }
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter?.subscribeTripUpdates(map, tripId) }
         }
     }
 

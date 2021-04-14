@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +22,6 @@ import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class SearchPlaceFragment(
@@ -52,7 +52,8 @@ class SearchPlaceFragment(
             config.key,
             this,
             mBackendProvider,
-            deviceId
+            deviceId,
+            viewLifecycleOwner
         )    }
 
     override fun onCreateView(
@@ -151,9 +152,9 @@ class SearchPlaceFragment(
         loader = LoaderDecorator(context)
         presenter.search(null)
 
-        GlobalScope.launch(Dispatchers.Default) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
-            GlobalScope.launch(Dispatchers.Main) { presenter.initMap(map) }
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter.initMap(map) }
         }
     }
 
@@ -230,17 +231,9 @@ class SearchPlaceFragment(
         confirm.visibility = View.GONE
     }
 
-    override fun showProgressBar() {
-        if (activity != null) {
-            loader!!.start()
-        }
-    }
+    override fun showProgressBar() { activity?.let { loader?.start() } }
 
-    override fun hideProgressBar() {
-        if (activity != null) {
-            loader!!.stop()
-        }
-    }
+    override fun hideProgressBar() { activity?.let { loader?.stop() } }
 
     override fun addShareTripFragment(tripId: String?, shareUrl: String?) {
         requireParentFragment()

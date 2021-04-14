@@ -29,16 +29,16 @@ internal class ShareTripPresenter(
     private val hyperTrackViews: HyperTrackViews = realTimeUpdatesProvider
     private var hyperTrackMap: HyperTrackMap? = null
 
-    fun subscribeTripUpdates(googleMap: GoogleMap?, tripId: String?) {
+    fun subscribeTripUpdates(googleMap: GoogleMap, tripId: String?) {
         if (hyperTrackMap == null) {
-            val mapAdapter = GoogleMapAdapter(googleMap!!, getBuilder(context).build())
+            val mapAdapter = GoogleMapAdapter(googleMap, getBuilder(context).build())
             hyperTrackMap = HyperTrackMap.getInstance(context, mapAdapter)
             hyperTrackMap?.setMyLocationEnabled(false)
         }
         state.currentTripId = tripId
         hyperTrackViews.subscribeToDeviceUpdates(hyperTrackDeviceId, tripId!!, this)
-        hyperTrackMap!!.bind(hyperTrackViews, hyperTrackDeviceId)
-            .subscribeTrip(tripId)
+        hyperTrackMap?.bind(hyperTrackViews, hyperTrackDeviceId)
+            ?.subscribeTrip(tripId)
     }
 
     fun pause() {

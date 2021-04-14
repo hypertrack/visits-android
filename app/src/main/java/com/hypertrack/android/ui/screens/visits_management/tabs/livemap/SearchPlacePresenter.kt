@@ -9,6 +9,8 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
@@ -27,7 +29,6 @@ import com.hypertrack.backend.models.ShareableTrip
 import com.hypertrack.backend.models.TripConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 internal class SearchPlacePresenter @SuppressLint("MissingPermission") constructor(
@@ -35,7 +36,8 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     mode: String?,
     private val view: View,
     private val backendProvider: AbstractBackendProvider,
-    deviceId: String
+    deviceId: String,
+    private val viewLifecycleOwner: LifecycleOwner
 ) {
     private val state = SearchPlaceState(context, mode ?: "config", backendProvider)
     private val mHyperTrackDeviceId: String  = deviceId
@@ -75,13 +77,13 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
                         state.destination = null
                         view.updateAddress(context.getString(R.string.searching_))
                         val target = map.cameraPosition.target
-                        GlobalScope.launch(Dispatchers.Default) {
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                             val detectedAddress = MapUtils.getLocationAddress(context, target)
                             val destination = PlaceModel().apply {
                                 address = detectedAddress
                                 latLng = target
                             }
-                            GlobalScope.launch(Dispatchers.Main){
+                            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main){
                                 state.destination = destination
                                 view.updateAddress(detectedAddress)
                             }
@@ -96,7 +98,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
                 view.updateList(emptyList())
                 view.showSetOnMap()
             } else {
-                googleMap!!.setOnCameraMoveListener(null)
+                googleMap?.setOnCameraMoveListener(null)
                 state.destination = null
                 view.updateAddress("")
                 view.hideSetOnMap()
@@ -225,7 +227,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     }
 
     fun destroy() {
-        googleMap!!.setOnCameraMoveListener(null)
+        googleMap?.setOnCameraMoveListener(null)
         googleMap = null
     }
 

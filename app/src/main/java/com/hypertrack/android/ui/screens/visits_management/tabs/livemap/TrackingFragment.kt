@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +22,6 @@ import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -143,10 +143,10 @@ class TrackingFragment(
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resuming tracking fragment")
-        GlobalScope.launch(Dispatchers.Default) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             Log.d(TAG, "got google map from VM $map")
-            GlobalScope.launch(Dispatchers.Main) { presenter.subscribeUpdates(map) }
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter.subscribeUpdates(map) }
         }
     }
 
