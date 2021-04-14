@@ -9,6 +9,7 @@
     <color name="colorRed">#EB5B64</color>
     <color name="tertiary_2_xdark">#4c4b5d</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorInvisible">#00000000</color>
     <color name="colorTimelineBackground">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGrey">#F4F4F4</color>
