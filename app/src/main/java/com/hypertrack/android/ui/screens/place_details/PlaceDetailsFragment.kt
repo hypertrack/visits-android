@@ -30,7 +30,7 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync {
+        (childFragmentManager.findFragmentById(R.id.liveMap) as SupportMapFragment?)?.getMapAsync {
             vm.onMapReady(it)
         }
 

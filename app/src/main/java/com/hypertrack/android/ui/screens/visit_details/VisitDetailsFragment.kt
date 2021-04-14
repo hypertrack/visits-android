@@ -97,7 +97,7 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
 
         setActionListeners()
-        (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?)?.getMapAsync {
+        (childFragmentManager.findFragmentById(R.id.liveMap) as SupportMapFragment?)?.getMapAsync {
             onMapReady(it)
         }
 

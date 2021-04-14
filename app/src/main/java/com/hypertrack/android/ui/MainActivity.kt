@@ -1,6 +1,7 @@
 package com.hypertrack.android.ui
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -8,6 +9,7 @@ import com.hypertrack.android.ui.base.NavActivity
 import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.DeeplinkResultListener
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.NavGraphDirections
 import com.hypertrack.logistics.android.github.R
@@ -24,6 +26,13 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
 
     override val navHostId: Int = R.id.navHost
 
+    private val customFragmentFactory = Injector.getCustomFragmentFactory(MyApplication.context)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        supportFragmentManager.fragmentFactory = customFragmentFactory
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.action == Intent.ACTION_SYNC) {
@@ -36,10 +45,6 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         } else {
             deepLinkProcessor.activityOnNewIntent(this, intent, this)
         }
-    }
-
-    override fun onDestinationChanged(destination: NavDestination) {
-        super.onDestinationChanged(destination)
     }
 
     override fun onStart() {

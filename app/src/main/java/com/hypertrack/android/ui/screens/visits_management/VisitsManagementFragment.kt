@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
@@ -25,10 +24,9 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsLis
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.fragment_signup.*
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
-class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visits_management) {
+class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     private val args: VisitsManagementFragmentArgs by navArgs()
 
@@ -37,7 +35,8 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
     }
 
     private val tabs = mapOf(
-        Tab.MAP to MapViewFragment(),
+//        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context).instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
+        Tab.HISTORY to MapViewFragment(),
         Tab.ORDERS to VisitsListFragment.newInstance(),
         Tab.PLACES to PlacesFragment.getInstance(),
         Tab.SUMMARY to SummaryFragment.newInstance(),
@@ -221,7 +220,8 @@ class VisitsManagementFragment() : ProgressDialogFragment(R.layout.fragment_visi
     }
 
     enum class Tab(@DrawableRes val iconRes: Int) {
-        MAP(R.drawable.ic_map_tab),
+//        MAP(R.drawable.ic_map_tab),
+        HISTORY(R.drawable.ic_history),
         ORDERS(R.drawable.ic_visits_list_tab),
         PLACES(R.drawable.ic_places),
 

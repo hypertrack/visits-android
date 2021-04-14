@@ -20,7 +20,7 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         android:allowBackup="false"
         android:fullBackupContent="false"
-        tools:replace="android:allowBackup,android:fullBackupContent">
+        >
 
         <activity
             android:name="com.hypertrack.android.ui.MainActivity"

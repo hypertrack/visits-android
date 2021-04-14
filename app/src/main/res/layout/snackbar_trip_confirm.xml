@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SnackbarContentLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="60dp"
+    android:background="@drawable/bg_info_bottom"
+    android:elevation="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/content_padding">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/resume"
+                style="@style/ShareTripButtonStyleLive"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_neutral_4"
+                android:text="@string/resume"
+                android:textColor="#0a84ff" />
+
+            <Button
+                android:id="@+id/end_trip"
+                style="@style/EndTripButtonStyleLive"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_cancel_4"
+                android:text="@string/end_trip" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SnackbarContentLayout>
