@@ -39,7 +39,7 @@ object Injector {
                 .build()
     }
 
-    fun getHomeManagementApiProvider(deviceId: String, publishableKey: String): HomeManagementApi {
+    fun getHomeManagementApiProvider(deviceId: String, publishableKey: String): com.hypertrack.android.models.HomeManagementApi {
         return GeofenceApiAdapter(
                 getRetrofitBasedGeofencesApiClient(deviceId, publishableKey)
         )

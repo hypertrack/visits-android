@@ -18,9 +18,9 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.TrackingStateValue
-import com.hypertrack.backend.AbstractBackendProvider
-import com.hypertrack.backend.ResultHandler
-import com.hypertrack.backend.models.GeofenceLocation
+import com.hypertrack.android.models.AbstractBackendProvider
+import com.hypertrack.android.models.ResultHandler
+import com.hypertrack.android.models.GeofenceLocation
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_map_view.*
 import kotlinx.android.synthetic.main.fragment_tab_map_webview.progress

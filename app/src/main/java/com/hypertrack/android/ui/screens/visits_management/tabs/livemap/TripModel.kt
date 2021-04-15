@@ -1,6 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
-import com.hypertrack.backend.models.ShareableTrip
+import com.hypertrack.android.models.ShareableTrip
 import com.hypertrack.sdk.views.dao.Trip
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter

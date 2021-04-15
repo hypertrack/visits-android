@@ -23,10 +23,10 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.hypertrack.backend.AbstractBackendProvider
-import com.hypertrack.backend.ResultHandler
-import com.hypertrack.backend.models.ShareableTrip
-import com.hypertrack.backend.models.TripConfig
+import com.hypertrack.android.models.AbstractBackendProvider
+import com.hypertrack.android.models.ResultHandler
+import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.TripConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

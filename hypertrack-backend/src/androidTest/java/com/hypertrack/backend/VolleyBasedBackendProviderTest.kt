@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.hypertrack.backend.models.ShareableTrip
-import com.hypertrack.backend.models.TripConfig
+import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.TripConfig
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 class VolleyBasedBackendProviderTest {
 
     private lateinit var appContext : Context
-    private lateinit var backendProvider: AbstractBackendProvider
+    private lateinit var backendProvider: com.hypertrack.android.models.AbstractBackendProvider
 
 
     @Before
@@ -31,15 +31,16 @@ class VolleyBasedBackendProviderTest {
     @Test @LargeTest
     fun test0010ItShouldCreateTripWithGivenDestination() {
 
-        val request = TripConfig.Builder()
+        val request = com.hypertrack.android.models.TripConfig.Builder()
                 .setDestinationLatitude(35.120995)
                 .setDestinationLongitude(47.84918)
                 .setDeviceId(DEVICE_ID)
                 .build()
 
         val latch = CountDownLatch(1)
-        backendProvider.createTrip(request, object : ResultHandler<ShareableTrip> {
-            override fun onResult(result: ShareableTrip) {
+        backendProvider.createTrip(request, object :
+            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip> {
+            override fun onResult(result: com.hypertrack.android.models.ShareableTrip) {
                 Log.i(TAG,"Got shareable trip ${result.tripId}")
                 assertNotNull(result)
                 testTrip = result
@@ -75,7 +76,8 @@ class VolleyBasedBackendProviderTest {
 
         var completedTripId:String? = null
 
-        testTrip?.let {  backendProvider.completeTrip(it.tripId, object : ResultHandler<String> {
+        testTrip?.let {  backendProvider.completeTrip(it.tripId, object :
+            com.hypertrack.android.models.ResultHandler<String> {
             override fun onResult(result: String) {
                 completedTripId = result
                 requestFinishedSignal.countDown()
@@ -98,7 +100,8 @@ class VolleyBasedBackendProviderTest {
         Log.d(TAG,"Getting deeplink")
         val requestFinishedSignal = CountDownLatch(1)
         var deeplink = ""
-        (backendProvider as HybridBackendProvider).getInviteLink(object : ResultHandler<String> {
+        (backendProvider as HybridBackendProvider).getInviteLink(object :
+            com.hypertrack.android.models.ResultHandler<String> {
             override fun onResult(result: String) {
                 deeplink = result
                 requestFinishedSignal.countDown()
@@ -118,7 +121,8 @@ class VolleyBasedBackendProviderTest {
         Log.d(TAG,"Getting accountEmail")
         val requestFinishedSignal = CountDownLatch(1)
         var accountName = ""
-        (backendProvider as HybridBackendProvider).getAccountName(object : ResultHandler<String> {
+        (backendProvider as HybridBackendProvider).getAccountName(object :
+            com.hypertrack.android.models.ResultHandler<String> {
             override fun onResult(result: String) {
                 accountName = result
                 requestFinishedSignal.countDown()
@@ -134,7 +138,7 @@ class VolleyBasedBackendProviderTest {
     }
 
     companion object {
-        var testTrip: ShareableTrip? = null
+        var testTrip: com.hypertrack.android.models.ShareableTrip? = null
         const val DEVICE_ID = "E15E21C3-C942-3FEA-B33B-16A58E291CD0"
         const val PUBLISHABLE_KEY = "uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw"
         const val TAG = "BackendProviderTest"

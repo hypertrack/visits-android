@@ -7,7 +7,6 @@ import com.hypertrack.backend.models.GeofenceProperties
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -39,7 +38,7 @@ class RetrofitGeofencesApiClient(baseUrl: String, private val deviceId: String, 
             .client(Injector.okHttpClient(authorizer))
             .build().create(GeofencesApiInterface::class.java)
 
-    override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
+    override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
 
         GlobalScope.launch(Dispatchers.Default) {
             try {
@@ -51,7 +50,7 @@ class RetrofitGeofencesApiClient(baseUrl: String, private val deviceId: String, 
         }
     }
 
-    override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {
+    override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
         GlobalScope.launch(Dispatchers.Default) {
             try {
                 val params = GeofenceParams(geofencesProperties, deviceId)

@@ -3,9 +3,9 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 import android.content.Context
 import android.os.Handler
 import android.util.Log
-import com.hypertrack.backend.HomeManagementApi
-import com.hypertrack.backend.ResultHandler
-import com.hypertrack.backend.models.GeofenceLocation
+import com.hypertrack.android.models.HomeManagementApi
+import com.hypertrack.android.models.ResultHandler
+import com.hypertrack.android.models.GeofenceLocation
 import java.util.concurrent.TimeUnit
 
 internal class SearchPlaceState(
@@ -25,7 +25,8 @@ internal class SearchPlaceState(
     }
 
     private fun createGeofenceOnPlatform(home: PlaceModel) {
-        mBackendProvider.updateHomeGeofence(GeofenceLocation(
+        mBackendProvider.updateHomeGeofence(
+            GeofenceLocation(
             home.latLng!!.latitude,
             home.latLng!!.longitude
         ),

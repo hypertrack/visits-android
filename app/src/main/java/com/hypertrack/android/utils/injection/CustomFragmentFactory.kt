@@ -7,7 +7,7 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapF
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SearchPlaceFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingFragment
 import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.backend.AbstractBackendProvider
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.sdk.views.HyperTrackViews
 import javax.inject.Provider
 

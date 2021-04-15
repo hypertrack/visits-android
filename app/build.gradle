@@ -136,7 +136,6 @@ dependencies {
 
     implementation 'com.hypertrack:hypertrack-views:0.8.6'
     implementation 'com.hypertrack:maps-google:0.1.8'
-    implementation project(':hypertrack-backend')
 
     testImplementation 'junit:junit:4.13.2'
     //noinspection GradleDependency

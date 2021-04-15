@@ -3,9 +3,9 @@ package com.hypertrack.android.api
 import android.graphics.Bitmap
 import android.util.Log
 import com.hypertrack.android.models.*
+import com.hypertrack.android.models.GeofenceMarker
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
-import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
@@ -22,7 +22,7 @@ class ApiClient(
         accessTokenRepository: AccessTokenRepository,
         baseUrl: String,
         private val deviceId: String
-) {
+) : AbstractBackendProvider {
 
     @Suppress("unused")
     private val loggingInterceptor by lazy {
@@ -136,6 +136,25 @@ class ApiClient(
             return HistoryError(e)
         }
 
+    }
+
+    override fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun completeTrip(tripId: String, callback: ResultHandler<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateHomeGeofence(
+        homeLocation: GeofenceLocation,
+        resultHandler: ResultHandler<Void?>
+    ) {
+        TODO("Not yet implemented")
     }
 
     companion object {

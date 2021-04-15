@@ -1,8 +1,33 @@
-package com.hypertrack.backend.models
+package com.hypertrack.android.models
 
 import androidx.annotation.FloatRange
-import java.lang.NullPointerException
+import com.hypertrack.android.models.TripConfig
 
+class Interfaces {
+}
+
+interface AbstractBackendProvider : HomeManagementApi, TripManagementApi
+interface TripManagementApi {
+    fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>)
+    fun completeTrip(tripId: String, callback: ResultHandler<String>)
+}
+
+interface HomeManagementApi {
+    fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>)
+    fun updateHomeGeofence(homeLocation: GeofenceLocation, resultHandler: ResultHandler<Void?>)
+}
+
+interface ResultHandler<T> {
+    fun onResult(result: T)
+    fun onError(error: Exception)
+}
+
+data class GeofenceLocation(
+        val latitude: Double,
+        val longitude: Double
+)
+
+class ShareableTrip(val shareUrl: String, val embedUrl: String, val tripId: String, val remainingDuration: Int?)
 class TripConfig internal constructor(
         val latitude: Double?,
         val longitude: Double?,
@@ -50,13 +75,11 @@ class TripConfig internal constructor(
         fun build(): TripConfig {
             requireNotNull(deviceId)
             return TripConfig(
-                    destinationLatitude,
-                    destinationLongitude,
-                    deviceId ?: throw NullPointerException("device id can't be null")
+                destinationLatitude,
+                destinationLongitude,
+                deviceId ?: throw NullPointerException("device id can't be null")
             )
         }
     }
 
 }
-
-class ShareableTrip(val shareUrl: String, val embedUrl: String, val tripId: String, val remainingDuration: Int?)

@@ -13,10 +13,10 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.hypertrack.backend.BuildConfig
-import com.hypertrack.backend.models.GeofenceLocation
+import com.hypertrack.android.models.GeofenceLocation
 import com.hypertrack.backend.models.GeofenceResponse
-import com.hypertrack.backend.models.ShareableTrip
-import com.hypertrack.backend.models.TripConfig
+import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.TripConfig
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 
@@ -59,13 +59,13 @@ class StopTrackingRequest(
 }
 
 class CreateGeofencesRequest(
-        location: GeofenceLocation,
-        deviceId: String,
-        private val gson: Gson,
-        tokenString: String,
-        responseListener: Response.Listener<String>,
-        errorListener: Response.ErrorListener,
-        baseUrl: String
+    location: com.hypertrack.android.models.GeofenceLocation,
+    deviceId: String,
+    private val gson: Gson,
+    tokenString: String,
+    responseListener: Response.Listener<String>,
+    errorListener: Response.ErrorListener,
+    baseUrl: String
 ) : LiveAppBackendRequest<String>(
         tokenString, "${baseUrl}client/geofences/?device_id=$deviceId", "{\"geofences\":[{\"radius\":50,\"geometry\":{\"type\":\"Point\",\"coordinates\":[${location.longitude},${location.latitude}]},\"metadata\":{\"name\":\"Home\"}}],\"device_id\":\"$deviceId\"}",
         responseListener, errorListener
@@ -100,14 +100,14 @@ class CreateGeofencesRequest(
 
 }
 
-class CreateTripRequest(tripConfig: TripConfig, private val gson: Gson, tokenString: String,
-                        responseListener: Response.Listener<ShareableTrip>, errorListener: Response.ErrorListener, baseUrl: String
+class CreateTripRequest(tripConfig: com.hypertrack.android.models.TripConfig, private val gson: Gson, tokenString: String,
+                        responseListener: Response.Listener<com.hypertrack.android.models.ShareableTrip>, errorListener: Response.ErrorListener, baseUrl: String
 ) :
-        LiveAppBackendRequest<ShareableTrip>(tokenString, "${baseUrl}client/trips/",
+        LiveAppBackendRequest<com.hypertrack.android.models.ShareableTrip>(tokenString, "${baseUrl}client/trips/",
                 tripConfig.getRequestBody(), responseListener, errorListener
         ) {
 
-    override fun parseNetworkResponse(response: NetworkResponse?): Response<ShareableTrip> {
+    override fun parseNetworkResponse(response: NetworkResponse?): Response<com.hypertrack.android.models.ShareableTrip> {
         response?.let {
 
             // Expired token etc.
@@ -123,7 +123,12 @@ class CreateTripRequest(tripConfig: TripConfig, private val gson: Gson, tokenStr
                 val parsedTrip = gson.fromJson<Trip>(responseBody, Trip::class.java)
                 parsedTrip?.let { trip ->
                     return Response.success(
-                            ShareableTrip(trip.views.shareUrl, trip.views.embedUrl, trip.tripId, trip.estimate?.route?.remainingDuration),
+                        com.hypertrack.android.models.ShareableTrip(
+                            trip.views.shareUrl,
+                            trip.views.embedUrl,
+                            trip.tripId,
+                            trip.estimate?.route?.remainingDuration
+                        ),
                             HttpHeaderParser.parseCacheHeaders(response)
                     )
                 }

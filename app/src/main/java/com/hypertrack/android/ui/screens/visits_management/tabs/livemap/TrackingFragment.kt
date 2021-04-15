@@ -18,7 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.Injector
-import com.hypertrack.backend.AbstractBackendProvider
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip

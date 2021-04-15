@@ -23,7 +23,7 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMa
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
-import com.hypertrack.backend.HybridBackendProvider
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
@@ -327,12 +327,14 @@ object Injector {
     fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {
         val publishableKeyProvider: Provider<String> = Provider<String> { getAccountRepo(applicationContext).publishableKey }
         val hyperTrackServiceProvider = Provider { getUserScope().hyperTrackService }
+        val apiClientProvider: Provider<AbstractBackendProvider> = Provider { getVisitsApiClient(applicationContext) }
+
         return CustomFragmentFactory(
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
             hyperTrackServiceProvider,
             {HyperTrackViews.getInstance(applicationContext, publishableKeyProvider.get())},
-            {HybridBackendProvider.getInstance(applicationContext, publishableKeyProvider.get(), hyperTrackServiceProvider.get().deviceId)}
+            apiClientProvider
         )
     }
 
