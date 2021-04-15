@@ -7,14 +7,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Handler
-import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.GoogleMap
+import com.hypertrack.android.models.CompletionSuccess
+import com.hypertrack.android.models.TripCompletionError
+import com.hypertrack.android.models.TripManagementApi
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
 import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.android.models.ResultHandler
-import com.hypertrack.android.models.TripManagementApi
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.maps.google.widget.GoogleMapAdapter
 import com.hypertrack.sdk.views.DeviceUpdatesHandler
@@ -24,6 +26,7 @@ import com.hypertrack.sdk.views.dao.StatusUpdate
 import com.hypertrack.sdk.views.dao.Trip
 import com.hypertrack.sdk.views.maps.GpsLocationProvider
 import com.hypertrack.sdk.views.maps.HyperTrackMap
+import kotlinx.coroutines.launch
 import java.util.*
 
 internal class TrackingPresenter(
@@ -31,7 +34,8 @@ internal class TrackingPresenter(
     private val view: View,
     private val backendProvider: TripManagementApi,
     private val hyperTrackService: HyperTrackService,
-    private val realTimeUpdatesService: HyperTrackViews
+    private val realTimeUpdatesService: HyperTrackViews,
+    private val viewLifecycleOwner: LifecycleOwner
 ) : DeviceUpdatesHandler {
     private val handler = Handler()
     private val state: TrackingState  = TrackingState(context)
@@ -116,20 +120,22 @@ internal class TrackingPresenter(
     }
 
     fun endTrip() {
-        if (!TextUtils.isEmpty(state.selectedTripId)) {
+        state.selectedTripId?.let { tripId ->
             view.showProgressBar()
-            backendProvider.completeTrip(state.selectedTripId, object : ResultHandler<String> {
-                override fun onResult(result: String) {
-                    Log.d(TAG, "trip is ended: $result")
-                    view.hideProgressBar()
-                }
+            viewLifecycleOwner.lifecycleScope.launch {
+                when (val result = backendProvider.finishTrip(tripId)) {
+                    is CompletionSuccess -> {
+                        Log.d(TAG, "trip is ended")
+                        view.hideProgressBar()
+                    }
+                    is TripCompletionError -> {
+                        Log.e(TAG, "complete trip failure", result.error)
+                        view.hideProgressBar()
+                        Toast.makeText(context, "Complete trip failure", Toast.LENGTH_SHORT).show()
 
-                override fun onError(error: Exception) {
-                    Log.e(TAG, "complete trip failure", error)
-                    view.hideProgressBar()
-                    Toast.makeText(context, "Complete trip failure", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            })
+            }
         }
     }
 
@@ -163,8 +169,7 @@ internal class TrackingPresenter(
     override fun onLocationUpdateReceived(location: Location) {}
     override fun onBatteryStateUpdateReceived(i: Int) {}
     override fun onStatusUpdateReceived(statusUpdate: StatusUpdate) {
-        val status: String
-        status = when (statusUpdate.value) {
+        val status: String = when (statusUpdate.value) {
             StatusUpdate.STOPPED -> context.getString(R.string.status_stopped)
             else -> "unknown"
         }
@@ -225,7 +230,7 @@ internal class TrackingPresenter(
     }
 
     fun shareTrackMessage() {
-        val shareableMessage = state.getShareMessage()
+        val shareableMessage = state.shareMessage
         if (shareableMessage.isEmpty()) return
         shareAction(context, shareableMessage)
     }

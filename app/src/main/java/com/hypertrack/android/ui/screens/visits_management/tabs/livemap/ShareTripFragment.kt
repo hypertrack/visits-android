@@ -58,7 +58,8 @@ class ShareTripFragment private constructor(
             shareUrl,
             mBackendProvider,
             deviceId,
-            realTimeUpdatesProvider
+            realTimeUpdatesProvider,
+            viewLifecycleOwner
         )
         share.setOnClickListener { presenter!!.shareTrackMessage() }
 

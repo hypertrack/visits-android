@@ -3,11 +3,14 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.GoogleMap
+import com.hypertrack.android.models.CompletionSuccess
+import com.hypertrack.android.models.TripCompletionError
+import com.hypertrack.android.models.TripManagementApi
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingPresenter.Companion.shareAction
-import com.hypertrack.android.models.ResultHandler
-import com.hypertrack.android.models.TripManagementApi
 import com.hypertrack.maps.google.widget.GoogleMapAdapter
 import com.hypertrack.sdk.views.DeviceUpdatesHandler
 import com.hypertrack.sdk.views.HyperTrackViews
@@ -15,6 +18,7 @@ import com.hypertrack.sdk.views.dao.Location
 import com.hypertrack.sdk.views.dao.StatusUpdate
 import com.hypertrack.sdk.views.dao.Trip
 import com.hypertrack.sdk.views.maps.HyperTrackMap
+import kotlinx.coroutines.launch
 
 internal class ShareTripPresenter(
     private val context: Context,
@@ -22,7 +26,8 @@ internal class ShareTripPresenter(
     url: String,
     private val backendProvider: TripManagementApi,
     deviceId: String,
-    realTimeUpdatesProvider: HyperTrackViews
+    realTimeUpdatesProvider: HyperTrackViews,
+    private val viewLifecycleOwner: LifecycleOwner
 ) : DeviceUpdatesHandler {
     private val state: ShareTripState = ShareTripState(context, url)
     private val hyperTrackDeviceId: String  = deviceId
@@ -52,17 +57,18 @@ internal class ShareTripPresenter(
 
     fun endTrip() {
         state.currentTripId?.let { tripId ->
-            backendProvider.completeTrip(tripId, object : ResultHandler<String> {
-                override fun onResult(result: String) {
-                    Log.d(TAG, "trip is ended: $result")
-                    state.currentTripId = null
+            viewLifecycleOwner.lifecycleScope.launch {
+                when (val result = backendProvider.finishTrip(tripId)) {
+                    is CompletionSuccess -> {
+                        Log.d(TAG, "trip is ended")
+                        state.currentTripId = null
+                    }
+                    is TripCompletionError -> {
+                        Log.e(TAG, "trip completion failure", result.error)
+                        Toast.makeText(context, "Trip completion failure", Toast.LENGTH_SHORT).show()
+                    }
                 }
-
-                override fun onError(error: Exception) {
-                    Log.e(TAG, "trip completion failure", error)
-                    Toast.makeText(context, "Trip completion failure", Toast.LENGTH_SHORT).show()
-                }
-            })
+            }
         }
     }
 

@@ -6,7 +6,9 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.Volley
 import com.hypertrack.backend.deprecated.InternalApiTokenProvider
 import com.hypertrack.backend.deprecated.VolleyBasedProvider
-import com.hypertrack.backend.models.*
+import com.hypertrack.backend.models.Geofence
+import com.hypertrack.backend.models.GeofenceProperties
+import com.hypertrack.backend.models.Point
 import java.net.HttpURLConnection
 
 private const val TAG = "HybridBackendProvider"
@@ -47,18 +49,18 @@ class HybridBackendProvider(
 
     override fun createTrip(tripConfig: com.hypertrack.android.models.TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip>) {
         Log.i(TAG, "Creating trip with config $tripConfig")
-        val retryCallback = wrapCallback<com.hypertrack.android.models.ShareableTrip>(
+        val retryCallback = wrapCallback(
                 callback,
                 Runnable { backendProvider.createTrip(tripConfig, callback) }
         )
         backendProvider.createTrip(tripConfig, retryCallback)
     }
 
-    override fun completeTrip(tripId: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun completeTrip(tripId: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
         Log.i(TAG, "Complete trip $tripId")
-        val retryCallback = wrapCallback<String>(
-                callback,
-                Runnable { backendProvider.completeTrip(tripId, callback) }
+        val retryCallback = wrapCallback(
+            callback,
+            { backendProvider.completeTrip(tripId, callback) }
         )
         backendProvider.completeTrip(tripId, retryCallback)
 

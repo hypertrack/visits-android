@@ -1,15 +1,12 @@
 package com.hypertrack.android.models
 
 import androidx.annotation.FloatRange
-import com.hypertrack.android.models.TripConfig
 
-class Interfaces {
-}
 
 interface AbstractBackendProvider : HomeManagementApi, TripManagementApi
 interface TripManagementApi {
-    fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>)
-    fun completeTrip(tripId: String, callback: ResultHandler<String>)
+    suspend fun addTrip(tripConfig: TripConfig) : ShareableTripResult
+    suspend fun finishTrip(tripId: String) : TripCompletionResult
 }
 
 interface HomeManagementApi {
@@ -27,7 +24,14 @@ data class GeofenceLocation(
         val longitude: Double
 )
 
-class ShareableTrip(val shareUrl: String, val embedUrl: String, val tripId: String, val remainingDuration: Int?)
+sealed class ShareableTripResult
+class ShareableTrip(val shareUrl: String, val embedUrl: String, val tripId: String, val remainingDuration: Int?) : ShareableTripResult()
+class CreateTripError(val error: Throwable?) : ShareableTripResult()
+
+sealed class TripCompletionResult
+object CompletionSuccess : TripCompletionResult()
+class TripCompletionError(val error: Throwable?) : TripCompletionResult()
+
 class TripConfig internal constructor(
         val latitude: Double?,
         val longitude: Double?,

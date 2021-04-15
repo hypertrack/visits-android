@@ -1,62 +1,44 @@
-package com.hypertrack.android.ui.screens.visits_management.tabs.livemap;
+package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
-import android.content.Context;
+import android.content.Context
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripModel.Companion.fromTrip
+import com.hypertrack.sdk.views.dao.Trip
+import com.hypertrack.sdk.views.maps.TripSubscription
+import java.util.*
 
-import androidx.annotation.NonNull;
-
-import com.hypertrack.sdk.views.dao.Trip;
-import com.hypertrack.sdk.views.maps.TripSubscription;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-class TrackingState extends BaseState {
-    private String tripId;
-    private final boolean isHomeLatLngAdded;
-    private TripModel mTripModel;
-    final Map<String, Trip> trips = new HashMap<>();
-    final Map<String, TripSubscription> tripSubscription = new HashMap<>();
-
-    String getSelectedTripId() {
-        return tripId;
-    }
-
-    void setSelectedTrip(Trip trip) {
+internal class TrackingState(context: Context?) : BaseState(context!!) {
+    var selectedTripId: String?
+        private set
+    val isHomeLatLngAdded: Boolean
+    private var mTripModel: TripModel? = null
+    val trips: MutableMap<String, Trip> = HashMap()
+    val tripSubscription: MutableMap<String, TripSubscription> = HashMap()
+    fun setSelectedTrip(trip: Trip?) {
         if (trip != null) {
-            this.tripId = trip.getTripId();
-            sharedHelper.setSelectedTripId(tripId);
-            mTripModel = TripModel.fromTrip(trip);
+            selectedTripId = trip.tripId
+            sharedHelper.setSelectedTripId(selectedTripId!!)
+            mTripModel = fromTrip(trip)
         } else {
-            tripId = null;
-            mTripModel = null;
-            sharedHelper.clearSelectedTripId();
+            selectedTripId = null
+            mTripModel = null
+            sharedHelper.clearSelectedTripId()
         }
     }
 
-    boolean isHomeLatLngAdded() {
-        return isHomeLatLngAdded;
-    }
+    val allTripsStartingFromLatest: List<Trip>
+        get() {
+            val result = ArrayList(trips.values)
+            Collections.sort(result) { trip1: Trip, trip2: Trip ->
+                if (trip1.startDate == null) return@sort 1
+                trip1.startDate!!.compareTo(trip2.startDate)
+            }
+            return result
+        }
+    val shareMessage: String
+        get() = if (mTripModel == null) "" else mTripModel!!.shareableMessage
 
-    TrackingState(Context context) {
-        super(context);
-        tripId = sharedHelper.getSelectedTripId();
-        isHomeLatLngAdded = sharedHelper.isHomePlaceSet();
-    }
-
-    List<Trip> getAllTripsStartingFromLatest() {
-        ArrayList<Trip> result = new ArrayList<>(this.trips.values());
-        Collections.sort(result, (trip1, trip2) -> {
-            if (trip1.getStartDate() == null) return 1;
-            return trip1.getStartDate().compareTo(trip2.getStartDate());
-        });
-        return result;
-    }
-
-    String getShareMessage() {
-        return mTripModel == null ? "" : mTripModel.getShareableMessage();
+    init {
+        selectedTripId = sharedHelper.selectedTripId
+        isHomeLatLngAdded = sharedHelper.isHomePlaceSet
     }
 }

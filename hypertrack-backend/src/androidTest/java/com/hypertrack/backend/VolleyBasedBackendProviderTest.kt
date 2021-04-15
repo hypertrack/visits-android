@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.hypertrack.android.models.ShareableTrip
-import com.hypertrack.android.models.TripConfig
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -38,7 +36,7 @@ class VolleyBasedBackendProviderTest {
                 .build()
 
         val latch = CountDownLatch(1)
-        backendProvider.createTrip(request, object :
+        (backendProvider as HybridBackendProvider).createTrip(request, object :
             com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip> {
             override fun onResult(result: com.hypertrack.android.models.ShareableTrip) {
                 Log.i(TAG,"Got shareable trip ${result.tripId}")
@@ -76,7 +74,7 @@ class VolleyBasedBackendProviderTest {
 
         var completedTripId:String? = null
 
-        testTrip?.let {  backendProvider.completeTrip(it.tripId, object :
+        testTrip?.let {  (backendProvider as HybridBackendProvider).completeTrip(it.tripId, object :
             com.hypertrack.android.models.ResultHandler<String> {
             override fun onResult(result: String) {
                 completedTripId = result

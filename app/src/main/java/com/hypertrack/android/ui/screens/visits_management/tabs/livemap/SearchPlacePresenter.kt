@@ -24,7 +24,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.models.AbstractBackendProvider
-import com.hypertrack.android.models.ResultHandler
+import com.hypertrack.android.models.CreateTripError
 import com.hypertrack.android.models.ShareableTrip
 import com.hypertrack.android.models.TripConfig
 import com.hypertrack.logistics.android.github.R
@@ -194,19 +194,6 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
 
     private fun startTrip(destination: PlaceModel?) {
         view.showProgressBar()
-        val resultHandler: ResultHandler<ShareableTrip> = object : ResultHandler<ShareableTrip> {
-            override fun onResult(result: ShareableTrip) {
-                Log.d(TAG, "trip is created: $result")
-                view.hideProgressBar()
-                view.addShareTripFragment(result.tripId, result.shareUrl)
-            }
-
-            override fun onError(error: Exception) {
-                Log.e(TAG, "Trip start failure", error)
-                view.hideProgressBar()
-                Toast.makeText(context, "Trip start failure", Toast.LENGTH_SHORT).show()
-            }
-        }
         val tripRequest: TripConfig = destination?.let {
             destination.latLng?.let {
                 TripConfig.Builder()
@@ -217,7 +204,21 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
 
             }
         } ?: TripConfig.Builder().setDeviceId(mHyperTrackDeviceId).build()
-        backendProvider.createTrip(tripRequest, resultHandler)
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = backendProvider.addTrip(tripRequest)) {
+                is ShareableTrip -> {
+                    Log.d(TAG, "trip is created: $result")
+                    view.hideProgressBar()
+                    view.addShareTripFragment(result.tripId, result.shareUrl)
+                }
+                is CreateTripError -> {
+                    Log.e(TAG, "Trip start failure", result.error)
+                    view.hideProgressBar()
+                    Toast.makeText(context, "Trip start failure", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
     }
 
     private fun actionLocationSourceSettings() {

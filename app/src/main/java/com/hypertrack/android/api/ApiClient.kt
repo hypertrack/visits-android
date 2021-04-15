@@ -138,11 +138,11 @@ class ApiClient(
 
     }
 
-    override fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>) {
+    override suspend fun addTrip(tripConfig: TripConfig): ShareableTripResult {
         TODO("Not yet implemented")
     }
 
-    override fun completeTrip(tripId: String, callback: ResultHandler<String>) {
+    override suspend fun finishTrip(tripId: String): TripCompletionResult {
         TODO("Not yet implemented")
     }
 

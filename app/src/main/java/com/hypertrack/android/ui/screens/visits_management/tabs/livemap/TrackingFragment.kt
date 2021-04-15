@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.Injector
-import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
@@ -63,13 +63,6 @@ class TrackingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "Creating view")
-        presenter = TrackingPresenter(
-            view.context,
-            this,
-            mBackendProvider,
-            hyperTrackService,
-            realTimeUpdatesService
-        )
         blockingView = view.findViewById(R.id.blocking_view)
         locationButton = view.findViewById(R.id.location_button)
         locationButton.setOnClickListener {
@@ -144,6 +137,14 @@ class TrackingFragment(
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resuming tracking fragment")
+        presenter = TrackingPresenter(
+            requireContext(),
+            this,
+            mBackendProvider,
+            hyperTrackService,
+            realTimeUpdatesService,
+            viewLifecycleOwner
+        )
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             Log.d(TAG, "got google map from VM $map")

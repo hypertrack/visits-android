@@ -12,11 +12,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.hypertrack.backend.BuildConfig
-import com.hypertrack.android.models.GeofenceLocation
-import com.hypertrack.backend.models.GeofenceResponse
 import com.hypertrack.android.models.ShareableTrip
 import com.hypertrack.android.models.TripConfig
+import com.hypertrack.backend.BuildConfig
+import com.hypertrack.backend.models.GeofenceResponse
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 
@@ -100,14 +99,14 @@ class CreateGeofencesRequest(
 
 }
 
-class CreateTripRequest(tripConfig: com.hypertrack.android.models.TripConfig, private val gson: Gson, tokenString: String,
-                        responseListener: Response.Listener<com.hypertrack.android.models.ShareableTrip>, errorListener: Response.ErrorListener, baseUrl: String
+class CreateTripRequest(tripConfig: TripConfig, private val gson: Gson, tokenString: String,
+                        responseListener: Response.Listener<ShareableTrip>, errorListener: Response.ErrorListener, baseUrl: String
 ) :
-        LiveAppBackendRequest<com.hypertrack.android.models.ShareableTrip>(tokenString, "${baseUrl}client/trips/",
+        LiveAppBackendRequest<ShareableTrip>(tokenString, "${baseUrl}client/trips/",
                 tripConfig.getRequestBody(), responseListener, errorListener
         ) {
 
-    override fun parseNetworkResponse(response: NetworkResponse?): Response<com.hypertrack.android.models.ShareableTrip> {
+    override fun parseNetworkResponse(response: NetworkResponse?): Response<ShareableTrip> {
         response?.let {
 
             // Expired token etc.
@@ -123,7 +122,7 @@ class CreateTripRequest(tripConfig: com.hypertrack.android.models.TripConfig, pr
                 val parsedTrip = gson.fromJson<Trip>(responseBody, Trip::class.java)
                 parsedTrip?.let { trip ->
                     return Response.success(
-                        com.hypertrack.android.models.ShareableTrip(
+                        ShareableTrip(
                             trip.views.shareUrl,
                             trip.views.embedUrl,
                             trip.tripId,

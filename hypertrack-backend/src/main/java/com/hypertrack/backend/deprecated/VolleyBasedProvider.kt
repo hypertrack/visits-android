@@ -8,11 +8,10 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
-import com.hypertrack.backend.AsyncTokenProvider
 import com.hypertrack.android.models.ResultHandler
-import com.hypertrack.android.models.GeofenceLocation
 import com.hypertrack.android.models.ShareableTrip
 import com.hypertrack.android.models.TripConfig
+import com.hypertrack.backend.AsyncTokenProvider
 
 
 class VolleyBasedProvider(
@@ -26,7 +25,7 @@ class VolleyBasedProvider(
             DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
 
-    fun start(deviceId: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun start(deviceId: String, callback: ResultHandler<String>) {
         Log.i(TAG, "start $deviceId")
         if (deviceId.isEmpty()) {
             callback.onError(java.lang.Exception("Can't start with empty deviceId"))
@@ -34,7 +33,7 @@ class VolleyBasedProvider(
         }
 
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) =
                     scheduleAuthenticatedStartTrackingRequest(deviceId, result, callback)
 
@@ -43,7 +42,7 @@ class VolleyBasedProvider(
         })
     }
 
-    fun stop(deviceId: String, callback: com.hypertrack.android.models.ResultHandler<String>?) {
+    fun stop(deviceId: String, callback: ResultHandler<String>?) {
         Log.i(TAG, "stop $deviceId")
         if (deviceId.isEmpty()) {
             callback?.onError(java.lang.Exception("Can't stop with empty deviceId"))
@@ -51,7 +50,7 @@ class VolleyBasedProvider(
         }
 
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) =
                     scheduleAuthenticatedStopTrackingRequest(deviceId, result, callback)
 
@@ -60,10 +59,10 @@ class VolleyBasedProvider(
         })
     }
 
-    fun createTrip(tripConfig: com.hypertrack.android.models.TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip>) {
+    fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>) {
         Log.i(TAG, "Create trip with config $tripConfig")
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
 
             override fun onResult(result: String) =
                     scheduleAuthenticatedCreateTripRequest(tripConfig, result, callback)
@@ -73,7 +72,7 @@ class VolleyBasedProvider(
 
     }
 
-    fun completeTrip(tripId: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun completeTrip(tripId: String, callback: ResultHandler<String>) {
         Log.i(TAG, "Complete trip $tripId")
         if (tripId.isEmpty()) {
             callback.onError(java.lang.Exception("Can't complete trip with empty id"))
@@ -81,7 +80,7 @@ class VolleyBasedProvider(
         }
 
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) =
                     scheduleAuthenticatedCompletionTripRequest(tripId, result, callback)
 
@@ -90,10 +89,10 @@ class VolleyBasedProvider(
         })
     }
 
-    fun getInviteLink(callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun getInviteLink(callback: ResultHandler<String>) {
         Log.i(TAG, "getInviteLink")
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) =
                     scheduleAuthenticatedGetInviteLinkRequest(result, callback)
 
@@ -102,10 +101,10 @@ class VolleyBasedProvider(
         })
     }
 
-    fun getAccountEmail(callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun getAccountEmail(callback: ResultHandler<String>) {
         Log.i(TAG, "getAccountEmail")
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) =
                     scheduleAuthenticatedGetAccountEmailRequest(result, callback)
 
@@ -114,7 +113,7 @@ class VolleyBasedProvider(
         })
     }
 
-    fun createGeofence(location: com.hypertrack.android.models.GeofenceLocation, deviceId: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun createGeofence(location: com.hypertrack.android.models.GeofenceLocation, deviceId: String, callback: ResultHandler<String>) {
         Log.i(TAG, "createGeofence $deviceId for location $location")
         if (deviceId.isEmpty()) {
             callback.onError(java.lang.Exception("Can't create geofences with empty deviceId"))
@@ -122,7 +121,7 @@ class VolleyBasedProvider(
         }
 
         tokenProvider.getAuthenticationToken(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) =
                     scheduleAuthenticatedCreateGeofenceRequest(location, deviceId, result, callback)
 
@@ -131,7 +130,7 @@ class VolleyBasedProvider(
         })
     }
 
-    private fun scheduleAuthenticatedStartTrackingRequest(deviceId: String, tokenString: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    private fun scheduleAuthenticatedStartTrackingRequest(deviceId: String, tokenString: String, callback: ResultHandler<String>) {
         val request = StartTrackingRequest(
                 deviceId, tokenString,
                 Response.Listener { callback.onResult(deviceId) },
@@ -144,7 +143,7 @@ class VolleyBasedProvider(
 
     }
 
-    private fun scheduleAuthenticatedStopTrackingRequest(deviceId: String, tokenString: String, callback: com.hypertrack.android.models.ResultHandler<String>?) {
+    private fun scheduleAuthenticatedStopTrackingRequest(deviceId: String, tokenString: String, callback: ResultHandler<String>?) {
         val request = StopTrackingRequest(
                 deviceId, tokenString,
                 Response.Listener { callback?.onResult(deviceId) },
@@ -157,7 +156,7 @@ class VolleyBasedProvider(
 
     }
 
-    private fun scheduleAuthenticatedCreateTripRequest(tripConfig: com.hypertrack.android.models.TripConfig, tokenString: String, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip>) {
+    private fun scheduleAuthenticatedCreateTripRequest(tripConfig: TripConfig, tokenString: String, callback: ResultHandler<ShareableTrip>) {
         val request = CreateTripRequest(
                 tripConfig, gson, tokenString,
                 Response.Listener { trip -> callback.onResult(trip) },
@@ -169,7 +168,7 @@ class VolleyBasedProvider(
         queue.add(request)
     }
 
-    private fun scheduleAuthenticatedCompletionTripRequest(tripId: String, tokenString: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    private fun scheduleAuthenticatedCompletionTripRequest(tripId: String, tokenString: String, callback: ResultHandler<String>) {
         Log.d(TAG, "Scheduling Authentication request for trip $tripId with token $tokenString")
         val request = CompleteTripRequest(
                 tripId, tokenString,
@@ -183,7 +182,7 @@ class VolleyBasedProvider(
 
     }
 
-    private fun scheduleAuthenticatedGetInviteLinkRequest(tokenString: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    private fun scheduleAuthenticatedGetInviteLinkRequest(tokenString: String, callback: ResultHandler<String>) {
         Log.d(TAG, "Requesting deeplink with token $tokenString")
         val request = GetDeeplinkRequest(
                 tokenString, Response.Listener { deeplink ->
@@ -199,7 +198,7 @@ class VolleyBasedProvider(
 
     }
 
-    private fun scheduleAuthenticatedGetAccountEmailRequest(tokenString: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    private fun scheduleAuthenticatedGetAccountEmailRequest(tokenString: String, callback: ResultHandler<String>) {
         Log.d(TAG, "Requesting account email with token $tokenString")
         val request = GetAccountEmailRequest(
                 tokenString, Response.Listener { email ->
@@ -216,7 +215,7 @@ class VolleyBasedProvider(
     }
 
     private fun scheduleAuthenticatedCreateGeofenceRequest(
-        location: com.hypertrack.android.models.GeofenceLocation, deviceId: String, tokenString: String, callback: com.hypertrack.android.models.ResultHandler<String>?
+        location: com.hypertrack.android.models.GeofenceLocation, deviceId: String, tokenString: String, callback: ResultHandler<String>?
     ) {
         val request = CreateGeofencesRequest(location,
                 deviceId, gson, tokenString,
@@ -260,7 +259,7 @@ class InternalApiTokenProvider(
     private var token: String = ""
     companion object { const val TAG = "InternalTokenProvider" }
 
-    override fun getAuthenticationToken(resultHandler: com.hypertrack.android.models.ResultHandler<String>) {
+    override fun getAuthenticationToken(resultHandler: ResultHandler<String>) {
         Log.d(TAG, "Getting Auth Token")
         if (token.isNotEmpty()) {
             Log.d(TAG, "Proceeding with token $token")
@@ -271,7 +270,7 @@ class InternalApiTokenProvider(
         queue.add(getInternalTokenRequest(resultHandler))
     }
 
-    private fun getInternalTokenRequest(resultHandler: com.hypertrack.android.models.ResultHandler<String>): GetInternalTokenRequest {
+    private fun getInternalTokenRequest(resultHandler: ResultHandler<String>): GetInternalTokenRequest {
         return GetInternalTokenRequest(gson, deviceId, publishableKey, authUrl,
                 Response.Listener {
                     token = it
