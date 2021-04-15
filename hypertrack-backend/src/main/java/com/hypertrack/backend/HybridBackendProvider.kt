@@ -26,7 +26,7 @@ class HybridBackendProvider(
     private val internalApiIssuesTokenProvider = InternalApiTokenProvider(queue, deviceID, publishableKey, gson, authUrl)
     val backendProvider = VolleyBasedProvider(gson, queue, internalApiIssuesTokenProvider, baseUrl)
 
-    override fun start(callback: ResultHandler<String>) {
+    fun start(callback: ResultHandler<String>) {
         Log.i(TAG, "start $deviceID")
         val retryCallback = wrapCallback<String>(
                 callback,
@@ -35,7 +35,7 @@ class HybridBackendProvider(
         backendProvider.start(deviceID, retryCallback)
     }
 
-    override fun stop() {
+    fun stop() {
         Log.i(TAG, "stop $deviceID")
         val retryCallback = wrapCallback<String>(
                 null,
@@ -64,7 +64,7 @@ class HybridBackendProvider(
 
     }
 
-    override fun getInviteLink(callback: ResultHandler<String>) {
+    fun getInviteLink(callback: ResultHandler<String>) {
         Log.i(TAG, "getInviteLink")
         val retryCallback = wrapCallback<String>(
                 callback,
@@ -73,7 +73,7 @@ class HybridBackendProvider(
         backendProvider.getInviteLink(retryCallback)
     }
 
-    override fun getAccountName(callback: ResultHandler<String>) {
+    fun getAccountName(callback: ResultHandler<String>) {
         Log.d(TAG, "Requesting account email")
         val retryCallback = wrapCallback<String>(
                 callback,

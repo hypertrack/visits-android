@@ -2,13 +2,11 @@ package com.hypertrack.backend
 
 import com.hypertrack.backend.models.*
 
-interface AbstractBackendProvider : HomeManagementApi {
-    fun start(callback: ResultHandler<String>)
-    fun stop()
+interface AbstractBackendProvider : HomeManagementApi, TripManagementApi
+
+interface TripManagementApi {
     fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>)
     fun completeTrip(tripId: String, callback: ResultHandler<String>)
-    fun getInviteLink(callback: ResultHandler<String>)
-    fun getAccountName(callback: ResultHandler<String>)
 }
 
 interface HomeManagementApi {

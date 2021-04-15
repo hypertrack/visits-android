@@ -98,7 +98,7 @@ class VolleyBasedBackendProviderTest {
         Log.d(TAG,"Getting deeplink")
         val requestFinishedSignal = CountDownLatch(1)
         var deeplink = ""
-        backendProvider.getInviteLink(object : ResultHandler<String> {
+        (backendProvider as HybridBackendProvider).getInviteLink(object : ResultHandler<String> {
             override fun onResult(result: String) {
                 deeplink = result
                 requestFinishedSignal.countDown()
@@ -118,7 +118,7 @@ class VolleyBasedBackendProviderTest {
         Log.d(TAG,"Getting accountEmail")
         val requestFinishedSignal = CountDownLatch(1)
         var accountName = ""
-        backendProvider.getAccountName(object : ResultHandler<String> {
+        (backendProvider as HybridBackendProvider).getAccountName(object : ResultHandler<String> {
             override fun onResult(result: String) {
                 accountName = result
                 requestFinishedSignal.countDown()

@@ -3,7 +3,7 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 import android.content.Context
 import android.os.Handler
 import android.util.Log
-import com.hypertrack.backend.AbstractBackendProvider
+import com.hypertrack.backend.HomeManagementApi
 import com.hypertrack.backend.ResultHandler
 import com.hypertrack.backend.models.GeofenceLocation
 import java.util.concurrent.TimeUnit
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 internal class SearchPlaceState(
     context: Context,
     val mode: String,
-    private val mBackendProvider: AbstractBackendProvider
+    private val mBackendProvider: HomeManagementApi
 ) : BaseState(context) {
     var destination: PlaceModel? = null
     val home: PlaceModel? = sharedHelper.homePlace

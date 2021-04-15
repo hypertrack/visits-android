@@ -13,8 +13,8 @@ import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
 import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.backend.ResultHandler
+import com.hypertrack.backend.TripManagementApi
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.maps.google.widget.GoogleMapAdapter
 import com.hypertrack.sdk.views.DeviceUpdatesHandler
@@ -29,7 +29,7 @@ import java.util.*
 internal class TrackingPresenter(
     private val context: Context,
     private val view: View,
-    private val backendProvider: AbstractBackendProvider,
+    private val backendProvider: TripManagementApi,
     private val hyperTrackService: HyperTrackService,
     private val realTimeUpdatesService: HyperTrackViews
 ) : DeviceUpdatesHandler {

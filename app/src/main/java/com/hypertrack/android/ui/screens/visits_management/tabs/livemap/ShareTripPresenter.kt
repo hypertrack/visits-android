@@ -6,8 +6,8 @@ import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingPresenter.Companion.shareAction
-import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.backend.ResultHandler
+import com.hypertrack.backend.TripManagementApi
 import com.hypertrack.maps.google.widget.GoogleMapAdapter
 import com.hypertrack.sdk.views.DeviceUpdatesHandler
 import com.hypertrack.sdk.views.HyperTrackViews
@@ -20,7 +20,7 @@ internal class ShareTripPresenter(
     private val context: Context,
     private val view: View,
     url: String,
-    private val backendProvider: AbstractBackendProvider,
+    private val backendProvider: TripManagementApi,
     deviceId: String,
     realTimeUpdatesProvider: HyperTrackViews
 ) : DeviceUpdatesHandler {
