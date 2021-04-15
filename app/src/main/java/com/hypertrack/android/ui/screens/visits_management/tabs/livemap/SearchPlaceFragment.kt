@@ -47,14 +47,7 @@ class SearchPlaceFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         config = arguments?.getParcelable("config") ?: Config.SEARCH_PLACE
-        presenter = SearchPlacePresenter(
-            requireContext(),
-            config.key,
-            this,
-            mBackendProvider,
-            deviceId,
-            viewLifecycleOwner
-        )    }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +59,14 @@ class SearchPlaceFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter = SearchPlacePresenter(
+            requireContext(),
+            config.key,
+            this,
+            mBackendProvider,
+            deviceId,
+            viewLifecycleOwner
+        )
         search = view.findViewById(R.id.search)
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
