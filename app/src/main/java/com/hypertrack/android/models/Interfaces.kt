@@ -22,9 +22,14 @@ interface ResultHandler<T> {
 data class GeofenceLocation(val latitude: Double, val longitude: Double)
 
 sealed class ShareableTripResult
-class ShareableTrip(val shareUrl: String, val embedUrl: String, val tripId: String, val remainingDuration: Int?) : ShareableTripResult()
 class CreateTripError(val error: Throwable?) : ShareableTripResult()
+class ShareableTripSuccess(
+    val shareUrl: String,
+    val embedUrl: String?,
+    val tripId: String,
+    val remainingDuration: Int?
+) : ShareableTripResult()
 
 sealed class TripCompletionResult
-object TripCompletionSuccess : TripCompletionResult()
 class TripCompletionError(val error: Throwable?) : TripCompletionResult()
+object TripCompletionSuccess : TripCompletionResult()

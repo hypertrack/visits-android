@@ -26,7 +26,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.api.TripParams
 import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.models.CreateTripError
-import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -201,7 +201,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         } ?: TripParams(mHyperTrackDeviceId)
         viewLifecycleOwner.lifecycleScope.launch {
             when (val result = backendProvider.createTrip(tripRequest)) {
-                is ShareableTrip -> {
+                is ShareableTripSuccess -> {
                     Log.d(TAG, "trip is created: $result")
                     view.hideProgressBar()
                     view.addShareTripFragment(result.tripId, result.shareUrl)

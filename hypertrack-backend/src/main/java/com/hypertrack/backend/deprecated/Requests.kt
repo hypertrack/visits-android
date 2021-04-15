@@ -12,7 +12,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.backend.BuildConfig
 import com.hypertrack.backend.TripConfig
 import com.hypertrack.backend.models.GeofenceResponse
@@ -100,13 +100,13 @@ class CreateGeofencesRequest(
 }
 
 class CreateTripRequest(tripConfig: TripConfig, private val gson: Gson, tokenString: String,
-                        responseListener: Response.Listener<ShareableTrip>, errorListener: Response.ErrorListener, baseUrl: String
+                        responseListener: Response.Listener<ShareableTripSuccess>, errorListener: Response.ErrorListener, baseUrl: String
 ) :
-        LiveAppBackendRequest<ShareableTrip>(tokenString, "${baseUrl}client/trips/",
+        LiveAppBackendRequest<ShareableTripSuccess>(tokenString, "${baseUrl}client/trips/",
                 tripConfig.getRequestBody(), responseListener, errorListener
         ) {
 
-    override fun parseNetworkResponse(response: NetworkResponse?): Response<ShareableTrip> {
+    override fun parseNetworkResponse(response: NetworkResponse?): Response<ShareableTripSuccess> {
         response?.let {
 
             // Expired token etc.
@@ -122,7 +122,7 @@ class CreateTripRequest(tripConfig: TripConfig, private val gson: Gson, tokenStr
                 val parsedTrip = gson.fromJson<Trip>(responseBody, Trip::class.java)
                 parsedTrip?.let { trip ->
                     return Response.success(
-                        ShareableTrip(
+                        ShareableTripSuccess(
                             trip.views.shareUrl,
                             trip.views.embedUrl,
                             trip.tripId,

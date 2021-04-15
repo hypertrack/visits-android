@@ -67,7 +67,7 @@ interface ApiInterface {
     ): Response<HistoryResponse>
 
     @POST("client/trips/")
-    suspend fun createTrip(@Body params: TripParams): Response<ShareableTrip>
+    suspend fun createTrip(@Body params: TripParams): Response<Trip>
 
     @POST("client/trips/{trip_id}/complete")
     suspend fun completeTrip(@Path("trip_id") tripId: String): Response<Unit>
@@ -126,7 +126,8 @@ data class Trip(
         @field:Json(name = "trip_id") val tripId: String,
         @field:Json(name = "started_at") override val createdAt: String,
         @field:Json(name = "metadata") val metadata: Map<String, Any>?,
-        @field:Json(name = "destination") val destination: TripDestination?
+        @field:Json(name = "destination") val destination: TripDestination?,
+        @field:Json(name = "estimate") val estimate: Estimate?,
 ) : VisitDataSource {
     override val visitedAt: String
         get() = destination?.arrivedAt ?: ""
@@ -149,6 +150,12 @@ data class Trip(
 }
 
 @JsonClass(generateAdapter = true)
+data class Estimate(@field:Json(name = "route") val route: Route?)
+
+@JsonClass(generateAdapter = true)
+data class Route(@field:Json(name = "remaining_duration") val remainingDuration: Int?)
+
+@JsonClass(generateAdapter = true)
 data class TripDestination(
     @field:Json(name = "address") val address: String?,
     @field:Json(name = "geometry") val geometry: Geometry,
@@ -157,7 +164,7 @@ data class TripDestination(
 
 @JsonClass(generateAdapter = true)
 data class Views(
-        @field:Json(name = "share_url") val shareUrl: String?,
+        @field:Json(name = "share_url") val shareUrl: String,
         @field:Json(name = "embed_url") val embedUrl: String?
 )
 

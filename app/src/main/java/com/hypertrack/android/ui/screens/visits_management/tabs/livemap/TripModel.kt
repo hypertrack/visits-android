@@ -1,6 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
-import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.sdk.views.dao.Trip
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -46,9 +46,9 @@ class TripModel private constructor(val tripId: String, val shareableUrl: String
     }
 
     companion object {
-        fun fromShareableTrip(shareableTrip: ShareableTrip): TripModel {
-            val model = TripModel(shareableTrip.tripId, shareableTrip.shareUrl)
-            val remainingDuration = shareableTrip.remainingDuration
+        fun fromShareableTrip(shareableTripSuccess: ShareableTripSuccess): TripModel {
+            val model = TripModel(shareableTripSuccess.tripId, shareableTripSuccess.shareUrl)
+            val remainingDuration = shareableTripSuccess.remainingDuration
             if (null != remainingDuration) {
                 model.mRemainingDuration = remainingDuration
                 model.tripReceived = LocalTime.now()

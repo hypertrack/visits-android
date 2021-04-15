@@ -9,7 +9,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.hypertrack.android.models.ResultHandler
-import com.hypertrack.android.models.ShareableTrip
+import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.backend.AsyncTokenProvider
 import com.hypertrack.backend.TripConfig
 
@@ -59,7 +59,7 @@ class VolleyBasedProvider(
         })
     }
 
-    fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTrip>) {
+    fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTripSuccess>) {
         Log.i(TAG, "Create trip with config $tripConfig")
         tokenProvider.getAuthenticationToken(object :
             ResultHandler<String> {
@@ -156,7 +156,7 @@ class VolleyBasedProvider(
 
     }
 
-    private fun scheduleAuthenticatedCreateTripRequest(tripConfig: TripConfig, tokenString: String, callback: ResultHandler<ShareableTrip>) {
+    private fun scheduleAuthenticatedCreateTripRequest(tripConfig: TripConfig, tokenString: String, callback: ResultHandler<ShareableTripSuccess>) {
         val request = CreateTripRequest(
                 tripConfig, gson, tokenString,
                 Response.Listener { trip -> callback.onResult(trip) },

@@ -37,8 +37,8 @@ class VolleyBasedBackendProviderTest {
 
         val latch = CountDownLatch(1)
         (backendProvider as HybridBackendProvider).createTrip(request, object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip> {
-            override fun onResult(result: com.hypertrack.android.models.ShareableTrip) {
+            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTripSuccess> {
+            override fun onResult(result: com.hypertrack.android.models.ShareableTripSuccess) {
                 Log.i(TAG,"Got shareable trip ${result.tripId}")
                 assertNotNull(result)
                 testTrip = result
@@ -136,7 +136,7 @@ class VolleyBasedBackendProviderTest {
     }
 
     companion object {
-        var testTrip: com.hypertrack.android.models.ShareableTrip? = null
+        var testTrip: com.hypertrack.android.models.ShareableTripSuccess? = null
         const val DEVICE_ID = "E15E21C3-C942-3FEA-B33B-16A58E291CD0"
         const val PUBLISHABLE_KEY = "uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw"
         const val TAG = "BackendProviderTest"

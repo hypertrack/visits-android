@@ -47,7 +47,7 @@ class HybridBackendProvider(
 
     }
 
-    fun createTrip(tripConfig: TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip>) {
+    fun createTrip(tripConfig: TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTripSuccess>) {
         Log.i(TAG, "Creating trip with config $tripConfig")
         val retryCallback = wrapCallback(
                 callback,

@@ -6,6 +6,7 @@ import com.hypertrack.android.models.*
 import com.hypertrack.android.models.GeofenceMarker
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
+import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
@@ -141,7 +142,10 @@ class ApiClient(
     override suspend fun createTrip(tripParams: TripParams): ShareableTripResult {
         return try {
             with(api.createTrip(tripParams)) {
-                if (isSuccessful) body()!!
+                if (isSuccessful) {
+                    val trip = body()!!
+                    ShareableTripSuccess(trip.views.shareUrl, trip.views.embedUrl, trip.tripId, trip.estimate?.route?.remainingDuration )
+                }
                 else CreateTripError(HttpException(this))
             }
         } catch (t: Throwable) {
