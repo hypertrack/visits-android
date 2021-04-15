@@ -138,8 +138,15 @@ class ApiClient(
 
     }
 
-    override suspend fun addTrip(tripConfig: TripConfig): ShareableTripResult {
-        TODO("Not yet implemented")
+    override suspend fun addTrip(tripParams: TripParams): ShareableTripResult {
+        return try {
+            with(api.createTrip(tripParams)) {
+                if (isSuccessful) body()!!
+                else CreateTripError(HttpException(this))
+            }
+        } catch (t: Throwable) {
+             CreateTripError(t)
+        }
     }
 
     override suspend fun finishTrip(tripId: String): TripCompletionResult {

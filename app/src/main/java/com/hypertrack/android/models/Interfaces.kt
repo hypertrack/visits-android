@@ -1,11 +1,12 @@
 package com.hypertrack.android.models
 
 import androidx.annotation.FloatRange
+import com.hypertrack.android.api.TripParams
 
 
 interface AbstractBackendProvider : HomeManagementApi, TripManagementApi
 interface TripManagementApi {
-    suspend fun addTrip(tripConfig: TripConfig) : ShareableTripResult
+    suspend fun addTrip(tripParams: TripParams) : ShareableTripResult
     suspend fun finishTrip(tripId: String) : TripCompletionResult
 }
 
@@ -31,6 +32,7 @@ class CreateTripError(val error: Throwable?) : ShareableTripResult()
 sealed class TripCompletionResult
 object CompletionSuccess : TripCompletionResult()
 class TripCompletionError(val error: Throwable?) : TripCompletionResult()
+
 
 class TripConfig internal constructor(
         val latitude: Double?,

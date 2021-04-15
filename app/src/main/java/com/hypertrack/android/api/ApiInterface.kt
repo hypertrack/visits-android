@@ -3,9 +3,7 @@ package com.hypertrack.android.api
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
-import com.hypertrack.android.models.Address
-import com.hypertrack.android.models.VisitDataSource
-import com.hypertrack.android.models.VisitType
+import com.hypertrack.android.models.*
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
@@ -68,6 +66,8 @@ interface ApiInterface {
         @Query("timezone") timezone: String
     ): Response<HistoryResponse>
 
+    @POST("client/trips/")
+    suspend fun createTrip(@Body params: TripParams): Response<ShareableTrip>
 }
 
 @JsonClass(generateAdapter = true)
@@ -410,3 +410,14 @@ class HistoryCoordinate(
         val altitude: Double?,
         val timestamp: String,
 )
+
+@JsonClass(generateAdapter = true)
+class TripParams(
+    @field:Json(name = "device_id") val deviceId: String,
+    @field:Json(name = "destination") val destination: TripDestination?
+    ) {
+    constructor(deviceId: String) : this(deviceId, null)
+    constructor(deviceId: String, latitude: Double, longitude: Double) : this(
+        deviceId, TripDestination(null, Point(listOf(longitude, latitude)), null)
+    )
+}
