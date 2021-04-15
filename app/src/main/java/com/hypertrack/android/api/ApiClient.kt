@@ -164,14 +164,11 @@ class ApiClient(
         }
     }
 
-    override fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>) {
+    override suspend fun getHomeLocation(): HomeLocationResult {
         TODO("Not yet implemented")
     }
 
-    override fun updateHomeGeofence(
-        homeLocation: GeofenceLocation,
-        resultHandler: ResultHandler<Void?>
-    ) {
+    override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {
         TODO("Not yet implemented")
     }
 

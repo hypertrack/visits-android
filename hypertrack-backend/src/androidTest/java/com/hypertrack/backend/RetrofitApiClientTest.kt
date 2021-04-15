@@ -26,7 +26,7 @@ class RetrofitApiClientTest {
         var testResult: Set<Geofence> = emptySet()
 
         apiClient.getDeviceGeofences(object :
-            com.hypertrack.android.models.ResultHandler<Set<Geofence>> {
+            ResultHandler<Set<Geofence>> {
             override fun onResult(result: Set<Geofence>) {
                 Log.d(TAG, "Got geofences list $result")
                 testResult = result
@@ -63,7 +63,7 @@ class RetrofitApiClientTest {
                 setOf(
                         GeofenceProperties(Point(listOf(35.1206527856364, 47.850388852921)), mapOf("name" to "Test 02"), 50)
                 ),
-                object : com.hypertrack.android.models.ResultHandler<Set<Geofence>> {
+                object : ResultHandler<Set<Geofence>> {
                     override fun onResult(result: Set<Geofence>) {
                         Log.d(TAG, "Got result from create geofence API $result")
                         geofence = result.first()

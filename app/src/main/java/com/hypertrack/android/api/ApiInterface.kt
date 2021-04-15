@@ -26,12 +26,14 @@ interface ApiInterface {
             @Body encodedImage: EncodedImage,
     ): Response<ImageResponse>
 
+    /** Returns list of device geofences with visit markers inlined */
     @GET("client/geofences?include_archived=false&include_markers=true")
     suspend fun getGeofencesWithMarkers(
         @Query("device_id") deviceId: String,
         @Query("pagination_token") paginationToken: String?
     ): Response<GeofenceResponse>
 
+    /** Returns list of device geofences without visit markers */
     @GET("client/devices/{device_id}/geofences")
     suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Set<Geofence>
 
@@ -50,6 +52,12 @@ interface ApiInterface {
         @Query("pagination_token") paginationToken: String
     ): Response<TripResponse>
 
+    @POST("client/trips/")
+    suspend fun createTrip(@Body params: TripParams): Response<Trip>
+
+    @POST("client/trips/{trip_id}/complete")
+    suspend fun completeTrip(@Path("trip_id") tripId: String): Response<Unit>
+
     /**
      * client/devices/A24BA1B4-1234-36F7-8DD7-15D97C3FD912/history/2021-02-05?timezone=Europe%2FZaporozhye
      */
@@ -59,12 +67,6 @@ interface ApiInterface {
         @Path("day") day: String,
         @Query("timezone") timezone: String
     ): Response<HistoryResponse>
-
-    @POST("client/trips/")
-    suspend fun createTrip(@Body params: TripParams): Response<Trip>
-
-    @POST("client/trips/{trip_id}/complete")
-    suspend fun completeTrip(@Path("trip_id") tripId: String): Response<Unit>
 }
 
 @JsonClass(generateAdapter = true)

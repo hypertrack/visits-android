@@ -38,7 +38,7 @@ class RetrofitGeofencesApiClient(baseUrl: String, private val deviceId: String, 
             .client(Injector.okHttpClient(authorizer))
             .build().create(GeofencesApiInterface::class.java)
 
-    override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+    override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
 
         GlobalScope.launch(Dispatchers.Default) {
             try {
@@ -50,7 +50,7 @@ class RetrofitGeofencesApiClient(baseUrl: String, private val deviceId: String, 
         }
     }
 
-    override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+    override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {
         GlobalScope.launch(Dispatchers.Default) {
             try {
                 val params = GeofenceParams(geofencesProperties, deviceId)

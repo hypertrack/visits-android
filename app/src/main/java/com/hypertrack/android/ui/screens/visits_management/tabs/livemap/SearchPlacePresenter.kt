@@ -60,7 +60,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         this.googleMap = googleMap
         if ("home" == state.mode) {
             if (state.home == null) {
-                state.saveHomePlace(null)
+                state.saveHomePlace(null, viewLifecycleOwner)
             }
             view.hideHomeAddress()
         } else if ("search" == state.mode) {
@@ -176,14 +176,14 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     }
 
     fun skip() {
-        state.saveHomePlace(null)
+        state.saveHomePlace(null, viewLifecycleOwner)
         view.finish()
     }
 
     fun providePlace(placeModel: PlaceModel?) {
         when (state.mode) {
             "home" -> {
-                state.saveHomePlace(placeModel)
+                state.saveHomePlace(placeModel, viewLifecycleOwner)
                 view.finish()
             }
             "search" -> startTrip(placeModel)

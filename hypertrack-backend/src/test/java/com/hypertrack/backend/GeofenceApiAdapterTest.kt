@@ -1,7 +1,7 @@
 package com.hypertrack.backend
 
-import com.hypertrack.backend.models.Geofence
 import com.hypertrack.android.models.GeofenceLocation
+import com.hypertrack.backend.models.Geofence
 import com.hypertrack.backend.models.GeofenceProperties
 import com.hypertrack.backend.models.Point
 import org.junit.Assert.*
@@ -14,12 +14,12 @@ class GeofenceApiAdapterTest {
 
         var receivedNull = false
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) = callback.onResult(emptySet())
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {}
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) = callback.onResult(emptySet())
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {}
             override fun deleteGeofence(geofence_id: String) {}
         })
-        geofenceApiAdapter.getHomeGeofenceLocation(object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.GeofenceLocation?> {
+        (geofenceApiAdapter as GeofenceApiAdapter).getHomeGeofenceLocation(object :
+            ResultHandler<GeofenceLocation?> {
             override fun onResult(result: com.hypertrack.android.models.GeofenceLocation?) { if (result == null) receivedNull = true }
             override fun onError(error: Exception) { }
         })
@@ -32,15 +32,15 @@ class GeofenceApiAdapterTest {
 
         var homeLocation : com.hypertrack.android.models.GeofenceLocation? = null
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
                 callback.onResult(setOf(geofenceAt("2020-01-01T20:20:01.010Z", "01")))
             }
 
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {}
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {}
             override fun deleteGeofence(geofence_id: String) {}
         })
-        geofenceApiAdapter.getHomeGeofenceLocation(object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.GeofenceLocation?> {
+        (geofenceApiAdapter as GeofenceApiAdapter).getHomeGeofenceLocation(object :
+            ResultHandler<GeofenceLocation?> {
             override fun onResult(result: com.hypertrack.android.models.GeofenceLocation?) { homeLocation = result }
             override fun onError(error: Exception) { }
         })
@@ -55,18 +55,18 @@ class GeofenceApiAdapterTest {
 
         var homeLocation : com.hypertrack.android.models.GeofenceLocation? = null
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
                 callback.onResult(setOf(
                         geofenceAt("2020-01-01T20:20:01.010Z", "01"),
                         geofenceAt("2020-01-02T20:20:01.010Z", "02", latitude = 3.0, longitude = 4.0)
                 ))
             }
 
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {}
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {}
             override fun deleteGeofence(geofence_id: String) {}
         })
-        geofenceApiAdapter.getHomeGeofenceLocation(object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.GeofenceLocation?> {
+        (geofenceApiAdapter as GeofenceApiAdapter).getHomeGeofenceLocation(object :
+            ResultHandler<GeofenceLocation?> {
             override fun onResult(result: com.hypertrack.android.models.GeofenceLocation?) { homeLocation = result }
             override fun onError(error: Exception) { }
         })
@@ -81,7 +81,7 @@ class GeofenceApiAdapterTest {
 
         var homeLocation : com.hypertrack.android.models.GeofenceLocation? = null
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
                 callback.onResult(setOf(
                         geofenceAt("2020-01-01T20:20:01.010Z", "01"),
                         geofenceAt("2020-01-02T20:20:01.010Z", "02", latitude = 3.0, longitude = 4.0),
@@ -90,11 +90,11 @@ class GeofenceApiAdapterTest {
                 ))
             }
 
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {}
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {}
             override fun deleteGeofence(geofence_id: String) {}
         })
-        geofenceApiAdapter.getHomeGeofenceLocation(object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.GeofenceLocation?> {
+        (geofenceApiAdapter as GeofenceApiAdapter).getHomeGeofenceLocation(object :
+            ResultHandler<GeofenceLocation?> {
             override fun onResult(result: com.hypertrack.android.models.GeofenceLocation?) { homeLocation = result }
             override fun onError(error: Exception) { }
         })
@@ -112,7 +112,7 @@ class GeofenceApiAdapterTest {
         val oldGeofence2 = "01"
         val actualHomeId = "02"
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
                 callback.onResult(setOf(
                         geofenceAt("2019-12-01T20:20:01.010Z", oldGeofence1),
                         geofenceAt("2020-01-01T20:20:01.010Z", oldGeofence2),
@@ -120,11 +120,11 @@ class GeofenceApiAdapterTest {
                 ))
             }
 
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {}
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) {}
             override fun deleteGeofence(geofence_id: String) {deleted.add(geofence_id)}
         })
-        geofenceApiAdapter.getHomeGeofenceLocation(object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.GeofenceLocation?> {
+        (geofenceApiAdapter as GeofenceApiAdapter).getHomeGeofenceLocation(object :
+            ResultHandler<GeofenceLocation?> {
             override fun onResult(result: com.hypertrack.android.models.GeofenceLocation?) { }
             override fun onError(error: Exception) { }
         })
@@ -144,7 +144,7 @@ class GeofenceApiAdapterTest {
         val oldGeofence2 = "01"
         val actualHomeId = "02"
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) {
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) {
                 callback.onResult(setOf(
                         geofenceAt("2019-12-01T20:20:01.010Z", oldGeofence1),
                         geofenceAt("2020-01-01T20:20:01.010Z", oldGeofence2),
@@ -152,13 +152,13 @@ class GeofenceApiAdapterTest {
                 ))
             }
 
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) { }
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) { }
             override fun deleteGeofence(geofence_id: String) {deleted.add(geofence_id)}
         })
 
         geofenceApiAdapter.updateHomeGeofence(
             com.hypertrack.android.models.GeofenceLocation(42.0, 43.0),
-                object : com.hypertrack.android.models.ResultHandler<Void?> {
+                object : ResultHandler<Void?> {
             override fun onResult(result: Void?) { }
             override fun onError(error: Exception) { }
         })
@@ -176,14 +176,14 @@ class GeofenceApiAdapterTest {
         mutableListOf<String>()
         var createdProperties : Set<GeofenceProperties>? = null
         val geofenceApiAdapter = GeofenceApiAdapter(object : GeofencesApiProvider {
-            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) { createdProperties = geofencesProperties }
-            override fun getDeviceGeofences(callback: com.hypertrack.android.models.ResultHandler<Set<Geofence>>) = callback.onResult(emptySet())
+            override fun createGeofences(geofencesProperties: Set<GeofenceProperties>, callback: ResultHandler<Set<Geofence>>) { createdProperties = geofencesProperties }
+            override fun getDeviceGeofences(callback: ResultHandler<Set<Geofence>>) = callback.onResult(emptySet())
             override fun deleteGeofence(geofence_id: String) { }
         })
 
         geofenceApiAdapter.updateHomeGeofence(
             com.hypertrack.android.models.GeofenceLocation(42.0, 43.0),
-                object : com.hypertrack.android.models.ResultHandler<Void?> {
+                object : ResultHandler<Void?> {
             override fun onResult(result: Void?) { }
             override fun onError(error: Exception) { }
         })

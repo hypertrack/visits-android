@@ -8,7 +8,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
-import com.hypertrack.android.models.ResultHandler
+import com.hypertrack.backend.ResultHandler
 import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.backend.AsyncTokenProvider
 import com.hypertrack.backend.TripConfig

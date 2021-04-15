@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.Volley
+import com.hypertrack.android.models.GeofenceLocation
+import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.backend.deprecated.InternalApiTokenProvider
 import com.hypertrack.backend.deprecated.VolleyBasedProvider
 import com.hypertrack.backend.models.Geofence
@@ -19,8 +21,8 @@ class HybridBackendProvider(
         private val deviceID: String,
         baseUrl: String,
         authUrl: String,
-        homeManagementApiProvider: com.hypertrack.android.models.HomeManagementApi
-) : com.hypertrack.android.models.HomeManagementApi by homeManagementApiProvider {
+        homeManagementApiProvider: GeofenceApiAdapter
+) : IGeofenceApiAdapter by homeManagementApiProvider {
     init { Log.d(TAG, "Initializing with deviceId $deviceID and publishableKey $publishableKey") }
 
     private val queue = Volley.newRequestQueue(context)
@@ -28,7 +30,7 @@ class HybridBackendProvider(
     private val internalApiIssuesTokenProvider = InternalApiTokenProvider(queue, deviceID, publishableKey, gson, authUrl)
     val backendProvider = VolleyBasedProvider(gson, queue, internalApiIssuesTokenProvider, baseUrl)
 
-    fun start(callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun start(callback: ResultHandler<String>) {
         Log.i(TAG, "start $deviceID")
         val retryCallback = wrapCallback<String>(
                 callback,
@@ -47,7 +49,7 @@ class HybridBackendProvider(
 
     }
 
-    fun createTrip(tripConfig: TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTripSuccess>) {
+    fun createTrip(tripConfig: TripConfig, callback: ResultHandler<ShareableTripSuccess>) {
         Log.i(TAG, "Creating trip with config $tripConfig")
         val retryCallback = wrapCallback(
                 callback,
@@ -56,7 +58,7 @@ class HybridBackendProvider(
         backendProvider.createTrip(tripConfig, retryCallback)
     }
 
-    fun completeTrip(tripId: String, callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun completeTrip(tripId: String, callback: ResultHandler<String>) {
         Log.i(TAG, "Complete trip $tripId")
         val retryCallback = wrapCallback(
             callback,
@@ -66,7 +68,7 @@ class HybridBackendProvider(
 
     }
 
-    fun getInviteLink(callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun getInviteLink(callback: ResultHandler<String>) {
         Log.i(TAG, "getInviteLink")
         val retryCallback = wrapCallback<String>(
                 callback,
@@ -75,7 +77,7 @@ class HybridBackendProvider(
         backendProvider.getInviteLink(retryCallback)
     }
 
-    fun getAccountName(callback: com.hypertrack.android.models.ResultHandler<String>) {
+    fun getAccountName(callback: ResultHandler<String>) {
         Log.d(TAG, "Requesting account email")
         val retryCallback = wrapCallback<String>(
                 callback,
@@ -84,8 +86,8 @@ class HybridBackendProvider(
         backendProvider.getAccountEmail(retryCallback)
     }
 
-    private fun <T> wrapCallback(callback: com.hypertrack.android.models.ResultHandler<T>?, actualCall: Runnable): com.hypertrack.android.models.ResultHandler<T> {
-        return object : com.hypertrack.android.models.ResultHandler<T> {
+    private fun <T> wrapCallback(callback: ResultHandler<T>?, actualCall: Runnable): ResultHandler<T> {
+        return object : ResultHandler<T> {
             override fun onResult(result: T) {
                 callback?.onResult(result)
             }
@@ -97,7 +99,7 @@ class HybridBackendProvider(
 
     private fun <T> getErrorHandlerWithTokenAutoRefresh(
         error: Exception,
-        callback: com.hypertrack.android.models.ResultHandler<T>?,
+        callback: ResultHandler<T>?,
         retryCall: () -> Unit
     ) {
         when (error) {
@@ -124,14 +126,18 @@ class HybridBackendProvider(
     }
 }
 
-internal class GeofenceApiAdapter(private val geofenceApiProvider: GeofencesApiProvider) :
-    com.hypertrack.android.models.HomeManagementApi {
+interface IGeofenceApiAdapter {
+    fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>)
+    fun updateHomeGeofence(homeLocation: GeofenceLocation, resultHandler: ResultHandler<Void?>)
+}
 
-    override fun getHomeGeofenceLocation(resultHandler: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.GeofenceLocation?>) {
+class GeofenceApiAdapter(private val geofenceApiProvider: GeofencesApiProvider): IGeofenceApiAdapter {
+
+    override fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>) {
 
         // Get all geofences
         geofenceApiProvider.getDeviceGeofences(object :
-            com.hypertrack.android.models.ResultHandler<Set<Geofence>> {
+            ResultHandler<Set<Geofence>> {
             override fun onResult(result: Set<Geofence>) {
                 Log.d(TAG, "Got geofences $result")
                 val homes = result
@@ -146,7 +152,7 @@ internal class GeofenceApiAdapter(private val geofenceApiProvider: GeofencesApiP
                         val home = homes.first()
                         // return coordinates for latest
                         resultHandler.onResult(
-                            com.hypertrack.android.models.GeofenceLocation(
+                            GeofenceLocation(
                                 home.latitude,
                                 home.longitude
                             )
@@ -163,10 +169,10 @@ internal class GeofenceApiAdapter(private val geofenceApiProvider: GeofencesApiP
 
     }
 
-    override fun updateHomeGeofence(homeLocation: com.hypertrack.android.models.GeofenceLocation, resultHandler: com.hypertrack.android.models.ResultHandler<Void?>) {
+    override fun updateHomeGeofence(homeLocation: GeofenceLocation, resultHandler: ResultHandler<Void?>) {
         // Get existing home geofences
         geofenceApiProvider.getDeviceGeofences(object :
-            com.hypertrack.android.models.ResultHandler<Set<Geofence>> {
+            ResultHandler<Set<Geofence>> {
             override fun onResult(result: Set<Geofence>) {
                 // delete all if present
                 result
@@ -176,7 +182,7 @@ internal class GeofenceApiAdapter(private val geofenceApiProvider: GeofencesApiP
                 geofenceApiProvider.createGeofences(setOf(GeofenceProperties(
                         Point(listOf(homeLocation.longitude, homeLocation.latitude)),
                         mapOf("name" to "Home"), 100
-                )), object : com.hypertrack.android.models.ResultHandler<Set<Geofence>> {
+                )), object : ResultHandler<Set<Geofence>> {
                     override fun onResult(result: Set<Geofence>) {
                         if (result.size == 1) resultHandler.onResult(null)
                         else resultHandler.onError(Exception("No geofence was received in server response"))

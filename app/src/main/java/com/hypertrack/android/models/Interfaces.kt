@@ -4,22 +4,11 @@ import com.hypertrack.android.api.TripParams
 
 
 interface AbstractBackendProvider : HomeManagementApi, TripManagementApi
+
 interface TripManagementApi {
     suspend fun createTrip(tripParams: TripParams) : ShareableTripResult
     suspend fun completeTrip(tripId: String) : TripCompletionResult
 }
-
-interface HomeManagementApi {
-    fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>)
-    fun updateHomeGeofence(homeLocation: GeofenceLocation, resultHandler: ResultHandler<Void?>)
-}
-
-interface ResultHandler<T> {
-    fun onResult(result: T)
-    fun onError(error: Exception)
-}
-
-data class GeofenceLocation(val latitude: Double, val longitude: Double)
 
 sealed class ShareableTripResult
 class CreateTripError(val error: Throwable?) : ShareableTripResult()
@@ -33,3 +22,17 @@ class ShareableTripSuccess(
 sealed class TripCompletionResult
 class TripCompletionError(val error: Throwable?) : TripCompletionResult()
 object TripCompletionSuccess : TripCompletionResult()
+
+
+interface HomeManagementApi {
+    suspend fun getHomeLocation(): HomeLocationResult
+    suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult
+}
+
+sealed class HomeLocationResult
+data class GeofenceLocation(val latitude: Double, val longitude: Double) : HomeLocationResult()
+class HomeLocationResultError(val error: Throwable?) : HomeLocationResult()
+
+sealed class HomeUpdateResult
+object HomeUpdateResultSuccess : HomeUpdateResult()
+class HomeUpdateResultError(error: Throwable?) : HomeUpdateResult()

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.hypertrack.android.models.ShareableTripSuccess
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class VolleyBasedBackendProviderTest {
 
     private lateinit var appContext : Context
-    private lateinit var backendProvider: com.hypertrack.android.models.AbstractBackendProvider
+    private lateinit var backendProvider: HybridBackendProvider
 
 
     @Before
@@ -37,7 +38,7 @@ class VolleyBasedBackendProviderTest {
 
         val latch = CountDownLatch(1)
         (backendProvider as HybridBackendProvider).createTrip(request, object :
-            com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTripSuccess> {
+            ResultHandler<ShareableTripSuccess> {
             override fun onResult(result: com.hypertrack.android.models.ShareableTripSuccess) {
                 Log.i(TAG,"Got shareable trip ${result.tripId}")
                 assertNotNull(result)
@@ -75,7 +76,7 @@ class VolleyBasedBackendProviderTest {
         var completedTripId:String? = null
 
         testTrip?.let {  (backendProvider as HybridBackendProvider).completeTrip(it.tripId, object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) {
                 completedTripId = result
                 requestFinishedSignal.countDown()
@@ -99,7 +100,7 @@ class VolleyBasedBackendProviderTest {
         val requestFinishedSignal = CountDownLatch(1)
         var deeplink = ""
         (backendProvider as HybridBackendProvider).getInviteLink(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) {
                 deeplink = result
                 requestFinishedSignal.countDown()
@@ -120,7 +121,7 @@ class VolleyBasedBackendProviderTest {
         val requestFinishedSignal = CountDownLatch(1)
         var accountName = ""
         (backendProvider as HybridBackendProvider).getAccountName(object :
-            com.hypertrack.android.models.ResultHandler<String> {
+            ResultHandler<String> {
             override fun onResult(result: String) {
                 accountName = result
                 requestFinishedSignal.countDown()
