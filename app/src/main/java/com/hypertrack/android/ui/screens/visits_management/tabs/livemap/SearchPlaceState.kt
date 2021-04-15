@@ -36,9 +36,9 @@ internal class SearchPlaceState(
             home.latLng!!.latitude,
             home.latLng!!.longitude
         )
-        when(mBackendProvider.updateHomeLocation(homeLocation)) {
-            is HomeUpdateResultSuccess -> Log.d(TAG, "Geofence was created")
-            is HomeUpdateResultError -> Log.w(TAG, "Can't update geofence")
+        when (val res = mBackendProvider.updateHomeLocation(homeLocation)) {
+            HomeUpdateResultSuccess -> Log.d(TAG, "Geofence was created")
+            is HomeUpdateResultError -> Log.w(TAG, "Can't update geofence", res.error)
         }
 
     }

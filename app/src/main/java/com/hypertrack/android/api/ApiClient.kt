@@ -165,7 +165,21 @@ class ApiClient(
     }
 
     override suspend fun getHomeLocation(): HomeLocationResult {
-        TODO("Not yet implemented")
+        return try {
+            with(api.getDeviceGeofences(deviceId)) {
+                return if (isSuccessful) {
+                    return body()?.firstOrNull {
+                        it.archived != true && it.metadata?.get("name") == "Home"
+                    }
+                    ?.let {
+                            homeLocation -> return GeofenceLocation(homeLocation.latitude, homeLocation.longitude)
+                    }
+                    ?: NoHomeLocation
+                } else HomeLocationResultError(HttpException(this))
+            }
+        } catch (t: Throwable) {
+            HomeLocationResultError(t)
+        }
     }
 
     override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {

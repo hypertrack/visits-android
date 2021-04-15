@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.models.GeofenceLocation
 import com.hypertrack.android.models.HomeLocationResultError
+import com.hypertrack.android.models.NoHomeLocation
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.TrackingStateValue
@@ -176,11 +177,11 @@ class LiveMapFragment(
                         populateAddressFromGeocoder(requireContext())
                     }
                 }
+                is NoHomeLocation -> sharedHelper.homePlace = null
                 is HomeLocationResultError -> {
                     Log.w(TAG, "Can't get home location.", homeLocation.error)
                 }
             }
-
         }
     }
 

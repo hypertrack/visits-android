@@ -35,7 +35,7 @@ interface ApiInterface {
 
     /** Returns list of device geofences without visit markers */
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Set<Geofence>
+    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Response<Set<Geofence>>
 
     @POST("client/devices/{device_id}/geofences")
     suspend fun createGeofences(
@@ -171,7 +171,8 @@ data class Geofence(
         @field:Json(name = "metadata") val metadata: Map<String, Any>?,
         @field:Json(name = "geometry") val geometry: Geometry,
         @field:Json(name = "markers") val marker: GeofenceMarkersResponse?,
-        @field:Json(name = "radius") val radius: Int?
+        @field:Json(name = "radius") val radius: Int?,
+        @field:Json(name = "archived") val archived : Boolean?,
 ) : VisitDataSource {
     override val latitude: Double
         get() = geometry.latitude

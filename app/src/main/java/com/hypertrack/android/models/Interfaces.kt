@@ -30,9 +30,10 @@ interface HomeManagementApi {
 }
 
 sealed class HomeLocationResult
+object NoHomeLocation : HomeLocationResult()
 data class GeofenceLocation(val latitude: Double, val longitude: Double) : HomeLocationResult()
 class HomeLocationResultError(val error: Throwable?) : HomeLocationResult()
 
 sealed class HomeUpdateResult
 object HomeUpdateResultSuccess : HomeUpdateResult()
-class HomeUpdateResultError(error: Throwable?) : HomeUpdateResult()
+class HomeUpdateResultError(val error: Throwable?) : HomeUpdateResult()
