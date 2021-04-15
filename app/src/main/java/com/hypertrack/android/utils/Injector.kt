@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Provider
 
 
 object ServiceLocator {
@@ -319,15 +320,14 @@ object Injector {
 
     private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
     fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {
-        val hyperTrackService = getUserScope().hyperTrackService
-        val publishableKey = getAccountRepo(applicationContext).publishableKey
-        val viewsSdk = HyperTrackViews.getInstance(applicationContext, publishableKey)
+        val publishableKeyProvider: Provider<String> = Provider<String> { getAccountRepo(applicationContext).publishableKey }
+        val hyperTrackServiceProvider = Provider { getUserScope().hyperTrackService }
         return CustomFragmentFactory(
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
-            hyperTrackService,
-            HybridBackendProvider.getInstance(applicationContext, publishableKey, hyperTrackService.deviceId),
-            viewsSdk
+            hyperTrackServiceProvider,
+            {HyperTrackViews.getInstance(applicationContext, publishableKeyProvider.get())},
+            {HybridBackendProvider.getInstance(applicationContext, publishableKeyProvider.get(), hyperTrackServiceProvider.get().deviceId)}
         )
     }
 
