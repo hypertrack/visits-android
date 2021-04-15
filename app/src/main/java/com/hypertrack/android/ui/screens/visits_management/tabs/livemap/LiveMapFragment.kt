@@ -13,10 +13,14 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.TrackingStateValue
+import com.hypertrack.backend.AbstractBackendProvider
+import com.hypertrack.backend.ResultHandler
+import com.hypertrack.backend.models.GeofenceLocation
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_tab_map_view.*
 import kotlinx.android.synthetic.main.fragment_tab_map_webview.progress
@@ -27,13 +31,15 @@ class LiveMapFragment(
     private val mapStyleOptions: MapStyleOptions,
     private val mapStyleOptionsSilver: MapStyleOptions,
     private val hyperTrackService: HyperTrackService,
+    private val backendProvider: AbstractBackendProvider,
 ) : Fragment(R.layout.fragment_tab_map_view)  {
 
     private var state: LoadingProgressState = LoadingProgressState.LOADING
     private var currentMapStyle = mapStyleOptions
     private var gMap: GoogleMap? = null
+    private lateinit var sharedHelper: SharedHelper
 
-    private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
+    private val liveMapViewModel: LiveMapViewModel by viewModels({ requireParentFragment() })
 
     private val shareBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -94,7 +100,8 @@ class LiveMapFragment(
             registerReceiver(shareBroadcastReceiver, IntentFilter(SHARE_BROADCAST_ACTION))
 
         }
-
+        sharedHelper = SharedHelper.getInstance(requireContext())
+        if (!sharedHelper.isHomePlaceSet) fetchHomeFromBackend()
     }
 
     override fun onPause() {
@@ -156,6 +163,20 @@ class LiveMapFragment(
         progress.setGoneState(!isLoading)
         progress.background = null
         if (isLoading) loader.playAnimation() else loader.cancelAnimation()
+    }
+
+    private fun fetchHomeFromBackend() {
+        backendProvider.getHomeGeofenceLocation(object : ResultHandler<GeofenceLocation?> {
+            override fun onResult(result: GeofenceLocation?) {
+                result?.let {
+                    val newPlace = PlaceModel()
+                    newPlace.latLng = LatLng(result.latitude, result.longitude)
+                    newPlace.populateAddressFromGeocoder(requireContext())
+                    sharedHelper.homePlace = newPlace
+                }
+            }
+            override fun onError(error: Exception) {}
+        })
     }
 
     companion object {

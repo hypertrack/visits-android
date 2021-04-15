@@ -17,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
 import com.hypertrack.android.utils.HyperTrackService
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
@@ -303,7 +304,7 @@ class TrackingFragment(
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_frame,
-                SearchPlaceFragment.newInstance(config, mBackendProvider, hyperTrackService.deviceId, realTimeUpdatesService),
+                Injector.getCustomFragmentFactory(requireContext()).instantiate(ClassLoader.getSystemClassLoader(), SearchPlaceFragment::class.java.name),
                 SearchPlaceFragment::class.java.simpleName
             )
             .addToBackStack(null)

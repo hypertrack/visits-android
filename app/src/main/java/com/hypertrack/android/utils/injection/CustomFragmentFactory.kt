@@ -24,7 +24,8 @@ class CustomFragmentFactory(
             LiveMapFragment::class.java.name -> LiveMapFragment(
                 mapStyleOptions,
                 mapStyleOptionsSilver,
-                hyperTrackServiceProvider.get()
+                hyperTrackServiceProvider.get(),
+                backendProvider.get()
             )
             TrackingFragment::class.java.name ->
                 TrackingFragment(backendProvider.get(), hyperTrackServiceProvider.get(), hyperTrackViewsProvider.get())
