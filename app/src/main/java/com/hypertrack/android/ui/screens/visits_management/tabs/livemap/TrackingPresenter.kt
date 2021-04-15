@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.GoogleMap
-import com.hypertrack.android.models.CompletionSuccess
+import com.hypertrack.android.models.TripCompletionSuccess
 import com.hypertrack.android.models.TripCompletionError
 import com.hypertrack.android.models.TripManagementApi
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
@@ -124,7 +124,7 @@ internal class TrackingPresenter(
             view.showProgressBar()
             viewLifecycleOwner.lifecycleScope.launch {
                 when (val result = backendProvider.finishTrip(tripId)) {
-                    is CompletionSuccess -> {
+                    is TripCompletionSuccess -> {
                         Log.d(TAG, "trip is ended")
                         view.hideProgressBar()
                     }

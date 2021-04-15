@@ -138,7 +138,7 @@ class ApiClient(
 
     }
 
-    override suspend fun addTrip(tripParams: TripParams): ShareableTripResult {
+    override suspend fun createTrip(tripParams: TripParams): ShareableTripResult {
         return try {
             with(api.createTrip(tripParams)) {
                 if (isSuccessful) body()!!

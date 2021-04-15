@@ -200,7 +200,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
             }
         } ?: TripParams(mHyperTrackDeviceId)
         viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = backendProvider.addTrip(tripRequest)) {
+            when (val result = backendProvider.createTrip(tripRequest)) {
                 is ShareableTrip -> {
                     Log.d(TAG, "trip is created: $result")
                     view.hideProgressBar()
