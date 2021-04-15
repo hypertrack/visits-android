@@ -123,7 +123,7 @@ internal class TrackingPresenter(
         state.selectedTripId?.let { tripId ->
             view.showProgressBar()
             viewLifecycleOwner.lifecycleScope.launch {
-                when (val result = backendProvider.finishTrip(tripId)) {
+                when (val result = backendProvider.completeTrip(tripId)) {
                     is TripCompletionSuccess -> {
                         Log.d(TAG, "trip is ended")
                         view.hideProgressBar()

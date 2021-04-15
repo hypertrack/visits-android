@@ -68,6 +68,9 @@ interface ApiInterface {
 
     @POST("client/trips/")
     suspend fun createTrip(@Body params: TripParams): Response<ShareableTrip>
+
+    @POST("client/trips/{trip_id}/complete")
+    suspend fun completeTrip(@Path("trip_id") tripId: String): Response<Unit>
 }
 
 @JsonClass(generateAdapter = true)

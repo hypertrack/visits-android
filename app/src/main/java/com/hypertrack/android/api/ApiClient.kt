@@ -149,8 +149,15 @@ class ApiClient(
         }
     }
 
-    override suspend fun finishTrip(tripId: String): TripCompletionResult {
-        TODO("Not yet implemented")
+    override suspend fun completeTrip(tripId: String): TripCompletionResult {
+        return try {
+            with (api.completeTrip(tripId)) {
+                if (isSuccessful) TripCompletionSuccess
+                else TripCompletionError(HttpException(this))
+            }
+        } catch (t: Throwable) {
+            TripCompletionError(t)
+        }
     }
 
     override fun getHomeGeofenceLocation(resultHandler: ResultHandler<GeofenceLocation?>) {

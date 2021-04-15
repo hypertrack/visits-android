@@ -29,7 +29,7 @@ class VolleyBasedBackendProviderTest {
     @Test @LargeTest
     fun test0010ItShouldCreateTripWithGivenDestination() {
 
-        val request = com.hypertrack.android.models.TripConfig.Builder()
+        val request = TripConfig.Builder()
                 .setDestinationLatitude(35.120995)
                 .setDestinationLongitude(47.84918)
                 .setDeviceId(DEVICE_ID)

@@ -10,8 +10,8 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.hypertrack.android.models.ResultHandler
 import com.hypertrack.android.models.ShareableTrip
-import com.hypertrack.android.models.TripConfig
 import com.hypertrack.backend.AsyncTokenProvider
+import com.hypertrack.backend.TripConfig
 
 
 class VolleyBasedProvider(

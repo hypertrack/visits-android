@@ -20,7 +20,7 @@ class HybridBackendProvider(
         baseUrl: String,
         authUrl: String,
         homeManagementApiProvider: com.hypertrack.android.models.HomeManagementApi
-) : com.hypertrack.android.models.AbstractBackendProvider, com.hypertrack.android.models.HomeManagementApi by homeManagementApiProvider {
+) : com.hypertrack.android.models.HomeManagementApi by homeManagementApiProvider {
     init { Log.d(TAG, "Initializing with deviceId $deviceID and publishableKey $publishableKey") }
 
     private val queue = Volley.newRequestQueue(context)
@@ -47,7 +47,7 @@ class HybridBackendProvider(
 
     }
 
-    override fun createTrip(tripConfig: com.hypertrack.android.models.TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip>) {
+    fun createTrip(tripConfig: TripConfig, callback: com.hypertrack.android.models.ResultHandler<com.hypertrack.android.models.ShareableTrip>) {
         Log.i(TAG, "Creating trip with config $tripConfig")
         val retryCallback = wrapCallback(
                 callback,

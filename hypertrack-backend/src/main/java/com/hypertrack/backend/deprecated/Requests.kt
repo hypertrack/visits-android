@@ -13,8 +13,8 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.hypertrack.android.models.ShareableTrip
-import com.hypertrack.android.models.TripConfig
 import com.hypertrack.backend.BuildConfig
+import com.hypertrack.backend.TripConfig
 import com.hypertrack.backend.models.GeofenceResponse
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset

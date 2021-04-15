@@ -58,7 +58,7 @@ internal class ShareTripPresenter(
     fun endTrip() {
         state.currentTripId?.let { tripId ->
             viewLifecycleOwner.lifecycleScope.launch {
-                when (val result = backendProvider.finishTrip(tripId)) {
+                when (val result = backendProvider.completeTrip(tripId)) {
                     is TripCompletionSuccess -> {
                         Log.d(TAG, "trip is ended")
                         state.currentTripId = null
