@@ -27,16 +27,10 @@ interface ApiInterface {
     ): Response<ImageResponse>
 
     @GET("client/geofences?include_archived=false&include_markers=true")
-    suspend fun getGeofences(
+    suspend fun getGeofencesWithMarkers(
         @Query("device_id") deviceId: String,
         @Query("pagination_token") paginationToken: String?
     ): Response<GeofenceResponse>
-
-    @GET("client/geofences/markers")
-    suspend fun getGeofenceMarkers(
-        @Query("device_id") deviceId: String,
-        @Query("pagination_token") paginationToken: String
-    ): Response<GeofenceMarkersResponse>
 
     @GET("client/devices/{device_id}/geofences")
     suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Set<Geofence>

@@ -56,7 +56,7 @@ class ApiClient(
         var paginationToken: String? = null
         try {
             do {
-                val response = api.getGeofences(deviceId, paginationToken ?: "null")
+                val response = api.getGeofencesWithMarkers(deviceId, paginationToken ?: "null")
                 if (response.isSuccessful) {
                     response.body()?.geofences?.let {
                         res.addAll(it)
