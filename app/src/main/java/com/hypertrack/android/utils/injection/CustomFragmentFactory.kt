@@ -9,29 +9,30 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.Tracking
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.sdk.views.HyperTrackViews
+import javax.inject.Provider
 
 
 class CustomFragmentFactory(
     private val mapStyleOptions: MapStyleOptions,
     private val mapStyleOptionsSilver: MapStyleOptions,
-    private val hyperTrackService: HyperTrackService,
-    private val backendProvider: AbstractBackendProvider,
-    private val realTimeUpdatesService: HyperTrackViews,
+    private val hyperTrackServiceProvider: Provider<HyperTrackService>,
+    private val hyperTrackViewsProvider: Provider<HyperTrackViews>,
+    private val abstractBackendProvider: Provider<AbstractBackendProvider>,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
             LiveMapFragment::class.java.name -> LiveMapFragment(
                 mapStyleOptions,
                 mapStyleOptionsSilver,
-                hyperTrackService
+                hyperTrackServiceProvider.get()
             )
             TrackingFragment::class.java.name ->
-                TrackingFragment(backendProvider, hyperTrackService, realTimeUpdatesService)
+                TrackingFragment(abstractBackendProvider.get(), hyperTrackServiceProvider.get(), hyperTrackViewsProvider.get())
             SearchPlaceFragment::class.java.name ->
                 SearchPlaceFragment(
-                    backendProvider,
-                    hyperTrackService.deviceId,
-                    realTimeUpdatesService
+                    abstractBackendProvider.get(),
+                    hyperTrackServiceProvider.get().deviceId,
+                    hyperTrackViewsProvider.get()
                 )
             else -> super.instantiate(classLoader, className)
         }
