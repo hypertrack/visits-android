@@ -18,7 +18,7 @@ class VisitsListFragment : Fragment(R.layout.fragment_tab_visits_list) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = (parentFragment as VisitsManagementFragment).viewAdapter.apply {
                 placeholderListener = { show ->
-                    lVisitsPlaceholder.setGoneState(!show)
+                    lVisitsPlaceholder?.setGoneState(!show)
                 }
                 itemCount //workaround to update placeholder state
             }
