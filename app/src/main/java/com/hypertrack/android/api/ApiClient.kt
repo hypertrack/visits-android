@@ -3,7 +3,6 @@ package com.hypertrack.android.api
 import android.graphics.Bitmap
 import android.util.Log
 import com.hypertrack.android.models.*
-import com.hypertrack.android.models.GeofenceMarker
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.BuildConfig
@@ -183,7 +182,29 @@ class ApiClient(
     }
 
     override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {
-        TODO("Not yet implemented")
+        return try {
+            with (api.getDeviceGeofences(deviceId)) {
+                if (isSuccessful) {
+                    body()?.filter { it.metadata?.get("name") == "Home" && it.archived != true }
+                        ?.forEach { api.deleteGeofence(it.geofence_id) }
+                    val result = api.createGeofences(deviceId, GeofenceParams(setOf(
+                        GeofenceProperties(
+                            Point(listOf(homeLocation.longitude, homeLocation.latitude)),
+                            mapOf("name" to "Home"),
+                            100
+                        )), deviceId))
+                    if (result.isSuccessful) {
+                        return@with HomeUpdateResultSuccess
+                    } else {
+                        return@with HomeUpdateResultError(HttpException(result))
+                    }
+                } else {
+                    return HomeUpdateResultError(HttpException(this))
+                }
+            }
+        }catch (t: Throwable) {
+            return HomeUpdateResultError(t)
+        }
     }
 
     companion object {

@@ -3,11 +3,11 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.hypertrack.android.models.GeofenceLocation
 import com.hypertrack.android.models.HomeManagementApi
 import com.hypertrack.android.models.HomeUpdateResultError
 import com.hypertrack.android.models.HomeUpdateResultSuccess
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 internal class SearchPlaceState(
@@ -24,7 +24,7 @@ internal class SearchPlaceState(
     fun saveHomePlace(home: PlaceModel?, viewLifecycleOwner: LifecycleOwner) {
         sharedHelper.homePlace = home
         home?.let {
-            viewLifecycleOwner.lifecycleScope.launch {
+            GlobalScope.launch {
                 createGeofenceOnPlatform(it)
             }
         }
