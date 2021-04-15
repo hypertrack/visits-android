@@ -17,7 +17,7 @@ class CustomFragmentFactory(
     private val mapStyleOptionsSilver: MapStyleOptions,
     private val hyperTrackServiceProvider: Provider<HyperTrackService>,
     private val hyperTrackViewsProvider: Provider<HyperTrackViews>,
-    private val abstractBackendProvider: Provider<AbstractBackendProvider>,
+    private val backendProvider: Provider<AbstractBackendProvider>,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -27,10 +27,10 @@ class CustomFragmentFactory(
                 hyperTrackServiceProvider.get()
             )
             TrackingFragment::class.java.name ->
-                TrackingFragment(abstractBackendProvider.get(), hyperTrackServiceProvider.get(), hyperTrackViewsProvider.get())
+                TrackingFragment(backendProvider.get(), hyperTrackServiceProvider.get(), hyperTrackViewsProvider.get())
             SearchPlaceFragment::class.java.name ->
                 SearchPlaceFragment(
-                    abstractBackendProvider.get(),
+                    backendProvider.get(),
                     hyperTrackServiceProvider.get().deviceId,
                     hyperTrackViewsProvider.get()
                 )
