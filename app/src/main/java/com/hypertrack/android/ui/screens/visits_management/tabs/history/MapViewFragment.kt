@@ -98,8 +98,12 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         bottomSheetBehavior.peekHeight = style.summaryPeekHeight
         val adapter = TimelineTileItemAdapter(
             tiles,
-            style
-        ) { historyNavigationHandler?.onTileSelected(it) }
+            style,
+            onClick = { historyNavigationHandler?.onTileSelected(it) },
+            onCopyClickListener = {
+                historyViewModel.onCopyClick(it)
+            }
+        )
         timeLineView.adapter = adapter
         timeLineView.layoutManager  =  LinearLayoutManager(MyApplication.context)
 

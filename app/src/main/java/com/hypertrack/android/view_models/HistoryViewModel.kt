@@ -2,22 +2,20 @@ package com.hypertrack.android.view_models
 
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hypertrack.android.models.History
-import com.hypertrack.android.models.HistoryError
-import com.hypertrack.android.models.HistoryTile
-import com.hypertrack.android.models.asTiles
+import com.hypertrack.android.models.*
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
+import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TimeDistanceFormatter
+import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
 class HistoryViewModel(
     private val historyRepository: HistoryRepository,
-    private val timeDistanceFormatter: TimeDistanceFormatter
+    private val timeDistanceFormatter: TimeDistanceFormatter,
+    private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
     val history = historyRepository.history
@@ -55,5 +53,20 @@ class HistoryViewModel(
         }
     }
 
-    companion object { const val TAG = "HistoryViewModel" }
+    fun onCopyClick(historyTile: HistoryTile) {
+        osUtilsProvider.copyToClipboard(historyTile.marker?.let { marker ->
+            when (marker.type) {
+                MarkerType.GEOTAG -> {
+                    (marker as GeoTagMarker).metadata.let {
+                        it["visit_id"]?.toString() ?: it.toString()
+                    }
+                }
+                else -> null
+            }
+        } ?: historyTile.address?.toString() ?: historyTile.description.toString())
+    }
+
+    companion object {
+        const val TAG = "HistoryViewModel"
+    }
 }

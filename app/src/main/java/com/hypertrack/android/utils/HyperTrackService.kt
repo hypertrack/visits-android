@@ -2,6 +2,7 @@ package com.hypertrack.android.utils
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.hypertrack.android.models.GeoTagMarker
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.sdk.HyperTrack
@@ -42,7 +43,7 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     }
 
     fun createVisitStartEvent(id: String, typeKey: String) {
-        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to Constants.VISIT_ADDED))
+        sdkInstance.addGeotag(mapOf(typeKey to id, "type" to GeoTagMarker.TYPE_VISIT_ADDED))
     }
 
     fun sendPickedUp(id: String, typeKey: String) {
@@ -50,13 +51,13 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     }
 
     fun clockOut() {
-        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_OUT))
+        sdkInstance.addGeotag(mapOf("type" to GeoTagMarker.TYPE_CLOCK_OUT))
         sdkInstance.stop()
     }
 
     fun clockIn() {
         sdkInstance.start()
-        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_IN))
+        sdkInstance.addGeotag(mapOf("type" to GeoTagMarker.TYPE_CLOCK_IN))
     }
 
     fun syncDeviceSettings() {

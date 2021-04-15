@@ -70,7 +70,17 @@ data class GeoTagMarker(
     override val timestamp: String,
     override val location: Location?,
     val metadata: Map<String, Any>,
-) : Marker
+) : Marker {
+
+    val metadataType: String?
+        get() = metadata["type"]?.toString()
+
+    companion object {
+        const val TYPE_VISIT_ADDED = "VISIT_ADDED"
+        const val TYPE_CLOCK_IN = "CLOCK_IN"
+        const val TYPE_CLOCK_OUT = "CLOCK_OUT"
+    }
+}
 
 enum class MarkerType {
     STATUS,
@@ -99,6 +109,7 @@ data class HistoryTile(
     val tileType: HistoryTileType,
     val locations: List<Location> = emptyList(),
     val isStatusTile: Boolean = true,
+    val marker: Marker? = null
 )
 
 enum class HistoryTileType {
@@ -144,7 +155,9 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
                         marker.asDescription(), null,
                         timeDistanceFormatter.formatTime(marker.timestamp),
                         historyTileType(startMarker, ongoingStatus),
-                        listOf(geotagLocation), false
+                        listOf(geotagLocation),
+                        false,
+                        marker
                     )
                     result.add(tile)
                 }
@@ -156,10 +169,12 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
                     marker.asTimeFrame(timeDistanceFormatter),
                     historyTileType(startMarker, ongoingStatus),
                     filterMarkerLocations(
-                        marker.arrivalTimestamp?:marker.timestamp,
-                        marker.exitTimestamp?:marker.timestamp,
+                        marker.arrivalTimestamp ?: marker.timestamp,
+                        marker.exitTimestamp ?: marker.timestamp,
                         locationTimePoints
-                    ), false
+                    ),
+                    false,
+                    marker
                 )
                 result.add(tile)
             }
@@ -193,12 +208,14 @@ private fun historyTileType(
 
 //todo string res
 private fun GeoTagMarker.asDescription(): String = when {
-    metadata.containsValue(Constants.CLOCK_IN) -> "Clock In"
-    metadata.containsValue(Constants.CLOCK_OUT) -> "Clock Out"
+    metadata.containsValue(GeoTagMarker.TYPE_CLOCK_IN) -> "Clock In"
+    metadata.containsValue(GeoTagMarker.TYPE_CLOCK_OUT) -> "Clock Out"
     metadata.containsValue(Constants.PICK_UP) -> "Pick Up"
     metadata.containsValue(Constants.VISIT_MARKED_CANCELED) -> "Visit Marked Cancelled"
     metadata.containsValue(Constants.VISIT_MARKED_COMPLETE) -> "Visit Marked Complete"
-    else -> "Geotag $metadata"
+    else -> (metadata["visit_id"]?.let { visitId ->
+        "visit_id = $visitId" + (metadata["type"]?.let { ",\ntype = $it" } ?: "")
+    } ?: metadata).let { "Geotag\n$it" }
 }
 
 private fun GeofenceMarker.asDescription(): String {
