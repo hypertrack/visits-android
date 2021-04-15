@@ -4,6 +4,7 @@ import android.location.Address
 import android.view.View
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.ui.base.BaseAdapter
+import com.hypertrack.android.ui.common.formatDateTime
 import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.common.toShortAddressString
 import com.hypertrack.android.ui.common.toView
@@ -60,8 +61,7 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                     }
                     ?: item.geofence.metadataAddress
                     ?: item.geofence.created_at.let {
-                        ZonedDateTime.parse(it)
-                            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+                        ZonedDateTime.parse(it).formatDateTime()
                     })
                 name.toView(containerView.tvTitle)
 

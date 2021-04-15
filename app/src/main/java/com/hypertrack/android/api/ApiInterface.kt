@@ -249,9 +249,11 @@ abstract class Geometry {
 @JsonClass(generateAdapter = true)
 data class GeofenceMarker(
     @field:Json(name = "geofence_id") val geofenceId: String,
+    @field:Json(name = "marker_id") val markerId: String,
     @field:Json(name = "arrival") val arrival: Arrival?,
     @field:Json(name = "exit") val exit: Exit?,
-//        @field:Json(name = "value") val value: String
+    @field:Json(name = "route_to") val routeTo: RouteTo?,
+    @field:Json(name = "duration") val duration: Int?
 )
 
 @JsonClass(generateAdapter = true)
@@ -259,6 +261,13 @@ data class Arrival(@field:Json(name = "recorded_at") val recordedAt: String = ""
 
 @JsonClass(generateAdapter = true)
 data class Exit(@field:Json(name = "recorded_at") val recordedAt: String = "")
+
+@JsonClass(generateAdapter = true)
+data class RouteTo(
+    @field:Json(name = "idle_time") val idleTime: Int?,
+    @field:Json(name = "distance") val distance: Int?,
+    @field:Json(name = "duration") val duration: Int?
+)
 
 @JsonClass(generateAdapter = true)
 data class HistoryResponse(

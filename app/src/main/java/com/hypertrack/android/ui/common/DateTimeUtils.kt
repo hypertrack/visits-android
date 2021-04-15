@@ -20,5 +20,10 @@ object DateTimeUtils {
 
 fun String.formatDateTime(): String {
     return ZonedDateTime.parse(this)
-        .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+        .formatDateTime()
+}
+
+fun ZonedDateTime.formatDateTime(): String {
+    return format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)) + ", " +
+            format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
 }
