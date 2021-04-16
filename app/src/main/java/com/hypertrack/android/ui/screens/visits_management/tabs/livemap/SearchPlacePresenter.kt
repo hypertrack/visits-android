@@ -204,7 +204,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
                 is ShareableTripSuccess -> {
                     Log.d(TAG, "trip is created: $result")
                     view.hideProgressBar()
-                    view.addShareTripFragment(result.tripId, result.shareUrl)
+                    view.finish()
                 }
                 is CreateTripError -> {
                     Log.e(TAG, "Trip start failure", result.error)
@@ -238,7 +238,6 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         fun hideSetOnMap()
         fun showProgressBar()
         fun hideProgressBar()
-        fun addShareTripFragment(tripId: String?, shareUrl: String?)
         fun finish()
     }
 

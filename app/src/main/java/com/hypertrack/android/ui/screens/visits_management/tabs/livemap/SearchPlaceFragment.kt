@@ -231,24 +231,6 @@ class SearchPlaceFragment(
 
     override fun hideProgressBar() { activity?.let { loader?.stop() } }
 
-    override fun addShareTripFragment(tripId: String?, shareUrl: String?) {
-        requireParentFragment()
-            .childFragmentManager
-            .beginTransaction().replace(
-                R.id.fragment_frame,
-                ShareTripFragment.newInstance(
-                    tripId,
-                    shareUrl,
-                    mBackendProvider,
-                    deviceId,
-                    realTimeUpdatesProvider
-                ),
-                ShareTripFragment::class.java.simpleName
-            )
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
-    }
-
     override fun finish() { activity?.onBackPressed() }
 
     override fun onDestroyView() {
