@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.9] - 2021-04-16
+### Added
+- Route info in place visit details
+- Copy Visit ID button at Visit details screen
+
+### Changed
+- Places list is now sorted by last visit
+
+### Fixed
+- Minor text fixes
+
 ## [0.6.8] - 2021-04-15
 ### Fixed
 - Crash on visits list fixed
