@@ -216,7 +216,7 @@
                 android:layout_margin="8dp"
                 android:textColor="@color/textColorSecondary"
                 android:textSize="12sp"
-                tools:text="@string/you_have_ongoing_trips" />
+                tools:text="@string/you_have_ongoing_orders" />
 
             <View
                 android:id="@+id/bottom_holder_cover"

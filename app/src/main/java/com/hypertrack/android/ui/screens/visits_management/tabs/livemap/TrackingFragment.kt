@@ -187,11 +187,9 @@ class TrackingFragment(
             } else {
                 whereAreYouGoing.visibility = View.INVISIBLE
                 bottomHolder.visibility = View.VISIBLE
-                val text = getString(R.string.you_have_ongoing_trips)
-                val tripValue =
-                    if (trips.size == 1) getString(R.string.trip).toLowerCase() else getString(R.string.trips).toLowerCase()
-                val tripsCountText = String.format(text, trips.size, tripValue)
-                tripsCount!!.text = tripsCountText
+                val text = getString(R.string.you_have_ongoing_orders)
+                val plural = resources.getQuantityString(R.plurals.order, trips.size)
+                tripsCount!!.text = String.format(text, trips.size, plural)
                 tripsAdapter.update(trips)
                 tripsAdapter.setSelection(selectedTripIndex)
             }
