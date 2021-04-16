@@ -10,6 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.*
+import com.hypertrack.android.ui.common.formatUnderscore
 import com.hypertrack.android.ui.common.nullIfEmpty
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.logistics.android.github.R
@@ -56,7 +57,8 @@ class VisitListAdapter(
                 val address = item.address.toString().nullIfEmpty()
                 visitView.tvAddress.text = address
                 visitView.tvAddress.setGoneState(address == null)
-                visitView.tvDescription.text = item.state.toString().toLowerCase().capitalize()
+                visitView.tvDescription.text = item.state.toString()
+                    .toLowerCase().capitalize().formatUnderscore()
                 visitView.tvTitle.text = item.visit_id
                 visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.GONE
                 visitView.ivNoteIcon.visibility = if (item.hasNotes()) View.VISIBLE else View.GONE
