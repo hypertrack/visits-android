@@ -4,10 +4,7 @@ import android.location.Address
 import android.view.View
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.ui.base.BaseAdapter
-import com.hypertrack.android.ui.common.formatDateTime
-import com.hypertrack.android.ui.common.toAddressString
-import com.hypertrack.android.ui.common.toShortAddressString
-import com.hypertrack.android.ui.common.toView
+import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
@@ -31,18 +28,35 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
     ): BaseAdapter.BaseVh<PlaceItem> {
         return object : BaseContainerVh<PlaceItem>(view, baseClickListener) {
             override fun bind(item: PlaceItem) {
-                (item.geofence.visitsCount).let {
-                    if (it > 0) {
+                (item.geofence.visitsCount).let { visitsCount ->
+                    listOf(containerView.tvLastVisit, containerView.ivLastVisit).forEach {
+                        it.setGoneState(visitsCount == 0)
+                    }
+                    if (visitsCount > 0) {
                         val timesString =
-                            MyApplication.context.resources.getQuantityString(R.plurals.time, it)
+                            MyApplication.context.resources.getQuantityString(
+                                R.plurals.time,
+                                visitsCount
+                            )
 
                         "${
                             MyApplication.context.getString(
                                 R.string.places_visited,
-                                it.toString()
+                                visitsCount.toString()
                             )
                         } $timesString"
                             .toView(containerView.tvVisited)
+
+                        item.geofence.marker!!.markers.sortedByDescending { it.arrival?.recordedAt }
+                            .firstOrNull()?.arrival?.recordedAt?.formatDateTime()
+                            ?.let {
+                                MyApplication.context.getString(
+                                    R.string.places_last_visit,
+                                    it
+                                )
+                            }
+                            ?.toView(containerView.tvLastVisit)
+
                     } else {
                         containerView.tvVisited.setText(R.string.places_not_visited)
                     }

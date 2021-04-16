@@ -211,8 +211,15 @@ data class Geofence(
             if (it is String) it else null
         }
 
-    val visitsCount: Int
-        get() = marker?.markers?.count() ?: 0
+    val visitsCount: Int by lazy {
+        marker?.markers?.count() ?: 0
+    }
+
+    val lastVisit: String? by lazy {
+        marker?.markers?.sortedByDescending {
+            it.arrival?.recordedAt
+        }?.firstOrNull()?.arrival?.recordedAt
+    }
 }
 
 class Point(

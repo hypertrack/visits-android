@@ -46,12 +46,15 @@ class PlaceDetailsViewModel(
 
     val metadata: LiveData<List<KeyValueItem>> = Transformations.map(geofence) { geofence ->
         (geofence.metadata?.filter { it.value is String } ?: mapOf())
-            .toMutableMap().apply { put("visits_count", geofence.visitsCount.toString()) }
+            .toMutableMap().apply {
+                put("visits_count", geofence.visitsCount.toString())
+//                put("created_at", geofence.created_at.toString())
+            }
             .map { KeyValueItem(it.key, it.value as String) }.toList()
     }
 
     val visits: LiveData<List<GeofenceMarker>> = Transformations.map(geofence) { geofence ->
-        geofence.marker?.markers?.sortedByDescending { it.arrival!!.recordedAt }
+        geofence.marker?.markers?.sortedByDescending { it.arrival!!.recordedAt } ?: listOf()
     }
 
     val externalMapsIntent = MutableLiveData<Intent>()
