@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.GoogleMap
-import com.hypertrack.android.models.TripCompletionSuccess
 import com.hypertrack.android.models.TripCompletionError
+import com.hypertrack.android.models.TripCompletionSuccess
 import com.hypertrack.android.models.TripManagementApi
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
 import com.hypertrack.android.utils.HyperTrackService
@@ -158,12 +158,14 @@ internal class TrackingPresenter(
 
     fun destroy() {
         stopTripInfoUpdating()
-        if (hyperTrackMap != null) {
-            hyperTrackMap!!.destroy()
-            hyperTrackMap = null
-        }
+        hyperTrackMap?.destroy()
+        hyperTrackMap = null
         realTimeUpdatesService.unsubscribeFromDeviceUpdates(this)
-        context.unregisterReceiver(connectivityReceiver)
+        try {
+            context.unregisterReceiver(connectivityReceiver)
+        } catch (e: Throwable) {
+            Log.w(TAG, "Receiver isn't registered")
+        }
     }
 
     override fun onLocationUpdateReceived(location: Location) {}
