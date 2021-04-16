@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SearchPlaceFragment(
-    @Inject private val mBackendProvider: AbstractBackendProvider,
+    @Inject private val backendProvider: AbstractBackendProvider,
     @Inject private val deviceId: String,
     @Inject private val realTimeUpdatesProvider: HyperTrackViews
 ) : Fragment(R.layout.fragment_search_place), SearchPlacePresenter.View {
@@ -44,7 +44,7 @@ class SearchPlaceFragment(
     private lateinit var setOnMap: View
     private lateinit var confirm: View
     private var placesAdapter = PlacesAdapter()
-    private var loader: LoaderDecorator? = null
+    private lateinit var loader: LoaderDecorator
     private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
 
 
@@ -57,11 +57,11 @@ class SearchPlaceFragment(
         super.onViewCreated(view, savedInstanceState)
         presenter = SearchPlacePresenter(
             requireContext(),
-            config.key,
             this,
-            mBackendProvider,
+            backendProvider,
             deviceId,
-            viewLifecycleOwner
+            viewLifecycleOwner,
+            SearchPlaceState(requireContext(), config.key ?: "config", backendProvider)
         )
         search = view.findViewById(R.id.search)
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
@@ -103,7 +103,7 @@ class SearchPlaceFragment(
                     R.id.fragment_frame,
                     newInstance(
                         Config.HOME_ADDRESS,
-                        mBackendProvider,
+                        backendProvider,
                         deviceId,
                         realTimeUpdatesProvider
                     ),
@@ -146,7 +146,7 @@ class SearchPlaceFragment(
         }
         view.setOnTouchListener(hideSoftInputOnTouchListener)
         locationsRecyclerView.setOnTouchListener(hideSoftInputOnTouchListener)
-        loader = LoaderDecorator(context)
+        loader = LoaderDecorator(requireContext())
         presenter.search(null)
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
@@ -228,9 +228,9 @@ class SearchPlaceFragment(
         confirm.visibility = View.GONE
     }
 
-    override fun showProgressBar() { activity?.let { loader?.start() } }
+    override fun showProgressBar() { activity?.let { loader.start() } }
 
-    override fun hideProgressBar() { activity?.let { loader?.stop() } }
+    override fun hideProgressBar() { activity?.let { loader.stop() } }
 
     override fun finish() { activity?.onBackPressed() }
 

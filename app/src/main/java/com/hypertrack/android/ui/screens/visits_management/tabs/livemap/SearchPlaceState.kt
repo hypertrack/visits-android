@@ -2,7 +2,6 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
 import com.hypertrack.android.models.GeofenceLocation
 import com.hypertrack.android.models.HomeManagementApi
 import com.hypertrack.android.models.HomeUpdateResultError
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 internal class SearchPlaceState(
     context: Context,
     val mode: String,
-    private val mBackendProvider: HomeManagementApi
+    private val backendProvider: HomeManagementApi
 ) : BaseState(context) {
     var destination: PlaceModel? = null
     val home: PlaceModel? = sharedHelper.homePlace
@@ -21,7 +20,7 @@ internal class SearchPlaceState(
 
     private val _recentPlaces: MutableSet<PlaceModel?> = sharedHelper.recentPlaces?.toMutableSet()?: mutableSetOf()
 
-    fun saveHomePlace(home: PlaceModel?, viewLifecycleOwner: LifecycleOwner) {
+    fun saveHomePlace(home: PlaceModel?) {
         sharedHelper.homePlace = home
         home?.let {
             GlobalScope.launch {
@@ -36,7 +35,7 @@ internal class SearchPlaceState(
             home.latLng!!.latitude,
             home.latLng!!.longitude
         )
-        when (val res = mBackendProvider.updateHomeLocation(homeLocation)) {
+        when (val res = backendProvider.updateHomeLocation(homeLocation)) {
             HomeUpdateResultSuccess -> Log.d(TAG, "Geofence was created")
             is HomeUpdateResultError -> Log.w(TAG, "Can't update geofence", res.error)
         }

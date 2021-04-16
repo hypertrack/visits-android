@@ -33,14 +33,12 @@ import kotlinx.coroutines.launch
 
 internal class SearchPlacePresenter @SuppressLint("MissingPermission") constructor(
     private val context: Context,
-    mode: String?,
     private val view: View,
     private val backendProvider: AbstractBackendProvider,
-    deviceId: String,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val deviceId: String,
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val state: SearchPlaceState
 ) {
-    private val state = SearchPlaceState(context, mode ?: "config", backendProvider)
-    private val mHyperTrackDeviceId: String  = deviceId
     private val placesClient: PlacesClient  = Places.createClient(context)
     private var bias: RectangularBounds? = null
     private val handler = Handler()
@@ -60,7 +58,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         this.googleMap = googleMap
         if ("home" == state.mode) {
             if (state.home == null) {
-                state.saveHomePlace(null, viewLifecycleOwner)
+                state.saveHomePlace(null)
             }
             view.hideHomeAddress()
         } else if ("search" == state.mode) {
@@ -170,14 +168,14 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     }
 
     fun skip() {
-        state.saveHomePlace(null, viewLifecycleOwner)
+        state.saveHomePlace(null)
         view.finish()
     }
 
     fun providePlace(placeModel: PlaceModel?) {
         when (state.mode) {
             "home" -> {
-                state.saveHomePlace(placeModel, viewLifecycleOwner)
+                state.saveHomePlace(placeModel)
                 view.finish()
             }
             "search" -> startTrip(placeModel)
@@ -190,9 +188,9 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         view.showProgressBar()
         val tripRequest: TripParams = destination?.let {
             destination.latLng?.let {
-                TripParams(mHyperTrackDeviceId, it.latitude, it.longitude)
+                TripParams(deviceId, it.latitude, it.longitude)
             }
-        } ?: TripParams(mHyperTrackDeviceId)
+        } ?: TripParams(deviceId)
         viewLifecycleOwner.lifecycleScope.launch {
             when (val result = backendProvider.createTrip(tripRequest)) {
                 is ShareableTripSuccess -> {

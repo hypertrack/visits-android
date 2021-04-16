@@ -1,15 +1,15 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
-import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.sdk.views.dao.Trip
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.ChronoUnit
 
-class TripModel private constructor(val tripId: String, val shareableUrl: String) {
+class TripModel private constructor(val tripId: String, private val shareableUrl: String) {
     private var mRemainingDuration: Int? = null
     private var mTrip: Trip? = null
     private var tripReceived: LocalTime? = null
+
     val shareableMessage: String
         get() = ShareableMessage(shareableUrl, mRemainingDuration, tripReceived).shareMessage
 
@@ -17,45 +17,32 @@ class TripModel private constructor(val tripId: String, val shareableUrl: String
         if (trip == null || tripId != trip.tripId) return
         mTrip = trip
         tripReceived = LocalTime.now()
-        mRemainingDuration = if (trip.estimate == null) null else if (trip.estimate!!
-                .route == null
-        ) null else trip.estimate!!.route!!.remainingDuration
+        mRemainingDuration = when (val route = trip.estimate?.route) {
+            null -> null
+            else -> route.remainingDuration
+        }
     }
 
     internal class ShareableMessage(
-        private val mShareableUrl: String,
-        private val mRemainingDuration: Int?,
-        private val mDurationAdjustmentTime: LocalTime?
+        private val shareUrl: String,
+        private val remainingDuration: Int?,
+        private val adjustmentTime: LocalTime?
     ) {
         val shareMessage: String
             get() {
-                if (mRemainingDuration == null) {
-                    return String.format("Track my live location here %s", mShareableUrl)
+                if (remainingDuration == null) {
+                    return "Track my live location here $shareUrl"
                 }
-                assert(mDurationAdjustmentTime != null)
                 val arriveTime =
-                    mDurationAdjustmentTime!!.plus(mRemainingDuration.toLong(), ChronoUnit.SECONDS)
+                    adjustmentTime!!.plus(remainingDuration.toLong(), ChronoUnit.SECONDS)
                 return if (arriveTime.isBefore(LocalTime.now())) {
-                    String.format("Arriving now. Track my live location here %s", mShareableUrl)
-                } else String.format(
-                    "Will be there by %s. Track my live location here %s",
-                    arriveTime.format(DateTimeFormatter.ofPattern("h:mma")),
-                    mShareableUrl
-                )
+                    "Arriving now. Track my live location here $shareUrl"
+                } else "Will be there by ${arriveTime.format(DateTimeFormatter.ofPattern("h:mma"))}. Track my live location here $shareUrl"
+
             }
     }
 
     companion object {
-        fun fromShareableTrip(shareableTripSuccess: ShareableTripSuccess): TripModel {
-            val model = TripModel(shareableTripSuccess.tripId, shareableTripSuccess.shareUrl)
-            val remainingDuration = shareableTripSuccess.remainingDuration
-            if (null != remainingDuration) {
-                model.mRemainingDuration = remainingDuration
-                model.tripReceived = LocalTime.now()
-            }
-            return model
-        }
-
         @JvmStatic
         fun fromTrip(trip: Trip): TripModel? {
             val views = trip.views

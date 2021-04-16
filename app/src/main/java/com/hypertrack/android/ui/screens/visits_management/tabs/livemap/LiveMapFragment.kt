@@ -29,12 +29,13 @@ import kotlinx.android.synthetic.main.fragment_tab_map_webview.progress
 import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
 class LiveMapFragment(
-    private val mapStyleOptions: MapStyleOptions,
-    private val mapStyleOptionsSilver: MapStyleOptions,
-    private val hyperTrackService: HyperTrackService,
-    private val backendProvider: AbstractBackendProvider,
+    @Inject private val mapStyleOptions: MapStyleOptions,
+    @Inject private val mapStyleOptionsSilver: MapStyleOptions,
+    @Inject private val hyperTrackService: HyperTrackService,
+    @Inject private val backendProvider: AbstractBackendProvider,
 ) : Fragment(R.layout.fragment_tab_map_view)  {
 
     private var state: LoadingProgressState = LoadingProgressState.LOADING
