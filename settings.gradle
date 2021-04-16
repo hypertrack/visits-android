@@ -1,2 +1,2 @@
-include ':app', ':hypertrack-backend'
+include ':app'
 rootProject.name='visits-android'
