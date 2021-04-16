@@ -63,7 +63,7 @@ class VisitDetailsViewModel(
     }
 
     val visitId: LiveData<String?> = Transformations.map(visit) {
-        it._id
+        if (it.isLocal) it._id else null
     }
 
     val address = Transformations.map(visit) { vis ->
