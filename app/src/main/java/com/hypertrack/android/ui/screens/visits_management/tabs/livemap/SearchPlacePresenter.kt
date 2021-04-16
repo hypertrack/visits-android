@@ -138,15 +138,9 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         }
     }
 
-    fun confirm() {
-        if (state.destination != null) {
-            providePlace(state.destination)
-        }
-    }
+    fun confirm() { state.destination?.let { providePlace(it) } }
 
-    fun selectHome() {
-        providePlace(state.home)
-    }
+    fun selectHome() = providePlace(state.home)
 
     fun selectItem(placeModel: PlaceModel) {
         view.showProgressBar()

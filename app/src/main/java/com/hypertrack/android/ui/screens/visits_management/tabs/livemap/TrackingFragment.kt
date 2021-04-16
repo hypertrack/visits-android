@@ -28,11 +28,12 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class TrackingFragment(
-    private val mBackendProvider: AbstractBackendProvider,
-    private val hyperTrackService: HyperTrackService,
-    private val realTimeUpdatesService: HyperTrackViews
+    @Inject private val mBackendProvider: AbstractBackendProvider,
+    @Inject private val hyperTrackService: HyperTrackService,
+    @Inject private val realTimeUpdatesService: HyperTrackViews
 ) : Fragment(R.layout.fragment_tracking), TrackingPresenter.View {
     private var tripConfirmSnackbar: Snackbar? = null
     private lateinit var blockingView: View

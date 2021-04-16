@@ -26,11 +26,12 @@ import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class SearchPlaceFragment(
-    private val mBackendProvider: AbstractBackendProvider,
-    private val deviceId: String,
-    private val realTimeUpdatesProvider: HyperTrackViews
+    @Inject private val mBackendProvider: AbstractBackendProvider,
+    @Inject private val deviceId: String,
+    @Inject private val realTimeUpdatesProvider: HyperTrackViews
 ) : Fragment(R.layout.fragment_search_place), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
