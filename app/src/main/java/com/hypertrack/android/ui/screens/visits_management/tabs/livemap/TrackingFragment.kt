@@ -114,7 +114,7 @@ class TrackingFragment(
         }})
         tripsRecyclerView.adapter = tripsAdapter
         bottomHolder.setOnClickListener {
-            if (bottomHolderSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            if (bottomHolderSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomHolderSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
             } else {
                 bottomHolderSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
