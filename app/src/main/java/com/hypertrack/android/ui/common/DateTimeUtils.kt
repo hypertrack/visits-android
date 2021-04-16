@@ -3,8 +3,11 @@ package com.hypertrack.android.ui.common
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import java.time.ZonedDateTime
+import java.time.chrono.Chronology
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 import java.time.format.FormatStyle
+import java.util.*
 
 object DateTimeUtils {
     fun secondsToLocalizedString(totalSeconds: Int): String {
@@ -20,5 +23,23 @@ object DateTimeUtils {
 
 fun String.formatDateTime(): String {
     return ZonedDateTime.parse(this)
-        .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+        .formatDateTime()
+}
+
+fun ZonedDateTime.formatDateTime(): String {
+    return format(createFormatterWithoutYear(FormatStyle.MEDIUM, Locale.getDefault())) + ", " +
+            format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+}
+
+private fun createFormatterWithoutYear(
+    style: FormatStyle,
+    locale: Locale
+): DateTimeFormatter {
+    var pattern: String = DateTimeFormatterBuilder.getLocalizedDateTimePattern(
+        style, null, Chronology.ofLocale(locale), locale
+    )
+    pattern = pattern.replaceFirst("\\P{IsLetter}+[Yy]+".toRegex(), "")
+    pattern = pattern.replaceFirst("^[Yy]+\\P{IsLetter}+".toRegex(), "")
+    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
+    return formatter
 }

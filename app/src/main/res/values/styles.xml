@@ -66,14 +66,16 @@
         <item name="android:background">@drawable/bg_minor_button</item>
     </style>
 
-    <style name="SmallTitle">
-        <item name="android:textSize">16sp</item>
+    <style name="SmallTitle" parent="TextDark">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/colorTextDark</item>
     </style>
 
     <style name="Text">
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextDark" parent="Text">
+        <item name="android:textColor">@color/colorTextDark</item>
     </style>
 
     <style name="LoaderDialog" parent="android:Theme.Holo.Dialog.NoActionBar">

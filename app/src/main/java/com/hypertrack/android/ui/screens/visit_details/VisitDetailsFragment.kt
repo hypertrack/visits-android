@@ -25,6 +25,7 @@ import com.hypertrack.android.models.Visit
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.common.setGoneState
+import com.hypertrack.android.ui.common.toView
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
@@ -88,7 +89,23 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         }
 
         viewModel.photoError.observe(viewLifecycleOwner) {
-            SnackbarUtil.showErrorSnackbar(view, /*it.message ?:*/ getString(R.string.photo_upload_unknown_error))
+            SnackbarUtil.showErrorSnackbar(
+                view, /*it.message ?:*/
+                getString(R.string.photo_upload_unknown_error)
+            )
+        }
+
+        viewModel.visitId.observe(viewLifecycleOwner, {
+            visitIdGroup.setGoneState(it == null)
+            it?.toView(tvVisitId)
+        })
+
+        viewModel.address.observe(viewLifecycleOwner, {
+            tvAddress.text = it
+        })
+
+        bCopy.setOnClickListener {
+            viewModel.onCopyVisitIdPressed()
         }
 
         rvPhotos.apply {
@@ -138,8 +155,6 @@ class VisitDetailsFragment : ProgressDialogFragment(R.layout.fragment_visit_deta
         // Log.v(TAG, "updated view with value $newValue")
         tvCustomerNote.text = newVisit.customerNote
         customerNoteGroup.visibility = if (newVisit.customerNote.isEmpty()) View.GONE else View.VISIBLE
-
-        tvAddress.text = newVisit.address.street
 
         if (newVisit.visitNote != etVisitNote.text.toString()) {
             etVisitNote.setText(newVisit.visitNote)

@@ -2,6 +2,7 @@ package com.hypertrack.android.models
 
 import android.annotation.SuppressLint
 import android.location.Location
+import com.hypertrack.android.ui.common.nullIfEmpty
 import com.hypertrack.android.utils.AccountPreferencesProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.squareup.moshi.JsonClass
@@ -189,7 +190,19 @@ sealed class VisitListItem
 data class HeaderVisitItem(val status: VisitStatusGroup) : VisitListItem()
 
 @JsonClass(generateAdapter = true)
-data class Address(val street: String, val postalCode: String?, val city: String?, val country: String?)
+data class Address(
+    val street: String,
+    val postalCode: String?,
+    val city: String?,
+    val country: String?
+) {
+
+    override fun toString(): String {
+        return "${country.nullIfEmpty()?.let { "$it, " } ?: ""}${
+            city.nullIfEmpty()?.let { "$it, " } ?: ""
+        }$street"
+    }
+}
 
 /**
  *

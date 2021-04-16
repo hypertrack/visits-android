@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Visits</string>
+    <string name="now">Now</string>
     <string name="enter_driver_id">enter driver id</string>
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
     <string name="channel_name">HyperTrack Notifications</string>
@@ -95,10 +96,16 @@
 
     <string name="places_no_places">You don\'t have Places yet</string>
     <string name="places_visited">Visited %s</string>
+    <string name="places_last_visit">Last visit: %s</string>
     <string name="places_directions_button">Show in Maps app</string>
     <string name="places_not_visited">Not visited</string>
     <string name="places_exit">Exit</string>
     <string name="places_enter">Enter</string>
+
+    <string name="place_visit_id">Visit ID</string>
+    <string name="place_route_ro">Traveled %s for %s</string>
+    <string name="place_details_visits_history">Visits history</string>
+    <string name="place_details_no_visits">No visits</string>
 
     <string name="add_place_confirm">Confirm</string>
     <string name="add_place_create">Create geofence</string>
@@ -106,6 +113,7 @@
     <string name="add_place">Add place</string>
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
+
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
@@ -142,11 +150,10 @@
     <string name="add_home_address">Add home address</string>
     <string name="search_address">Search address</string>
     <string name="share_live">Share</string>
-    <string name="place_details_visits_history">Visits history</string>
-    <string name="place_details_no_visits">No visits</string>
 
     <string name="tap_to_turn_location_settings">Tap to turn on location in settings</string>
     <string name="app_settings">App settings</string>
+
     <plurals name="time">
         <item quantity="one">time</item>
         <item quantity="other">times</item>

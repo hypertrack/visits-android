@@ -127,7 +127,12 @@ object Injector {
     }
 
     fun provideVisitStatusViewModel(context: Context, visitId: String): VisitDetailsViewModel {
-        return VisitDetailsViewModel(getVisitsRepo(context), getVisitsInteractor(), visitId)
+        return VisitDetailsViewModel(
+            getVisitsRepo(context),
+            getVisitsInteractor(),
+            visitId,
+            getOsUtilsProvider(MyApplication.context)
+        )
     }
 
     private fun getUserScope(): UserScope {

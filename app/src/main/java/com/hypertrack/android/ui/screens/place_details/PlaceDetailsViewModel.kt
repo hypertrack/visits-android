@@ -10,15 +10,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.api.Geofence
+import com.hypertrack.android.api.GeofenceMarker
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.ui.common.KeyValueItem
-import com.hypertrack.android.ui.common.formatDateTime
 import com.hypertrack.android.ui.common.toAddressString
-import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
-import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
 class PlaceDetailsViewModel(
@@ -48,30 +46,15 @@ class PlaceDetailsViewModel(
 
     val metadata: LiveData<List<KeyValueItem>> = Transformations.map(geofence) { geofence ->
         (geofence.metadata?.filter { it.value is String } ?: mapOf())
-            .toMutableMap().apply { put("visits_count", geofence.visitsCount.toString()) }
+            .toMutableMap().apply {
+                put("visits_count", geofence.visitsCount.toString())
+//                put("created_at", geofence.created_at.toString())
+            }
             .map { KeyValueItem(it.key, it.value as String) }.toList()
     }
 
-    val visits: LiveData<List<KeyValueItem>> = Transformations.map(geofence) { geofence ->
-        val res = mutableListOf<KeyValueItem>()
-        geofence.marker?.markers?.sortedByDescending { it.arrival!!.recordedAt }
-            ?.forEach { marker ->
-                marker.exit?.let {
-                    res.add(
-                        KeyValueItem(
-                            MyApplication.context.getString(R.string.places_exit),
-                            it.recordedAt.formatDateTime()
-                        )
-                    )
-                }
-                res.add(
-                    KeyValueItem(
-                        MyApplication.context.getString(R.string.places_enter),
-                        marker.arrival!!.recordedAt.formatDateTime()
-                    )
-                )
-            }
-        return@map res
+    val visits: LiveData<List<GeofenceMarker>> = Transformations.map(geofence) { geofence ->
+        geofence.marker?.markers?.sortedByDescending { it.arrival!!.recordedAt } ?: listOf()
     }
 
     val externalMapsIntent = MutableLiveData<Intent>()
@@ -131,5 +114,9 @@ class PlaceDetailsViewModel(
             placesRepository.refreshGeofences()
             loadingState.postValue(false)
         }
+    }
+
+    fun onCopyVisitIdClick(str: String) {
+        osUtilsProvider.copyToClipboard(str)
     }
 }

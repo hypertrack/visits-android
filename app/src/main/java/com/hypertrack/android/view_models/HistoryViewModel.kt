@@ -55,5 +55,7 @@ class HistoryViewModel(
         }
     }
 
-    companion object { const val TAG = "HistoryViewModel" }
+    companion object {
+        const val TAG = "HistoryViewModel"
+    }
 }

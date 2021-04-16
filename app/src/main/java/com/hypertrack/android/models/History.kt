@@ -156,8 +156,8 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
                     marker.asTimeFrame(timeDistanceFormatter),
                     historyTileType(startMarker, ongoingStatus),
                     filterMarkerLocations(
-                        marker.arrivalTimestamp?:marker.timestamp,
-                        marker.exitTimestamp?:marker.timestamp,
+                        marker.arrivalTimestamp ?: marker.timestamp,
+                        marker.exitTimestamp ?: marker.timestamp,
                         locationTimePoints
                     ), false
                 )
@@ -191,6 +191,7 @@ private fun historyTileType(
     }
 }
 
+//todo string res
 private fun GeoTagMarker.asDescription(): String = when {
     metadata.containsValue(Constants.CLOCK_IN) -> "Clock In"
     metadata.containsValue(Constants.CLOCK_OUT) -> "Clock Out"
@@ -200,9 +201,14 @@ private fun GeoTagMarker.asDescription(): String = when {
     else -> "Geotag $metadata"
 }
 
-private fun GeofenceMarker.asDescription(): String = when {
-    metadata.containsKey("name") -> "Geofence ${metadata["name"]}"
-    else -> "Geofence $metadata"
+private fun GeofenceMarker.asDescription(): String {
+    //todo string res
+    return (metadata["name"]
+        ?: metadata["address"]
+        ?: metadata
+            ).let {
+            "Geofence $it"
+        }
 }
 
 private fun StatusMarker.asDescription(): String = when (status) {

@@ -36,4 +36,24 @@
         app:layout_constraintEnd_toEndOf="@+id/tvAddress"
         app:layout_constraintTop_toBottomOf="@+id/tvAddress"
         tools:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvLastVisit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivLastVisit"
+        app:layout_constraintStart_toEndOf="@+id/ivLastVisit"
+        app:layout_constraintTop_toTopOf="@+id/ivLastVisit"
+        tools:text="TextView" />
+
+    <ImageView
+        android:id="@+id/ivLastVisit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@android:color/tertiary_text_light"
+        app:layout_constraintStart_toStartOf="@+id/tvAddress"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddress"
+        app:srcCompat="@drawable/eta" />
 </androidx.constraintlayout.widget.ConstraintLayout>

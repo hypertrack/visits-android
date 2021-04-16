@@ -8,8 +8,11 @@ import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.common.nullIfEmpty
+import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.screens.visit_details.VisitPhotoItem
 import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -17,7 +20,8 @@ import kotlinx.coroutines.launch
 class VisitDetailsViewModel(
     private val visitsRepository: VisitsRepository,
     private val visitsInteractor: VisitsInteractor,
-    private val id: String
+    private val id: String,
+    private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
     val visit: LiveData<Visit> = visitsRepository.visitForId(id)
@@ -56,6 +60,14 @@ class VisitDetailsViewModel(
             }
         }
 
+    }
+
+    val visitId: LiveData<String?> = Transformations.map(visit) {
+        if (it.isLocal) it._id else null
+    }
+
+    val address = Transformations.map(visit) { vis ->
+        vis.address.toString()
     }
 
     val message = MutableLiveData<String>()
@@ -121,6 +133,10 @@ class VisitDetailsViewModel(
 
     fun requestVisitNoteUpdate() {
         updateNote()
+    }
+
+    fun onCopyVisitIdPressed() {
+        osUtilsProvider.copyToClipboard(visit.value!!._id)
     }
 
     companion object {
