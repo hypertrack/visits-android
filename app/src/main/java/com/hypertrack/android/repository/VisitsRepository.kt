@@ -199,7 +199,8 @@ class VisitsRepository(
             val createdAt = osUtilsProvider.getCurrentTimestamp()
             val newLocalVisit = Visit(
                 _id = UUID.randomUUID().toString(),
-                visit_id = osUtilsProvider.getString(R.string.local_visit_on) + osUtilsProvider.getFineDateTimeString(),
+                address = osUtilsProvider.getAddressFromCoordinates(it?.latitude, it?.longitude),
+                visit_id = osUtilsProvider.getString(R.string.local_visit_on) + " " + osUtilsProvider.getFineDateTimeString(),
                 createdAt = createdAt,
                 visitedAt = createdAt,
                 visitType = VisitType.LOCAL,

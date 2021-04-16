@@ -35,16 +35,24 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
         return "${df.format(now)}${postfixFmt.format(now).toLowerCase(Locale.ENGLISH)}"
     }
 
-    fun getAddressFromCoordinates(latitude: Double, longitude: Double): Address {
+    fun getAddressFromCoordinates(latitude: Double?, longitude: Double?): Address {
+        if (latitude == null || longitude == null) {
+            return Address(
+                street = "",
+                postalCode = null,
+                city = null,
+                country = null
+            )
+        }
         try {
             val coder = Geocoder(context)
             val address = coder.getFromLocation(latitude, longitude, 1)?.get(0)
             address?.let {
                 return Address(
-                        street = address.thoroughfare ?: stubStreet(latitude, longitude),
-                        postalCode = address.postalCode,
-                        city = address.locality,
-                        country = address.countryName
+                    street = address.thoroughfare ?: stubStreet(latitude, longitude),
+                    postalCode = address.postalCode,
+                    city = address.locality,
+                    country = address.countryName
                 )
             }
         } catch (t: Throwable) {
@@ -61,7 +69,10 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
         )
     }
 
-    fun getPlaceFromCoordinates(latitude: Double, longitude: Double): android.location.Address? {
+    fun getPlaceFromCoordinates(latitude: Double?, longitude: Double?): android.location.Address? {
+        if (latitude == null || longitude == null) {
+            return null
+        }
         return try {
             Geocoder(context).let { it.getFromLocation(latitude, longitude, 1)?.get(0) }
         } catch (t: Throwable) {

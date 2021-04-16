@@ -10,6 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.*
+import com.hypertrack.android.ui.common.nullIfEmpty
 import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.inflate_header_item.view.*
@@ -52,6 +53,9 @@ class VisitListAdapter(
             }
             is Visit -> {
                 val visitView = holder as VisitViewHolder
+                val address = item.address.toString().nullIfEmpty()
+                visitView.tvAddress.text = address
+                visitView.tvAddress.setGoneState(address == null)
                 visitView.tvDescription.text = item.state.toString().toLowerCase().capitalize()
                 visitView.tvTitle.text = item.visit_id
                 visitView.ivCompass.visibility = if (item.isVisited) View.VISIBLE else View.GONE
@@ -99,6 +103,7 @@ class VisitListAdapter(
     inner class VisitViewHolder(holder: View) : RecyclerView.ViewHolder(holder) {
 
         internal var tvTitle: TextView = holder.findViewById(R.id.tvTitle) as TextView
+        internal var tvAddress: TextView = holder.findViewById(R.id.tvAddress) as TextView
         internal var tvDescription: TextView = holder.findViewById(R.id.tvDescription) as TextView
         internal var ivPhotosStateIcon: ImageView =
                 holder.findViewById(R.id.ivPhotosStateIcon) as AppCompatImageView
