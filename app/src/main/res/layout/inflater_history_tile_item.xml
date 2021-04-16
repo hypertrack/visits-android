@@ -23,11 +23,11 @@
         android:id="@+id/ivEventIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_ht_geofence_visited_active"
-        app:layout_constraintBottom_toBottomOf="@id/ivStatusStripe"
-        app:layout_constraintEnd_toEndOf="@id/ivStatusStripe"
-        app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
         app:layout_constraintTop_toTopOf="@id/ivStatusStripe"
+        app:layout_constraintStart_toStartOf="@id/ivStatusStripe"
+        app:layout_constraintEnd_toEndOf="@id/ivStatusStripe"
+        app:layout_constraintBottom_toBottomOf="@id/ivStatusStripe"
+        android:src="@drawable/ic_ht_geofence_visited_active"
         tools:ignore="ContentDescription" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -41,65 +41,50 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvActivitySummary"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/regular"
         android:padding="5dp"
         android:text="5 min • 400 steps"
         android:textColor="@color/colorBlack"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/bCopy"
         app:layout_constraintStart_toEndOf="@+id/ivActivityIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
-
-    <ImageView
-        android:id="@+id/bCopy"
-        android:layout_width="48dp"
-        android:layout_height="0dp"
-        android:scaleType="center"
-        tools:visibility="visible"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tvTimeframe"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_copy" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTimeframe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/light"
         android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvActivitySummary"
+        android:fontFamily="@font/light"
         android:text="9:18 am - 10:06 am"
         android:textColor="@color/colorDescription"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/tvActivitySummary"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="HardcodedText" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvActivityPlace"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:fontFamily="@font/light"
         android:text="1906 Mission, San Francisco, CA"
         android:textColor="@color/colorDescription"
         android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/bCopy"
         app:layout_constraintStart_toStartOf="@id/tvActivitySummary"
         app:layout_constraintTop_toBottomOf="@id/tvActivitySummary"
         tools:ignore="HardcodedText" />
 
     <View
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/notch"
         android:layout_width="140dp"
         android:layout_height="2dp"
         android:background="@color/tertiary_2_xdark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

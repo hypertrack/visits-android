@@ -56,8 +56,7 @@ class UserScopeViewModelFactory(
             SummaryViewModel::class.java -> SummaryViewModel(historyRepository) as T
             HistoryViewModel::class.java -> HistoryViewModel(
                 historyRepository,
-                timeLengthFormatter,
-                osUtilsProvider
+                timeLengthFormatter
             ) as T
             DriverLoginViewModel::class.java -> DriverLoginViewModel(
                 driverRepository,

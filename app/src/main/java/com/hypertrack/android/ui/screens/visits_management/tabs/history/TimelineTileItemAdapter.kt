@@ -9,20 +9,15 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.models.GeoTagMarker
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.HistoryTileType
 import com.hypertrack.android.models.Status
-import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.inflater_history_tile_item.view.*
 
 class TimelineTileItemAdapter(
     private val tiles: LiveData<List<HistoryTile>>,
     private val style: TimelineStyle,
-    private val onClick: (HistoryTile) -> Unit,
-    private val onCopyClickListener: ((HistoryTile) -> Unit)? = null
+    private val onClick: (HistoryTile) -> Unit
 ) : RecyclerView.Adapter<TimeLineTile>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineTile {
@@ -65,27 +60,19 @@ class TimelineTileItemAdapter(
             holder.notch.visibility = View.INVISIBLE
         }
         holder.itemView.setOnClickListener { onClick(tile) }
-        holder.containerView.bCopy.setGoneState(
-            !(tile.marker is GeoTagMarker
-                    && tile.marker.metadataType == GeoTagMarker.TYPE_VISIT_ADDED)
-        )
-        holder.containerView.bCopy.setOnClickListener {
-            onCopyClickListener?.invoke(tile)
-        }
     }
 
     override fun getItemCount(): Int = tiles.value?.size?:0
 }
 
-class TimeLineTile(override val containerView: View) : RecyclerView.ViewHolder(containerView),
-    LayoutContainer {
-    val activityIcon: AppCompatImageView = containerView.findViewById(R.id.ivActivityIcon)
-    val activitySummary: AppCompatTextView = containerView.findViewById(R.id.tvActivitySummary)
-    val activityPlace: AppCompatTextView = containerView.findViewById(R.id.tvActivityPlace)
-    val activityTimeFrame: AppCompatTextView = containerView.findViewById(R.id.tvTimeframe)
-    val statusStripe: AppCompatImageView = containerView.findViewById(R.id.ivStatusStripe)
-    val eventIcon: AppCompatImageView = containerView.findViewById(R.id.ivEventIcon)
-    val notch: View = containerView.findViewById(R.id.notch)
+class TimeLineTile(holder: View) : RecyclerView.ViewHolder(holder) {
+    val activityIcon: AppCompatImageView = holder.findViewById(R.id.ivActivityIcon)
+    val activitySummary: AppCompatTextView = holder.findViewById(R.id.tvActivitySummary)
+    val activityPlace: AppCompatTextView = holder.findViewById(R.id.tvActivityPlace)
+    val activityTimeFrame: AppCompatTextView = holder.findViewById(R.id.tvTimeframe)
+    val statusStripe: AppCompatImageView = holder.findViewById(R.id.ivStatusStripe)
+    val eventIcon: AppCompatImageView = holder.findViewById(R.id.ivEventIcon)
+    val notch: View = holder.findViewById(R.id.notch)
 }
 
 interface TimelineStyle {
