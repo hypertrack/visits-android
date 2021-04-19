@@ -35,11 +35,15 @@ private fun createFormatterWithoutYear(
     style: FormatStyle,
     locale: Locale
 ): DateTimeFormatter {
-    var pattern: String = DateTimeFormatterBuilder.getLocalizedDateTimePattern(
-        style, null, Chronology.ofLocale(locale), locale
-    )
-    pattern = pattern.replaceFirst("\\P{IsLetter}+[Yy]+".toRegex(), "")
-    pattern = pattern.replaceFirst("^[Yy]+\\P{IsLetter}+".toRegex(), "")
-    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
-    return formatter
+    try {
+        var pattern: String = DateTimeFormatterBuilder.getLocalizedDateTimePattern(
+            style, null, Chronology.ofLocale(locale), locale
+        )
+        pattern = pattern.replaceFirst("\\P{IsLetter}+[Yy]+".toRegex(), "")
+        pattern = pattern.replaceFirst("^[Yy]+\\P{IsLetter}+".toRegex(), "")
+        val formatter = DateTimeFormatter.ofPattern(pattern, locale)
+        return formatter
+    } catch (e: Exception) {
+        return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    }
 }
