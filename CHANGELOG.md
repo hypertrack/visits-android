@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.10] - 2021-04-19
+### Fixed
+- Crash on places screen fixed
+
 ## [0.6.9] - 2021-04-16
 ### Added
 - Route info in place visit details
