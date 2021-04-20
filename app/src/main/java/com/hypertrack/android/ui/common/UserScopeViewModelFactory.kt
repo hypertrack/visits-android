@@ -72,7 +72,8 @@ class UserScopeViewModelFactory(
             ) as T
             ProfileViewModel::class.java -> ProfileViewModel(
                 driverRepository,
-                hyperTrackService
+                hyperTrackService,
+                osUtilsProvider
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }
