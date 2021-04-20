@@ -22,7 +22,7 @@ class ApiClient(
         accessTokenRepository: AccessTokenRepository,
         baseUrl: String,
         private val deviceId: String
-) {
+) : AbstractBackendProvider {
 
     @Suppress("unused")
     private val loggingInterceptor by lazy {
@@ -55,7 +55,7 @@ class ApiClient(
         var paginationToken: String? = null
         try {
             do {
-                val response = api.getGeofences(deviceId, paginationToken ?: "null")
+                val response = api.getGeofencesWithMarkers(deviceId, paginationToken ?: "null")
                 if (response.isSuccessful) {
                     response.body()?.geofences?.let {
                         res.addAll(it)
@@ -136,6 +136,75 @@ class ApiClient(
             return HistoryError(e)
         }
 
+    }
+
+    override suspend fun createTrip(tripParams: TripParams): ShareableTripResult {
+        return try {
+            with(api.createTrip(tripParams)) {
+                if (isSuccessful) {
+                    val trip = body()!!
+                    ShareableTripSuccess(trip.views.shareUrl, trip.views.embedUrl, trip.tripId, trip.estimate?.route?.remainingDuration )
+                }
+                else CreateTripError(HttpException(this))
+            }
+        } catch (t: Throwable) {
+             CreateTripError(t)
+        }
+    }
+
+    override suspend fun completeTrip(tripId: String): TripCompletionResult {
+        return try {
+            with (api.completeTrip(tripId)) {
+                if (isSuccessful) TripCompletionSuccess
+                else TripCompletionError(HttpException(this))
+            }
+        } catch (t: Throwable) {
+            TripCompletionError(t)
+        }
+    }
+
+    override suspend fun getHomeLocation(): HomeLocationResult {
+        return try {
+            with(api.getDeviceGeofences(deviceId)) {
+                return if (isSuccessful) {
+                    return body()?.firstOrNull {
+                        it.archived != true && it.metadata?.get("name") == "Home"
+                    }
+                    ?.let {
+                            homeLocation -> return GeofenceLocation(homeLocation.latitude, homeLocation.longitude)
+                    }
+                    ?: NoHomeLocation
+                } else HomeLocationResultError(HttpException(this))
+            }
+        } catch (t: Throwable) {
+            HomeLocationResultError(t)
+        }
+    }
+
+    override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {
+        return try {
+            with (api.getDeviceGeofences(deviceId)) {
+                if (isSuccessful) {
+                    body()?.filter { it.metadata?.get("name") == "Home" && it.archived != true }
+                        ?.forEach { api.deleteGeofence(it.geofence_id) }
+                    val result = api.createGeofences(deviceId, GeofenceParams(setOf(
+                        GeofenceProperties(
+                            Point(listOf(homeLocation.longitude, homeLocation.latitude)),
+                            mapOf("name" to "Home"),
+                            100
+                        )), deviceId))
+                    if (result.isSuccessful) {
+                        return@with HomeUpdateResultSuccess
+                    } else {
+                        return@with HomeUpdateResultError(HttpException(result))
+                    }
+                } else {
+                    return HomeUpdateResultError(HttpException(this))
+                }
+            }
+        }catch (t: Throwable) {
+            return HomeUpdateResultError(t)
+        }
     }
 
     companion object {

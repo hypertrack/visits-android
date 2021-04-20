@@ -3,9 +3,7 @@ package com.hypertrack.android.api
 import android.graphics.Bitmap
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
-import com.hypertrack.android.models.Address
-import com.hypertrack.android.models.VisitDataSource
-import com.hypertrack.android.models.VisitType
+import com.hypertrack.android.models.*
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
@@ -28,20 +26,16 @@ interface ApiInterface {
             @Body encodedImage: EncodedImage,
     ): Response<ImageResponse>
 
+    /** Returns list of device geofences with visit markers inlined */
     @GET("client/geofences?include_archived=false&include_markers=true")
-    suspend fun getGeofences(
+    suspend fun getGeofencesWithMarkers(
         @Query("device_id") deviceId: String,
         @Query("pagination_token") paginationToken: String?
     ): Response<GeofenceResponse>
 
-    @GET("client/geofences/markers")
-    suspend fun getGeofenceMarkers(
-        @Query("device_id") deviceId: String,
-        @Query("pagination_token") paginationToken: String
-    ): Response<GeofenceMarkersResponse>
-
+    /** Returns list of device geofences without visit markers */
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Set<Geofence>
+    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Response<Set<Geofence>>
 
     @POST("client/devices/{device_id}/geofences")
     suspend fun createGeofences(
@@ -58,6 +52,12 @@ interface ApiInterface {
         @Query("pagination_token") paginationToken: String
     ): Response<TripResponse>
 
+    @POST("client/trips/")
+    suspend fun createTrip(@Body params: TripParams): Response<Trip>
+
+    @POST("client/trips/{trip_id}/complete")
+    suspend fun completeTrip(@Path("trip_id") tripId: String): Response<Unit>
+
     /**
      * client/devices/A24BA1B4-1234-36F7-8DD7-15D97C3FD912/history/2021-02-05?timezone=Europe%2FZaporozhye
      */
@@ -67,7 +67,6 @@ interface ApiInterface {
         @Path("day") day: String,
         @Query("timezone") timezone: String
     ): Response<HistoryResponse>
-
 }
 
 @JsonClass(generateAdapter = true)
@@ -123,7 +122,8 @@ data class Trip(
         @field:Json(name = "trip_id") val tripId: String,
         @field:Json(name = "started_at") override val createdAt: String,
         @field:Json(name = "metadata") val metadata: Map<String, Any>?,
-        @field:Json(name = "destination") val destination: TripDestination?
+        @field:Json(name = "destination") val destination: TripDestination?,
+        @field:Json(name = "estimate") val estimate: Estimate?,
 ) : VisitDataSource {
     override val visitedAt: String
         get() = destination?.arrivedAt ?: ""
@@ -146,6 +146,12 @@ data class Trip(
 }
 
 @JsonClass(generateAdapter = true)
+data class Estimate(@field:Json(name = "route") val route: Route?)
+
+@JsonClass(generateAdapter = true)
+data class Route(@field:Json(name = "remaining_duration") val remainingDuration: Int?)
+
+@JsonClass(generateAdapter = true)
 data class TripDestination(
     @field:Json(name = "address") val address: String?,
     @field:Json(name = "geometry") val geometry: Geometry,
@@ -154,7 +160,7 @@ data class TripDestination(
 
 @JsonClass(generateAdapter = true)
 data class Views(
-        @field:Json(name = "share_url") val shareUrl: String?,
+        @field:Json(name = "share_url") val shareUrl: String,
         @field:Json(name = "embed_url") val embedUrl: String?
 )
 
@@ -165,7 +171,8 @@ data class Geofence(
         @field:Json(name = "metadata") val metadata: Map<String, Any>?,
         @field:Json(name = "geometry") val geometry: Geometry,
         @field:Json(name = "markers") val marker: GeofenceMarkersResponse?,
-        @field:Json(name = "radius") val radius: Int?
+        @field:Json(name = "radius") val radius: Int?,
+        @field:Json(name = "archived") val archived : Boolean?,
 ) : VisitDataSource {
     override val latitude: Double
         get() = geometry.latitude
@@ -410,3 +417,14 @@ class HistoryCoordinate(
         val altitude: Double?,
         val timestamp: String,
 )
+
+@JsonClass(generateAdapter = true)
+class TripParams(
+    @field:Json(name = "device_id") val deviceId: String,
+    @field:Json(name = "destination") val destination: TripDestination?
+    ) {
+    constructor(deviceId: String) : this(deviceId, null)
+    constructor(deviceId: String, latitude: Double, longitude: Double) : this(
+        deviceId, TripDestination(null, Point(listOf(longitude, latitude)), null)
+    )
+}

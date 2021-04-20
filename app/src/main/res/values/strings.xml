@@ -126,12 +126,12 @@
     <string name="arrival">Arrival</string>
     <string name="away">Away</string>
     <string name="end">End</string>
-    <string name="share_trip">Share trip</string>
-    <string name="you_have_ongoing_trips">You have %d ongoing %s</string>
+    <string name="share_trip">Share</string>
+    <string name="you_have_ongoing_orders">You have %d ongoing %s</string>
     <string name="trip">Trip</string>
     <string name="trips">Trips</string>
     <string name="resume">Resume</string>
-    <string name="end_trip">End trip</string>
+    <string name="end_trip">Complete</string>
     <string name="trip_started_from">Trip started from</string>
     <string name="_min">%d min</string>
     <string name="tracking">Tracking</string>
@@ -157,5 +157,9 @@
     <plurals name="time">
         <item quantity="one">time</item>
         <item quantity="other">times</item>
+    </plurals>
+    <plurals name="order">
+        <item quantity="one">order</item>
+        <item quantity="other">orders</item>
     </plurals>
 </resources>

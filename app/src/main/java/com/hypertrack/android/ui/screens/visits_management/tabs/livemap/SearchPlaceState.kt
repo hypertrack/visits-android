@@ -1,17 +1,18 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
 import android.content.Context
-import android.os.Handler
 import android.util.Log
-import com.hypertrack.backend.AbstractBackendProvider
-import com.hypertrack.backend.ResultHandler
-import com.hypertrack.backend.models.GeofenceLocation
-import java.util.concurrent.TimeUnit
+import com.hypertrack.android.models.GeofenceLocation
+import com.hypertrack.android.models.HomeManagementApi
+import com.hypertrack.android.models.HomeUpdateResultError
+import com.hypertrack.android.models.HomeUpdateResultSuccess
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 internal class SearchPlaceState(
     context: Context,
     val mode: String,
-    private val mBackendProvider: AbstractBackendProvider
+    private val backendProvider: HomeManagementApi
 ) : BaseState(context) {
     var destination: PlaceModel? = null
     val home: PlaceModel? = sharedHelper.homePlace
@@ -21,27 +22,24 @@ internal class SearchPlaceState(
 
     fun saveHomePlace(home: PlaceModel?) {
         sharedHelper.homePlace = home
-        home?.let { createGeofenceOnPlatform(it) }
+        home?.let {
+            GlobalScope.launch {
+                createGeofenceOnPlatform(it)
+            }
+        }
     }
 
-    private fun createGeofenceOnPlatform(home: PlaceModel) {
-        mBackendProvider.updateHomeGeofence(GeofenceLocation(
+    private suspend fun createGeofenceOnPlatform(home: PlaceModel) {
+
+        val homeLocation = GeofenceLocation(
             home.latLng!!.latitude,
             home.latLng!!.longitude
-        ),
-            object : ResultHandler<Void?> {
-                override fun onResult(result: Void?) {
-                    Log.d(TAG, "Geofence was created")
-                }
-                override fun onError(error: Exception) {
-                    val handler = Handler(mContext.mainLooper)
-                    handler.postDelayed(
-                        { createGeofenceOnPlatform(home) },
-                        TimeUnit.SECONDS.toMillis(5)
-                    )
-                }
-            }
         )
+        when (val res = backendProvider.updateHomeLocation(homeLocation)) {
+            HomeUpdateResultSuccess -> Log.d(TAG, "Geofence was created")
+            is HomeUpdateResultError -> Log.w(TAG, "Can't update geofence", res.error)
+        }
+
     }
 
     val recentPlaces: List<PlaceModel> = _recentPlaces.filterNotNull().reversed()

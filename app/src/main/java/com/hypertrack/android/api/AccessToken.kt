@@ -6,8 +6,8 @@ import com.hypertrack.android.repository.AUTH_HEADER_KEY
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.*
+import okhttp3.Route
 import okhttp3.internal.userAgent
-import java.lang.Exception
 
 const val TAG = "AccessToken"
 

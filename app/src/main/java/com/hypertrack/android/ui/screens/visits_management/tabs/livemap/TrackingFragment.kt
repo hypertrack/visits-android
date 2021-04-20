@@ -15,9 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TripsAdapter.OnItemClickListener
 import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.backend.AbstractBackendProvider
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import com.hypertrack.sdk.views.dao.Trip
@@ -27,11 +28,12 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class TrackingFragment(
-    private val mBackendProvider: AbstractBackendProvider,
-    private val hyperTrackService: HyperTrackService,
-    private val realTimeUpdatesService: HyperTrackViews
+    @Inject private val mBackendProvider: AbstractBackendProvider,
+    @Inject private val hyperTrackService: HyperTrackService,
+    @Inject private val realTimeUpdatesService: HyperTrackViews
 ) : Fragment(R.layout.fragment_tracking), TrackingPresenter.View {
     private var tripConfirmSnackbar: Snackbar? = null
     private lateinit var blockingView: View
@@ -62,13 +64,6 @@ class TrackingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "Creating view")
-        presenter = TrackingPresenter(
-            view.context,
-            this,
-            mBackendProvider,
-            hyperTrackService,
-            realTimeUpdatesService
-        )
         blockingView = view.findViewById(R.id.blocking_view)
         locationButton = view.findViewById(R.id.location_button)
         locationButton.setOnClickListener {
@@ -120,7 +115,7 @@ class TrackingFragment(
         }})
         tripsRecyclerView.adapter = tripsAdapter
         bottomHolder.setOnClickListener {
-            if (bottomHolderSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            if (bottomHolderSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomHolderSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
             } else {
                 bottomHolderSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
@@ -143,6 +138,14 @@ class TrackingFragment(
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resuming tracking fragment")
+        presenter = TrackingPresenter(
+            requireContext(),
+            this,
+            mBackendProvider,
+            hyperTrackService,
+            realTimeUpdatesService,
+            viewLifecycleOwner
+        )
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             Log.d(TAG, "got google map from VM $map")
@@ -184,11 +187,9 @@ class TrackingFragment(
             } else {
                 whereAreYouGoing.visibility = View.INVISIBLE
                 bottomHolder.visibility = View.VISIBLE
-                val text = getString(R.string.you_have_ongoing_trips)
-                val tripValue =
-                    if (trips.size == 1) getString(R.string.trip).toLowerCase() else getString(R.string.trips).toLowerCase()
-                val tripsCountText = String.format(text, trips.size, tripValue)
-                tripsCount!!.text = tripsCountText
+                val text = getString(R.string.you_have_ongoing_orders)
+                val plural = resources.getQuantityString(R.plurals.order, trips.size)
+                tripsCount!!.text = String.format(text, trips.size, plural)
                 tripsAdapter.update(trips)
                 tripsAdapter.setSelection(selectedTripIndex)
             }
@@ -303,7 +304,7 @@ class TrackingFragment(
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_frame,
-                SearchPlaceFragment.newInstance(config, mBackendProvider, hyperTrackService.deviceId, realTimeUpdatesService),
+                Injector.getCustomFragmentFactory(requireContext()).instantiate(ClassLoader.getSystemClassLoader(), SearchPlaceFragment::class.java.name),
                 SearchPlaceFragment::class.java.simpleName
             )
             .addToBackStack(null)

@@ -4,7 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import android.view.View.OnTouchListener
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -17,18 +20,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
-import com.hypertrack.backend.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class SearchPlaceFragment(
-    private val mBackendProvider: AbstractBackendProvider,
-    private val deviceId: String,
-    private val realTimeUpdatesProvider: HyperTrackViews
-) : Fragment(), SearchPlacePresenter.View {
+    @Inject private val backendProvider: AbstractBackendProvider,
+    @Inject private val deviceId: String,
+    @Inject private val realTimeUpdatesProvider: HyperTrackViews
+) : Fragment(R.layout.fragment_search_place), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
     private lateinit var search: EditText
@@ -40,32 +44,25 @@ class SearchPlaceFragment(
     private lateinit var setOnMap: View
     private lateinit var confirm: View
     private var placesAdapter = PlacesAdapter()
-    private var loader: LoaderDecorator? = null
+    private lateinit var loader: LoaderDecorator
     private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         config = arguments?.getParcelable("config") ?: Config.SEARCH_PLACE
-        presenter = SearchPlacePresenter(
-            requireContext(),
-            config.key,
-            this,
-            mBackendProvider,
-            deviceId,
-            viewLifecycleOwner
-        )    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_search_place, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter = SearchPlacePresenter(
+            requireContext(),
+            this,
+            backendProvider,
+            deviceId,
+            viewLifecycleOwner,
+            SearchPlaceState(requireContext(), config.key ?: "config", backendProvider)
+        )
         search = view.findViewById(R.id.search)
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -106,7 +103,7 @@ class SearchPlaceFragment(
                     R.id.fragment_frame,
                     newInstance(
                         Config.HOME_ADDRESS,
-                        mBackendProvider,
+                        backendProvider,
                         deviceId,
                         realTimeUpdatesProvider
                     ),
@@ -149,7 +146,7 @@ class SearchPlaceFragment(
         }
         view.setOnTouchListener(hideSoftInputOnTouchListener)
         locationsRecyclerView.setOnTouchListener(hideSoftInputOnTouchListener)
-        loader = LoaderDecorator(context)
+        loader = LoaderDecorator(requireContext())
         presenter.search(null)
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
@@ -231,27 +228,9 @@ class SearchPlaceFragment(
         confirm.visibility = View.GONE
     }
 
-    override fun showProgressBar() { activity?.let { loader?.start() } }
+    override fun showProgressBar() { activity?.let { loader.start() } }
 
-    override fun hideProgressBar() { activity?.let { loader?.stop() } }
-
-    override fun addShareTripFragment(tripId: String?, shareUrl: String?) {
-        requireParentFragment()
-            .childFragmentManager
-            .beginTransaction().replace(
-                R.id.fragment_frame,
-                ShareTripFragment.newInstance(
-                    tripId,
-                    shareUrl,
-                    mBackendProvider,
-                    deviceId,
-                    realTimeUpdatesProvider
-                ),
-                ShareTripFragment::class.java.simpleName
-            )
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
-    }
+    override fun hideProgressBar() { activity?.let { loader.stop() } }
 
     override fun finish() { activity?.onBackPressed() }
 

@@ -23,24 +23,22 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.hypertrack.backend.AbstractBackendProvider
-import com.hypertrack.backend.ResultHandler
-import com.hypertrack.backend.models.ShareableTrip
-import com.hypertrack.backend.models.TripConfig
+import com.hypertrack.android.api.TripParams
+import com.hypertrack.android.models.AbstractBackendProvider
+import com.hypertrack.android.models.CreateTripError
+import com.hypertrack.android.models.ShareableTripSuccess
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal class SearchPlacePresenter @SuppressLint("MissingPermission") constructor(
     private val context: Context,
-    mode: String?,
     private val view: View,
     private val backendProvider: AbstractBackendProvider,
-    deviceId: String,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val deviceId: String,
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val state: SearchPlaceState
 ) {
-    private val state = SearchPlaceState(context, mode ?: "config", backendProvider)
-    private val mHyperTrackDeviceId: String  = deviceId
     private val placesClient: PlacesClient  = Places.createClient(context)
     private var bias: RectangularBounds? = null
     private val handler = Handler()
@@ -138,15 +136,9 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         }
     }
 
-    fun confirm() {
-        if (state.destination != null) {
-            providePlace(state.destination)
-        }
-    }
+    fun confirm() { state.destination?.let { providePlace(it) } }
 
-    fun selectHome() {
-        providePlace(state.home)
-    }
+    fun selectHome() = providePlace(state.home)
 
     fun selectItem(placeModel: PlaceModel) {
         view.showProgressBar()
@@ -194,30 +186,26 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
 
     private fun startTrip(destination: PlaceModel?) {
         view.showProgressBar()
-        val resultHandler: ResultHandler<ShareableTrip> = object : ResultHandler<ShareableTrip> {
-            override fun onResult(result: ShareableTrip) {
-                Log.d(TAG, "trip is created: $result")
-                view.hideProgressBar()
-                view.addShareTripFragment(result.tripId, result.shareUrl)
-            }
-
-            override fun onError(error: Exception) {
-                Log.e(TAG, "Trip start failure", error)
-                view.hideProgressBar()
-                Toast.makeText(context, "Trip start failure", Toast.LENGTH_SHORT).show()
-            }
-        }
-        val tripRequest: TripConfig = destination?.let {
+        val tripRequest: TripParams = destination?.let {
             destination.latLng?.let {
-                TripConfig.Builder()
-                    .setDestinationLatitude(it.latitude)
-                    .setDestinationLongitude(it.longitude)
-                    .setDeviceId(mHyperTrackDeviceId)
-                    .build()
-
+                TripParams(deviceId, it.latitude, it.longitude)
             }
-        } ?: TripConfig.Builder().setDeviceId(mHyperTrackDeviceId).build()
-        backendProvider.createTrip(tripRequest, resultHandler)
+        } ?: TripParams(deviceId)
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = backendProvider.createTrip(tripRequest)) {
+                is ShareableTripSuccess -> {
+                    Log.d(TAG, "trip is created: $result")
+                    view.hideProgressBar()
+                    view.finish()
+                }
+                is CreateTripError -> {
+                    Log.e(TAG, "Trip start failure", result.error)
+                    view.hideProgressBar()
+                    Toast.makeText(context, "Trip start failure", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
     }
 
     private fun actionLocationSourceSettings() {
@@ -242,7 +230,6 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         fun hideSetOnMap()
         fun showProgressBar()
         fun hideProgressBar()
-        fun addShareTripFragment(tripId: String?, shareUrl: String?)
         fun finish()
     }
 
