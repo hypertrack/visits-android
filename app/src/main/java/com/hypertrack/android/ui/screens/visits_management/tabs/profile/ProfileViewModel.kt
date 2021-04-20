@@ -4,32 +4,36 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.common.KeyValueItem
+import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 
 class ProfileViewModel(
     driverRepository: DriverRepository,
     hyperTrackService: HyperTrackService,
+    private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
-    val profile = MutableLiveData<List<ProfileItem>>(mutableListOf<ProfileItem>().apply {
+    val profile = MutableLiveData<List<KeyValueItem>>(mutableListOf<KeyValueItem>().apply {
         add(
-            ProfileItem(
-                R.string.driver_id,
+            KeyValueItem(
+                R.string.driver_id.stringFromResource(),
                 driverRepository.driverId
             )
         )
         add(
-            ProfileItem(
-                R.string.device_id,
+            KeyValueItem(
+                R.string.device_id.stringFromResource(),
                 hyperTrackService.deviceId ?: ""
             )
         )
         getBuildVersion()?.let {
             add(
-                ProfileItem(
-                    R.string.app_version,
+                KeyValueItem(
+                    R.string.app_version.stringFromResource(),
                     it
                 )
             )
@@ -38,11 +42,18 @@ class ProfileViewModel(
 
     private fun getBuildVersion(): String? {
         try {
-            val pInfo = MyApplication.context.packageManager.getPackageInfo(MyApplication.context.packageName, 0)
+            val pInfo = MyApplication.context.packageManager.getPackageInfo(
+                MyApplication.context.packageName,
+                0
+            )
             return pInfo.versionName
         } catch (e: Exception) {
             return null
         }
+    }
+
+    fun onCopyItemClick(txt: String) {
+        osUtilsProvider.copyToClipboard(txt)
     }
 
 }
