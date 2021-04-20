@@ -1,8 +1,12 @@
 # Changelog
 
+## [0.6.11] - 2021-04-20
+### Added
+- Copy button for profile data
+
 ## [0.6.10] - 2021-04-19
 ### Fixed
-- Crash on places screen fixed
+- Crash on places screen fixed for OPPO devices
 
 ## [0.6.9] - 2021-04-16
 ### Added
