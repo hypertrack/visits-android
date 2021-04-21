@@ -31,8 +31,7 @@ import javax.inject.Inject
 
 class SearchPlaceFragment(
     @Inject private val backendProvider: AbstractBackendProvider,
-    @Inject private val deviceId: String,
-    @Inject private val realTimeUpdatesProvider: HyperTrackViews
+    @Inject private val deviceId: String
 ) : Fragment(R.layout.fragment_search_place), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
@@ -338,7 +337,7 @@ class SearchPlaceFragment(
             deviceId: String,
             realTimeUpdatesProvider: HyperTrackViews
         ): SearchPlaceFragment {
-            val fragment = SearchPlaceFragment(backendProvider, deviceId, realTimeUpdatesProvider)
+            val fragment = SearchPlaceFragment(backendProvider, deviceId)
             val bundle = Bundle()
             bundle.putParcelable("config", config)
             fragment.arguments = bundle

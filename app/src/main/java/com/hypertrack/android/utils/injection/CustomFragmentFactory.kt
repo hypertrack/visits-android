@@ -30,8 +30,7 @@ class CustomFragmentFactory(
             SearchPlaceFragment::class.java.name ->
                 SearchPlaceFragment(
                     backendProvider.get(),
-                    hyperTrackServiceProvider.get().deviceId,
-                    hyperTrackViewsProvider.get()
+                    hyperTrackServiceProvider.get().deviceId
                 )
             else -> super.instantiate(classLoader, className)
         }
