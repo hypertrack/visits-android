@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -98,20 +99,7 @@ class SearchPlaceFragment(
         setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            // TODO Denys: update view to display home search
-//            parentFragmentManager.beginTransaction()
-//                .replace(
-//                    R.id.fragment_frame,
-//                    newInstance(
-//                        Config.HOME_ADDRESS,
-//                        backendProvider,
-//                        deviceId,
-//                        realTimeUpdatesProvider
-//                    ),
-//                    SearchPlaceFragment::class.java.simpleName
-//                )
-//                .addToBackStack(null)
-//                .commitAllowingStateLoss()
+            liveMapViewModel.onHomeAddressClicked()
         }
         setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
@@ -149,11 +137,36 @@ class SearchPlaceFragment(
         locationsRecyclerView.setOnTouchListener(hideSoftInputOnTouchListener)
         loader = LoaderDecorator(requireContext())
         presenter.search(null)
+        view.visibility = View.INVISIBLE
+
+        liveMapViewModel.state.observe(viewLifecycleOwner) { viewState ->
+            when(viewState) {
+                is OnTrip -> {
+                    view.visibility = View.INVISIBLE
+                    presenter.initMap(viewState.map)
+                }
+                is SearchPlace -> {
+                    view.visibility = View.VISIBLE
+                    updateViewForState(Config.SEARCH_PLACE)
+                }
+                is SetHome -> {
+                    view.visibility = View.VISIBLE
+                    updateViewForState(Config.HOME_ADDRESS)
+                }
+                else -> {
+                    view.visibility = View.INVISIBLE
+                }
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter.initMap(map) }
         }
+    }
+
+    private fun updateViewForState(config: Config) {
+        Log.d(TAG, "updateViewForState for $config")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -319,6 +332,7 @@ class SearchPlaceFragment(
     }
 
     companion object {
+        const val TAG = "SearchPlaceFragment"
         fun newInstance(
             config: Config?,
             backendProvider: AbstractBackendProvider,

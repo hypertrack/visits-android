@@ -38,12 +38,14 @@ class LiveMapFragment(
     @Inject private val backendProvider: AbstractBackendProvider,
 ) : Fragment(R.layout.fragment_tab_map_view)  {
 
-    private var state: LoadingProgressState = LoadingProgressState.LOADING
     private var currentMapStyle = mapStyleOptions
     private var gMap: GoogleMap? = null
     private lateinit var sharedHelper: SharedHelper
 
     private val liveMapViewModel: LiveMapViewModel by viewModels()
+
+    private lateinit var trackingFragment: View
+    private lateinit var searchFragment: View
 
     private val shareBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -54,6 +56,8 @@ class LiveMapFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated")
+        trackingFragment = view.findViewById(R.id.tracking_fragment)
+        searchFragment = view.findViewById(R.id.search_place_fragment)
         trackingStatusText.setOnClickListener { trackingStatusText.visibility = View.GONE }
         trackingStatus.setOnClickListener {
             trackingStatusText.visibility =
@@ -67,12 +71,29 @@ class LiveMapFragment(
                 else -> onError()
             }
         }
+        liveMapViewModel.state.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is OnTrip -> {
+                    trackingFragment.visibility = View.VISIBLE
+                    searchFragment.visibility = View.INVISIBLE
+                }
+                is SearchPlace, is SetHome -> {
+                    trackingFragment.visibility = View.INVISIBLE
+                    searchFragment.visibility = View.VISIBLE
+                }
+                is Loading -> displayLoadingState(true)
+                is Error -> {
+                    // TODO Denys: Generic error stub.
+                }
+                is Paused -> { /* NOOP */ }
+            }
+        }
+        liveMapViewModel.mapLoading()
         (childFragmentManager.findFragmentById(R.id.liveMap) as SupportMapFragment)
             .getMapAsync {
                 Log.d(TAG, "Got googleMap, updating VM")
                 gMap = it
                 liveMapViewModel.googleMap = it
-                state = LoadingProgressState.DONE
                 displayLoadingState(false)
                 hyperTrackService.state.value?.let { state ->
                     when (state) {
@@ -87,7 +108,10 @@ class LiveMapFragment(
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "Resuming...")
-        if (state == LoadingProgressState.LOADING) displayLoadingState(true)
+        when (liveMapViewModel.state.value) {
+            Loading -> displayLoadingState(true)
+            else -> Log.d(TAG, "Map already loaded")
+        }
         activity?.apply {
             registerReceiver(shareBroadcastReceiver, IntentFilter(SHARE_BROADCAST_ACTION))
 
@@ -179,6 +203,3 @@ class LiveMapFragment(
         const val SHARE_BROADCAST_ACTION = "com.hypertrack.visits.SHARE_BROADCAST_ACTION"
     }
 }
-
-
-private enum class LoadingProgressState { LOADING, DONE }

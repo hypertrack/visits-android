@@ -133,10 +133,21 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
             Snackbar.make(view.rootView, R.layout.snackbar_trip_confirm, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.id.resume) { tripConfirmSnackbar!!.dismiss() }
                 .setAction(R.id.end_trip) {
-                    presenter.endTrip()
+                    viewLifecycleOwner.lifecycleScope.launch { presenter.endTrip() }
                     tripConfirmSnackbar!!.dismiss()
                 }
         loader = LoaderDecorator(view.context)
+        liveMapViewModel.state.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is OnTrip -> {
+                    view.visibility = View.VISIBLE
+                    presenter.subscribeUpdates(viewState.map)
+                }
+                else -> {
+                    view.visibility = View.INVISIBLE
+                }
+            }
+        }
     }
 
     override fun onResume() {
