@@ -43,7 +43,7 @@ class LiveMapFragment(
     private var gMap: GoogleMap? = null
     private lateinit var sharedHelper: SharedHelper
 
-    private val liveMapViewModel: LiveMapViewModel by viewModels({ requireParentFragment() })
+    private val liveMapViewModel: LiveMapViewModel by viewModels()
 
     private val shareBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -81,18 +81,6 @@ class LiveMapFragment(
                     }
                 }
             }
-
-        Log.d(TAG, "Attaching TrackingFragment")
-        parentFragmentManager
-            .beginTransaction()
-            .replace(
-                R.id.fragment_frame,
-                parentFragmentManager.fragmentFactory.instantiate(
-                    ClassLoader.getSystemClassLoader(), TrackingFragment::class.java.name
-                ),
-                TrackingFragment::class.java.name
-            )
-            .commitAllowingStateLoss()
 
     }
 

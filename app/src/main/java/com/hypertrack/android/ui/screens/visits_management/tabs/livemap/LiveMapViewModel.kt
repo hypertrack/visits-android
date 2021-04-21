@@ -43,4 +43,5 @@ class LiveMapViewModel : ViewModel() {
             }
         }
 
+    companion object {const val TAG = "LiveMapVM"}
 }

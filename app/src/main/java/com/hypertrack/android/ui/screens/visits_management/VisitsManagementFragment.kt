@@ -16,11 +16,13 @@ import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitListAdapter
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
@@ -35,7 +37,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
     }
 
     private val tabs = mapOf(
-//        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context).instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
+        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context).instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
         Tab.HISTORY to MapViewFragment(),
         Tab.ORDERS to VisitsListFragment.newInstance(),
         Tab.PLACES to PlacesFragment.getInstance(),
@@ -220,7 +222,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
     }
 
     enum class Tab(@DrawableRes val iconRes: Int) {
-//        MAP(R.drawable.ic_map_tab),
+        MAP(R.drawable.ic_map_tab),
         HISTORY(R.drawable.ic_history),
         ORDERS(R.drawable.ic_visits_list_tab),
         PLACES(R.drawable.ic_places),

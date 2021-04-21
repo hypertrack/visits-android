@@ -43,6 +43,13 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:visibility="visible" />
+    <fragment
+        android:id="@+id/tracking_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/elevation"
+        android:name="com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingFragment"
+        />
     <FrameLayout
         android:id="@+id/fragment_frame"
         android:layout_width="match_parent"
