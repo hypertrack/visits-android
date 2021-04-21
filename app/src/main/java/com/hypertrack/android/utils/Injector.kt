@@ -12,6 +12,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
 import com.hypertrack.android.interactors.*
+import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.ParamViewModelFactory
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
@@ -23,7 +24,6 @@ import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMa
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
 import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
-import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.ServiceNotificationConfig
@@ -322,6 +322,10 @@ object Injector {
 
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }
+
+    fun getBackendProvider(ctx: Context): Provider<AbstractBackendProvider> = Provider { getVisitsApiClient(ctx) }
+    fun getRealTimeUpdatesService(ctx: Context): Provider<HyperTrackViews> = Provider { HyperTrackViews.getInstance(ctx, getAccountRepo(ctx).publishableKey)}
+    val hyperTrackServiceProvider = Provider { getUserScope().hyperTrackService }
 
     private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
     fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {

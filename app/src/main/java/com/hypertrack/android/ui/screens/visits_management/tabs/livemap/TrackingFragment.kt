@@ -30,11 +30,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class TrackingFragment(
-    @Inject private val mBackendProvider: AbstractBackendProvider,
-    @Inject private val hyperTrackService: HyperTrackService,
-    @Inject private val realTimeUpdatesService: HyperTrackViews
-) : Fragment(R.layout.fragment_tracking), TrackingPresenter.View {
+class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter.View {
+    @Inject private lateinit var mBackendProvider: AbstractBackendProvider
+    @Inject private lateinit var hyperTrackService: HyperTrackService
+    @Inject private lateinit var realTimeUpdatesService: HyperTrackViews
+
     private var tripConfirmSnackbar: Snackbar? = null
     private lateinit var blockingView: View
     private var offlineView: View? = null
@@ -64,6 +64,10 @@ class TrackingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "Creating view")
+        mBackendProvider = Injector.getBackendProvider(requireContext()).get()
+        hyperTrackService = Injector.hyperTrackServiceProvider.get()
+        realTimeUpdatesService = Injector.getRealTimeUpdatesService(requireContext()).get()
+
         blockingView = view.findViewById(R.id.blocking_view)
         locationButton = view.findViewById(R.id.location_button)
         locationButton.setOnClickListener {
@@ -129,15 +133,26 @@ class TrackingFragment(
             Snackbar.make(view.rootView, R.layout.snackbar_trip_confirm, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.id.resume) { tripConfirmSnackbar!!.dismiss() }
                 .setAction(R.id.end_trip) {
-                    presenter.endTrip()
+                    viewLifecycleOwner.lifecycleScope.launch { presenter.endTrip() }
                     tripConfirmSnackbar!!.dismiss()
                 }
         loader = LoaderDecorator(view.context)
+        liveMapViewModel.state.observe(viewLifecycleOwner) { viewState ->
+            when (viewState) {
+                is OnTrip -> {
+                    view.visibility = View.VISIBLE
+                    presenter.subscribeUpdates(viewState.map)
+                }
+                else -> {
+                    view.visibility = View.INVISIBLE
+                }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "Resuming tracking fragment")
+        Log.d(TAG, "onResume")
         presenter = TrackingPresenter(
             requireContext(),
             this,
@@ -301,14 +316,9 @@ class TrackingFragment(
     }
 
     override fun addSearchPlaceFragment(config: SearchPlaceFragment.Config?) {
-        parentFragmentManager.beginTransaction()
-            .replace(
-                R.id.fragment_frame,
-                Injector.getCustomFragmentFactory(requireContext()).instantiate(ClassLoader.getSystemClassLoader(), SearchPlaceFragment::class.java.name),
-                SearchPlaceFragment::class.java.simpleName
-            )
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
+        Log.d(TAG, "Add search place fragment")
+        view?.visibility = View.INVISIBLE
+        parentFragment?.view?.findViewById<View>(R.id.search_place_fragment)?.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

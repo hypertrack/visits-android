@@ -10,7 +10,6 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.GoogleMap
 import com.hypertrack.android.models.TripCompletionError
 import com.hypertrack.android.models.TripCompletionSuccess
@@ -26,7 +25,6 @@ import com.hypertrack.sdk.views.dao.StatusUpdate
 import com.hypertrack.sdk.views.dao.Trip
 import com.hypertrack.sdk.views.maps.GpsLocationProvider
 import com.hypertrack.sdk.views.maps.HyperTrackMap
-import kotlinx.coroutines.launch
 import java.util.*
 
 internal class TrackingPresenter(
@@ -119,10 +117,9 @@ internal class TrackingPresenter(
         }
     }
 
-    fun endTrip() {
+    suspend fun endTrip() {
         state.selectedTripId?.let { tripId ->
             view.showProgressBar()
-            viewLifecycleOwner.lifecycleScope.launch {
                 when (val result = backendProvider.completeTrip(tripId)) {
                     is TripCompletionSuccess -> {
                         Log.d(TAG, "trip is ended")
@@ -135,7 +132,6 @@ internal class TrackingPresenter(
 
                     }
                 }
-            }
         }
     }
 
@@ -219,6 +215,8 @@ internal class TrackingPresenter(
 
     override fun onError(e: Exception, s: String) {}
     override fun onCompleted(s: String) {}
+
+
     interface View {
         fun updateConnectionStatus(offline: Boolean)
         fun onStatusUpdateReceived(statusText: String)

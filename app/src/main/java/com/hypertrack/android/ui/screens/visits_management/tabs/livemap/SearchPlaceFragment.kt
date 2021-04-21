@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -30,8 +31,7 @@ import javax.inject.Inject
 
 class SearchPlaceFragment(
     @Inject private val backendProvider: AbstractBackendProvider,
-    @Inject private val deviceId: String,
-    @Inject private val realTimeUpdatesProvider: HyperTrackViews
+    @Inject private val deviceId: String
 ) : Fragment(R.layout.fragment_search_place), SearchPlacePresenter.View {
     private lateinit var config: Config
     private lateinit var presenter: SearchPlacePresenter
@@ -69,7 +69,7 @@ class SearchPlaceFragment(
         (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
         requireActivity().setTitle(config.titleResId)
-        toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        toolbar.setNavigationOnClickListener { finish() }
         setHasOptionsMenu(true)
         search.setHint(config.hintResId)
         search.setOnClickListener {
@@ -98,19 +98,7 @@ class SearchPlaceFragment(
         setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(
-                    R.id.fragment_frame,
-                    newInstance(
-                        Config.HOME_ADDRESS,
-                        backendProvider,
-                        deviceId,
-                        realTimeUpdatesProvider
-                    ),
-                    SearchPlaceFragment::class.java.simpleName
-                )
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
+            liveMapViewModel.onHomeAddressClicked()
         }
         setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
@@ -148,11 +136,36 @@ class SearchPlaceFragment(
         locationsRecyclerView.setOnTouchListener(hideSoftInputOnTouchListener)
         loader = LoaderDecorator(requireContext())
         presenter.search(null)
+        view.visibility = View.INVISIBLE
+
+        liveMapViewModel.state.observe(viewLifecycleOwner) { viewState ->
+            when(viewState) {
+                is OnTrip -> {
+                    view.visibility = View.INVISIBLE
+                    presenter.initMap(viewState.map)
+                }
+                is SearchPlace -> {
+                    view.visibility = View.VISIBLE
+                    updateViewForState(Config.SEARCH_PLACE)
+                }
+                is SetHome -> {
+                    view.visibility = View.VISIBLE
+                    updateViewForState(Config.HOME_ADDRESS)
+                }
+                else -> {
+                    view.visibility = View.INVISIBLE
+                }
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter.initMap(map) }
         }
+    }
+
+    private fun updateViewForState(config: Config) {
+        Log.d(TAG, "updateViewForState for $config")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -232,7 +245,9 @@ class SearchPlaceFragment(
 
     override fun hideProgressBar() { activity?.let { loader.stop() } }
 
-    override fun finish() { activity?.onBackPressed() }
+    override fun finish() {
+        liveMapViewModel.onPlaceSelected()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -315,13 +330,14 @@ class SearchPlaceFragment(
     }
 
     companion object {
+        const val TAG = "SearchPlaceFragment"
         fun newInstance(
             config: Config?,
             backendProvider: AbstractBackendProvider,
             deviceId: String,
             realTimeUpdatesProvider: HyperTrackViews
         ): SearchPlaceFragment {
-            val fragment = SearchPlaceFragment(backendProvider, deviceId, realTimeUpdatesProvider)
+            val fragment = SearchPlaceFragment(backendProvider, deviceId)
             val bundle = Bundle()
             bundle.putParcelable("config", config)
             fragment.arguments = bundle
