@@ -306,14 +306,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
 
     override fun addSearchPlaceFragment(config: SearchPlaceFragment.Config?) {
         Log.d(TAG, "Add search place fragment")
-//        parentFragmentManager.beginTransaction()
-//            .replace(
-//                R.id.fragment_frame,
-//                Injector.getCustomFragmentFactory(requireContext()).instantiate(ClassLoader.getSystemClassLoader(), SearchPlaceFragment::class.java.name),
-//                SearchPlaceFragment::class.java.simpleName
-//            )
-//            .addToBackStack(null)
-//            .commitAllowingStateLoss()
+        view?.visibility = View.INVISIBLE
+        parentFragment?.view?.findViewById<View>(R.id.search_place_fragment)?.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

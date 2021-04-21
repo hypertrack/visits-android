@@ -69,7 +69,7 @@ class SearchPlaceFragment(
         (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
         requireActivity().setTitle(config.titleResId)
-        toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        toolbar.setNavigationOnClickListener { finish() }
         setHasOptionsMenu(true)
         search.setHint(config.hintResId)
         search.setOnClickListener {
@@ -98,19 +98,20 @@ class SearchPlaceFragment(
         setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(
-                    R.id.fragment_frame,
-                    newInstance(
-                        Config.HOME_ADDRESS,
-                        backendProvider,
-                        deviceId,
-                        realTimeUpdatesProvider
-                    ),
-                    SearchPlaceFragment::class.java.simpleName
-                )
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
+            // TODO Denys: update view to display home search
+//            parentFragmentManager.beginTransaction()
+//                .replace(
+//                    R.id.fragment_frame,
+//                    newInstance(
+//                        Config.HOME_ADDRESS,
+//                        backendProvider,
+//                        deviceId,
+//                        realTimeUpdatesProvider
+//                    ),
+//                    SearchPlaceFragment::class.java.simpleName
+//                )
+//                .addToBackStack(null)
+//                .commitAllowingStateLoss()
         }
         setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
@@ -232,7 +233,10 @@ class SearchPlaceFragment(
 
     override fun hideProgressBar() { activity?.let { loader.stop() } }
 
-    override fun finish() { activity?.onBackPressed() }
+    override fun finish() {
+        // TODO Denys: Move back to hidden state
+        view?.visibility = View.GONE
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

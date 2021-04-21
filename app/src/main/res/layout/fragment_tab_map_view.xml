@@ -50,11 +50,14 @@
         android:elevation="@dimen/elevation"
         android:name="com.hypertrack.android.ui.screens.visits_management.tabs.livemap.TrackingFragment"
         />
-    <FrameLayout
-        android:id="@+id/fragment_frame"
+    <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="@dimen/elevation" />
+        android:visibility="gone"
+        android:id="@+id/search_place_fragment"
+        android:name="com.hypertrack.android.ui.screens.visits_management.tabs.livemap.SearchPlaceFragment"
+        android:elevation="@dimen/elevation"
+        tools:ignore="Instantiatable" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
