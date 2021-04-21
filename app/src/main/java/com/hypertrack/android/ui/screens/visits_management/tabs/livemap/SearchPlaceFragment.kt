@@ -247,8 +247,7 @@ class SearchPlaceFragment(
     override fun hideProgressBar() { activity?.let { loader.stop() } }
 
     override fun finish() {
-        // TODO Denys: Move back to hidden state
-        view?.visibility = View.GONE
+        liveMapViewModel.onPlaceSelected()
     }
 
     override fun onDestroyView() {
