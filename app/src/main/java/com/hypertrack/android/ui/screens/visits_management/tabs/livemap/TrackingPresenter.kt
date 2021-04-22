@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.maps.GoogleMap
 import com.hypertrack.android.models.TripCompletionError
 import com.hypertrack.android.models.TripCompletionSuccess
@@ -32,26 +32,34 @@ internal class TrackingPresenter(
     private val view: View,
     private val backendProvider: TripManagementApi,
     private val hyperTrackService: HyperTrackService,
-    private val realTimeUpdatesService: HyperTrackViews,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val realTimeUpdatesService: HyperTrackViews
 ) : DeviceUpdatesHandler {
     private val handler = Handler()
     private val state: TrackingState  = TrackingState(context)
     private var hyperTrackMap: HyperTrackMap? = null
     private val connectivityReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            view.updateConnectionStatus(false)
-            realTimeUpdatesService.subscribeToDeviceUpdates(
-                hyperTrackService.deviceId,
-                this@TrackingPresenter
-            )
-            hyperTrackService.syncDeviceSettings()
+            Log.d(TAG, "OnConnectivity change")
+            if (context.isOffline()) {
+                Log.d(TAG, "isOffline")
+                view.updateConnectionStatus(false)
+                realTimeUpdatesService.stopAllUpdates()
+            } else {
+                Log.d(TAG, "isOnline")
+                view.updateConnectionStatus(false)
+                realTimeUpdatesService.subscribeToDeviceUpdates(
+                    hyperTrackService.deviceId,
+                    this@TrackingPresenter
+                )
+                hyperTrackService.syncDeviceSettings()
+            }
         }
     }
     private var tripInfoUpdater: Timer? = null
 
     init {
-        this.context.registerReceiver(connectivityReceiver,
+        context.registerReceiver(
+            connectivityReceiver,
             IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         )
     }
@@ -255,4 +263,10 @@ internal class TrackingPresenter(
         }
     }
 
+}
+
+private fun Context.isOffline(): Boolean {
+
+    val cm = (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?) ?: return false
+    return cm.getNetworkCapabilities(null)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)?:false
 }

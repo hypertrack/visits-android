@@ -37,7 +37,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
 
     private var tripConfirmSnackbar: Snackbar? = null
     private lateinit var blockingView: View
-    private var offlineView: View? = null
+    private lateinit var offlineView: View
     private lateinit var locationButton: FloatingActionButton
     private lateinit var bottomHolder: View
     private lateinit var bottomHolderCover: View
@@ -158,8 +158,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
             this,
             mBackendProvider,
             hyperTrackService,
-            realTimeUpdatesService,
-            viewLifecycleOwner
+            realTimeUpdatesService
         )
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
@@ -175,12 +174,13 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
     }
 
     override fun updateConnectionStatus(offline: Boolean) {
+        Log.d(TAG, "updateConnectionStatus offline $offline")
         if (offline) {
             bottomHolderSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            offlineView!!.visibility = View.VISIBLE
+            offlineView.visibility = View.VISIBLE
             bottomHolderCover.visibility = View.VISIBLE
         } else {
-            offlineView!!.visibility = View.GONE
+            offlineView.visibility = View.GONE
             bottomHolderCover.visibility = View.GONE
         }
     }

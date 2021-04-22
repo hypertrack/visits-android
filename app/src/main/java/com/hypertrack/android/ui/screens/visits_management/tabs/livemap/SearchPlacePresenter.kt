@@ -2,10 +2,8 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.location.Location
 import android.os.Handler
-import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
@@ -56,15 +54,10 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
 
     fun initMap(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        if ("home" == state.mode) {
-            if (state.home == null) {
-                state.saveHomePlace(null)
-            }
-            view.hideHomeAddress()
-        } else if ("search" == state.mode) {
-            view.updateHomeAddress(state.home)
-        }
+
     }
+
+    fun applyMode() = view.updateHomeAddress(state.home)
 
     fun setMapDestinationModeEnable(enable: Boolean) {
         if (state.mapDestinationMode != enable) {
@@ -173,15 +166,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     }
 
     fun providePlace(placeModel: PlaceModel?) {
-        when (state.mode) {
-            "home" -> {
-                state.saveHomePlace(placeModel)
-                view.finish()
-            }
-            "search" -> startTrip(placeModel)
-            else -> {
-            }
-        }
+        startTrip(placeModel)
     }
 
     private fun startTrip(destination: PlaceModel?) {
@@ -206,12 +191,6 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
             }
 
         }
-    }
-
-    private fun actionLocationSourceSettings() {
-        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
     }
 
     fun destroy() {
