@@ -50,13 +50,11 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     }
 
     fun clockOut() {
-        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_OUT))
         sdkInstance.stop()
     }
 
     fun clockIn() {
         sdkInstance.start()
-        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_IN))
     }
 
     fun syncDeviceSettings() {
