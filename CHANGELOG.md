@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.0] - 2021-04-22
+### Added
+- Create trip from the app (Where are you going appearence)
+- CLOCK_IN / CLOCK_OUT geotags were removed
+
 ## [0.6.11] - 2021-04-20
 ### Added
 - Copy button for profile data
