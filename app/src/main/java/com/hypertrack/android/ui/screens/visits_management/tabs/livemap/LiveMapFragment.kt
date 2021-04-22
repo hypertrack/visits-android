@@ -77,7 +77,7 @@ class LiveMapFragment(
                     trackingFragment.visibility = View.VISIBLE
                     searchFragment.visibility = View.INVISIBLE
                 }
-                is SearchPlace, is SetHome -> {
+                is SearchPlace -> {
                     trackingFragment.visibility = View.INVISIBLE
                     searchFragment.visibility = View.VISIBLE
                 }

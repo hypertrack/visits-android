@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
 
 internal class SearchPlaceState(
     context: Context,
-    val mode: String,
     private val backendProvider: HomeManagementApi
 ) : BaseState(context) {
     var destination: PlaceModel? = null
     val home: PlaceModel? = sharedHelper.homePlace
     var mapDestinationMode = false
+
 
     private val _recentPlaces: MutableSet<PlaceModel?> = sharedHelper.recentPlaces?.toMutableSet()?: mutableSetOf()
 
