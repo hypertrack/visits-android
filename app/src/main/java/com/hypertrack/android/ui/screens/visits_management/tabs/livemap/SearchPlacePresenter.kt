@@ -44,11 +44,13 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     private var token: AutocompleteSessionToken? = null
 
     init {
-        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location: Location ->
-            bias = RectangularBounds.newInstance(
-                LatLng(location.latitude - 0.1, location.longitude + 0.1),  // SW
-                LatLng(location.latitude + 0.1, location.longitude - 0.1) // NE
-            )
+        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location: Location? ->
+            location?.let {
+                bias = RectangularBounds.newInstance(
+                    LatLng(location.latitude - 0.1, location.longitude + 0.1),  // SW
+                    LatLng(location.latitude + 0.1, location.longitude - 0.1) // NE
+                )
+            }
         }
     }
 
