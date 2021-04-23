@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [0.7.1] - 2021-04-23
 ### Fixed
 - A crash when no last location is returned from the OS
 
