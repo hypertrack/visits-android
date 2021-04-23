@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+### Fixed
+- A crash when no last location is returned from the OS
+
 ## [0.7.0] - 2021-04-22
 ### Added
 - Create trip from the app (Where are you going appearence)
