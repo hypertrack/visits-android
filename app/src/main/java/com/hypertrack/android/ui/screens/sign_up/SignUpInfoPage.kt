@@ -13,7 +13,6 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.LoginInteractorImpl
-import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import java.util.*
@@ -101,5 +100,9 @@ object SignUpInfoPage {
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
         return view
+    }
+
+    fun Int.stringFromResource(): String {
+        return MyApplication.context.getString(this)
     }
 }

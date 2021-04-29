@@ -32,6 +32,8 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Provider
@@ -92,12 +94,17 @@ object Injector {
         )
     }
 
+    //todo user scope
     fun <T> provideParamVmFactory(param: T): ParamViewModelFactory<T> {
         return ParamViewModelFactory(
             param,
+            getUserScope().tripsInteractor,
             getUserScope().placesRepository,
             getOsUtilsProvider(MyApplication.context),
             placesClient,
+            getAccountRepo(MyApplication.context),
+            getUserScope().photoUploadQueueInteractor,
+            getVisitsApiClient(MyApplication.context)
         )
     }
 
@@ -143,11 +150,55 @@ object Injector {
             val scope = CoroutineScope(Dispatchers.IO)
             val placesRepository = getPlacesRepository()
             val hyperTrackService = getHyperTrackService(context)
+            val photoUploadInteractor = PhotoUploadInteractorImpl(
+                getVisitsRepo(context),
+                getFileRepository(),
+                crashReportsProvider,
+                getImageDecoder(),
+                getVisitsApiClient(MyApplication.context),
+                scope,
+                RetryParams(
+                    retryTimes = 3,
+                    initialDelay = 1000,
+                    factor = 10.0,
+                    maxDelay = 30 * 1000
+                )
+            )
+
+            val photoUploadQueueInteractor = PhotoUploadQueueInteractorImpl(
+                getMyPreferences(MyApplication.context),
+                getFileRepository(),
+                crashReportsProvider,
+                getImageDecoder(),
+                getVisitsApiClient(MyApplication.context),
+                scope,
+                RetryParams(
+                    retryTimes = 3,
+                    initialDelay = 1000,
+                    factor = 10.0,
+                    maxDelay = 30 * 1000
+                )
+            )
+
+            val tripsInteractor = TripsInteractorImpl(
+                getVisitsApiClient(MyApplication.context),
+                getMyPreferences(MyApplication.context),
+                getAccountRepo(MyApplication.context),
+                getMoshi(),
+                getHyperTrackService(MyApplication.context),
+                GlobalScope,
+                photoUploadQueueInteractor,
+                getImageDecoder(),
+                getOsUtilsProvider(MyApplication.context),
+                Dispatchers.IO
+            )
             userScope = UserScope(
                 historyRepository,
+                tripsInteractor,
                 placesRepository,
                 UserScopeViewModelFactory(
                     getVisitsRepo(context),
+                    tripsInteractor,
                     placesRepository,
                     historyRepository,
                     getDriverRepo(context),
@@ -162,21 +213,9 @@ object Injector {
                     placesClient,
                     getDeviceLocationProvider()
                 ),
-                PhotoUploadInteractorImpl(
-                    getVisitsRepo(context),
-                    getFileRepository(),
-                    crashReportsProvider,
-                    getImageDecoder(),
-                    getVisitsApiClient(MyApplication.context),
-                    scope,
-                    RetryParams(
-                        retryTimes = 3,
-                        initialDelay = 1000,
-                        factor = 10.0,
-                        maxDelay = 30 * 1000
-                    )
-                ),
-                hyperTrackService
+                photoUploadInteractor,
+                hyperTrackService,
+                photoUploadQueueInteractor
             )
         }
         return userScope!!
@@ -248,7 +287,8 @@ object Injector {
         val accessTokenRepository = accessTokenRepository(context)
         return ApiClient(
             accessTokenRepository,
-            BASE_URL, accessTokenRepository.deviceId
+            BASE_URL, accessTokenRepository.deviceId,
+            getMoshi()
         )
     }
 
@@ -342,10 +382,12 @@ object Injector {
 
 private class UserScope(
     val historyRepository: HistoryRepository,
+    val tripsInteractor: TripsInteractor,
     val placesRepository: PlacesRepository,
     val userScopeViewModelFactory: UserScopeViewModelFactory,
     val photoUploadInteractor: PhotoUploadInteractor,
-    val hyperTrackService: HyperTrackService
+    val hyperTrackService: HyperTrackService,
+    val photoUploadQueueInteractor: PhotoUploadQueueInteractor
 )
 
 fun interface Factory<A, T> {

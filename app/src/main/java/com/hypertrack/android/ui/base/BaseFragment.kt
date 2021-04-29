@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hypertrack.android.utils.MyApplication
 
 abstract class BaseFragment<T : Activity>(layoutId: Int) : Fragment(layoutId) {
 
@@ -83,6 +84,10 @@ abstract class BaseFragment<T : Activity>(layoutId: Int) : Fragment(layoutId) {
             }
         }
         return false
+    }
+
+    fun Int.stringFromResource(): String {
+        return MyApplication.context.getString(this)
     }
 
 }

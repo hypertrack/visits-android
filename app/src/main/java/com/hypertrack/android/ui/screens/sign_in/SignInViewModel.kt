@@ -11,7 +11,6 @@ import androidx.navigation.NavDirections
 import com.hypertrack.android.interactors.*
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.ui.base.BaseViewModel
-import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
@@ -19,6 +18,7 @@ import kotlinx.coroutines.launch
 class SignInViewModel(
     private val loginInteractor: LoginInteractor,
     private val permissionsInteractor: PermissionsInteractor,
+    private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
     private var login = ""
@@ -58,10 +58,10 @@ class SignInViewModel(
                     showProgress.postValue(false)
                     when (res) {
                         is NoSuchUser -> {
-                            errorText.postValue(R.string.user_does_not_exist.stringFromResource())
+                            errorText.postValue(osUtilsProvider.stringFromResource(R.string.user_does_not_exist))
                         }
                         is InvalidLoginOrPassword -> {
-                            errorText.postValue(R.string.incorrect_username_or_pass.stringFromResource())
+                            errorText.postValue(osUtilsProvider.stringFromResource(R.string.incorrect_username_or_pass))
                         }
                         is EmailConfirmationRequired -> {
                             destination.postValue(
@@ -106,6 +106,10 @@ class SignInViewModel(
 
     fun onSignUpClick() {
         destination.postValue(SignInFragmentDirections.actionSignInFragmentToSignUpFragment())
+    }
+
+    fun Int.stringFromResource(): String {
+        return MyApplication.context.getString(this)
     }
 
     companion object {

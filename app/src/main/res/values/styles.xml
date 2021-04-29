@@ -13,6 +13,7 @@
         <item name="android:fontFamily">@font/medium</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:padding">10dp</item>
+        <item name="android:gravity">center</item>
         <item name="android:textSize">20sp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:background">@drawable/bg_button</item>
@@ -64,6 +65,11 @@
     <style name="MinorButtonStyle" parent="ButtonStyle">
         <item name="android:textColor">@color/colorTakePicture</item>
         <item name="android:background">@drawable/bg_minor_button</item>
+    </style>
+
+    <style name="Title" parent="SmallTitle">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="SmallTitle" parent="TextDark">

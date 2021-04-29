@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.inputmethod.InputMethodManager
@@ -14,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +25,8 @@ import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SearchPlaceFragment(
@@ -32,7 +38,7 @@ class SearchPlaceFragment(
     private lateinit var search: EditText
     private lateinit var destinationOnMap: View
     private var offlineView: View? = null
-    private lateinit var home: View
+    private var home: View? = null
     private lateinit var setHome: View
     private lateinit var homeInfo: View
     private lateinit var setOnMap: View
@@ -40,7 +46,6 @@ class SearchPlaceFragment(
     private var placesAdapter = PlacesAdapter()
     private lateinit var loader: LoaderDecorator
     private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
-    private lateinit var noDestination: View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,15 +61,17 @@ class SearchPlaceFragment(
             backendProvider,
             deviceId,
             viewLifecycleOwner,
-            SearchPlaceState(requireContext(), backendProvider)
+            SearchPlaceState(requireContext(), config.key ?: "config", backendProvider)
         )
         search = view.findViewById(R.id.search)
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
+        requireActivity().setTitle(config.titleResId)
         toolbar.setNavigationOnClickListener { finish() }
         setHasOptionsMenu(true)
+        search.setHint(config.hintResId)
         search.setOnClickListener {
             presenter.setMapDestinationModeEnable(
                 false
@@ -76,11 +83,12 @@ class SearchPlaceFragment(
             }
         })
         search.requestFocus()
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(search, InputMethodManager.SHOW_IMPLICIT)
-        noDestination = view.findViewById(R.id.no_destination)
-        requireActivity().setTitle(R.string.where_are_you_going)
-        search.setHint(R.string.i_m_going_to)
+        val noDestination = view.findViewById<View>(R.id.no_destination)
+        noDestination.visibility =
+            if (config.isNotDecidedEnabled) View.VISIBLE else View.INVISIBLE
         noDestination.setOnClickListener {
             presenter.setMapDestinationModeEnable(false)
             presenter.providePlace(null)
@@ -88,11 +96,10 @@ class SearchPlaceFragment(
         destinationOnMap = view.findViewById(R.id.destination_on_map)
         offlineView = view.findViewById(R.id.offline)
         home = view.findViewById(R.id.home)
-        home.visibility = View.GONE
         setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            Log.d(TAG, "On Home address clicked")
+            liveMapViewModel.onHomeAddressClicked()
         }
         setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
@@ -133,23 +140,53 @@ class SearchPlaceFragment(
         view.visibility = View.INVISIBLE
 
         liveMapViewModel.state.observe(viewLifecycleOwner) { viewState ->
-            when(viewState) {
+            when (viewState) {
                 is OnTrip -> {
                     view.visibility = View.INVISIBLE
                     presenter.initMap(viewState.map)
                 }
                 is SearchPlace -> {
                     view.visibility = View.VISIBLE
+                    updateViewForState(Config.SEARCH_PLACE)
+                }
+                is SetHome -> {
+                    view.visibility = View.VISIBLE
+                    updateViewForState(Config.HOME_ADDRESS)
                 }
                 else -> {
                     view.visibility = View.INVISIBLE
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+            val map = liveMapViewModel.getMap()
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter.initMap(map) }
+        }
+    }
+
+    private fun updateViewForState(config: Config) {
+        Log.d(TAG, "updateViewForState for $config")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_search_place, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.skip).isVisible = config.isSkipEnabled
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.skip) {
+            presenter.skip()
+        }
+        return false
     }
 
     private fun hideSoftInput() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(search.windowToken, 0)
         search.clearFocus()
     }
@@ -170,9 +207,9 @@ class SearchPlaceFragment(
 
     override fun updateHomeAddress(home: PlaceModel?) {
         if (home == null) {
-            this.home.visibility = View.GONE
+            setHome.visibility = View.VISIBLE
+            homeInfo.visibility = View.GONE
         } else {
-            this.home.visibility = View.VISIBLE
             setHome.visibility = View.GONE
             homeInfo.visibility = View.VISIBLE
             (homeInfo.findViewById<View>(R.id.home_text) as TextView).text = home.address
@@ -186,11 +223,11 @@ class SearchPlaceFragment(
     }
 
     override fun showHomeAddress() {
-        home.visibility = View.VISIBLE
+        home?.visibility = View.VISIBLE
     }
 
     override fun hideHomeAddress() {
-        home.visibility = View.GONE
+        home?.visibility = View.GONE
     }
 
     override fun showSetOnMap() {

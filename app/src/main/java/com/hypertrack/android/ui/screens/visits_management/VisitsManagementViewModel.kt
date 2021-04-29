@@ -12,6 +12,7 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.HistoryRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
@@ -134,7 +135,7 @@ class VisitsManagementViewModel(
 
     val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
 
-    val error = MutableLiveData<String>()
+    val error = SingleLiveEvent<String>()
 
     fun refreshVisits(block: () -> Unit) {
 

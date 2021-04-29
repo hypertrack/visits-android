@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.common.KeyValueItem
-import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
@@ -20,20 +19,20 @@ class ProfileViewModel(
     val profile = MutableLiveData<List<KeyValueItem>>(mutableListOf<KeyValueItem>().apply {
         add(
             KeyValueItem(
-                R.string.driver_id.stringFromResource(),
+                osUtilsProvider.stringFromResource(R.string.driver_id),
                 driverRepository.driverId
             )
         )
         add(
             KeyValueItem(
-                R.string.device_id.stringFromResource(),
+                osUtilsProvider.stringFromResource(R.string.device_id),
                 hyperTrackService.deviceId ?: ""
             )
         )
         getBuildVersion()?.let {
             add(
                 KeyValueItem(
-                    R.string.app_version.stringFromResource(),
+                    osUtilsProvider.stringFromResource(R.string.app_version),
                     it
                 )
             )

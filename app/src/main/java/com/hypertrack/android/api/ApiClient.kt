@@ -3,9 +3,13 @@ package com.hypertrack.android.api
 import android.graphics.Bitmap
 import android.util.Log
 import com.hypertrack.android.models.*
+import com.hypertrack.android.models.local.OrderStatus
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.BuildConfig
+import com.squareup.moshi.Moshi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
@@ -19,9 +23,10 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class ApiClient(
-        accessTokenRepository: AccessTokenRepository,
-        baseUrl: String,
-        private val deviceId: String
+    accessTokenRepository: AccessTokenRepository,
+    private val baseUrl: String,
+    private val deviceId: String,
+    private val moshi: Moshi,
 ) : AbstractBackendProvider {
 
     @Suppress("unused")
@@ -92,6 +97,7 @@ class ApiClient(
     }
 
     suspend fun getTrips(page: String = ""): List<Trip> {
+        //todo task pagination
         try {
             val response = api.getTrips(deviceId, page)
             if (response.isSuccessful) {
@@ -106,6 +112,22 @@ class ApiClient(
             throw e
         }
         return emptyList()
+    }
+
+    suspend fun updateOrderMetadata(
+        orderId: String,
+        tripId: String,
+        metadata: Map<String, String>
+    ): Response<Order> {
+        try {
+            return api.updateOrder(
+                orderId = orderId,
+                tripId = tripId,
+                order = OrderBody(metadata = metadata)
+            )
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     suspend fun uploadImage(filename: String, image: Bitmap) {
@@ -154,12 +176,64 @@ class ApiClient(
 
     override suspend fun completeTrip(tripId: String): TripCompletionResult {
         return try {
-            with (api.completeTrip(tripId)) {
+            with(api.completeTrip(tripId)) {
                 if (isSuccessful) TripCompletionSuccess
                 else TripCompletionError(HttpException(this))
             }
         } catch (t: Throwable) {
             TripCompletionError(t)
+        }
+    }
+
+    suspend fun completeOrder(orderId: String, tripId: String): OrderCompletionResponse {
+        try {
+            val res = api.completeOrder(tripId = tripId, orderId = orderId)
+            if (res.isSuccessful) {
+                return OrderCompletionSuccess
+            } else {
+                if (res.code() == 409) {
+                    @Suppress("BlockingMethodInNonBlockingContext")
+                    val order = withContext(Dispatchers.IO) {
+                        moshi.adapter(Order::class.java)
+                            .fromJson(res.errorBody()!!.string())
+                    }
+                    when (order!!.status) {
+                        OrderStatus.COMPLETED -> return OrderCompletionCompleted
+                        OrderStatus.CANCELED -> return OrderCompletionCanceled
+                        else -> return OrderCompletionFailure(HttpException(res))
+                    }
+                } else {
+                    return OrderCompletionFailure(HttpException(res))
+                }
+            }
+        } catch (e: Exception) {
+            return OrderCompletionFailure(e)
+        }
+    }
+
+    suspend fun cancelOrder(orderId: String, tripId: String): OrderCompletionResponse {
+        try {
+            val res = api.cancelOrder(tripId = tripId, orderId = orderId)
+            if (res.isSuccessful) {
+                return OrderCompletionSuccess
+            } else {
+                if (res.code() == 409) {
+                    @Suppress("BlockingMethodInNonBlockingContext")
+                    val order = withContext(Dispatchers.IO) {
+                        moshi.adapter(Order::class.java)
+                            .fromJson(res.errorBody()!!.string())
+                    }
+                    when (order!!.status) {
+                        OrderStatus.COMPLETED -> return OrderCompletionCompleted
+                        OrderStatus.CANCELED -> return OrderCompletionCanceled
+                        else -> return OrderCompletionFailure(HttpException(res))
+                    }
+                } else {
+                    return OrderCompletionFailure(HttpException(res))
+                }
+            }
+        } catch (e: Exception) {
+            return OrderCompletionFailure(e)
         }
     }
 
@@ -170,9 +244,9 @@ class ApiClient(
                     return body()?.firstOrNull {
                         it.archived != true && it.metadata?.get("name") == "Home"
                     }
-                    ?.let {
-                            homeLocation -> return GeofenceLocation(homeLocation.latitude, homeLocation.longitude)
-                    }
+                        ?.let { homeLocation ->
+                            return GeofenceLocation(homeLocation.latitude, homeLocation.longitude)
+                        }
                     ?: NoHomeLocation
                 } else HomeLocationResultError(HttpException(this))
             }
@@ -187,12 +261,17 @@ class ApiClient(
                 if (isSuccessful) {
                     body()?.filter { it.metadata?.get("name") == "Home" && it.archived != true }
                         ?.forEach { api.deleteGeofence(it.geofence_id) }
-                    val result = api.createGeofences(deviceId, GeofenceParams(setOf(
-                        GeofenceProperties(
-                            Point(listOf(homeLocation.longitude, homeLocation.latitude)),
-                            mapOf("name" to "Home"),
-                            100
-                        )), deviceId))
+                    val result = api.createGeofences(
+                        deviceId, GeofenceParams(
+                            setOf(
+                                GeofenceProperties(
+                                    Point(listOf(homeLocation.longitude, homeLocation.latitude)),
+                                    mapOf("name" to "Home"),
+                                    100
+                                )
+                            ), deviceId
+                        )
+                    )
                     if (result.isSuccessful) {
                         return@with HomeUpdateResultSuccess
                     } else {
@@ -202,9 +281,13 @@ class ApiClient(
                     return HomeUpdateResultError(HttpException(this))
                 }
             }
-        }catch (t: Throwable) {
+        } catch (t: Throwable) {
             return HomeUpdateResultError(t)
         }
+    }
+
+    fun getImageUrl(imageId: String): String {
+        return baseUrl + imageId
     }
 
     companion object {
@@ -286,3 +369,9 @@ private fun HistoryStatusMarker.asStatusMarker() = StatusMarker(
     data.steps,
     data.address
 )
+
+sealed class OrderCompletionResponse
+object OrderCompletionSuccess : OrderCompletionResponse()
+object OrderCompletionCanceled : OrderCompletionResponse()
+object OrderCompletionCompleted : OrderCompletionResponse()
+class OrderCompletionFailure(val exception: Exception) : OrderCompletionResponse()

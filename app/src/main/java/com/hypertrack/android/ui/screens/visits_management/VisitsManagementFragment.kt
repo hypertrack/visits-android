@@ -17,6 +17,7 @@ import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.orders.OrdersFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
@@ -36,10 +37,12 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         MyApplication.injector.provideUserScopeViewModelFactory()
     }
 
-    private val tabs = mapOf(
-        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context).instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
+    private val tabs: Map<Tab, Fragment> = mapOf(
+        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context)
+            .instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
         Tab.HISTORY to MapViewFragment(),
-        Tab.ORDERS to VisitsListFragment.newInstance(),
+        Tab.ORDERS to OrdersFragment.newInstance(),
+//        Tab.VISITS to VisitsListFragment.newInstance(),
         Tab.PLACES to PlacesFragment.getInstance(),
         Tab.SUMMARY to SummaryFragment.newInstance(),
         Tab.PROFILE to ProfileFragment()
@@ -83,7 +86,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             override fun getCount(): Int = tabs.size
 
             override fun getItem(position: Int): Fragment {
-                val fragment = tabs.getValue(Tab.values()[position])
+                val fragment = tabs.getValue(tabs.keys.toList()[position])
                 if (fragment is MapViewFragmentOld) {
                     fragment.arguments = Bundle().apply {
                         putString(
@@ -101,7 +104,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             sliding_tabs.getTabAt(i)?.icon =
                 ResourcesCompat.getDrawable(
                     resources,
-                    Tab.values()[i].iconRes,
+                    tabs.keys.toList()[i].iconRes,
                     requireContext().theme
                 )
         }
@@ -218,13 +221,13 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
     companion object {
         const val TAG = "VisitsManagementAct"
-
     }
 
     enum class Tab(@DrawableRes val iconRes: Int) {
         MAP(R.drawable.ic_map_tab),
         HISTORY(R.drawable.ic_history),
         ORDERS(R.drawable.ic_visits_list_tab),
+        VISITS(R.drawable.ic_visits),
         PLACES(R.drawable.ic_places),
 
         //        TIMELINE(R.drawable.,
