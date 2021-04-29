@@ -8,4 +8,7 @@ open class BaseViewModel : ViewModel() {
     val destination = SingleLiveEvent<NavDirections>()
     val popBackStack = SingleLiveEvent<Boolean>()
 
+    //todo remove loadingState form children and rename to loadingState
+    val loadingStateBase = SingleLiveEvent<Boolean>()
+
 }

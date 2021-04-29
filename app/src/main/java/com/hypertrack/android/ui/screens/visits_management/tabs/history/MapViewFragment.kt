@@ -2,6 +2,7 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.history
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.blue
@@ -17,8 +18,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
 import com.hypertrack.android.models.HistoryTile
+import com.hypertrack.android.ui.base.AnimatedDialog
 import com.hypertrack.android.ui.common.SnackbarUtil
+import com.hypertrack.android.ui.common.hide
 import com.hypertrack.android.ui.common.setGoneState
+import com.hypertrack.android.ui.common.show
 import com.hypertrack.android.utils.Factory
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.view_models.HistoryViewModel
@@ -52,6 +56,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
             timeLineView.adapter?.notifyDataSetChanged()
         }
         historyViewModel.history.observe(viewLifecycleOwner) { history ->
+            Log.d(TAG, "Updating history $history")
             historyRenderer?.let { map ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     map.showHistory(history)
@@ -63,6 +68,7 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         }
 
         historyViewModel.error.observe(viewLifecycleOwner, { error ->
+            Log.w(TAG, "History error $error")
             error?.let {
                 SnackbarUtil.showErrorSnackbar(view, it)
             }
@@ -127,7 +133,9 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         if (isLoading) loader.playAnimation() else loader.cancelAnimation()
     }
 
-    companion object { const val TAG = "MapViewFragment" }
+    companion object {
+        const val TAG = "MapViewFragment"
+    }
 }
 
 private enum class LoadingProgressState {

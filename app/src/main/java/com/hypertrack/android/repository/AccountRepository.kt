@@ -33,7 +33,7 @@ class AccountRepository(
         }
 
     override var isPickUpAllowed: Boolean
-        get() = accountData.pickUpAllowed
+        get() = true
         set(value) {
             accountData.pickUpAllowed = value
         }

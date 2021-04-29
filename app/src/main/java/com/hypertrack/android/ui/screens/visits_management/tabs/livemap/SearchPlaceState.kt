@@ -17,7 +17,6 @@ internal class SearchPlaceState(
     val home: PlaceModel? = sharedHelper.homePlace
     var mapDestinationMode = false
 
-
     private val _recentPlaces: MutableSet<PlaceModel?> = sharedHelper.recentPlaces?.toMutableSet()?: mutableSetOf()
 
     fun saveHomePlace(home: PlaceModel?) {

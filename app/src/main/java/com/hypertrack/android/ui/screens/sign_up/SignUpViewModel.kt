@@ -8,11 +8,14 @@ import com.hypertrack.android.interactors.ConfirmationRequired
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.SignUpError
 import com.hypertrack.android.ui.base.BaseViewModel
-import com.hypertrack.android.ui.common.stringFromResource
+import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewModel() {
+class SignUpViewModel(
+    private val loginInteractor: LoginInteractor,
+    private val osUtilsProvider: OsUtilsProvider
+) : BaseViewModel() {
 
     val errorText = MutableLiveData<String?>()
     val page = MutableLiveData<Int>(0)
@@ -21,11 +24,11 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
         when {
             password.length < 8 -> {
                 page.postValue(SignUpFragment.PAGE_USER)
-                errorText.postValue(R.string.password_too_short.stringFromResource())
+                errorText.postValue(osUtilsProvider.stringFromResource(R.string.password_too_short))
             }
             !isEmail(login) -> {
                 page.postValue(SignUpFragment.PAGE_USER)
-                errorText.postValue(R.string.invalid_email.stringFromResource())
+                errorText.postValue(osUtilsProvider.stringFromResource(R.string.invalid_email))
             }
             else -> {
                 viewModelScope.launch {
@@ -73,7 +76,7 @@ class SignUpViewModel(private val loginInteractor: LoginInteractor) : BaseViewMo
             page.postValue(SignUpFragment.PAGE_INFO)
         } else {
             page.postValue(SignUpFragment.PAGE_USER)
-            errorText.postValue(R.string.invalid_email.stringFromResource())
+            errorText.postValue(osUtilsProvider.stringFromResource(R.string.invalid_email))
         }
     }
 

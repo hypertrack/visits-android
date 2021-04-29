@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
+import com.hypertrack.android.api.Trip
 import com.hypertrack.android.models.*
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.AccountPreferencesProvider
@@ -62,7 +63,8 @@ class VisitsRepository(
         // Log.v(TAG, "Refreshing visits")
 //        val geofences = apiClient.getGeofences()
         // Log.v(TAG, "Got geofences $geofences")
-        val trips = apiClient.getTrips()
+//        val trips = apiClient.getTrips()
+        val trips = setOf<Trip>()
         // Log.v(TAG, "Got trips $trips")
         val prototypes: Set<VisitDataSource> = trips.toSet()/*.union(geofences)*/
         // Log.d(TAG, "Total prototypes $prototypes")
@@ -71,9 +73,9 @@ class VisitsRepository(
             val currentValue = _visitsMap[prototype._id]
             if (currentValue == null) {
                 val visit = Visit(
-                        prototype,
-                        osUtilsProvider,
-                        accountPreferences
+                    prototype,
+                    osUtilsProvider,
+                    accountPreferences
                 )
                 _visitsMap[visit._id] = visit
                 _visitItemsById[visit._id] = MutableLiveData(visit)

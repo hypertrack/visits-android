@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.ui.MainActivity
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.utils.stringFromResource
 import com.hypertrack.logistics.android.github.R
 
 

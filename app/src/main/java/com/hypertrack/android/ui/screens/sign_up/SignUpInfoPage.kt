@@ -13,8 +13,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.LoginInteractorImpl
-import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.utils.stringFromResource
 import com.hypertrack.logistics.android.github.R
 import java.util.*
 
@@ -102,4 +102,5 @@ object SignUpInfoPage {
         }
         return view
     }
+
 }

@@ -2,8 +2,10 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.livemap
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.Handler
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
@@ -46,13 +48,11 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
     private var token: AutocompleteSessionToken? = null
 
     init {
-        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location: Location? ->
-            location?.let {
-                bias = RectangularBounds.newInstance(
-                    LatLng(location.latitude - 0.1, location.longitude + 0.1),  // SW
-                    LatLng(location.latitude + 0.1, location.longitude - 0.1) // NE
-                )
-            }
+        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location: Location ->
+            bias = RectangularBounds.newInstance(
+                LatLng(location.latitude - 0.1, location.longitude + 0.1),  // SW
+                LatLng(location.latitude + 0.1, location.longitude - 0.1) // NE
+            )
         }
     }
 
@@ -196,6 +196,12 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
             }
 
         }
+    }
+
+    private fun actionLocationSourceSettings() {
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
     fun destroy() {
