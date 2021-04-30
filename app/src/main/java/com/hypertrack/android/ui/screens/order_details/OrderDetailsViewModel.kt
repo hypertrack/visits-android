@@ -277,6 +277,10 @@ class OrderDetailsViewModel(
                         )
                     }
                 }
+            }.also {
+                Log.d("cutag", "order photos${order.photos}")
+                Log.d("cutag", "queue ${uploadQueue}")
+                Log.d("cutag", "items ${it}")
             }
         )
     }

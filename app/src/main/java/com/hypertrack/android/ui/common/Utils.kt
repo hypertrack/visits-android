@@ -61,4 +61,10 @@ fun <T, R> List<T>.toMap(keyFunction: (T) -> R): Map<R, T> {
     return map
 }
 
+fun <T, R> Set<T>.toMap(keyFunction: (T) -> R): Map<R, T> {
+    val map = mutableMapOf<R, T>()
+    forEach { map.put(keyFunction.invoke(it), it) }
+    return map
+}
+
 

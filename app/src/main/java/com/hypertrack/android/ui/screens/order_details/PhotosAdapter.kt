@@ -34,4 +34,8 @@ class PhotoItem(
     val thumbnail: Bitmap?,
     val url: String?,
     val state: PhotoUploadingState
-)
+) {
+    override fun toString(): String {
+        return " $photoId $state"
+    }
+}
