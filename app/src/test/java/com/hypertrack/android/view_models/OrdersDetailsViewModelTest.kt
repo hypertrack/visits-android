@@ -276,7 +276,7 @@ class OrdersDetailsViewModelTest {
                 coEvery { getTrips() } returns backendTrips
                 coEvery { completeTrip(any()) } returns TripCompletionSuccess
             }
-            val slot = slot<Map<String, String>>()
+            val slot = slot<Map<String, Any>>()
             val sdk: HyperTrack = mockk() {
                 every { addGeotag(capture(slot), any()) } returns this
                 every { isRunning } returns true
@@ -291,7 +291,11 @@ class OrdersDetailsViewModelTest {
                                     createBaseOrder().copy(id = "1"),
                                     false,
                                     "Note",
-                                    legacy = true
+                                    legacy = true,
+                                    photos = mutableSetOf(
+                                        TripInteractorTest.createBasePhotoForUpload(photoId = "1"),
+                                        TripInteractorTest.createBasePhotoForUpload(photoId = "2"),
+                                    )
                                 )
                             ).toMutableList()
                         )
@@ -318,8 +322,9 @@ class OrdersDetailsViewModelTest {
             slot.captured.let {
                 assertEquals("1", it["trip_id"])
                 assertEquals("VISIT_MARKED_COMPLETE", it["type"])
-                assertEquals("Note", it["visit_note"])
-                assertTrue(it["visit_photos"] != null)
+                assertEquals("Note", it["order_note"])
+                assertTrue(it["order_photos"] != null)
+                assertEquals(2, (it["order_photos"]!! as Set<*>).size)
             }
         }
     }
@@ -338,7 +343,7 @@ class OrdersDetailsViewModelTest {
                 coEvery { getTrips() } returns backendTrips
                 coEvery { completeTrip(any()) } returns TripCompletionSuccess
             }
-            val slot = slot<Map<String, String>>()
+            val slot = slot<Map<String, Any>>()
             val sdk: HyperTrack = mockk() {
                 every { addGeotag(capture(slot), any()) } returns this
                 every { isRunning } returns true
@@ -353,7 +358,11 @@ class OrdersDetailsViewModelTest {
                                     createBaseOrder().copy(id = "1"),
                                     false,
                                     "Note",
-                                    legacy = true
+                                    legacy = true,
+                                    photos = mutableSetOf(
+                                        TripInteractorTest.createBasePhotoForUpload(photoId = "1"),
+                                        TripInteractorTest.createBasePhotoForUpload(photoId = "2"),
+                                    )
                                 )
                             ).toMutableList()
                         )
@@ -380,7 +389,9 @@ class OrdersDetailsViewModelTest {
             slot.captured.let {
                 assertEquals("1", it["trip_id"])
                 assertEquals("VISIT_MARKED_CANCELED", it["type"])
-                assertEquals("Note", it["visit_note"])
+                assertEquals("Note", it["order_note"])
+                assertTrue(it["order_photos"] != null)
+                assertEquals(2, (it["order_photos"]!! as Set<*>).size)
             }
         }
     }
@@ -540,9 +551,21 @@ class OrdersDetailsViewModelTest {
             )
             val ld = MutableLiveData<Map<String, PhotoForUpload>>(
                 mapOf(
-                    "1" to PhotoForUpload("", "1", "", "", PhotoUploadingState.ERROR),
-                    "2" to PhotoForUpload("", "2", "", "", PhotoUploadingState.NOT_UPLOADED),
-                    "3" to PhotoForUpload("", "3", "", "", PhotoUploadingState.UPLOADED),
+                    "1" to TripInteractorTest.createBasePhotoForUpload(
+                        "1",
+                        "",
+                        PhotoUploadingState.ERROR
+                    ),
+                    "2" to TripInteractorTest.createBasePhotoForUpload(
+                        "2",
+                        "",
+                        PhotoUploadingState.NOT_UPLOADED
+                    ),
+                    "3" to TripInteractorTest.createBasePhotoForUpload(
+                        "3",
+                        "",
+                        PhotoUploadingState.UPLOADED
+                    ),
                 )
             )
             val slot = slot<String>()
@@ -554,7 +577,11 @@ class OrdersDetailsViewModelTest {
                 every { getOrder("1") } returns LocalOrder(
                     createBaseOrder(), true, null, false,
                     listOf("1", "2", "3").map {
-                        PhotoForUpload("", it, "", "", state = PhotoUploadingState.NOT_UPLOADED)
+                        TripInteractorTest.createBasePhotoForUpload(
+                            it,
+                            "",
+                            state = PhotoUploadingState.NOT_UPLOADED
+                        )
                     }.toMutableSet()
                 )
             }

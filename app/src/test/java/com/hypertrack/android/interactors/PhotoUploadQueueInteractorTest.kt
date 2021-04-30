@@ -6,7 +6,6 @@ import android.os.Looper
 import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.repository.FileRepository
-import com.hypertrack.android.ui.common.toMap
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.ImageDecoder
 import com.hypertrack.android.utils.MAX_IMAGE_SIDE_LENGTH_PX
@@ -111,27 +110,39 @@ class PhotoUploadQueueInteractorTest() {
     fun uploadImagesQueue() {
         runBlocking {
             val initialQueue = listOf(
-                PhotoForUpload(
-                    itemId = "order1",
+                TripInteractorTest.createBasePhotoForUpload(
                     photoId = "5",
                     filePath = "path5",
-                    base64thumbnail = "",
-                    PhotoUploadingState.NOT_UPLOADED
+                    state = PhotoUploadingState.NOT_UPLOADED
                 ),
-                PhotoForUpload(
-                    itemId = "order2",
+                TripInteractorTest.createBasePhotoForUpload(
                     photoId = "6",
                     filePath = "path6",
-                    base64thumbnail = "",
-                    PhotoUploadingState.ERROR
-                ),
+                    state = PhotoUploadingState.ERROR
+                )
             )
 
             val toUpload = listOf(
-                PhotoForUpload("", "1", "path1", "", PhotoUploadingState.NOT_UPLOADED),
-                PhotoForUpload("", "2", "path2", "", PhotoUploadingState.NOT_UPLOADED),
-                PhotoForUpload("", "3", "path3", "", PhotoUploadingState.NOT_UPLOADED),
-                PhotoForUpload("", "4", "path4", "", PhotoUploadingState.NOT_UPLOADED)
+                TripInteractorTest.createBasePhotoForUpload(
+                    "1",
+                    "path1",
+                    PhotoUploadingState.NOT_UPLOADED
+                ),
+                TripInteractorTest.createBasePhotoForUpload(
+                    "2",
+                    "path2",
+                    PhotoUploadingState.NOT_UPLOADED
+                ),
+                TripInteractorTest.createBasePhotoForUpload(
+                    "3",
+                    "path3",
+                    PhotoUploadingState.NOT_UPLOADED
+                ),
+                TripInteractorTest.createBasePhotoForUpload(
+                    "4",
+                    "path4",
+                    PhotoUploadingState.NOT_UPLOADED
+                )
             )
 
             val photos = mutableSetOf<PhotoForUpload>().apply {
@@ -147,14 +158,8 @@ class PhotoUploadQueueInteractorTest() {
                     photos.add(photo)
                 }
 
-                override suspend fun updatePhotoState(
-                    itemId: String,
-                    photoId: String,
-                    state: PhotoUploadingState
-                ) {
-                    photos.first { it.photoId == photoId }.also {
-                        assertEquals(itemId, it.itemId)
-                    }.state = state
+                override suspend fun updatePhotoState(photoId: String, state: PhotoUploadingState) {
+                    photos.first { it.photoId == photoId }.state = state
                 }
 
                 override suspend fun getPhotoFromQueue(photoId: String): PhotoForUpload? {

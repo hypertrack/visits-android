@@ -401,13 +401,16 @@ class TripInteractorTest {
             )
         }
 
-        fun createBasePhotoForUpload(): PhotoForUpload {
+        fun createBasePhotoForUpload(
+            photoId: String = "1 " + Math.random(),
+            filePath: String = "",
+            state: PhotoUploadingState = PhotoUploadingState.NOT_UPLOADED
+        ): PhotoForUpload {
             return PhotoForUpload(
+                photoId,
+                filePath,
                 "",
-                "",
-                "",
-                "",
-                PhotoUploadingState.NOT_UPLOADED,
+                state,
             )
         }
     }

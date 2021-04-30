@@ -38,9 +38,23 @@ class ComplexTripsTest {
         )
         val listVm = OrdersListViewModel(tripsInteractor, mockk())
         val detailsVm1 =
-            OrderDetailsViewModel("1", tripsInteractor, mockk(), mockk(), mockk(), mockk())
+            OrderDetailsViewModel(
+                "1",
+                tripsInteractor,
+                mockk(relaxed = true),
+                mockk(relaxed = true),
+                mockk(relaxed = true),
+                mockk(relaxed = true)
+            )
         val detailsVm2 =
-            OrderDetailsViewModel("2", tripsInteractor, mockk(), mockk(), mockk(), mockk())
+            OrderDetailsViewModel(
+                "2",
+                tripsInteractor,
+                mockk(relaxed = true),
+                mockk(relaxed = true),
+                mockk(relaxed = true),
+                mockk(relaxed = true)
+            )
 
         runBlocking {
             tripsInteractor.refreshTrips()
