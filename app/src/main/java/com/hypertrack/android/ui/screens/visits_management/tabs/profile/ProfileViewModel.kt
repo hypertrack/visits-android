@@ -2,17 +2,20 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.profile
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.common.KeyValueItem
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 
 class ProfileViewModel(
     driverRepository: DriverRepository,
     hyperTrackService: HyperTrackService,
+    accountRepository: AccountRepository,
     private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
@@ -29,6 +32,14 @@ class ProfileViewModel(
                 hyperTrackService.deviceId ?: ""
             )
         )
+        if (BuildConfig.DEBUG) {
+            add(
+                KeyValueItem(
+                    "Publishable key (debug)",
+                    accountRepository.publishableKey
+                )
+            )
+        }
         getBuildVersion()?.let {
             add(
                 KeyValueItem(
