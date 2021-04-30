@@ -9,6 +9,7 @@ import com.hypertrack.android.repository.FileRepository
 import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.retryWithBackoff
 import com.hypertrack.android.ui.base.Consumable
+import com.hypertrack.android.ui.common.toMap
 import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.ImageDecoder
 import com.hypertrack.android.utils.MAX_IMAGE_SIDE_LENGTH_PX
@@ -42,7 +43,11 @@ class PhotoForUpload(
     //todo task test
     val base64thumbnail: String,
     var state: PhotoUploadingState
-)
+) {
+    override fun toString(): String {
+        return " $photoId $state"
+    }
+}
 
 enum class PhotoUploadingState {
     UPLOADED, NOT_UPLOADED, ERROR
@@ -67,51 +72,41 @@ class PhotoUploadQueueInteractorImpl(
 
     init {
         scope.launch {
-            val oldPhotos = mutableMapOf<String, PhotoForUpload>().apply {
-                queueStorage.getPhotosQueue().filter { it.state != PhotoUploadingState.UPLOADED }
-                    .forEach {
-                        put(it.photoId, it)
-                    }
-            }
-
-            queue.postValue(oldPhotos)
-
-            oldPhotos.forEach {
-                uploadPhoto(it.value)
-            }
+            queueStorage.getPhotosQueue()
+                .filter { it.state != PhotoUploadingState.UPLOADED }
+                .toMap { it.photoId }.forEach {
+                    uploadPhotoSetStateAndUpdateLiveData(it.value)
+                }
         }
     }
 
     override fun addToQueue(photo: PhotoForUpload) {
         scope.launch {
             queueStorage.addToPhotosQueue(photo)
-            queue.postValue((queue.value ?: mapOf()).toMutableMap().apply {
-                put(photo.photoId, photo)
-            })
-            uploadPhoto(photo)
+            updateQueueLiveData()
+            uploadPhotoSetStateAndUpdateLiveData(photo)
         }
     }
 
     override fun retry(photoId: String) {
         scope.launch {
-            queueStorage.getPhotoFromQueue(photoId)?.let { uploadPhoto(it) }
+            queueStorage.getPhotoFromQueue(photoId)?.let {
+                uploadPhotoSetStateAndUpdateLiveData(it)
+            }
         }
     }
 
-    private suspend fun uploadPhoto(photo: PhotoForUpload) {
+    private suspend fun uploadPhotoSetStateAndUpdateLiveData(photo: PhotoForUpload) {
         // Log.d(TAG, "Launched preview update task")
         try {
             saveImageState(
                 imageId = photo.photoId,
                 PhotoUploadingState.NOT_UPLOADED
             )
+            updateQueueLiveData()
             retryWithBackoff(retryParams, {
                 uploadImage(imageId = photo.photoId, imagePath = photo.filePath)
             }, shouldRetry = {
-                //todo task
-                if (BuildConfig.DEBUG) {
-                    return@retryWithBackoff false
-                }
                 return@retryWithBackoff when (it) {
                     is HttpException -> {
                         it.code() !in 400..499
@@ -124,18 +119,15 @@ class PhotoUploadQueueInteractorImpl(
                 imageId = photo.photoId,
                 PhotoUploadingState.UPLOADED
             )
-            queue.postValue((queue.value ?: mapOf()).toMutableMap().apply {
-                remove(photo.photoId)
-            })
+            updateQueueLiveData()
             fileRepository.deleteIfExists(photo.filePath)
         } catch (t: Exception) {
             saveImageState(
                 imageId = photo.photoId,
                 PhotoUploadingState.ERROR
             )
+            updateQueueLiveData()
             errorFlow.emit(Consumable(t))
-            //todo test
-            queue.value?.get(photo.photoId)?.state = PhotoUploadingState.ERROR
             when (t) {
                 is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException -> {
                     Log.i(VisitsRepository.TAG, "Failed to upload image", t)
@@ -150,11 +142,6 @@ class PhotoUploadQueueInteractorImpl(
         imagePath: String,
     ) {
         try {
-            //todo task
-            if (BuildConfig.DEBUG) {
-                delay(1000)
-                throw Exception()
-            }
             val uploadedImage = imageDecoder.readBitmap(imagePath, MAX_IMAGE_SIDE_LENGTH_PX)
             apiClient.uploadImage(imageId, uploadedImage)
             // Log.v(TAG, "Updated visit pic in target $target")
@@ -168,5 +155,12 @@ class PhotoUploadQueueInteractorImpl(
         state: PhotoUploadingState
     ) {
         queueStorage.updatePhotoState(imageId, state)
+        updateQueueLiveData()
     }
+
+    private suspend fun updateQueueLiveData() {
+        queue.postValue(queueStorage.getPhotosQueue().toMap { it.photoId })
+    }
+
+
 }
