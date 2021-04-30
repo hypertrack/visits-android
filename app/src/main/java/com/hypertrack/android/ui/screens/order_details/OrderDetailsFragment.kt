@@ -22,7 +22,6 @@ import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.stringFromResource
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_order_detail.*
-import kotlinx.android.synthetic.main.fragment_order_detail.customerNoteGroup
 import kotlinx.android.synthetic.main.fragment_order_detail.divider
 import kotlinx.android.synthetic.main.fragment_order_detail.etVisitNote
 import kotlinx.android.synthetic.main.fragment_order_detail.ivBack
@@ -122,9 +121,6 @@ class OrderDetailsFragment : ProgressDialogFragment(R.layout.fragment_order_deta
                 vm.onNoteChanged(text)
             }
         })
-
-        //todo
-        customerNoteGroup.hide()
 
         tvTakePicture.setOnClickListener {
             vm.onAddPhotoClicked(mainActivity(), etVisitNote.textString())
