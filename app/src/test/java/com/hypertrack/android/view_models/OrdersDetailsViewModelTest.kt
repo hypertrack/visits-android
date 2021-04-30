@@ -83,7 +83,7 @@ class OrdersDetailsViewModelTest {
                 assertTrue(it.isNoteEditable.observeAndGetValue())
                 assertTrue(it.showCompleteButtons.observeAndGetValue())
                 assertFalse(it.showPickUpButton.observeAndGetValue())
-                //todo task enable on twmo
+                //todo enable on twmo
 //                assertTrue(it.showAddPhoto.observeAndGetValue())
                 assertNull(
                     getFromMetadata(

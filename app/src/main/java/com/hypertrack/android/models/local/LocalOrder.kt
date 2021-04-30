@@ -27,7 +27,6 @@ data class LocalOrder(
     //todo task remove
     var isPickedUp: Boolean = true,
     var note: String? = null,
-    //todo task test persists
     //todo we should make it set of string, whole photos is stored here until we'll enable retrieving them from s3
     var photos: MutableSet<PhotoForUpload> = mutableSetOf(),
     val legacy: Boolean = false
