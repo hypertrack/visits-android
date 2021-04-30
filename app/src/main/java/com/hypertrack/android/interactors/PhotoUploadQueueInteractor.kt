@@ -40,7 +40,7 @@ interface PhotoUploadQueueStorage {
 class PhotoForUpload(
     val photoId: String,
     val filePath: String,
-    //todo task test
+    //todo test
     val base64thumbnail: String,
     var state: PhotoUploadingState
 ) {

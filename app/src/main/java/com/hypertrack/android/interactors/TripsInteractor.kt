@@ -97,7 +97,7 @@ class TripsInteractorImpl(
             if (legacyTrip != null) {
                 //legacy mode for v1 trips
                 //destination = order, order.id = trip.id
-                //todo task handle case if not loaded yet
+                //todo handle case if not loaded from database yet
                 val oldLocalOrders = trips.value!!.firstOrNull { it.id == legacyTrip._id }
                     ?.orders ?: listOf()
                 val localTrip =
@@ -154,7 +154,7 @@ class TripsInteractorImpl(
 
     override suspend fun updateOrderNote(orderId: String, orderNote: String) {
         var stop = false
-        //todo task handle not loaded yet
+        //todo handle when not loaded from database yet
         trips.postValue(trips.value!!.apply {
             for (trip in this) {
                 for (order in trip.orders) {
@@ -225,7 +225,6 @@ class TripsInteractorImpl(
         photoUploadInteractor.retry(photoId)
     }
 
-    //todo task test legacy trips
     private suspend fun setOrderCompletionStatus(
         orderId: String,
         canceled: Boolean

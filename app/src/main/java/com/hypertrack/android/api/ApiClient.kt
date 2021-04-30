@@ -97,7 +97,6 @@ class ApiClient(
     }
 
     suspend fun getTrips(page: String = ""): List<Trip> {
-        //todo task pagination
         try {
             val response = api.getTrips(deviceId, page)
             if (response.isSuccessful) {

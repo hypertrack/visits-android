@@ -41,7 +41,6 @@ class OrdersListViewModel(
             }
         }
 
-    //todo task tests
     val orders: LiveData<List<LocalOrder>> =
         Transformations.map(tripsInteractor.currentTrip) { trip ->
             if (trip != null) {

@@ -34,7 +34,7 @@ class TripInteractorTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    //todo task test error emission
+    //todo test error emission
     @Test
     fun `it should load trips with orders`() {
         val backendTrips = listOf(
