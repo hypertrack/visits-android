@@ -28,7 +28,9 @@ class OrdersListViewModel(
     val metadata: LiveData<List<KeyValueItem>> =
         Transformations.map(tripsInteractor.currentTrip) { trip ->
             if (trip != null) {
-                trip.metadata.toList().map { KeyValueItem(it.first, it.second) }.toMutableList()
+                trip.metadata
+                    .filter { (key, _) -> !key.startsWith("ht_") }
+                    .toList().map { KeyValueItem(it.first, it.second) }.toMutableList()
                     .apply {
                         if (BuildConfig.DEBUG) {
                             add(KeyValueItem("trip_id (debug)", trip.id))

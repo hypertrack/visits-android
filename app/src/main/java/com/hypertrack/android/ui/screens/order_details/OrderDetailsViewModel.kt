@@ -79,17 +79,19 @@ class OrderDetailsViewModel(
     }
 
     val metadata = Transformations.map(order) { order ->
-        order.metadata.toMutableMap().apply {
-            put(osUtilsProvider.stringFromResource(R.string.order_status), order.status.value)
-            if (accountRepository.isPickUpAllowed && order.status == OrderStatus.ONGOING) {
-                put(
-                    osUtilsProvider.stringFromResource(R.string.order_picked_up),
-                    order.isPickedUp.toString()
-                )
+        order.metadata
+            .filter { (key, _) -> !key.startsWith("ht_") }
+            .toMutableMap().apply {
+                put(osUtilsProvider.stringFromResource(R.string.order_status), order.status.value)
+                if (accountRepository.isPickUpAllowed && order.status == OrderStatus.ONGOING) {
+                    put(
+                        osUtilsProvider.stringFromResource(R.string.order_picked_up),
+                        order.isPickedUp.toString()
+                    )
+                }
+            }.map {
+                KeyValueItem(it.key, it.value)
             }
-        }.map {
-            KeyValueItem(it.key, it.value)
-        }
     }
     val showNoteButtons = MutableLiveData(false)
     val showPhotosGroup = Transformations.map(order) {
