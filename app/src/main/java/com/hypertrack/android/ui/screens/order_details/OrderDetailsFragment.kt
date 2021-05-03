@@ -200,7 +200,7 @@ class OrderDetailsFragment : ProgressDialogFragment(R.layout.fragment_order_deta
     }
 
     override fun onBackPressed(): Boolean {
-        vm.onSaveNote(etVisitNote.textString())
+        vm.onExit(etVisitNote.textString())
         return super.onBackPressed()
     }
 }

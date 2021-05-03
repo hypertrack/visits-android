@@ -75,7 +75,7 @@ interface ApiInterface {
         @Path("trip_id") tripId: String,
         @Path("order_id") orderId: String,
         @Body order: OrderBody
-    ): Response<Order>
+    ): Response<Trip>
 
     /**
      * client/devices/A24BA1B4-1234-36F7-8DD7-15D97C3FD912/history/2021-02-05?timezone=Europe%2FZaporozhye

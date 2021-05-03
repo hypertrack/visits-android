@@ -172,7 +172,10 @@ class TripsInteractorImpl(
                                     trip.orders = trip.orders.toMutableList().apply {
                                         set(
                                             indexOf(order),
-                                            orderFactory.create(res.body()!!, order)
+                                            orderFactory.create(
+                                                res.body()!!.orders!!.first { it.id == orderId },
+                                                order
+                                            )
                                         )
                                     }
                                 } else {

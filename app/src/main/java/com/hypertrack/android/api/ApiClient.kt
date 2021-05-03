@@ -117,7 +117,7 @@ class ApiClient(
         orderId: String,
         tripId: String,
         metadata: Map<String, String>
-    ): Response<Order> {
+    ): Response<Trip> {
         try {
             return api.updateOrder(
                 orderId = orderId,
