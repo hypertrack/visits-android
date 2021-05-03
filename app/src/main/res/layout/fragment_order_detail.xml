@@ -243,12 +243,12 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
-                tools:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTakePicture"
-                app:srcCompat="@color/colorBlack" />
+                app:srcCompat="@color/colorBlack"
+                tools:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPickUp"
@@ -256,15 +256,16 @@
                 android:layout_width="0dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/medium"
                 android:gravity="center"
                 android:padding="10dp"
-                tools:visibility="gone"
                 android:text="@string/pick_up"
                 android:textColor="@color/colorWhite"
-                app:layout_constraintEnd_toEndOf="@+id/etVisitNote"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider" />
+                app:layout_constraintTop_toBottomOf="@+id/divider"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/divider2"
