@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.*
+import com.airbnb.lottie.L
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.MarkerOptions
@@ -81,6 +82,7 @@ class OrderDetailsViewModel(
     val metadata = Transformations.map(order) { order ->
         order.metadata
             .filter { (key, _) -> !key.startsWith("ht_") }
+            .filter { (key, _) -> key != LocalOrder.ORDER_NOTE_KEY }
             .toMutableMap().apply {
                 put(osUtilsProvider.stringFromResource(R.string.order_status), order.status.value)
                 if (accountRepository.isPickUpAllowed && order.status == OrderStatus.ONGOING) {
@@ -157,10 +159,17 @@ class OrderDetailsViewModel(
     fun onSaveNote(orderNote: String) {
         if (orderNote != order.value!!.metadataNote.orEmpty()) {
             viewModelScope.launch {
+                showNoteButtons.postValue(false)
                 loadingStateBase.postValue(true)
                 tripsInteractor.updateOrderNote(orderId, orderNote)
                 loadingStateBase.postValue(false)
             }
+        }
+    }
+
+    fun onExit(orderNote: String) {
+        if (order.value?.legacy == false) {
+            onSaveNote(orderNote)
         }
     }
 
@@ -197,7 +206,9 @@ class OrderDetailsViewModel(
     }
 
     fun onAddPhotoClicked(activity: Activity, note: String) {
-        onSaveNote(note)
+        if (order.value!!.legacy) {
+            onSaveNote(note)
+        }
         try {
             val file = osUtilsProvider.createImageFile()
             // Save a file: path for use with ACTION_VIEW intents
