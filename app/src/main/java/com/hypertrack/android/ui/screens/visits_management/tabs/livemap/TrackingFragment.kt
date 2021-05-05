@@ -56,7 +56,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
     private var stats: TextView? = null
     private var destination: TextView? = null
     private var loader: LoaderDecorator? = null
-    private lateinit var presenter: TrackingPresenter
+    private var presenter: TrackingPresenter? = null
     private var tripsAdapter = TripsAdapter()
 
     private val liveMapViewModel: LiveMapViewModel by viewModels({ requireParentFragment() })
@@ -71,10 +71,10 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
         blockingView = view.findViewById(R.id.blocking_view)
         locationButton = view.findViewById(R.id.location_button)
         locationButton.setOnClickListener {
-            presenter.setCameraFixedEnabled(true)
+            presenter?.setCameraFixedEnabled(true)
             locationButton.hide()
             blockingView.setOnTouchListener { _, _ ->
-                presenter.setCameraFixedEnabled(false)
+                presenter?.setCameraFixedEnabled(false)
                 locationButton.show()
                 blockingView.setOnTouchListener(null)
                 false
@@ -82,7 +82,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
         }
         offlineView = view.findViewById(R.id.offline)
         whereAreYouGoing = view.findViewById(R.id.where_are_you)
-        whereAreYouGoing.setOnClickListener { presenter.openSearch() }
+        whereAreYouGoing.setOnClickListener { presenter?.openSearch() }
         bottomHolder = view.findViewById(R.id.bottom_holder)
         bottomHolderCover = view.findViewById(R.id.bottom_holder_cover)
         bottomHolderSheetBehavior = BottomSheetBehavior.from(bottomHolder)
@@ -115,7 +115,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
                 view: View?,
                 position: Int
             ) {
-            presenter.selectTrip(tripsAdapter.getItem(position))
+            presenter?.selectTrip(tripsAdapter.getItem(position))
         }})
         tripsRecyclerView.adapter = tripsAdapter
         bottomHolder.setOnClickListener {
@@ -126,14 +126,14 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
             }
         }
         val shareButton = view.findViewById<Button>(R.id.shareButton)
-        shareButton.setOnClickListener { presenter.shareTrackMessage() }
+        shareButton.setOnClickListener { presenter?.shareTrackMessage() }
         val endTripButton = view.findViewById<Button>(R.id.endTripButton)
         endTripButton.setOnClickListener { tripConfirmSnackbar!!.show() }
         tripConfirmSnackbar =
             Snackbar.make(view.rootView, R.layout.snackbar_trip_confirm, Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.id.resume) { tripConfirmSnackbar!!.dismiss() }
                 .setAction(R.id.end_trip) {
-                    viewLifecycleOwner.lifecycleScope.launch { presenter.endTrip() }
+                    viewLifecycleOwner.lifecycleScope.launch { presenter?.endTrip() }
                     tripConfirmSnackbar!!.dismiss()
                 }
         loader = LoaderDecorator(view.context)
@@ -141,7 +141,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
             when (viewState) {
                 is OnTrip -> {
                     view.visibility = View.VISIBLE
-                    presenter.subscribeUpdates(viewState.map)
+                    presenter?.subscribeUpdates(viewState.map)
                 }
                 else -> {
                     view.visibility = View.INVISIBLE
@@ -163,14 +163,14 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             Log.d(TAG, "got google map from VM $map")
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter.subscribeUpdates(map) }
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter?.subscribeUpdates(map) }
         }
     }
 
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "Pausing...")
-        presenter.pause()
+        presenter?.pause()
     }
 
     override fun updateConnectionStatus(offline: Boolean) {
@@ -198,7 +198,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
                     bottomHolder.visibility = View.INVISIBLE
                     whereAreYouGoing.visibility = View.VISIBLE
                 }
-                presenter.stopTripInfoUpdating()
+                presenter?.stopTripInfoUpdating()
             } else {
                 whereAreYouGoing.visibility = View.INVISIBLE
                 bottomHolder.visibility = View.VISIBLE
@@ -231,7 +231,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
                 destinationArrivalTitle!!.setText(R.string.tracking)
                 destinationAway!!.text = ""
                 destinationAwayTitle!!.visibility = View.INVISIBLE
-                presenter.stopTripInfoUpdating()
+                presenter?.stopTripInfoUpdating()
             } else {
                 tripTo!!.setText(R.string.trip_to)
                 destinationIcon!!.setImageResource(destination)
@@ -260,7 +260,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
                                 TimeUnit.SECONDS.toMinutes(remainingDuration.toLong())
                             )
                         }
-                        presenter.startTripInfoUpdating(trip)
+                        presenter?.startTripInfoUpdating(trip)
                     } else {
                         destinationArrival!!.text = "-"
                         destinationAway!!.text = "-"
@@ -281,7 +281,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
     }
 
     override fun showTripSummaryInfo(trip: Trip) {
-        presenter.stopTripInfoUpdating()
+        presenter?.stopTripInfoUpdating()
         tripConfirmSnackbar!!.dismiss()
         if (activity != null) {
             if (trip.destination == null && trip.summary == null) {
@@ -323,7 +323,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
 
     override fun onDestroyView() {
         super.onDestroyView()
-        presenter.destroy()
+        presenter?.destroy()
     }
 
     companion object {
