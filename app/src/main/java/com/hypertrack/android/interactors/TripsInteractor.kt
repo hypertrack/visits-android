@@ -1,6 +1,7 @@
 package com.hypertrack.android.interactors
 
 import android.content.res.Resources
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -31,11 +32,13 @@ interface TripsInteractor {
     val errorFlow: MutableSharedFlow<Consumable<Exception>>
     val currentTrip: LiveData<LocalTrip?>
     val completedTrips: LiveData<List<LocalTrip>>
+    fun getOrderLiveData(orderId: String): LiveData<LocalOrder>
     suspend fun refreshTrips()
     suspend fun cancelOrder(orderId: String): OrderCompletionResponse
     suspend fun completeOrder(orderId: String): OrderCompletionResponse
-    fun getOrder(orderId: String): LocalOrder
+    fun getOrder(orderId: String): LocalOrder?
     suspend fun updateOrderNote(orderId: String, orderNote: String)
+    suspend fun persistOrderNote(orderId: String, orderNote: String?)
     suspend fun setOrderPickedUp(orderId: String)
     suspend fun addPhotoToOrder(orderId: String, path: String)
     fun retryPhotoUpload(orderId: String, photoId: String)
@@ -86,6 +89,14 @@ class TripsInteractorImpl(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+
+    override fun getOrderLiveData(orderId: String): LiveData<LocalOrder> {
+        return Transformations.switchMap(trips) {
+            MutableLiveData<LocalOrder>().apply {
+                getOrder(orderId).let { if (it != null) postValue(it) }
+            }
+        }
+    }
 
     override suspend fun refreshTrips() {
         try {
@@ -139,9 +150,8 @@ class TripsInteractorImpl(
         }
     }
 
-    //todo live data
-    override fun getOrder(orderId: String): LocalOrder {
-        return currentTrip.value?.orders?.first { it.id == orderId }!!
+    override fun getOrder(orderId: String): LocalOrder? {
+        return trips.value?.map { it.orders }?.flatten()?.firstOrNull() { it.id == orderId }
     }
 
     override suspend fun completeOrder(orderId: String): OrderCompletionResponse {
@@ -153,49 +163,49 @@ class TripsInteractorImpl(
     }
 
     override suspend fun updateOrderNote(orderId: String, orderNote: String) {
-        var stop = false
-        //todo handle when not loaded from database yet
-        trips.postValue(trips.value!!.apply {
-            for (trip in this) {
-                for (order in trip.orders) {
-                    if (order.id == orderId) {
-                        try {
-                            if (!order.legacy) {
-                                val res = apiClient.updateOrderMetadata(
-                                    orderId = orderId,
-                                    tripId = trip.id,
-                                    metadata = order.metadata.toMutableMap().apply {
-                                        put(LocalOrder.ORDER_NOTE_KEY, orderNote)
-                                    }
-                                )
-                                if (res.isSuccessful) {
-                                    trip.orders = trip.orders.toMutableList().apply {
-                                        set(
-                                            indexOf(order),
-                                            orderFactory.create(
-                                                res.body()!!.orders!!.first { it.id == orderId },
-                                                order
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    order.note = orderNote
-                                    errorFlow.emit(Consumable(HttpException(res)))
-                                }
-                            } else {
-                                order.note = orderNote
-                            }
-                        } catch (e: Exception) {
-                            errorFlow.emit(Consumable(e))
-                        }
-
-                        stop = true
+        try {
+            persistOrderNote(orderId, orderNote)
+            val order = getOrder(orderId)!!
+            val tripId = getOrderTripId(order)
+            if (!order.legacy) {
+                val res = apiClient.updateOrderMetadata(
+                    orderId = orderId,
+                    tripId = tripId,
+                    metadata = order.metadata.toMutableMap().apply {
+                        put(LocalOrder.ORDER_NOTE_KEY, orderNote)
                     }
-                    if (stop) break
+                )
+                if (res.isSuccessful) {
+                    val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
+                    updateOrder(
+                        orderId, orderFactory.create(
+                            remoteOrder.copy(
+                                _metadata = remoteOrder._metadata?.toMutableMap()?.apply {
+                                    put(LocalOrder.ORDER_NOTE_KEY, orderNote)
+                                }),
+                            order
+                        )
+                    )
+                } else {
+                    errorFlow.emit(Consumable(HttpException(res)))
                 }
-                if (stop) break
+            } else {
+                order.note = orderNote
             }
-        })
+        } catch (e: Exception) {
+            errorFlow.emit(Consumable(e))
+        }
+    }
+
+    //todo workaround, move to order model
+    private fun getOrderTripId(order: LocalOrder): String {
+        return trips.value!!.first { it.orders.any { it.id == order.id } }.id
+    }
+
+    override suspend fun persistOrderNote(orderId: String, orderNote: String?) {
+        updateOrder(orderId) {
+            it.note = orderNote
+        }
     }
 
     override suspend fun setOrderPickedUp(orderId: String) {
@@ -278,13 +288,27 @@ class TripsInteractorImpl(
         }
     }
 
-    private fun updateOrder(orderId: String, updateFun: (LocalOrder) -> Unit) {
+    private suspend fun updateOrder(orderId: String, updateFun: (LocalOrder) -> Unit) {
         trips.postValue(trips.value!!.map { localTrip ->
             localTrip.apply {
                 orders = orders.map {
                     if (it.id == orderId) {
                         updateFun.invoke(it)
                         it
+                    } else {
+                        it
+                    }
+                }.toMutableList()
+            }
+        })
+    }
+
+    private fun updateOrder(orderId: String, order: LocalOrder) {
+        trips.postValue(trips.value!!.map { localTrip ->
+            localTrip.apply {
+                orders = orders.map {
+                    if (it.id == orderId) {
+                        order
                     } else {
                         it
                     }

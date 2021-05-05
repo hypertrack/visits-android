@@ -11,6 +11,7 @@ import com.hypertrack.android.ui.screens.order_details.OrderDetailsViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.orders.OrdersListViewModel
 import io.mockk.mockk
 import junit.framework.Assert.*
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
@@ -44,7 +45,8 @@ class ComplexTripsTest {
                 mockk(relaxed = true),
                 mockk(relaxed = true),
                 mockk(relaxed = true),
-                mockk(relaxed = true)
+                mockk(relaxed = true),
+                GlobalScope
             )
         val detailsVm2 =
             OrderDetailsViewModel(
@@ -53,7 +55,8 @@ class ComplexTripsTest {
                 mockk(relaxed = true),
                 mockk(relaxed = true),
                 mockk(relaxed = true),
-                mockk(relaxed = true)
+                mockk(relaxed = true),
+                GlobalScope
             )
 
         runBlocking {
