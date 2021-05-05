@@ -1,7 +1,5 @@
 package com.hypertrack.android.interactors
 
-import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -13,7 +11,6 @@ import com.hypertrack.android.models.local.OrderStatus
 import com.hypertrack.android.models.local.TripStatus
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.TripsStorage
-import com.hypertrack.android.toBase64
 import com.hypertrack.android.ui.base.Consumable
 import com.hypertrack.android.ui.common.toHotTransformation
 import com.hypertrack.android.ui.common.toMap
@@ -215,22 +212,56 @@ class TripsInteractorImpl(
     }
 
     override suspend fun addPhotoToOrder(orderId: String, imagePath: String) {
-        val generatedImageId = UUID.randomUUID().toString()
+        try {
+            val generatedImageId = UUID.randomUUID().toString()
 
-        val previewMaxSideLength: Int = (200 * osUtilsProvider.screenDensity).toInt()
-        withContext(ioDispatcher) {
-            val bitmap = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
-            val photo = PhotoForUpload(
-                photoId = generatedImageId,
-                filePath = imagePath,
-                base64thumbnail = osUtilsProvider.bitmapToBase64(bitmap),
-                state = PhotoUploadingState.NOT_UPLOADED
-            )
-            updateOrder(orderId) {
+            val previewMaxSideLength: Int = (200 * osUtilsProvider.screenDensity).toInt()
+            withContext(ioDispatcher) {
+                val bitmap = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
+                val photo = PhotoForUpload(
+                    photoId = generatedImageId,
+                    filePath = imagePath,
+                    base64thumbnail = osUtilsProvider.bitmapToBase64(bitmap),
+                    state = PhotoUploadingState.NOT_UPLOADED
+                )
+                val order = getOrder(orderId)!!
+                if (!order.legacy) {
+                    val newMd = order.metadata.toMutableMap().apply {
+                        val photos = (get(LocalOrder.ORDER_PHOTOS_KEY)
+                            ?.split(",") ?: listOf<String>())
+                            .toMutableList()
+                        photos.add(photo.photoId)
+
+                        put(
+                            LocalOrder.ORDER_PHOTOS_KEY,
+                            photos.toSet().joinToString(",")
+                        )
+                    }
+                    val res = apiClient.updateOrderMetadata(
+                        orderId,
+                        getOrderTripId(order),
+                        newMd
+                    )
+                    if (res.isSuccessful) {
+                        val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
+                        updateOrder(orderId, orderFactory.create(remoteOrder, order.apply {
+                            photos.add(photo)
+//                            it.photos.add(photo.photoId)
+                        }))
+                        photoUploadInteractor.addToQueue(photo)
+                    } else {
+                        errorFlow.emit(Consumable(HttpException(res)))
+                    }
+                } else {
+                    updateOrder(orderId) {
 //                it.photos.add(photo.photoId)
-                it.photos.add(photo)
+                        it.photos.add(photo)
+                    }
+                    photoUploadInteractor.addToQueue(photo)
+                }
             }
-            photoUploadInteractor.addToQueue(photo)
+        } catch (e: Exception) {
+            errorFlow.emit(Consumable(e))
         }
     }
 
@@ -442,4 +473,3 @@ class TripsInteractorImpl(
 interface LocalOrderFactory {
     fun create(order: Order, localOrder: LocalOrder?): LocalOrder
 }
-

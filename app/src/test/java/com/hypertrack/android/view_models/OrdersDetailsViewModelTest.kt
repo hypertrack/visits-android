@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.MainCoroutineScopeRule
+import com.hypertrack.android.api.OrderCompletionSuccess
 import com.hypertrack.android.createBaseOrder
 import com.hypertrack.android.createBaseTrip
 import com.hypertrack.android.interactors.*
@@ -18,6 +19,7 @@ import com.hypertrack.android.models.local.LocalTrip
 import com.hypertrack.android.models.local.OrderStatus
 import com.hypertrack.android.models.local.TripStatus
 import com.hypertrack.android.observeAndGetValue
+import com.hypertrack.android.repository.TripsStorage
 import com.hypertrack.android.ui.base.Consumable
 import com.hypertrack.android.ui.common.KeyValueItem
 import com.hypertrack.android.ui.common.formatUnderscore
@@ -37,6 +39,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
 import org.junit.Test
+import retrofit2.Response
 import java.io.File
 
 @Suppress("EXPERIMENTAL_API_USAGE")
@@ -80,8 +83,7 @@ class OrdersDetailsViewModelTest {
                 assertTrue(it.isNoteEditable.observeAndGetValue())
                 assertTrue(it.showCompleteButtons.observeAndGetValue())
                 assertFalse(it.showPickUpButton.observeAndGetValue())
-                //todo enable on twmo
-//                assertTrue(it.showAddPhoto.observeAndGetValue())
+                assertTrue(it.showAddPhoto.observeAndGetValue())
                 assertNull(
                     getFromMetadata(
                         "order_picked_up",
@@ -213,6 +215,66 @@ class OrdersDetailsViewModelTest {
     }
 
     @Test
+    fun `it should persist order photos`() {
+        runBlocking {
+            val backendTrips = listOf(
+                createBaseTrip().copy(
+                    tripId = "t1",
+                    status = TripStatus.ACTIVE.value,
+                    orders = listOf(
+                        createBaseOrder().copy(id = "1")
+                    )
+                ),
+            )
+            val queueInteractor = object : PhotoUploadQueueInteractor {
+                override fun addToQueue(photo: PhotoForUpload) {
+                    queue.postValue(queue.value!!.toMutableMap().apply {
+                        put(photo.photoId, photo.apply {
+                            state = PhotoUploadingState.UPLOADED
+                        })
+                    })
+                }
+
+                override fun retry(photoId: String) {
+                }
+
+                override val errorFlow = MutableSharedFlow<Consumable<Exception>>()
+                override val queue = MutableLiveData<Map<String, PhotoForUpload>>(mapOf())
+            }
+            assertTrue(queueInteractor.queue.value!!.isEmpty())
+            val tripsInteractor = TripInteractorTest.createTripInteractorImpl(
+                backendTrips = backendTrips,
+                queueInteractor = queueInteractor,
+                tripStorage = TripInteractorTest.createTripsStorage()
+            )
+            tripsInteractor.refreshTrips()
+
+
+            OrdersDetailsViewModelTest.createVm("1", tripsInteractor, false, queueInteractor).let {
+                it.onAddPhotoClicked(mockk(relaxed = true), "")
+                it.onActivityResult(
+                    VisitDetailsFragment.REQUEST_IMAGE_CAPTURE,
+                    AppCompatActivity.RESULT_OK,
+                    null
+                )
+
+                runBlocking {
+                    tripsInteractor.getOrder("1")!!.photos.let {
+                        assertEquals(1, it.size)
+                    }
+
+                    tripsInteractor.refreshTrips()
+
+                    tripsInteractor.getOrder("1")!!.photos.let {
+                        assertEquals(1, it.size)
+                    }
+                }
+
+            }
+        }
+    }
+
+    @Test
     fun `it should show local note and save button if it differs from remote one`() {
         val pickUpAllowed = true
         val order = createBaseOrder().copy(
@@ -307,15 +369,33 @@ class OrdersDetailsViewModelTest {
     }
 
     @Test
-    fun `it should upload order photo`() {
+    fun `it should upload order photos`() {
         runBlocking {
-            val backendTrips = listOf(
-                createBaseTrip().copy(
-                    tripId = "1",
-                    status = TripStatus.ACTIVE.value,
-                    orders = null
-                ),
+            var trip = createBaseTrip().copy(
+                tripId = "t1",
+                status = TripStatus.ACTIVE.value,
+                orders = listOf(
+                    createBaseOrder().copy(id = "1")
+                )
             )
+            val apiClient = mockk<ApiClient> {
+                coEvery { getTrips() } answers {
+                    listOf(trip)
+                }
+                coEvery { completeOrder(any(), any()) } returns OrderCompletionSuccess
+                coEvery { cancelOrder(any(), any()) } returns OrderCompletionSuccess
+                coEvery { updateOrderMetadata(any(), any(), any()) } answers {
+                    println("t " + thirdArg())
+                    trip = trip.copy(orders = trip.orders!!.map {
+                        if (it.id == firstArg()) {
+                            it.copy(_metadata = thirdArg())
+                        } else {
+                            it
+                        }
+                    })
+                    Response.success(trip)
+                }
+            }
             val queueInteractor = object : PhotoUploadQueueInteractor {
                 override fun addToQueue(photo: PhotoForUpload) {
                     queue.postValue(queue.value!!.toMutableMap().apply {
@@ -333,8 +413,9 @@ class OrdersDetailsViewModelTest {
             }
             assertTrue(queueInteractor.queue.value!!.isEmpty())
             val tripsInteractor = TripInteractorTest.createTripInteractorImpl(
-                backendTrips = backendTrips,
-                queueInteractor = queueInteractor
+                apiClient = apiClient,
+                queueInteractor = queueInteractor,
+                tripStorage = TripInteractorTest.createTripsStorage()
             )
             tripsInteractor.refreshTrips()
 
@@ -356,13 +437,28 @@ class OrdersDetailsViewModelTest {
                     null
                 )
 
+                it.onActivityResult(
+                    VisitDetailsFragment.REQUEST_IMAGE_CAPTURE,
+                    AppCompatActivity.RESULT_OK,
+                    null
+                )
+
                 tripsInteractor.getOrder("1")!!.photos.let {
-                    assertEquals(1, it.size)
+                    assertEquals(2, it.size)
                 }
 
                 it.photos.observeAndGetValue().let {
                     assertEquals(PhotoUploadingState.UPLOADED, it[0].state)
                 }
+
+                runBlocking {
+
+                }
+
+                val list = mutableListOf<Map<String, String>>()
+                coVerify { apiClient.updateOrderMetadata(any(), any(), capture(list)) }
+                assertEquals(1, list[0][LocalOrder.ORDER_PHOTOS_KEY]!!.split(",").size)
+                assertEquals(2, list[1][LocalOrder.ORDER_PHOTOS_KEY]!!.split(",").size)
             }
         }
     }

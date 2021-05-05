@@ -233,17 +233,7 @@ class TripInteractorTest {
             ),
         )
         val tripsInteractorImpl = createTripInteractorImpl(
-            tripStorage = object : TripsStorage {
-                var trips: List<LocalTrip> = listOf()
-
-                override suspend fun saveTrips(trips: List<LocalTrip>) {
-                    this.trips = trips
-                }
-
-                override suspend fun getTrips(): List<LocalTrip> {
-                    return trips
-                }
-            },
+            tripStorage = createTripsStorage(),
             backendTrips = backendTrips,
             accountRepository = mockk() { coEvery { isPickUpAllowed } returns true }
         )
@@ -285,17 +275,7 @@ class TripInteractorTest {
             ),
         )
         val tripsInteractorImpl = createTripInteractorImpl(
-            tripStorage = object : TripsStorage {
-                var trips: List<LocalTrip> = listOf()
-
-                override suspend fun saveTrips(trips: List<LocalTrip>) {
-                    this.trips = trips
-                }
-
-                override suspend fun getTrips(): List<LocalTrip> {
-                    return trips
-                }
-            },
+            tripStorage = createTripsStorage(),
             backendTrips = backendTrips,
             accountRepository = mockk() { coEvery { isPickUpAllowed } returns true }
         )
@@ -364,6 +344,20 @@ class TripInteractorTest {
     }
 
     companion object {
+        fun createTripsStorage(): TripsStorage {
+            return object : TripsStorage {
+                var trips: List<LocalTrip> = listOf()
+
+                override suspend fun saveTrips(trips: List<LocalTrip>) {
+                    this.trips = trips
+                }
+
+                override suspend fun getTrips(): List<LocalTrip> {
+                    return trips
+                }
+            }
+        }
+
         fun createMockApiClient(backendTrips: List<Trip> = listOf()): ApiClient {
             return mockk {
                 coEvery { getTrips() } returns backendTrips

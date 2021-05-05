@@ -17,6 +17,7 @@ import com.hypertrack.android.models.local.LocalTrip
 import com.hypertrack.android.models.local.OrderStatus
 import com.hypertrack.android.models.local.TripStatus
 import com.hypertrack.android.observeAndGetValue
+import com.hypertrack.android.repository.TripsStorage
 import com.hypertrack.android.ui.base.Consumable
 import com.hypertrack.android.ui.common.KeyValueItem
 import com.hypertrack.android.ui.common.formatUnderscore
@@ -148,7 +149,7 @@ class OrdersDetailsViewModelLegacyTest {
     }
 
     @Test
-    fun `it should persist order note for legacy order`() {
+    fun `it should persist order note and photos for legacy order`() {
         val tripsInteractor: TripsInteractor = TripInteractorTest.createTripInteractorImpl(
             backendTrips = listOf(createBaseTrip().copy(tripId = "1", orders = null)),
             accountRepository = mockk() { coEvery { isPickUpAllowed } returns false }
@@ -164,6 +165,67 @@ class OrdersDetailsViewModelLegacyTest {
 
             OrdersDetailsViewModelTest.createVm("1", tripsInteractor).let {
                 assertEquals("New note", it.note.observeAndGetValue())
+            }
+        }
+    }
+
+    @Test
+    fun `it should upload order photo for legacy order`() {
+        runBlocking {
+            val backendTrips = listOf(
+                createBaseTrip().copy(
+                    tripId = "1",
+                    status = TripStatus.ACTIVE.value,
+                    orders = null
+                ),
+            )
+            val queueInteractor = object : PhotoUploadQueueInteractor {
+                override fun addToQueue(photo: PhotoForUpload) {
+                    queue.postValue(queue.value!!.toMutableMap().apply {
+                        put(photo.photoId, photo.apply {
+                            state = PhotoUploadingState.UPLOADED
+                        })
+                    })
+                }
+
+                override fun retry(photoId: String) {
+                }
+
+                override val errorFlow = MutableSharedFlow<Consumable<Exception>>()
+                override val queue = MutableLiveData<Map<String, PhotoForUpload>>(mapOf())
+            }
+            assertTrue(queueInteractor.queue.value!!.isEmpty())
+            val tripsInteractor = TripInteractorTest.createTripInteractorImpl(
+                backendTrips = backendTrips,
+                queueInteractor = queueInteractor
+            )
+            tripsInteractor.refreshTrips()
+
+
+            OrdersDetailsViewModelTest.createVm("1", tripsInteractor, false, queueInteractor).let {
+                val activity = mockk<Activity>(relaxed = true)
+
+                it.onAddPhotoClicked(activity, "Note")
+
+                verify { activity.startActivityForResult(any(), any()) }
+                assertEquals(
+                    "Note",
+                    tripsInteractor.currentTrip.observeAndGetValue()!!.orders.first().note
+                )
+
+                it.onActivityResult(
+                    VisitDetailsFragment.REQUEST_IMAGE_CAPTURE,
+                    AppCompatActivity.RESULT_OK,
+                    null
+                )
+
+                tripsInteractor.getOrder("1")!!.photos.let {
+                    assertEquals(1, it.size)
+                }
+
+                it.photos.observeAndGetValue().let {
+                    assertEquals(PhotoUploadingState.UPLOADED, it[0].state)
+                }
             }
         }
     }
