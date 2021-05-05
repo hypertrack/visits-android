@@ -36,7 +36,7 @@ data class LocalOrder(
     constructor(
         order: Order,
         isPickedUp: Boolean = true,
-        note: String?,
+        note: String? = null,
         legacy: Boolean = false,
         photos: MutableSet<PhotoForUpload> = mutableSetOf()
     ) : this(

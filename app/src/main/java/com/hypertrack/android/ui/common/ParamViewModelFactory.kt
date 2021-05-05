@@ -12,6 +12,7 @@ import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.screens.place_details.PlaceDetailsViewModel
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.ui.screens.order_details.OrderDetailsViewModel
+import kotlinx.coroutines.GlobalScope
 
 @Suppress("UNCHECKED_CAST")
 class ParamViewModelFactory<T>(
@@ -38,7 +39,8 @@ class ParamViewModelFactory<T>(
                 photoUploadQueueInteractor,
                 osUtilsProvider,
                 accountRepository,
-                apiClient
+                apiClient,
+                GlobalScope
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }

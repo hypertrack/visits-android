@@ -364,6 +364,25 @@ class TripInteractorTest {
     }
 
     companion object {
+        fun createMockApiClient(backendTrips: List<Trip> = listOf()): ApiClient {
+            return mockk {
+                coEvery { getTrips() } returns backendTrips
+                coEvery { completeOrder(any(), any()) } returns OrderCompletionSuccess
+                coEvery { cancelOrder(any(), any()) } returns OrderCompletionSuccess
+                coEvery { updateOrderMetadata(any(), any(), any()) } answers {
+                    var trip = backendTrips.first { it.orders!!.any { it.id == firstArg() } }.copy()
+                    trip = trip.copy(orders = trip.orders!!.map {
+                        if (it.id == firstArg()) {
+                            it.copy(_metadata = thirdArg())
+                        } else {
+                            it
+                        }
+                    })
+                    Response.success(trip)
+                }
+            }
+        }
+
         fun createTripInteractorImpl(
             tripStorage: TripsStorage = mockk() {
                 coEvery { getTrips() } returns listOf()
@@ -371,17 +390,7 @@ class TripInteractorTest {
             },
             backendTrips: List<Trip> = listOf(),
             accountRepository: AccountRepository = mockk() { coEvery { isPickUpAllowed } returns false },
-            apiClient: ApiClient = mockk {
-                coEvery { getTrips() } returns backendTrips
-                coEvery { completeOrder(any(), any()) } returns OrderCompletionSuccess
-                coEvery { cancelOrder(any(), any()) } returns OrderCompletionSuccess
-                coEvery { updateOrderMetadata(any(), any(), any()) } answers {
-                    Response.success(
-                        backendTrips.map { it.orders }.filterNotNull().flatten()
-                            .first { it.id == firstArg() }.copy(_metadata = thirdArg())
-                    )
-                }
-            },
+            apiClient: ApiClient = createMockApiClient(backendTrips),
             hyperTrackService: HyperTrackService = mockk(relaxed = true) {
                 coEvery { sendPickedUp(any(), any()) } returns Unit
             },

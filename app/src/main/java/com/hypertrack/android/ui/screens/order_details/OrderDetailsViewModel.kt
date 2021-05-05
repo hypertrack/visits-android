@@ -27,7 +27,10 @@ import com.hypertrack.android.ui.common.toHotTransformation
 import com.hypertrack.android.ui.screens.visit_details.VisitDetailsFragment
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -41,22 +44,24 @@ class OrderDetailsViewModel(
     private val photoUploadInteractor: PhotoUploadQueueInteractor,
     private val osUtilsProvider: OsUtilsProvider,
     private val accountRepository: AccountRepository,
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    private val globalScope: CoroutineScope
 ) : BaseViewModel() {
-
-    private val map = MutableLiveData<GoogleMap>()
-
-    private val order = MutableLiveData<LocalOrder>()
-
-    init {
-        updateOrder()
-    }
 
     val error = MediatorLiveData<Consumable<String?>>()
 
+    private val map = MutableLiveData<GoogleMap>()
+
+    private val order = tripsInteractor.getOrderLiveData(orderId)
+
     init {
         error.addSource(tripsInteractor.errorFlow.asLiveData()) { err ->
-            error.postValue(err.map { it.message })
+            error.postValue(err.map {
+                if (BuildConfig.DEBUG) {
+                    it.printStackTrace()
+                }
+                it.message
+            })
         }
     }
 
@@ -74,7 +79,7 @@ class OrderDetailsViewModel(
 
     init {
         //todo check leaks
-        Transformations.map(order) { it.metadataNote ?: it.note }.observeForever {
+        Transformations.map(order) { it.note ?: it.metadataNote }.observeForever {
             note.postValue(it)
         }
     }
@@ -110,6 +115,18 @@ class OrderDetailsViewModel(
     }
     val showPickUpButton = Transformations.map(order) {
         !it.isPickedUp && it.status == OrderStatus.ONGOING && accountRepository.isPickUpAllowed
+    }
+
+    init {
+        Transformations.map(order) {
+            if (!it.legacy) {
+                if (it.note != null && it.note != it.metadataNote.orEmpty()) {
+                    showNoteButtons.postValue(true)
+                } else {
+                    showNoteButtons.postValue(false)
+                }
+            }
+        }.toHotTransformation()
     }
 
     init {
@@ -164,17 +181,25 @@ class OrderDetailsViewModel(
                 tripsInteractor.updateOrderNote(orderId, orderNote)
                 loadingStateBase.postValue(false)
             }
+        } else {
+            showNoteButtons.postValue(false)
         }
     }
 
+    //todo test
     fun onExit(orderNote: String) {
-        if (order.value?.legacy == false) {
-            onSaveNote(orderNote)
+        globalScope.launch {
+            tripsInteractor.persistOrderNote(orderId, orderNote)
         }
     }
 
     fun onCancelNote() {
-        note.postValue(order.value!!.metadataNote)
+        order.value!!.metadataNote.let {
+            note.postValue(it)
+            globalScope.launch {
+                tripsInteractor.persistOrderNote(orderId, it)
+            }
+        }
         showNoteButtons.postValue(false)
     }
 
@@ -201,7 +226,6 @@ class OrderDetailsViewModel(
     fun onPickUpClicked() {
         viewModelScope.launch {
             tripsInteractor.setOrderPickedUp(orderId)
-            updateOrder()
         }
     }
 
@@ -231,7 +255,6 @@ class OrderDetailsViewModel(
                         orderId,
                         currentPhotoPath!!
                     )
-                    updateOrder()
                 }
             }
         }
@@ -257,16 +280,6 @@ class OrderDetailsViewModel(
             else -> {
             }
         }
-        updateOrder()
-    }
-
-    //todo change to livedata
-    private fun updateOrder() {
-        try {
-            order.postValue(tripsInteractor.getOrder(orderId))
-        } catch (e: Exception) {
-            error.postValue(Consumable(e.message))
-        }
     }
 
     private fun updatePhotos(order: LocalOrder, uploadQueue: Map<String, PhotoForUpload>) {
@@ -290,10 +303,6 @@ class OrderDetailsViewModel(
                         )
                     }
                 }
-            }.also {
-                Log.d("cutag", "order photos${order.photos}")
-                Log.d("cutag", "queue ${uploadQueue}")
-                Log.d("cutag", "items ${it}")
             }
         )
     }
