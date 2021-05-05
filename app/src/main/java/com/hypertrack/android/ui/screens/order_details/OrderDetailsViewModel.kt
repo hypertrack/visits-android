@@ -105,7 +105,7 @@ class OrderDetailsViewModel(
         it.legacy
     }
     val showAddPhoto = Transformations.map(order) {
-        it.legacy && it.status == OrderStatus.ONGOING
+        it.status == OrderStatus.ONGOING
     }
     val isNoteEditable = Transformations.map(order) {
         it.status == OrderStatus.ONGOING
@@ -230,8 +230,8 @@ class OrderDetailsViewModel(
     }
 
     fun onAddPhotoClicked(activity: Activity, note: String) {
-        if (order.value!!.legacy) {
-            onSaveNote(note)
+        globalScope.launch {
+            tripsInteractor.persistOrderNote(orderId, note)
         }
         try {
             val file = osUtilsProvider.createImageFile()
@@ -251,10 +251,12 @@ class OrderDetailsViewModel(
         if (requestCode == VisitDetailsFragment.REQUEST_IMAGE_CAPTURE && resultCode == AppCompatActivity.RESULT_OK) {
             viewModelScope.launch {
                 currentPhotoPath?.let {
+                    loadingStateBase.postValue(true)
                     tripsInteractor.addPhotoToOrder(
                         orderId,
                         currentPhotoPath!!
                     )
+                    loadingStateBase.postValue(false)
                 }
             }
         }
@@ -283,27 +285,33 @@ class OrderDetailsViewModel(
     }
 
     private fun updatePhotos(order: LocalOrder, uploadQueue: Map<String, PhotoForUpload>) {
-        photos.postValue(order.photos
-            .map { photo ->
-                val photoId = photo.photoId
-                return@map uploadQueue.get(photoId).let {
-                    if (it != null) {
-                        PhotoItem(
-                            photoId = photoId,
-                            osUtilsProvider.decodeBase64Bitmap(it.base64thumbnail),
-                            url = null,
-                            it.state
-                        )
+        photos.postValue(
+            order.photos
+                .map { photo ->
+                    val photoId = photo.photoId
+                    //todo test
+                    if (order.metadataPhotoIds.contains(photoId) || order.legacy) {
+                        return@map uploadQueue.get(photoId).let {
+                            if (it != null) {
+                                PhotoItem(
+                                    photoId = photoId,
+                                    osUtilsProvider.decodeBase64Bitmap(it.base64thumbnail),
+                                    url = null,
+                                    it.state
+                                )
+                            } else {
+                                PhotoItem(
+                                    photoId = photoId,
+                                    osUtilsProvider.decodeBase64Bitmap(photo.base64thumbnail),
+                                    url = apiClient.getImageUrl(photoId),
+                                    PhotoUploadingState.UPLOADED
+                                )
+                            }
+                        }
                     } else {
-                        PhotoItem(
-                            photoId = photoId,
-                            osUtilsProvider.decodeBase64Bitmap(photo.base64thumbnail),
-                            url = apiClient.getImageUrl(photoId),
-                            PhotoUploadingState.UPLOADED
-                        )
+                        return@map null
                     }
-                }
-            }
+                }.filterNotNull()
         )
     }
 

@@ -73,8 +73,12 @@ data class LocalOrder(
     val metadataNote: String?
         get() = metadata[ORDER_NOTE_KEY]
 
+    val metadataPhotoIds: List<String>
+        get() = metadata[ORDER_PHOTOS_KEY]?.split(",") ?: listOf()
+
     companion object {
         const val ORDER_NOTE_KEY = "order_note"
+        const val ORDER_PHOTOS_KEY = "order_photos"
     }
 
 }
