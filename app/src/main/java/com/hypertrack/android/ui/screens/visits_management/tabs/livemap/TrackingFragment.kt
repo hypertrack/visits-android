@@ -163,7 +163,9 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
             Log.d(TAG, "got google map from VM $map")
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter?.subscribeUpdates(map) }
+            view?.let {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter?.subscribeUpdates(map) }
+            }
         }
     }
 
