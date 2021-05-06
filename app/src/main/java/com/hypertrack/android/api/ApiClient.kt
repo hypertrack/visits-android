@@ -285,8 +285,18 @@ class ApiClient(
         }
     }
 
-    fun getImageUrl(imageId: String): String {
-        return baseUrl + imageId
+    suspend fun getImageBase64(imageId: String): String? {
+        try {
+            val res = api.getImage(deviceId = deviceId, imageId = imageId)
+            if (res.isSuccessful) {
+                return res.body()?.data
+            } else {
+                throw HttpException(res)
+            }
+        } catch (e: Exception) {
+            //todo handle
+            return null
+        }
     }
 
     companion object {

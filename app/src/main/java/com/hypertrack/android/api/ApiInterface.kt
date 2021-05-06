@@ -22,9 +22,15 @@ interface ApiInterface {
 
     @POST("client/devices/{device_id}/image")
     suspend fun persistImage(
-            @Path("device_id") deviceId: String,
-            @Body encodedImage: EncodedImage,
+        @Path("device_id") deviceId: String,
+        @Body encodedImage: EncodedImage,
     ): Response<ImageResponse>
+
+    @GET("client/devices/{device_id}/image/{image_id}")
+    suspend fun getImage(
+        @Path("device_id") deviceId: String,
+        @Path("image_id") imageId: String,
+    ): Response<EncodedImage>
 
     /** Returns list of device geofences with visit markers inlined */
     @GET("client/geofences?include_archived=false&include_markers=true")
@@ -108,7 +114,7 @@ data class GeofenceProperties(
 
 @JsonClass(generateAdapter = true)
 data class EncodedImage(
-    @field:Json(name = "file_name") val filename: String,
+    @field:Json(name = "file_name") val filename: String?,
     @field:Json(name = "data") val data: String
 ) {
     constructor(filename: String, bitmap: Bitmap) : this(

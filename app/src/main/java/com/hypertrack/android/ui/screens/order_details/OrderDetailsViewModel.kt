@@ -291,19 +291,25 @@ class OrderDetailsViewModel(
                     val photoId = photo.photoId
                     //todo test
                     if (order.metadataPhotoIds.contains(photoId) || order.legacy) {
-                        return@map uploadQueue.get(photoId).let {
-                            if (it != null) {
+                        return@map uploadQueue.get(photoId).let { photoFromQueue ->
+                            if (photoFromQueue != null) {
                                 PhotoItem(
                                     photoId = photoId,
-                                    osUtilsProvider.decodeBase64Bitmap(it.base64thumbnail),
-                                    url = null,
-                                    it.state
+                                    photoFromQueue.base64thumbnail?.let {
+                                        osUtilsProvider.decodeBase64Bitmap(
+                                            it
+                                        )
+                                    },
+                                    photoFromQueue.state
                                 )
                             } else {
                                 PhotoItem(
                                     photoId = photoId,
-                                    osUtilsProvider.decodeBase64Bitmap(photo.base64thumbnail),
-                                    url = apiClient.getImageUrl(photoId),
+                                    photo.base64thumbnail?.let {
+                                        osUtilsProvider.decodeBase64Bitmap(
+                                            it
+                                        )
+                                    },
                                     PhotoUploadingState.UPLOADED
                                 )
                             }
