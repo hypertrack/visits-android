@@ -307,7 +307,7 @@ object Injector {
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
     private fun getCognitoLoginProvider(context: Context): CognitoAccountLoginProvider =
-        CognitoAccountLoginProviderImpl(context, LIVE_API_URL_BASE)
+        CognitoAccountLoginProviderImpl(context)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
         GoogleMapHistoryRenderer(

@@ -8,20 +8,14 @@ import com.amazonaws.mobile.client.results.SignInResult
 import com.amazonaws.mobile.client.results.SignInState
 import com.amazonaws.mobile.client.results.SignUpResult
 import com.amazonaws.mobile.client.results.Tokens
-import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotConfirmedException
-import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
-import com.hypertrack.android.interactors.LoginResult
-import com.hypertrack.android.interactors.RegisterResult
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 interface CognitoAccountLoginProvider {
     suspend fun awsInitCallWrapper(): AwsInitResult
@@ -54,22 +48,18 @@ sealed class AwsTokenResult
 class CognitoToken(val token: String) : AwsTokenResult()
 class CognitoTokenError(val exception: Exception) : AwsTokenResult()
 
-@ExperimentalCoroutinesApi
-class CognitoAccountLoginProviderImpl(private val ctx: Context, private val baseApiUrl: String) :
+class CognitoAccountLoginProviderImpl(private val ctx: Context) :
     CognitoAccountLoginProvider {
 
-    override suspend fun awsInitCallWrapper(): AwsInitResult {
-        return suspendCancellableCoroutine {
-            AWSMobileClient.getInstance().initialize(ctx, object : Callback<UserStateDetails> {
-                override fun onResult(result: UserStateDetails?) = it.resume(AwsSuccess) {}
-                override fun onError(e: Exception) = it.resume(AwsError(e)) {}
-            })
-        }
+    override suspend fun awsInitCallWrapper(): AwsInitResult = suspendCoroutine {
+        AWSMobileClient.getInstance().initialize(ctx, object : Callback<UserStateDetails> {
+            override fun onResult(result: UserStateDetails?) = it.resume(AwsSuccess)
+            override fun onError(e: Exception) = it.resume(AwsError(e))
+        })
     }
 
-
-    override suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult {
-        return suspendCancellableCoroutine {
+    override suspend fun awsLoginCallWrapper(login: String, password: String): AwsSignInResult =
+        suspendCoroutine {
             AWSMobileClient.getInstance().signIn(
                 login,
                 password,
@@ -78,72 +68,62 @@ class CognitoAccountLoginProviderImpl(private val ctx: Context, private val base
                     override fun onResult(result: SignInResult) {
                         when (result.signInState) {
                             SignInState.DONE -> {
-                                it.resume(AwsSignInSuccess) {}
+                                it.resume(AwsSignInSuccess)
                             }
                             else -> {
-                                it.resume(AwsSignInError(Exception(result.signInState.toString()))) {}
+                                it.resume(AwsSignInError(Exception(result.signInState.toString())))
                             }
                         }
                     }
-
                     override fun onError(e: Exception) {
                         if (e is UserNotConfirmedException) {
-                            it.resume(AwsSignInConfirmationRequired) {}
+                            it.resume(AwsSignInConfirmationRequired)
                         } else {
-                            it.resume(AwsSignInError(e)) {}
+                            it.resume(AwsSignInError(e))
                         }
                     }
                 })
         }
-    }
 
     override suspend fun awsSignUpCallWrapper(
         login: String,
         password: String,
         userAttributes: Map<String, String>
-    ): AwsSignUpResult {
-        return suspendCancellableCoroutine {
-            AWSMobileClient.getInstance().signUp(
-                login,
-                password,
-                userAttributes,
-                emptyMap(),
-                object : Callback<SignUpResult> {
-                    override fun onResult(result: SignUpResult) {
-                        //true - user is confirmed, no further action is necessary
-                        if (!result.confirmationState) {
-                            it.resume(AwsSignUpConfirmationRequired) {}
-                        } else {
-                            it.resume(AwsSignUpSuccess) {}
-                        }
+    ): AwsSignUpResult = suspendCoroutine {
+        AWSMobileClient.getInstance().signUp(
+            login,
+            password,
+            userAttributes,
+            emptyMap(),
+            object : Callback<SignUpResult> {
+                override fun onResult(result: SignUpResult) {
+                    //true - user is confirmed, no further action is necessary
+                    if (!result.confirmationState) {
+                        it.resume(AwsSignUpConfirmationRequired)
+                    } else {
+                        it.resume(AwsSignUpSuccess)
                     }
-
-                    override fun onError(e: Exception) {
-                        it.resume(AwsSignUpError(e)) {}
-                    }
-                })
-        }
-    }
-
-    override suspend fun awsTokenCallWrapper(): AwsTokenResult {
-        return suspendCancellableCoroutine {
-            AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
-                override fun onResult(result: Tokens) {
-                    it.resume(CognitoToken(result.idToken.tokenString)) {}
                 }
 
-                override fun onError(e: Exception) = it.resume(CognitoTokenError(e)) {}
+                override fun onError(e: Exception) {
+                    it.resume(AwsSignUpError(e))
+                }
             })
-        }
     }
 
-    override fun signOut() {
-        AWSMobileClient.getInstance().signOut()
+    override suspend fun awsTokenCallWrapper(): AwsTokenResult = suspendCoroutine {
+        AWSMobileClient.getInstance().getTokens(object : Callback<Tokens> {
+            override fun onResult(result: Tokens) {
+                it.resume(CognitoToken(result.idToken.tokenString))
+            }
+
+            override fun onError(e: Exception) = it.resume(CognitoTokenError(e))
+        })
     }
 
-    companion object {
-        const val TAG = "CognitoAccountProvider"
-    }
+    override fun signOut() = AWSMobileClient.getInstance().signOut()
+
+    companion object { const val TAG = "CognitoAccountProvider" }
 }
 
 interface TokenForPublishableKeyExchangeService {
