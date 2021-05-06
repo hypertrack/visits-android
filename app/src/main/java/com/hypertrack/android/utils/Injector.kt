@@ -50,7 +50,7 @@ object ServiceLocator {
             .backgroundTrackingRequirement(false)
             .setTrackingNotificationConfig(
                 ServiceNotificationConfig.Builder()
-                    .setSmallIcon(R.drawable.ic_notif_logo_small)
+                    .setSmallIcon(R.drawable.ic_stat_notification)
                     .build()
             )
 
