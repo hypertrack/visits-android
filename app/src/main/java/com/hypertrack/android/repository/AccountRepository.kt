@@ -69,7 +69,7 @@ class AccountRepository(
             } // Log.d(TAG, "Account is suspended or device was deleted")
         }
 
-        isManualCheckInAllowed = checkInEnabled ?: true
+        isManualCheckInAllowed = checkInEnabled ?: false
         isPickUpAllowed = pickUpAllowed ?: false
 
         accountDataStorage.saveAccountData(
