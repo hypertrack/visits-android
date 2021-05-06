@@ -2,7 +2,6 @@ package com.hypertrack.android.utils
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.hypertrack.logistics.android.github.R
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -14,7 +13,7 @@ class AwsLoginProviderTest {
     @Test
     fun itShouldGetTokenByNameAndPassword() {
         val accountLoginProvider: CognitoAccountLoginProvider =
-            CognitoAccountLoginProviderImpl(ctx, LIVE_API_URL_BASE)
+            CognitoAccountLoginProviderImpl(ctx)
         val login = ctx.resources.getString(R.string.awsLoginTestUserName)
         val pwd = ctx.resources.getString(R.string.awsLoginTestUserPwd)
         val expected = ctx.resources.getString(R.string.awsLoginTestExpectedPk)

@@ -32,7 +32,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Provider
@@ -41,9 +40,7 @@ import javax.inject.Provider
 object ServiceLocator {
 
     fun getAccessTokenRepository(deviceId: String, userName: String) =
-        BasicAuthAccessTokenRepository(
-            AUTH_URL, deviceId, userName
-        )
+        BasicAuthAccessTokenRepository(AUTH_URL, deviceId, userName)
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
         val listener = TrackingState()
@@ -53,7 +50,7 @@ object ServiceLocator {
             .backgroundTrackingRequirement(false)
             .setTrackingNotificationConfig(
                 ServiceNotificationConfig.Builder()
-                    .setSmallIcon(R.drawable.ic_notif_logo_small)
+                    .setSmallIcon(R.drawable.ic_stat_notification)
                     .build()
             )
 
@@ -219,7 +216,6 @@ object Injector {
         return@lazy retrofit.create(LiveAccountApi::class.java)
     }
 
-    @ExperimentalCoroutinesApi
     private fun getLoginInteractor(): LoginInteractor {
         return LoginInteractorImpl(
             getCognitoLoginProvider(MyApplication.context),
@@ -307,7 +303,7 @@ object Injector {
     private fun getImageDecoder(): ImageDecoder = SimpleImageDecoder()
 
     private fun getCognitoLoginProvider(context: Context): CognitoAccountLoginProvider =
-        CognitoAccountLoginProviderImpl(context, LIVE_API_URL_BASE)
+        CognitoAccountLoginProviderImpl(context)
 
     private fun getHistoryMapRenderer(supportMapFragment: SupportMapFragment): HistoryMapRenderer =
         GoogleMapHistoryRenderer(

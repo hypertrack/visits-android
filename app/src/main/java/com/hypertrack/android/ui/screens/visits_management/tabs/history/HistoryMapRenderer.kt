@@ -9,8 +9,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.model.Marker
 import com.hypertrack.android.models.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /** Maps imports swimline */
 interface HistoryMapRenderer {
@@ -48,8 +48,7 @@ class GoogleMapHistoryRenderer(
 
 
     @SuppressLint("MissingPermission")
-    @ExperimentalCoroutinesApi
-    override suspend fun showHistory(history: History) = suspendCancellableCoroutine<Boolean> { continuation ->
+    override suspend fun showHistory(history: History): Boolean = suspendCoroutine { continuation ->
         if (map == null) {
             mapFragment.getMapAsync { googleMap ->
                 googleMap.isMyLocationEnabled = true
@@ -58,11 +57,12 @@ class GoogleMapHistoryRenderer(
                 map = googleMap
 
                 if (history.locationTimePoints.isEmpty()) {
-                    locationProvider.getCurrentLocation {
-                        if (it != null) {
-                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), CITY_LEVEL_ZOOM))
-                        } else {
-//                            map?.animateCamera(CameraUpdateFactory.zoomBy(CITY_LEVEL_ZOOM))
+                    locationProvider.getCurrentLocation { lastLocation ->
+                        lastLocation?.let {
+                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                LatLng(lastLocation.latitude, lastLocation.longitude),
+                                CITY_LEVEL_ZOOM
+                            ))
                         }
                     }
                 } else {
@@ -71,13 +71,13 @@ class GoogleMapHistoryRenderer(
                     map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, style.mapPadding))
 
                 }
-                continuation.resume(true, null)
+                continuation.resume(true)
             }
         } else {
             polyLine?.remove()
             polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
             map?.let { map ->
-                history.locationTimePoints.sortedByDescending { it.second }.firstOrNull()
+                history.locationTimePoints.maxByOrNull { it.second }
                     ?.let { point ->
                         map.animateCamera(
                             CameraUpdateFactory.newLatLngZoom(
@@ -87,8 +87,7 @@ class GoogleMapHistoryRenderer(
                         )
                     }
             }
-
-            continuation.resume(true, null)
+            continuation.resume(true)
         }
     }
 

@@ -7,15 +7,13 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.utils.*
 import io.mockk.*
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 
-@ExperimentalCoroutinesApi
 class LoginInteractorImplTest {
 
     private var accountLoginProvider: CognitoAccountLoginProviderImpl = mockk {
@@ -72,7 +70,7 @@ class LoginInteractorImplTest {
         } returns Response.success(LiveAccountApi.PublishableKeyResponse("pk"))
     }
 
-    fun MockKMatcherScope.respMatch(e: LiveAccountApi.OtpBody) =
+    private fun MockKMatcherScope.respMatch(e: LiveAccountApi.OtpBody) =
         match<LiveAccountApi.OtpBody> { e1 ->
             e.email == e1.email && e.code == e1.code
         }

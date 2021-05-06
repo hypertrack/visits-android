@@ -4,9 +4,10 @@ import android.content.Context
 import android.location.Geocoder
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.maps.google.widget.GoogleMapConfig
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.IOException
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object MapUtils {
     @JvmStatic
@@ -17,32 +18,20 @@ object MapUtils {
             .boundingBoxDimensions(width, (height / 1.9).toInt())
     }
 
-    suspend fun getLocationAddress(context: Context, latLng: LatLng): String = suspendCancellableCoroutine {
+    suspend fun getLocationAddress(context: Context, latLng: LatLng): String = suspendCoroutine {
         try {
             val addresses = Geocoder(context, Locale.getDefault()).getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (!addresses.isNullOrEmpty()) {
-                var formattedAddress = ""
                 val address = addresses[0]
-                if (address.subThoroughfare != null) {
-                    formattedAddress += address.subThoroughfare
+                var formattedAddress = listOfNotNull(address.subThoroughfare, address.thoroughfare).joinToString(" ")
+                formattedAddress += address.locality?.let { locality ->
+                        if (formattedAddress.isBlank()) locality else ", $locality"
                 }
-                if (address.thoroughfare != null) {
-                    if (!formattedAddress.isEmpty()) {
-                        formattedAddress += " "
-                    }
-                    formattedAddress += address.thoroughfare
-                }
-                if (address.locality != null) {
-                    if (!formattedAddress.isEmpty()) {
-                        formattedAddress += ", "
-                    }
-                    formattedAddress += address.locality
-                }
-                it.resume(formattedAddress) {}
+                it.resume(formattedAddress)
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            it.resume("") {}
+            it.resume("")
         }
     }
 }

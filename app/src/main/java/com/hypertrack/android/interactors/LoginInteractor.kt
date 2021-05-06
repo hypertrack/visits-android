@@ -8,8 +8,6 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.toBase64
 import com.hypertrack.android.utils.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import retrofit2.HttpException
 import java.util.*
 
 interface LoginInteractor {
@@ -37,7 +35,6 @@ interface LoginInteractor {
     }
 }
 
-@ExperimentalCoroutinesApi
 class LoginInteractorImpl(
     private val cognito: CognitoAccountLoginProvider,
     private val accountRepository: AccountRepository,
@@ -48,8 +45,7 @@ class LoginInteractorImpl(
 ) : LoginInteractor {
 
     override suspend fun signIn(email: String, password: String): LoginResult {
-        val res = getPublishableKey(email.toLowerCase(Locale.getDefault()), password)
-        when (res) {
+        when (val res = getPublishableKey(email.toLowerCase(Locale.getDefault()), password)) {
             is PublishableKey -> {
                 return try {
                     val success = loginWithPublishableKey(res.key, email)
@@ -70,11 +66,11 @@ class LoginInteractorImpl(
 
     private suspend fun loginWithPublishableKey(key: String, email: String): Boolean {
         val pkValid = accountRepository.onKeyReceived(key = key, checkInEnabled = true)
-        if (pkValid) {
+        return if (pkValid) {
             driverRepository.driverId = email
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
@@ -96,16 +92,15 @@ class LoginInteractorImpl(
                 password,
                 userAttributes
             )
-        when (signUpResult) {
+        return when (signUpResult) {
             is AwsSignUpSuccess -> {
-                //todo
-                return SignUpError(Exception("Confirmation request expected, but got success"))
+                SignUpError(Exception("Confirmation request expected, but got success"))
             }
             is AwsSignUpConfirmationRequired -> {
-                return ConfirmationRequired
+                ConfirmationRequired
             }
             is AwsSignUpError -> {
-                return SignUpError(signUpResult.exception)
+                SignUpError(signUpResult.exception)
             }
         }
     }
@@ -193,11 +188,9 @@ class LoginInteractorImpl(
         }
 
         // Log.v(TAG, "Initialized with user State $userStateDetails")
-        val signInResult = cognito.awsLoginCallWrapper(login, password)
-        when (signInResult) {
+        when (val signInResult = cognito.awsLoginCallWrapper(login, password)) {
             is AwsSignInSuccess -> {
-                val tokenRes = cognito.awsTokenCallWrapper()
-                return when (tokenRes) {
+                return when (val tokenRes = cognito.awsTokenCallWrapper()) {
                     is CognitoTokenError -> {
                         LoginError(Exception("Failed to retrieve Cognito token"))
                     }
