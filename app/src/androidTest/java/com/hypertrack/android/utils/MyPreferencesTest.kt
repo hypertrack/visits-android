@@ -103,7 +103,6 @@ class MyPreferencesTest {
             //todo test overwrite for equal ids?
             myPreferences.addToPhotosQueue(
                 PhotoForUpload(
-                    "i1",
                     "1",
                     "path",
                     "thumb",
@@ -112,7 +111,6 @@ class MyPreferencesTest {
             )
             myPreferences.addToPhotosQueue(
                 PhotoForUpload(
-                    "i2",
                     "2",
                     "path",
                     "thumb",
@@ -122,11 +120,10 @@ class MyPreferencesTest {
             myPreferences.getPhotosQueue().toList().let {
                 assertEquals(2, it.size)
                 assertEquals("1", it[0].photoId)
-                assertEquals("i2", it[1].itemId)
                 assertEquals(PhotoUploadingState.ERROR, it[0].state)
             }
-            myPreferences.updatePhotoState("i2", "2", PhotoUploadingState.UPLOADED)
-            myPreferences.updatePhotoState("i1", "1", PhotoUploadingState.NOT_UPLOADED)
+            myPreferences.updatePhotoState("2", PhotoUploadingState.UPLOADED)
+            myPreferences.updatePhotoState("1", PhotoUploadingState.NOT_UPLOADED)
             myPreferences.getPhotosQueue().toList().let {
                 assertEquals(1, it.size)
                 assertEquals(PhotoUploadingState.NOT_UPLOADED, it[0].state)

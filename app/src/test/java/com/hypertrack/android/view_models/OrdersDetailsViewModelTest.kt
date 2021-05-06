@@ -12,6 +12,7 @@ import com.hypertrack.android.createBaseOrder
 import com.hypertrack.android.createBaseTrip
 import com.hypertrack.android.interactors.*
 import com.hypertrack.android.interactors.TripInteractorTest.Companion.createMockApiClient
+import com.hypertrack.android.models.Metadata
 import com.hypertrack.android.models.Order
 import com.hypertrack.android.models.TripCompletionSuccess
 import com.hypertrack.android.models.local.LocalOrder
@@ -217,14 +218,12 @@ class OrdersDetailsViewModelTest {
     @Test
     fun `it should persist order photos`() {
         runBlocking {
-            val backendTrips = listOf(
-                createBaseTrip().copy(
-                    tripId = "t1",
-                    status = TripStatus.ACTIVE.value,
-                    orders = listOf(
-                        createBaseOrder().copy(id = "1")
-                    )
-                ),
+            var trip = createBaseTrip().copy(
+                tripId = "t1",
+                status = TripStatus.ACTIVE.value,
+                orders = listOf(
+                    createBaseOrder().copy(id = "1")
+                )
             )
             val queueInteractor = object : PhotoUploadQueueInteractor {
                 override fun addToQueue(photo: PhotoForUpload) {
@@ -243,14 +242,43 @@ class OrdersDetailsViewModelTest {
             }
             assertTrue(queueInteractor.queue.value!!.isEmpty())
             val tripsInteractor = TripInteractorTest.createTripInteractorImpl(
-                backendTrips = backendTrips,
+                apiClient = mockk {
+                    coEvery { getTrips() } answers {
+                        listOf(trip)
+                    }
+                    coEvery {
+                        completeOrder(
+                            any(),
+                            any()
+                        )
+                    } returns com.hypertrack.android.api.OrderCompletionSuccess
+                    coEvery {
+                        cancelOrder(
+                            any(),
+                            any()
+                        )
+                    } returns com.hypertrack.android.api.OrderCompletionSuccess
+                    coEvery { updateOrderMetadata(any(), any(), any()) } answers {
+                        trip = trip.copy(orders = trip.orders!!.map {
+                            if (it.id == firstArg()) {
+                                it.copy(
+                                    _metadata = thirdArg<Metadata>().copy(visitsAppMetadata = thirdArg<Metadata>().visitsAppMetadata.copy())
+                                        .toMap()
+                                )
+                            } else {
+                                it
+                            }
+                        })
+                        Response.success(trip)
+                    }
+                },
                 queueInteractor = queueInteractor,
                 tripStorage = TripInteractorTest.createTripsStorage()
             )
             tripsInteractor.refreshTrips()
 
 
-            OrdersDetailsViewModelTest.createVm("1", tripsInteractor, false, queueInteractor).let {
+            createVm("1", tripsInteractor, false, queueInteractor).let {
                 it.onAddPhotoClicked(mockk(relaxed = true), "")
                 it.onActivityResult(
                     VisitDetailsFragment.REQUEST_IMAGE_CAPTURE,
@@ -279,7 +307,7 @@ class OrdersDetailsViewModelTest {
         val pickUpAllowed = true
         val order = createBaseOrder().copy(
             id = "1",
-            _metadata = mapOf("order_note" to "Note")
+            _metadata = mapOf(Metadata.VISITS_APP_KEY to mapOf("note" to "Note"))
         )
         val apiClient = createMockApiClient(
             backendTrips = listOf(
@@ -296,7 +324,9 @@ class OrdersDetailsViewModelTest {
                     LocalTrip(
                         "1", TripStatus.ACTIVE, mapOf(), mutableListOf(
                             LocalOrder(
-                                order, note = "Note_local"
+                                order,
+                                metadata = null,
+                                note = "Note_local"
                             )
                         )
                     )
@@ -314,9 +344,9 @@ class OrdersDetailsViewModelTest {
                 assertEquals("Note_local", vm.note.observeAndGetValue())
                 assertTrue(vm.showNoteButtons.observeAndGetValue())
                 it.onSaveNote(vm.note.observeAndGetValue()!!)
-                val slot = slot<Map<String, String>>()
+                val slot = slot<Metadata>()
                 coVerify { apiClient.updateOrderMetadata("1", "1", capture(slot)) }
-                assertEquals("Note_local", slot.captured["order_note"])
+                assertEquals("Note_local", slot.captured.visitsAppMetadata.note)
             }
 
         }
@@ -327,7 +357,7 @@ class OrdersDetailsViewModelTest {
         val pickUpAllowed = true
         val order = createBaseOrder().copy(
             id = "1",
-            _metadata = mapOf("order_note" to "Note")
+            _metadata = mapOf(Metadata.VISITS_APP_KEY to mapOf("note" to "Note"))
         )
         val apiClient = createMockApiClient(
             backendTrips = listOf(
@@ -344,7 +374,11 @@ class OrdersDetailsViewModelTest {
                     LocalTrip(
                         "1", TripStatus.ACTIVE, mapOf(), mutableListOf(
                             LocalOrder(
-                                order, note = "Note_local"
+                                order,
+                                note = "Note_local",
+                                metadata = Metadata.empty().apply {
+                                    visitsAppMetadata.note = "Note"
+                                },
                             )
                         )
                     )
@@ -385,10 +419,12 @@ class OrdersDetailsViewModelTest {
                 coEvery { completeOrder(any(), any()) } returns OrderCompletionSuccess
                 coEvery { cancelOrder(any(), any()) } returns OrderCompletionSuccess
                 coEvery { updateOrderMetadata(any(), any(), any()) } answers {
-                    println("t " + thirdArg())
                     trip = trip.copy(orders = trip.orders!!.map {
                         if (it.id == firstArg()) {
-                            it.copy(_metadata = thirdArg())
+                            it.copy(
+                                _metadata = thirdArg<Metadata>().copy(visitsAppMetadata = thirdArg<Metadata>().visitsAppMetadata.copy())
+                                    .toMap()
+                            )
                         } else {
                             it
                         }
@@ -451,14 +487,10 @@ class OrdersDetailsViewModelTest {
                     assertEquals(PhotoUploadingState.UPLOADED, it[0].state)
                 }
 
-                runBlocking {
-
-                }
-
-                val list = mutableListOf<Map<String, String>>()
+                val list = mutableListOf<Metadata>()
                 coVerify { apiClient.updateOrderMetadata(any(), any(), capture(list)) }
-                assertEquals(1, list[0][LocalOrder.ORDER_PHOTOS_KEY]!!.split(",").size)
-                assertEquals(2, list[1][LocalOrder.ORDER_PHOTOS_KEY]!!.split(",").size)
+                assertEquals(1, list[0].visitsAppMetadata.photos.size)
+                assertEquals(2, list[1].visitsAppMetadata.photos.size)
             }
         }
     }
@@ -466,13 +498,6 @@ class OrdersDetailsViewModelTest {
     @Test
     fun `it should retry upload on order photo click (if error)`() {
         runBlocking {
-            val backendTrips = listOf(
-                createBaseTrip().copy(
-                    tripId = "1",
-                    status = TripStatus.ACTIVE.value,
-                    orders = null
-                ),
-            )
             val ld = MutableLiveData<Map<String, PhotoForUpload>>(
                 mapOf(
                     "1" to TripInteractorTest.createBasePhotoForUpload(
@@ -500,14 +525,22 @@ class OrdersDetailsViewModelTest {
             val tripsInteractor = createTripsInteractorMock(orderSet = {
                 every { it.getOrderLiveData("1") } returns MutableLiveData(
                     LocalOrder(
-                        createBaseOrder(), true, null, false,
+                        createBaseOrder(),
+                        true,
+                        null,
+                        Metadata.empty().apply {
+                            visitsAppMetadata.apply {
+                                _photos = "1,2,3"
+                            }
+                        },
+                        false,
                         listOf("1", "2", "3").map {
                             TripInteractorTest.createBasePhotoForUpload(
                                 it,
                                 "",
                                 state = PhotoUploadingState.NOT_UPLOADED
                             )
-                        }.toMutableSet()
+                        }.toMutableSet(),
                     )
                 )
             })
@@ -542,6 +575,7 @@ class OrdersDetailsViewModelTest {
                     LocalOrder(
                         createBaseOrder(),
                         note = null,
+                        metadata = null,
                         isPickedUp = false
                     )
                 )

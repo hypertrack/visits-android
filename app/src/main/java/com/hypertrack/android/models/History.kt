@@ -3,6 +3,7 @@ package com.hypertrack.android.models
 import android.util.Log
 import com.hypertrack.android.utils.Constants
 import com.hypertrack.android.utils.TimeDistanceFormatter
+import com.squareup.moshi.JsonClass
 
 data class History(
     val summary: Summary,
@@ -26,6 +27,7 @@ data class Summary(
     val totalStopDuration: Int,
 )
 
+@JsonClass(generateAdapter = true)
 data class Location(
     val longitude: Double,
     val latitude: Double

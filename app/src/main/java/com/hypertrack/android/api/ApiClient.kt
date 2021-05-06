@@ -118,13 +118,13 @@ class ApiClient(
     suspend fun updateOrderMetadata(
         orderId: String,
         tripId: String,
-        metadata: Map<String, String>
+        metadata: Metadata
     ): Response<Trip> {
         try {
             return api.updateOrder(
                 orderId = orderId,
                 tripId = tripId,
-                order = OrderBody(metadata = metadata)
+                order = OrderBody(metadata = metadata.toMap())
             )
         } catch (e: Exception) {
             throw e

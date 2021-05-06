@@ -25,9 +25,9 @@ data class Order(
     val status: OrderStatus
         get() = OrderStatus.fromString(_status)
 
-    val metadata: Map<String, String>
-        get() = (_metadata ?: mapOf<String, String>())
-            .filter { it.value is String } as Map<String, String>
+    val metadata: Map<String, Any>
+        get() = (_metadata ?: mapOf())
+
 
 }
 

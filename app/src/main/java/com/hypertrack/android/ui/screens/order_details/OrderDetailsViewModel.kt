@@ -86,8 +86,6 @@ class OrderDetailsViewModel(
 
     val metadata = Transformations.map(order) { order ->
         order.metadata
-            .filter { (key, _) -> !key.startsWith("ht_") }
-            .filter { (key, _) -> key != LocalOrder.ORDER_NOTE_KEY }
             .toMutableMap().apply {
                 put(osUtilsProvider.stringFromResource(R.string.order_status), order.status.value)
                 if (accountRepository.isPickUpAllowed && order.status == OrderStatus.ONGOING) {

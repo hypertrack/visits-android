@@ -96,7 +96,7 @@ interface ApiInterface {
 
 @JsonClass(generateAdapter = true)
 data class OrderBody(
-    val metadata: Map<String, String>,
+    val metadata: Map<String, Any>,
 )
 
 @JsonClass(generateAdapter = true)

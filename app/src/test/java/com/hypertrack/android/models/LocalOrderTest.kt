@@ -16,7 +16,8 @@ class LocalOrderTest {
         LocalOrder(
             order = createBaseOrder().copy(scheduledAt = scheduledAt),
             true,
-            null
+            null,
+            null,
         ).apply {
             assertEquals(scheduledAt.formatDateTime(), shortAddress)
         }
@@ -30,6 +31,7 @@ class LocalOrderTest {
                 )
             ),
             true,
+            null,
             null
         ).apply {
             assertEquals("42.0, 42.0", shortAddress)

@@ -48,8 +48,8 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         val payload = mapOf(
             "trip_id" to legacyOrder.id,
             "type" to if (!canceled) Constants.VISIT_MARKED_COMPLETE else Constants.VISIT_MARKED_CANCELED,
-            LocalOrder.ORDER_NOTE_KEY to legacyOrder.note,
-            LocalOrder.ORDER_PHOTOS_KEY to legacyOrder.photos.map { it.photoId }.toSet()
+            LocalOrder.VISIT_NOTE_KEY to legacyOrder.note,
+            LocalOrder.VISIT_PHOTOS_KEY to legacyOrder.photos.map { it.photoId }.toSet()
         )
         sdkInstance.addGeotag(payload, with(legacyOrder.destinationLatLng) {
             latitude.let {

@@ -54,6 +54,7 @@ class OrdersDetailsViewModelLegacyTest {
                         LocalOrder(
                             createBaseOrder(),
                             note = "Note",
+                            metadata = null,
                             legacy = true,
                             isPickedUp = false
                         )
@@ -259,6 +260,7 @@ class OrdersDetailsViewModelLegacyTest {
                                     createBaseOrder().copy(id = "1"),
                                     false,
                                     "Note",
+                                    metadata = null,
                                     legacy = true,
                                     photos = mutableSetOf(
                                         TripInteractorTest.createBasePhotoForUpload(photoId = "1"),
@@ -290,9 +292,9 @@ class OrdersDetailsViewModelLegacyTest {
             slot.captured.let {
                 assertEquals("1", it["trip_id"])
                 assertEquals("VISIT_MARKED_COMPLETE", it["type"])
-                assertEquals("Note", it["order_note"])
-                assertTrue(it["order_photos"] != null)
-                assertEquals(2, (it["order_photos"]!! as Set<*>).size)
+                assertEquals("Note", it["visit_note"])
+                assertTrue(it["_visit_photos"] != null)
+                assertEquals(2, (it["_visit_photos"]!! as Set<*>).size)
             }
         }
     }
@@ -326,6 +328,7 @@ class OrdersDetailsViewModelLegacyTest {
                                     createBaseOrder().copy(id = "1"),
                                     false,
                                     "Note",
+                                    metadata = null,
                                     legacy = true,
                                     photos = mutableSetOf(
                                         TripInteractorTest.createBasePhotoForUpload(photoId = "1"),
@@ -357,9 +360,9 @@ class OrdersDetailsViewModelLegacyTest {
             slot.captured.let {
                 assertEquals("1", it["trip_id"])
                 assertEquals("VISIT_MARKED_CANCELED", it["type"])
-                assertEquals("Note", it["order_note"])
-                assertTrue(it["order_photos"] != null)
-                assertEquals(2, (it["order_photos"]!! as Set<*>).size)
+                assertEquals("Note", it["visit_note"])
+                assertTrue(it["_visit_photos"] != null)
+                assertEquals(2, (it["_visit_photos"]!! as Set<*>).size)
             }
         }
     }
@@ -394,6 +397,7 @@ class OrdersDetailsViewModelLegacyTest {
                                     createBaseOrder().copy(id = "1"),
                                     false,
                                     "Note",
+                                    metadata = null,
                                     legacy = true
                                 )
                             ).toMutableList()
