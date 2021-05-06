@@ -8,15 +8,13 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.screens.background_permissions.BackgroundPermissionsViewModel
 import com.hypertrack.android.ui.screens.confirm_email.ConfirmEmailViewModel
-import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.ui.screens.sign_in.SignInViewModel
 import com.hypertrack.android.ui.screens.sign_up.SignUpViewModel
 import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
+import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.OsUtilsProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Suppress("UNCHECKED_CAST")
-@ExperimentalCoroutinesApi
 class ViewModelFactory(
     private val accountRepository: AccountRepository,
     private val driverRepository: DriverRepository,

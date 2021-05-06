@@ -17,17 +17,15 @@ import io.mockk.coEvery
 import io.mockk.coVerifyAll
 import io.mockk.every
 import io.mockk.mockk
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,7 +40,7 @@ import retrofit2.Response
 @RunWith(RobolectricTestRunner::class) //Location class in Android
 @Config(sdk = [Build.VERSION_CODES.P])
 @LooperMode(LooperMode.Mode.PAUSED)
-class PhotoUploadInteractorTest() {
+class PhotoUploadInteractorTest {
 
     private val visit1 = mockk<Visit>(relaxed = true) {
         every { _id } returns "1"
@@ -53,16 +51,16 @@ class PhotoUploadInteractorTest() {
         every { photos } returns mutableListOf()
     }
 
-    lateinit var photoUploadInteractorImpl: PhotoUploadInteractorImpl
+    private lateinit var photoUploadInteractorImpl: PhotoUploadInteractorImpl
 
-    lateinit var imageDecoder: ImageDecoder
-    lateinit var apiClient: ApiClient
-    lateinit var visitsRepository: VisitsRepository
-    lateinit var crashReportsProvider: CrashReportsProvider
+    private lateinit var imageDecoder: ImageDecoder
+    private lateinit var apiClient: ApiClient
+    private lateinit var visitsRepository: VisitsRepository
+    private lateinit var crashReportsProvider: CrashReportsProvider
 
-    val finishChannel = Channel<Boolean>()
+    private val finishChannel = Channel<Boolean>()
 
-    var fileRepository = TestFileRepository()
+    private var fileRepository = TestFileRepository()
 
     inner class TestFileRepository : FileRepository {
         var fileCount = 0
@@ -73,9 +71,9 @@ class PhotoUploadInteractorTest() {
         }
     }
 
-    var errors = 0
+    private var errors = 0
 
-    val retriesLeft = mutableMapOf<String, Int>(
+    private val retriesLeft = mutableMapOf(
             "3" to 1,
             "2" to 9999,
             "5" to 2,
@@ -85,11 +83,11 @@ class PhotoUploadInteractorTest() {
     @Before
     fun setUp() {
         Dispatchers.setMain(Dispatchers.Unconfined)
-        imageDecoder = mockk<ImageDecoder>(relaxed = true)
+        imageDecoder = mockk(relaxed = true)
         every {
             imageDecoder.readBitmap("1", MAX_IMAGE_SIDE_LENGTH_PX)
         } returns BitmapFactory.decodeByteArray(ByteArray(1) { 0 }, 0, 1)
-        visitsRepository = mockk<VisitsRepository>(relaxed = true)
+        visitsRepository = mockk(relaxed = true)
         every { visitsRepository.getVisit("1") } returns visit1
         every { visitsRepository.getVisit("2") } returns visit2
         every { visitsRepository.visits } returns listOf(visit1, visit2)
@@ -172,8 +170,8 @@ class PhotoUploadInteractorTest() {
 
             println("after finish")
 
-            visit1.photos.forEach { System.out.println("${it.imageId} ${it.state}") }
-            visit2.photos.forEach { System.out.println("${it.imageId} ${it.state}") }
+            visit1.photos.forEach { println("${it.imageId} ${it.state}") }
+            visit2.photos.forEach { println("${it.imageId} ${it.state}") }
 
             coVerifyAll {
                 (1..6).map { it.toString() }.forEach {
@@ -210,12 +208,9 @@ class PhotoUploadInteractorTest() {
     }
 
     private fun checkFinish() {
-//        System.out.println("fileCount + errors ${fileCount + errors}")
         if (fileRepository.fileCount + errors >= 6) {
-            System.out.println("finish")
-            GlobalScope.launch {
-                finishChannel.send(true)
-            }
+            println("finish")
+            GlobalScope.launch { finishChannel.send(true) }
         }
     }
 
