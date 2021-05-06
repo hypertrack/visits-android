@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.2] - 2021-05-06
+### Added
+- New launcher and notification icons
+### Fixed
+- NPE crash on lateinit property not being initialized.
+
 ## [0.7.1] - 2021-04-23
 ### Fixed
 - A crash when no last location is returned from the OS
