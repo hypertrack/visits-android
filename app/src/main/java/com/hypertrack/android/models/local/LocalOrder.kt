@@ -4,10 +4,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.api.TripDestination
 import com.hypertrack.android.interactors.PhotoForUpload
 import com.hypertrack.android.models.Estimate
+import com.hypertrack.android.models.Metadata
 import com.hypertrack.android.models.Order
-import com.hypertrack.android.models.VisitPhoto
+import com.hypertrack.android.models.VisitsAppMetadata
 import com.hypertrack.android.ui.common.formatDateTime
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.time.Instant
 import java.time.ZoneId
@@ -22,7 +22,7 @@ data class LocalOrder(
     val status: OrderStatus,
     val scheduledAt: String?,
     val estimate: Estimate?,
-    val metadata: Map<String, String>,
+    val _metadata: Metadata?,
     //local
     //todo remove
     var isPickedUp: Boolean = true,
@@ -37,6 +37,7 @@ data class LocalOrder(
         order: Order,
         isPickedUp: Boolean = true,
         note: String? = null,
+        metadata: Metadata?,
         legacy: Boolean = false,
         photos: MutableSet<PhotoForUpload> = mutableSetOf()
     ) : this(
@@ -45,13 +46,15 @@ data class LocalOrder(
         status = OrderStatus.fromString(order._status),
         scheduledAt = order.scheduledAt,
         estimate = order.estimate,
-        metadata = (order._metadata ?: mapOf<String, String>())
-            .filter { it.value is String } as Map<String, String>,
+        _metadata = metadata,
         note = note,
         legacy = legacy,
         isPickedUp = isPickedUp,
-        photos = photos
+        photos = photos,
     )
+
+    val metadata: Map<String, String>
+        get() = _metadata?.otherMetadata ?: mapOf()
 
     val destinationLatLng: LatLng
         get() = LatLng(destination?.geometry?.latitude, destination?.geometry?.longitude)
@@ -71,14 +74,14 @@ data class LocalOrder(
         } ?: ""
 
     val metadataNote: String?
-        get() = metadata[ORDER_NOTE_KEY]
+        get() = _metadata?.visitsAppMetadata?.note
 
     val metadataPhotoIds: List<String>
-        get() = metadata[ORDER_PHOTOS_KEY]?.split(",") ?: listOf()
+        get() = _metadata?.visitsAppMetadata?.photos ?: listOf()
 
     companion object {
-        const val ORDER_NOTE_KEY = "order_note"
-        const val ORDER_PHOTOS_KEY = "order_photos"
+        const val VISIT_NOTE_KEY = "visit_note"
+        const val VISIT_PHOTOS_KEY = "_visit_photos"
     }
 
 }

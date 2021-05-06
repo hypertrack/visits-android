@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.hypertrack.android.api.*
 import com.hypertrack.android.createBaseOrder
 import com.hypertrack.android.createBaseTrip
+import com.hypertrack.android.models.Metadata
 import com.hypertrack.android.models.Order
 import com.hypertrack.android.models.TripCompletionSuccess
 import com.hypertrack.android.models.local.LocalTrip
@@ -223,18 +224,36 @@ class TripInteractorTest {
 
     @Test
     fun `it should persist local orders state when refreshing trips`() {
-        val backendTrips = listOf(
+        var trip =
             createBaseTrip().copy(
                 orders = listOf(
                     createBaseOrder().copy(id = "1"),
                     createBaseOrder().copy(id = "2"),
                     createBaseOrder().copy(id = "3"),
                 )
-            ),
-        )
+            )
         val tripsInteractorImpl = createTripInteractorImpl(
             tripStorage = createTripsStorage(),
-            backendTrips = backendTrips,
+            apiClient = mockk {
+                coEvery { getTrips() } answers {
+                    listOf(trip)
+                }
+                coEvery { completeOrder(any(), any()) } returns OrderCompletionSuccess
+                coEvery { cancelOrder(any(), any()) } returns OrderCompletionSuccess
+                coEvery { updateOrderMetadata(any(), any(), any()) } answers {
+                    trip = trip.copy(orders = trip.orders!!.map {
+                        if (it.id == firstArg()) {
+                            it.copy(
+                                _metadata = thirdArg<Metadata>().copy(visitsAppMetadata = thirdArg<Metadata>().visitsAppMetadata.copy())
+                                    .toMap()
+                            )
+                        } else {
+                            it
+                        }
+                    })
+                    Response.success(trip)
+                }
+            },
             accountRepository = mockk() { coEvery { isPickUpAllowed } returns true }
         )
         runBlocking {
@@ -367,7 +386,10 @@ class TripInteractorTest {
                     var trip = backendTrips.first { it.orders!!.any { it.id == firstArg() } }.copy()
                     trip = trip.copy(orders = trip.orders!!.map {
                         if (it.id == firstArg()) {
-                            it.copy(_metadata = thirdArg())
+                            it.copy(
+                                _metadata = thirdArg<Metadata>().copy(visitsAppMetadata = thirdArg<Metadata>().visitsAppMetadata.copy())
+                                    .toMap()
+                            )
                         } else {
                             it
                         }

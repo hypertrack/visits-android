@@ -168,18 +168,18 @@ class TripsInteractorImpl(
                 val res = apiClient.updateOrderMetadata(
                     orderId = orderId,
                     tripId = tripId,
-                    metadata = order.metadata.toMutableMap().apply {
-                        put(LocalOrder.ORDER_NOTE_KEY, orderNote)
+                    metadata = (order._metadata ?: Metadata.empty()).apply {
+                        visitsAppMetadata.note = orderNote
                     }
                 )
                 if (res.isSuccessful) {
                     val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
                     updateOrder(
                         orderId, orderFactory.create(
-                            remoteOrder.copy(
+                            remoteOrder/*.copy(
                                 _metadata = remoteOrder._metadata?.toMutableMap()?.apply {
                                     put(LocalOrder.ORDER_NOTE_KEY, orderNote)
-                                }),
+                                })*/,
                             order
                         )
                     )
@@ -226,21 +226,12 @@ class TripsInteractorImpl(
                 )
                 val order = getOrder(orderId)!!
                 if (!order.legacy) {
-                    val newMd = order.metadata.toMutableMap().apply {
-                        val photos = (get(LocalOrder.ORDER_PHOTOS_KEY)
-                            ?.split(",") ?: listOf<String>())
-                            .toMutableList()
-                        photos.add(photo.photoId)
-
-                        put(
-                            LocalOrder.ORDER_PHOTOS_KEY,
-                            photos.toSet().joinToString(",")
-                        )
-                    }
                     val res = apiClient.updateOrderMetadata(
                         orderId,
                         getOrderTripId(order),
-                        newMd
+                        (order._metadata ?: Metadata.empty()).apply {
+                            visitsAppMetadata.addPhoto(photo.photoId)
+                        }
                     )
                     if (res.isSuccessful) {
                         val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
@@ -437,15 +428,16 @@ class TripsInteractorImpl(
     inner class OrderFactory : LocalOrderFactory {
         @Suppress("RedundantIf")
         override suspend fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
+            val remoteMetadata = Metadata.deserealize(order.metadata)
             val localPhotos = localOrder?.photos?.toMap { it.photoId } ?: mapOf()
-            val resPhotos = order.metadata.get(LocalOrder.ORDER_PHOTOS_KEY)
-                ?.split(",")
-                ?.map {
+            val resPhotos = remoteMetadata.visitsAppMetadata.photos
+                .map {
                     if (localPhotos.keys.contains(it)) {
                         localPhotos.getValue(it)
                     } else {
                         val loadedImage = apiClient.getImageBase64(it)
 
+                        //todo cache
                         PhotoForUpload(
                             it,
                             null,
@@ -453,7 +445,7 @@ class TripsInteractorImpl(
                             state = PhotoUploadingState.UPLOADED
                         )
                     }
-                }?.toMutableSet() ?: mutableSetOf()
+                }.toMutableSet() ?: mutableSetOf()
 
             return LocalOrder(
                 order,
@@ -463,7 +455,8 @@ class TripsInteractorImpl(
                     true //if pick up not allowed, order created as already picked up
                 },
                 note = localOrder?.note,
-                photos = resPhotos
+                photos = resPhotos,
+                metadata = remoteMetadata
             )
         }
     }
@@ -480,7 +473,8 @@ class TripsInteractorImpl(
                 },
                 note = localOrder?.note,
                 legacy = true,
-                photos = localOrder?.photos ?: mutableSetOf()
+                photos = localOrder?.photos ?: mutableSetOf(),
+                metadata = Metadata.deserealize(order.metadata)
             )
             return res
         }
