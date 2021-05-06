@@ -370,7 +370,7 @@ class TripsInteractorImpl(
         }
     }
 
-    private fun localOrdersFromRemote(
+    private suspend fun localOrdersFromRemote(
         remoteOrders: List<Order>,
         localOrders: List<LocalOrder>,
         orderFactory: LocalOrderFactory
@@ -436,7 +436,25 @@ class TripsInteractorImpl(
 
     inner class OrderFactory : LocalOrderFactory {
         @Suppress("RedundantIf")
-        override fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
+        override suspend fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
+            val localPhotos = localOrder?.photos?.toMap { it.photoId } ?: mapOf()
+            val resPhotos = order.metadata.get(LocalOrder.ORDER_PHOTOS_KEY)
+                ?.split(",")
+                ?.map {
+                    if (localPhotos.keys.contains(it)) {
+                        localPhotos.getValue(it)
+                    } else {
+                        val loadedImage = apiClient.getImageBase64(it)
+
+                        PhotoForUpload(
+                            it,
+                            null,
+                            loadedImage,
+                            state = PhotoUploadingState.UPLOADED
+                        )
+                    }
+                }?.toMutableSet() ?: mutableSetOf()
+
             return LocalOrder(
                 order,
                 isPickedUp = localOrder?.isPickedUp ?: if (accountRepository.isPickUpAllowed) {
@@ -445,14 +463,14 @@ class TripsInteractorImpl(
                     true //if pick up not allowed, order created as already picked up
                 },
                 note = localOrder?.note,
-                photos = localOrder?.photos ?: mutableSetOf()
+                photos = resPhotos
             )
         }
     }
 
     inner class LegacyOrderFactory : LocalOrderFactory {
         @Suppress("RedundantIf")
-        override fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
+        override suspend fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
             val res = LocalOrder(
                 order,
                 isPickedUp = localOrder?.isPickedUp ?: if (accountRepository.isPickUpAllowed) {
@@ -471,5 +489,5 @@ class TripsInteractorImpl(
 }
 
 interface LocalOrderFactory {
-    fun create(order: Order, localOrder: LocalOrder?): LocalOrder
+    suspend fun create(order: Order, localOrder: LocalOrder?): LocalOrder
 }

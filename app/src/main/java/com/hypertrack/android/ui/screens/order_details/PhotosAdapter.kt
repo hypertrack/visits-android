@@ -32,7 +32,6 @@ class PhotosAdapter : BaseAdapter<PhotoItem, BaseAdapter.BaseVh<PhotoItem>>() {
 class PhotoItem(
     val photoId: String,
     val thumbnail: Bitmap?,
-    val url: String?,
     val state: PhotoUploadingState
 ) {
     override fun toString(): String {

@@ -39,9 +39,9 @@ interface PhotoUploadQueueStorage {
 @JsonClass(generateAdapter = true)
 class PhotoForUpload(
     val photoId: String,
-    val filePath: String,
+    val filePath: String?,
     //todo test
-    val base64thumbnail: String,
+    val base64thumbnail: String?,
     var state: PhotoUploadingState
 ) {
     override fun toString(): String {
@@ -105,7 +105,7 @@ class PhotoUploadQueueInteractorImpl(
             )
             updateQueueLiveData()
             retryWithBackoff(retryParams, {
-                uploadImage(imageId = photo.photoId, imagePath = photo.filePath)
+                uploadImage(imageId = photo.photoId, imagePath = photo.filePath!!)
             }, shouldRetry = {
                 return@retryWithBackoff when (it) {
                     is HttpException -> {
@@ -120,7 +120,7 @@ class PhotoUploadQueueInteractorImpl(
                 PhotoUploadingState.UPLOADED
             )
             updateQueueLiveData()
-            fileRepository.deleteIfExists(photo.filePath)
+            fileRepository.deleteIfExists(photo.filePath!!)
         } catch (t: Exception) {
             saveImageState(
                 imageId = photo.photoId,

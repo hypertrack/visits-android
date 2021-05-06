@@ -24,7 +24,7 @@ data class LocalOrder(
     val estimate: Estimate?,
     val metadata: Map<String, String>,
     //local
-    //todo task remove
+    //todo remove
     var isPickedUp: Boolean = true,
     var note: String? = null,
     //todo we should make it set of string, whole photos is stored here until we'll enable retrieving them from s3
