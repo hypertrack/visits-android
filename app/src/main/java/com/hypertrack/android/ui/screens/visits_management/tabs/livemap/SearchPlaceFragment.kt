@@ -92,7 +92,7 @@ class SearchPlaceFragment(
         setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            Log.d(TAG, "On Home address clicked")
+            // Log.d(TAG, "On Home address clicked")
         }
         setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)

@@ -1,6 +1,5 @@
 package com.hypertrack.android.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -178,7 +177,7 @@ class VisitsRepository(
     }
 
     fun startTracking() {
-        Log.d(TAG, "Start tracking")
+        // Log.d(TAG, "Start tracking")
         hyperTrackService.clockIn()
     }
 

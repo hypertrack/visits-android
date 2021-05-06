@@ -55,7 +55,7 @@ class LiveMapFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated")
+        // Log.d(TAG, "onViewCreated")
         trackingFragment = view.findViewById(R.id.tracking_fragment)
         searchFragment = view.findViewById(R.id.search_place_fragment)
         trackingStatusText.setOnClickListener { trackingStatusText.visibility = View.GONE }
@@ -91,7 +91,7 @@ class LiveMapFragment(
         liveMapViewModel.mapLoading()
         (childFragmentManager.findFragmentById(R.id.liveMap) as SupportMapFragment)
             .getMapAsync {
-                Log.d(TAG, "Got googleMap, updating VM")
+                // Log.d(TAG, "Got googleMap, updating VM")
                 gMap = it
                 liveMapViewModel.googleMap = it
                 displayLoadingState(false)
@@ -107,10 +107,12 @@ class LiveMapFragment(
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "Resuming...")
+        // Log.d(TAG, "Resuming...")
         when (liveMapViewModel.state.value) {
             Loading -> displayLoadingState(true)
-            else -> Log.d(TAG, "Map already loaded")
+            else -> {
+                // Log.d(TAG, "Map already loaded")
+            }
         }
         activity?.apply {
             registerReceiver(shareBroadcastReceiver, IntentFilter(SHARE_BROADCAST_ACTION))
@@ -122,7 +124,7 @@ class LiveMapFragment(
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "Pausing...")
+        // Log.d(TAG, "Pausing...")
         if (progress.isVisible) displayLoadingState(false)
     }
 
@@ -153,10 +155,10 @@ class LiveMapFragment(
     private fun onError() = onMapDisabled()
 
     private fun onMapActive() {
-        Log.d(TAG, "onMapActive")
+        // Log.d(TAG, "onMapActive")
         gMap?.let {
             if (currentMapStyle != mapStyleOptions) {
-                Log.d(TAG, "applying active style")
+                // Log.d(TAG, "applying active style")
                 it.setMapStyle(mapStyleOptions)
                 currentMapStyle = mapStyleOptions
             }
@@ -164,10 +166,10 @@ class LiveMapFragment(
     }
 
     private fun onMapDisabled() {
-        Log.d(TAG, "onMapDisabled")
+        // Log.d(TAG, "onMapDisabled")
         gMap?.let {
             if (currentMapStyle != mapStyleOptionsSilver) {
-                Log.d(TAG, "applying active style")
+                // Log.d(TAG, "applying active style")
                 it.setMapStyle(mapStyleOptionsSilver)
                 currentMapStyle = mapStyleOptionsSilver
             }

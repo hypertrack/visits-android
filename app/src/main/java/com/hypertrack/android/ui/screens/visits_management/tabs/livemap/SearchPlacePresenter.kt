@@ -181,7 +181,7 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
         viewLifecycleOwner.lifecycleScope.launch {
             when (val result = backendProvider.createTrip(tripRequest)) {
                 is ShareableTripSuccess -> {
-                    Log.d(TAG, "trip is created: $result")
+                    // Log.d(TAG, "trip is created: $result")
                     view.hideProgressBar()
                     view.finish()
                 }

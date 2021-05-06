@@ -92,7 +92,7 @@ class GoogleMapHistoryRenderer(
     }
 
     override fun onTileSelected(tile: HistoryTile) {
-        Log.d(TAG, "onTileSelected $tile")
+        // Log.d(TAG, "onTileSelected $tile")
         if (tile.tileType == HistoryTileType.SUMMARY) return
 
         selectedSegment?.remove()
@@ -113,7 +113,7 @@ class GoogleMapHistoryRenderer(
             }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(tile.locations.boundRect(), style.mapPadding))
             googleMap.setOnMapClickListener {
-                Log.d(TAG, "onMapClicked")
+                // Log.d(TAG, "onMapClicked")
                 selectedSegment?.remove()
                 activeMarkers.forEach { it.remove() }
                 activeMarkers.clear()

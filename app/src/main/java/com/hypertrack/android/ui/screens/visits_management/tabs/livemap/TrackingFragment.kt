@@ -63,7 +63,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "Creating view")
+        // Log.d(TAG, "Creating view")
         mBackendProvider = Injector.getBackendProvider(requireContext()).get()
         hyperTrackService = Injector.hyperTrackServiceProvider.get()
         realTimeUpdatesService = Injector.getRealTimeUpdatesService(requireContext()).get()
@@ -152,7 +152,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume")
+        // Log.d(TAG, "onResume")
         presenter = TrackingPresenter(
             requireContext(),
             this,
@@ -162,7 +162,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
         )
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()
-            Log.d(TAG, "got google map from VM $map")
+            // Log.d(TAG, "got google map from VM $map")
             view?.let {
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { presenter?.subscribeUpdates(map) }
             }
@@ -171,12 +171,12 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "Pausing...")
+        // Log.d(TAG, "Pausing...")
         presenter?.pause()
     }
 
     override fun updateConnectionStatus(offline: Boolean) {
-        Log.d(TAG, "updateConnectionStatus offline $offline")
+        // Log.d(TAG, "updateConnectionStatus offline $offline")
         if (offline) {
             bottomHolderSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             offlineView.visibility = View.VISIBLE
@@ -318,7 +318,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
     }
 
     override fun addSearchPlaceFragment(config: SearchPlaceFragment.Config?) {
-        Log.d(TAG, "Add search place fragment")
+        // Log.d(TAG, "Add search place fragment")
         view?.visibility = View.INVISIBLE
         parentFragment?.view?.findViewById<View>(R.id.search_place_fragment)?.visibility = View.VISIBLE
     }

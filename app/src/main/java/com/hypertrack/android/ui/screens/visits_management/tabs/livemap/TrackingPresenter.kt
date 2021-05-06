@@ -39,13 +39,13 @@ internal class TrackingPresenter(
     private var hyperTrackMap: HyperTrackMap? = null
     private val connectivityReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d(TAG, "OnConnectivity change")
+            // Log.d(TAG, "OnConnectivity change")
             if (context.isOffline()) {
-                Log.d(TAG, "isOffline")
+                // Log.d(TAG, "isOffline")
                 view.updateConnectionStatus(false)
                 realTimeUpdatesService.stopAllUpdates()
             } else {
-                Log.d(TAG, "isOnline")
+                // Log.d(TAG, "isOnline")
                 view.updateConnectionStatus(false)
                 realTimeUpdatesService.subscribeToDeviceUpdates(
                     hyperTrackService.deviceId,
@@ -65,7 +65,7 @@ internal class TrackingPresenter(
     }
 
     fun subscribeUpdates(googleMap: GoogleMap) {
-        Log.d(TAG, "Subscribing to map updates")
+        // Log.d(TAG, "Subscribing to map updates")
         if (hyperTrackMap == null) {
             val mapAdapter = GoogleMapAdapter(googleMap, getBuilder(context).build())
             mapAdapter.addTripFilter { trip -> trip.tripId == state.selectedTripId }
@@ -77,7 +77,7 @@ internal class TrackingPresenter(
         hyperTrackService.syncDeviceSettings()
         val selectedTrip = state.trips[state.selectedTripId]
         if (selectedTrip == null) {
-            Log.d(TAG, "showing search as no trip selected")
+            // Log.d(TAG, "showing search as no trip selected")
             view.showSearch()
             hyperTrackMap!!.moveToMyLocation()
         } else {
@@ -130,7 +130,7 @@ internal class TrackingPresenter(
             view.showProgressBar()
                 when (val result = backendProvider.completeTrip(tripId)) {
                     is TripCompletionSuccess -> {
-                        Log.d(TAG, "trip is ended")
+                        // Log.d(TAG, "trip is ended")
                         view.hideProgressBar()
                     }
                     is TripCompletionError -> {
@@ -183,7 +183,7 @@ internal class TrackingPresenter(
     }
 
     override fun onTripUpdateReceived(trip: Trip) {
-        Log.d(TAG, "onTripUpdateReceived: $trip")
+        // Log.d(TAG, "onTripUpdateReceived: $trip")
         if (hyperTrackMap != null) {
             state.trips[trip.tripId] = trip
             val isNewTrip = !state.tripSubscription.containsKey(trip.tripId)

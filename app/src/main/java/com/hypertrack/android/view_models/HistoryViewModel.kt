@@ -27,12 +27,12 @@ class HistoryViewModel(
     init {
         tiles.addSource(historyRepository.history) {
             if (it.locationTimePoints.isNotEmpty()) {
-                Log.d(TAG, "got new history $it")
+                // Log.d(TAG, "got new history $it")
                 val asTiles = it.asTiles(timeDistanceFormatter)
-                Log.d(TAG, "converted to tiles $asTiles")
+                // Log.d(TAG, "converted to tiles $asTiles")
                 tiles.postValue(asTiles)
             } else {
-                Log.d(TAG, "Empty history")
+                // Log.d(TAG, "Empty history")
                 tiles.postValue(emptyList())
             }
         }
