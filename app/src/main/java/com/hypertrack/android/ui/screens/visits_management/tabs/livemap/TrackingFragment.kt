@@ -158,7 +158,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking), TrackingPresenter
             this,
             mBackendProvider,
             hyperTrackService,
-            realTimeUpdatesService
+            realTimeUpdatesService,
+            Injector.getVisitsRepo(requireActivity())
         )
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
             val map = liveMapViewModel.getMap()

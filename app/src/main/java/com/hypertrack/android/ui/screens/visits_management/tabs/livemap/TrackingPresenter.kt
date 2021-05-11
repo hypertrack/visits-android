@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.hypertrack.android.models.TripCompletionError
 import com.hypertrack.android.models.TripCompletionSuccess
 import com.hypertrack.android.models.TripManagementApi
+import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.MapUtils.getBuilder
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.logistics.android.github.R
@@ -32,7 +33,8 @@ internal class TrackingPresenter(
     private val view: View,
     private val backendProvider: TripManagementApi,
     private val hyperTrackService: HyperTrackService,
-    private val realTimeUpdatesService: HyperTrackViews
+    private val realTimeUpdatesService: HyperTrackViews,
+    private val visitsRepository: VisitsRepository
 ) : DeviceUpdatesHandler {
     private val handler = Handler()
     private val state: TrackingState  = TrackingState(context)
@@ -131,6 +133,10 @@ internal class TrackingPresenter(
                 when (val result = backendProvider.completeTrip(tripId)) {
                     is TripCompletionSuccess -> {
                         Log.d(TAG, "trip is ended")
+                        if (visitsRepository.getVisit(tripId) == null) {
+                            visitsRepository.refreshVisits()
+                        }
+                        visitsRepository.setCompleted(tripId)
                         view.hideProgressBar()
                     }
                     is TripCompletionError -> {

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import javax.inject.Inject
@@ -56,7 +57,8 @@ class SearchPlaceFragment(
             backendProvider,
             deviceId,
             viewLifecycleOwner,
-            SearchPlaceState(requireContext(), backendProvider)
+            SearchPlaceState(requireContext(), backendProvider),
+            Injector.getVisitsRepo(requireActivity())
         )
         search = view.findViewById(R.id.search)
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)

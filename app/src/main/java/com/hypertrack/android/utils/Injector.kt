@@ -282,7 +282,7 @@ object Injector {
         return getServiceLocator().getHyperTrackService(publishableKey)
     }
 
-    private fun getVisitsRepo(context: Context): VisitsRepository {
+    fun getVisitsRepo(context: Context): VisitsRepository {
         visitsRepository?.let { return it }
 
         getMyPreferences(context).getAccountData().publishableKey
