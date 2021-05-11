@@ -128,7 +128,6 @@
     <string name="i_m_going_to">I’m going to</string>
     <string name="arrival">Arrival</string>
     <string name="away">Away</string>
-    <string name="end">End</string>
     <string name="share_trip">Share</string>
     <string name="you_have_ongoing_orders">You have %d ongoing %s</string>
     <string name="trip">Trip</string>

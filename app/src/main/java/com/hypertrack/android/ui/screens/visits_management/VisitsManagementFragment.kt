@@ -151,7 +151,6 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         }
 
         swClockIn.setOnCheckedChangeListener { view, isChecked ->
-            Log.d("cutag", "${view.isChecked} ${isChecked}")
             visitsManagementViewModel.switchTracking()
         }
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
