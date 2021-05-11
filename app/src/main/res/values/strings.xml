@@ -64,8 +64,8 @@
     <string name="summary_drive">Drives</string>
     <string name="summary_walk">Walks</string>
     <string name="summary_stop">Stops</string>
-    <string name="clock_hint_tracking_on">Pressing Clock Out will stop location tracking</string>
-    <string name="clock_hint_tracking_off">Pressing Clock In will start location tracking</string>
+    <string name="clock_hint_tracking_on">Pressing the switch will stop location tracking</string>
+    <string name="clock_hint_tracking_off">Pressing the switch will start location tracking</string>
     <string name="cancel_visit_confirmation">Are you sure you want to cancel this visit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

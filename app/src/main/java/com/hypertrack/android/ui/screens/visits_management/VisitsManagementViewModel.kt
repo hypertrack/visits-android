@@ -32,20 +32,12 @@ class VisitsManagementViewModel(
 
     val isTracking = visitsRepository.isTracking
 
-    private val _clockInButtonText = MediatorLiveData<CharSequence>()
-
     init {
-        _clockInButtonText.addSource(visitsRepository.isTracking) { tracking ->
-            _clockInButtonText.postValue(if (tracking) "Clock Out" else "Clock In")
-        }
         if (accountRepository.shouldStartTracking) {
             visitsRepository.startTracking()
             accountRepository.shouldStartTracking = false
         }
     }
-
-    val clockInButtonText: LiveData<CharSequence>
-        get() = _clockInButtonText
 
     private val _checkInButtonText = MediatorLiveData<LocalVisitCtaLabel>()
 
@@ -132,7 +124,9 @@ class VisitsManagementViewModel(
     val statusBarMessage: LiveData<StatusMessage>
         get() = _statusBarMessage
 
-    val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
+    //todo remove completely
+//    val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
+    val showCheckIn: Boolean = false
 
     val error = MutableLiveData<String>()
 
@@ -182,7 +176,6 @@ class VisitsManagementViewModel(
         viewModelScope.launch {
             visitsRepository.switchTracking()
             _showSpinner.postValue(false)
-
         }
     }
 
