@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -133,7 +134,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             checkIn.visibility = View.GONE
 
         visitsManagementViewModel.isTracking.observe(viewLifecycleOwner) { isTracking ->
-            swClockIn.isChecked = isTracking
+            swClockIn.setStateWithoutTriggeringListener(isTracking)
             tvClockHint.setText(
                 if (isTracking) {
                     R.string.clock_hint_tracking_on
@@ -149,7 +150,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             }
         }
 
-        swClockIn.setOnCheckedChangeListener { _, isChecked ->
+        swClockIn.setOnCheckedChangeListener { view, isChecked ->
+            Log.d("cutag", "${view.isChecked} ${isChecked}")
             visitsManagementViewModel.switchTracking()
         }
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
@@ -219,5 +221,6 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         SUMMARY(R.drawable.ic_insights_tab),
         PROFILE(R.drawable.ic_profile_tab),
     }
+
 }
 
