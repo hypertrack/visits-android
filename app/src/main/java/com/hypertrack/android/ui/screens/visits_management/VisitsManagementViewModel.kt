@@ -99,30 +99,21 @@ class VisitsManagementViewModel(
     val statusBarColor: LiveData<Int?>
         get() = _statusBarColor
 
-    private val _statusBarMessage = MediatorLiveData<StatusMessage>()
+    val statusBarMessage = MediatorLiveData<StatusMessage>()
 
     init {
-        _statusBarMessage.addSource(visitsRepository.trackingState) {
-            _statusBarMessage.postValue(
+        statusBarMessage.addSource(visitsRepository.trackingState) {
+            statusBarMessage.postValue(
                 when (it) {
                     TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
                     TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
-                    else -> visitsRepository.visitListItems.value.asStats()
+                    TrackingStateValue.TRACKING -> StatusString(R.string.clocked_in)
+                    TrackingStateValue.STOP -> StatusString(R.string.clocked_out)
+                    else -> StatusString(R.string.unknown_error)
                 }
             )
         }
-        _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
-            when (_statusBarMessage.value) {
-                is StatusString -> {
-                }
-                else -> _statusBarMessage.postValue(visits.asStats())
-            }
-
-        }
     }
-
-    val statusBarMessage: LiveData<StatusMessage>
-        get() = _statusBarMessage
 
     //todo remove completely
 //    val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
@@ -201,15 +192,8 @@ class VisitsManagementViewModel(
 
 }
 
-fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
-    VisitsStats(filterIsInstance<Visit>()
-        .groupBy { it.state.group }
-        .mapValues { (_, items) -> items.size })
-} ?: VisitsStats(emptyMap())
-
 sealed class StatusMessage
 class StatusString(val stringId: Int) : StatusMessage()
-class VisitsStats(val stats: Map<VisitStatusGroup, Int>) : StatusMessage()
 
 enum class LocalVisitCtaLabel {
     CHECK_IN, CHECK_OUT
