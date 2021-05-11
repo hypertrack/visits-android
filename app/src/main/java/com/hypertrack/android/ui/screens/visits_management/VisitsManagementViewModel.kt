@@ -32,20 +32,12 @@ class VisitsManagementViewModel(
 
     val isTracking = visitsRepository.isTracking
 
-    private val _clockInButtonText = MediatorLiveData<CharSequence>()
-
     init {
-        _clockInButtonText.addSource(visitsRepository.isTracking) { tracking ->
-            _clockInButtonText.postValue(if (tracking) "Clock Out" else "Clock In")
-        }
         if (accountRepository.shouldStartTracking) {
             visitsRepository.startTracking()
             accountRepository.shouldStartTracking = false
         }
     }
-
-    val clockInButtonText: LiveData<CharSequence>
-        get() = _clockInButtonText
 
     private val _checkInButtonText = MediatorLiveData<LocalVisitCtaLabel>()
 
@@ -107,32 +99,25 @@ class VisitsManagementViewModel(
     val statusBarColor: LiveData<Int?>
         get() = _statusBarColor
 
-    private val _statusBarMessage = MediatorLiveData<StatusMessage>()
+    val statusBarMessage = MediatorLiveData<StatusMessage>()
 
     init {
-        _statusBarMessage.addSource(visitsRepository.trackingState) {
-            _statusBarMessage.postValue(
+        statusBarMessage.addSource(visitsRepository.trackingState) {
+            statusBarMessage.postValue(
                 when (it) {
                     TrackingStateValue.DEVICE_DELETED -> StatusString(R.string.device_deleted)
                     TrackingStateValue.ERROR -> StatusString(R.string.generic_tracking_error)
-                    else -> visitsRepository.visitListItems.value.asStats()
+                    TrackingStateValue.TRACKING -> StatusString(R.string.clocked_in)
+                    TrackingStateValue.STOP -> StatusString(R.string.clocked_out)
+                    else -> StatusString(R.string.unknown_error)
                 }
             )
         }
-        _statusBarMessage.addSource(visitsRepository.visitListItems) { visits ->
-            when (_statusBarMessage.value) {
-                is StatusString -> {
-                }
-                else -> _statusBarMessage.postValue(visits.asStats())
-            }
-
-        }
     }
 
-    val statusBarMessage: LiveData<StatusMessage>
-        get() = _statusBarMessage
-
-    val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
+    //todo remove completely
+//    val showCheckIn: Boolean = accountRepository.isManualCheckInAllowed
+    val showCheckIn: Boolean = false
 
     val error = MutableLiveData<String>()
 
@@ -182,7 +167,6 @@ class VisitsManagementViewModel(
         viewModelScope.launch {
             visitsRepository.switchTracking()
             _showSpinner.postValue(false)
-
         }
     }
 
@@ -208,15 +192,8 @@ class VisitsManagementViewModel(
 
 }
 
-fun List<VisitListItem>?.asStats(): VisitsStats = this?.let {
-    VisitsStats(filterIsInstance<Visit>()
-        .groupBy { it.state.group }
-        .mapValues { (_, items) -> items.size })
-} ?: VisitsStats(emptyMap())
-
 sealed class StatusMessage
 class StatusString(val stringId: Int) : StatusMessage()
-class VisitsStats(val stats: Map<VisitStatusGroup, Int>) : StatusMessage()
 
 enum class LocalVisitCtaLabel {
     CHECK_IN, CHECK_OUT

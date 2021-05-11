@@ -1,6 +1,7 @@
 package com.hypertrack.android.ui.screens.visits_management
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.DrawableRes
@@ -114,21 +115,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         visitsManagementViewModel.statusBarMessage.observe(viewLifecycleOwner) { msg ->
             when (msg) {
                 is StatusString -> tvTrackerStatus.setText(msg.stringId)
-                is VisitsStats -> {
-                    if (msg.stats.isEmpty())
-                        tvTrackerStatus.setText(R.string.no_planned_visits)
-                    else {
-                        val groupNames = resources.getStringArray(R.array.visit_state_group_names)
-                        val messageText = msg.stats.entries
-                            .filter { it.value > 0 }
-                            .map { entry -> "${entry.value} ${groupNames[entry.key.ordinal]}" }
-                            .joinToString(", ")
-                        tvTrackerStatus.text = messageText
-                    }
-
-                }
             }
-
         }
 
         visitsManagementViewModel.showSpinner.observe(viewLifecycleOwner) { show ->
@@ -144,10 +131,9 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             checkIn.visibility = View.VISIBLE
         else
             checkIn.visibility = View.GONE
-        visitsManagementViewModel.clockInButtonText.observe(viewLifecycleOwner) {
-            clockIn.text = it
-        }
+
         visitsManagementViewModel.isTracking.observe(viewLifecycleOwner) { isTracking ->
+            swClockIn.isChecked = isTracking
             tvClockHint.setText(
                 if (isTracking) {
                     R.string.clock_hint_tracking_on
@@ -163,7 +149,9 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             }
         }
 
-        clockIn.setOnClickListener { visitsManagementViewModel.switchTracking() }
+        swClockIn.setOnCheckedChangeListener { _, isChecked ->
+            visitsManagementViewModel.switchTracking()
+        }
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(viewLifecycleOwner) { msg ->
             if (msg.isNotEmpty()) Toast

@@ -64,8 +64,8 @@
     <string name="summary_drive">Drives</string>
     <string name="summary_walk">Walks</string>
     <string name="summary_stop">Stops</string>
-    <string name="clock_hint_tracking_on">Pressing Clock Out will stop location tracking</string>
-    <string name="clock_hint_tracking_off">Pressing Clock In will start location tracking</string>
+    <string name="clock_hint_tracking_on">Pressing the switch will stop location tracking</string>
+    <string name="clock_hint_tracking_off">Pressing the switch will start location tracking</string>
     <string name="cancel_visit_confirmation">Are you sure you want to cancel this visit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -93,6 +93,9 @@
     <string name="code_from_clipboard">Code have pasted from clipboard</string>
     <string name="password_too_short">Password length must be 8 characters or more </string>
     <string name="invalid_email">Invalid email</string>
+
+    <string name="clocked_in">You are clocked in</string>
+    <string name="clocked_out">You are clocked out</string>
 
     <string name="places_no_places">You don\'t have Places yet</string>
     <string name="places_visited">Visited %s</string>
