@@ -19,33 +19,13 @@ open class ProgressDialogFragment(layoutId: Int) : BaseFragment<MainActivity>(la
 
     protected fun dismissProgress() = dialog.dismiss()
 
-    private val notificationManager by lazy { MyApplication.context.getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager }
-
-    protected fun showSyncNotification() {
-        @Suppress("DEPRECATION", "suggested API isn't available before Oreo")
-        val notification = (
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    Notification.Builder(requireContext(), MyApplication.CHANNEL_ID)
-                else
-                    Notification.Builder(requireContext()).setPriority(Notification.PRIORITY_LOW)
-                )
-                .setContentText("Refreshing Visits")
-                .setSmallIcon(android.R.drawable.stat_notify_sync)
-                .build()
-        notificationManager.notify(SYNC_NOTIFICATION_ID, notification)
-    }
-
-
-    protected fun dismissSyncNotification() {
-        notificationManager.cancel(SYNC_NOTIFICATION_ID)
-    }
-
     override fun onLeave() {
         super.onLeave()
         dismissProgress()
     }
 
     companion object {
+        const val TRIP_NOTIFICATION_ID = 1
         const val SYNC_NOTIFICATION_ID = 4242
     }
 

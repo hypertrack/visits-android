@@ -15,6 +15,7 @@ import androidx.navigation.fragment.navArgs
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
+import com.hypertrack.android.ui.common.NotificationUtils
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
@@ -123,7 +124,11 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             if (show) showProgress() else dismissProgress()
         }
         visitsManagementViewModel.showSync.observe(viewLifecycleOwner) { show ->
-            if (show) showSyncNotification() else dismissSyncNotification()
+            if (show) {
+                NotificationUtils.showSyncNotification(requireContext())
+            } else {
+                NotificationUtils.dismissSyncNotification()
+            }
         }
         visitsManagementViewModel.enableCheckIn.observe(viewLifecycleOwner) { enabled ->
             checkIn.isEnabled = enabled
@@ -200,7 +205,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         super.onPause()
         visitsManagementViewModel.showSync.value?.let {
             if (it) {
-                dismissSyncNotification()
+                NotificationUtils.dismissSyncNotification()
             }
         }
     }

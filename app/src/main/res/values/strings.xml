@@ -5,7 +5,7 @@
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
     <string name="channel_name">HyperTrack Notifications</string>
     <string name="channel_id">HyperTrack</string>
-    <string name="channel_description">All HyperTrack Visits app notifications</string>
+    <string name="channel_description">HyperTrack Visits app notifications</string>
     <string name="file_provider_authority" translatable="false">com.hypertrack.logistics.android.github.fileprovider</string>
     <string name="replace_picture">Replace Picture</string>
     <string name="location">Location</string>
@@ -96,6 +96,10 @@
 
     <string name="clocked_in">You are clocked in</string>
     <string name="clocked_out">You are clocked out</string>
+
+    <string name="notification_important_channel_name">HyperTrack Important Notifications</string>
+    <string name="notification_important_channel_description">HyperTrack Visits app notifications</string>
+    <string name="notification_new_trip">A new trip was assigned to you</string>
 
     <string name="places_no_places">You don\'t have Places yet</string>
     <string name="places_visited">Visited %s</string>
