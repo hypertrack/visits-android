@@ -23,7 +23,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/no_planned_visits"
-            android:textSize="16dp"
+            android:textSize="18dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
