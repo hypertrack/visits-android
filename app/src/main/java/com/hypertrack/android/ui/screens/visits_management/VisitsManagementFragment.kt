@@ -156,7 +156,9 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         }
 
         swClockIn.setOnCheckedChangeListener { view, isChecked ->
-            visitsManagementViewModel.switchTracking()
+            if (isChecked != visitsManagementViewModel.isTracking.value) {
+                visitsManagementViewModel.switchTracking()
+            }
         }
         checkIn.setOnClickListener { visitsManagementViewModel.checkIn() }
         visitsManagementViewModel.showToast.observe(viewLifecycleOwner) { msg ->
