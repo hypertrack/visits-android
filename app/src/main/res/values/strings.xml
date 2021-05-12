@@ -147,7 +147,6 @@
     <string name="miles_mins">%.2f miles • %d mins</string>
     <string name="set_on_map">Set on map</string>
     <string name="confirm">Confirm</string>
-    <string name="not_decided_yet">Not decided yet</string>
     <string name="searching_">Searching…</string>
     <string name="set_home_address">Set home address</string>
     <string name="home">Home</string>

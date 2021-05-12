@@ -48,16 +48,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/no_destination"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:layout_gravity="end"
-            android:gravity="center"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="@string/not_decided_yet" />
-
     </LinearLayout>
 
     <ImageView
