@@ -16,9 +16,15 @@ object DistanceUtils {
 
     fun metersToDistanceString(meters: Int): String {
         if (shouldUseImperial()) {
-            return MyApplication.context.getString(R.string.miles, round(meters / 1000 * 0.62137).toInt())
+            return MyApplication.context.getString(
+                R.string.miles,
+                (round(meters / 1000 * 0.62137 * 100) / 100.0).toString()
+            )
         } else {
-            return MyApplication.context.getString(R.string.kms, round(meters / 1000.0).toInt())
+            return MyApplication.context.getString(
+                R.string.kms,
+                (round(meters / 1000.0 * 100) / 100.0).toString()
+            )
         }
     }
 }

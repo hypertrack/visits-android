@@ -12,12 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.HistoryTile
 import com.hypertrack.android.models.HistoryTileType
 import com.hypertrack.android.models.Status
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 
 class TimelineTileItemAdapter(
     private val tiles: LiveData<List<HistoryTile>>,
     private val style: TimelineStyle,
-    private val onClick: (HistoryTile) -> Unit
+    private val onClick: (HistoryTile) -> Unit,
 ) : RecyclerView.Adapter<TimeLineTile>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineTile {
@@ -26,9 +27,13 @@ class TimelineTileItemAdapter(
     }
 
     override fun onBindViewHolder(holder: TimeLineTile, position: Int) {
-        val tile = tiles.value?.get(position)?:return
+        val tile = tiles.value?.get(position) ?: return
         holder.activityIcon.setImageResource(style.iconForStatus(tile.status))
-        holder.activitySummary.text = tile.description
+        holder.activitySummary.text = if (tile.tileType != HistoryTileType.SUMMARY) {
+            tile.description
+        } else {
+            MyApplication.context.getString(R.string.timeline_summary, tile.description)
+        }
         holder.activitySummary.setTextColor(style.textColorForType(tile.tileType))
         holder.activityTimeFrame.text = tile.timeframe
         if (tile.address != null) {
