@@ -264,10 +264,6 @@ class SearchPlaceFragment(
         }
 
         companion object {
-            val HOME_ADDRESS = Config("home")
-                .setTitle(R.string.add_home_address)
-                .setHint(R.string.search_address)
-                .setSkipEnabled(true)
             val SEARCH_PLACE = Config("search")
                 .setTitle(R.string.where_are_you_going)
                 .setHint(R.string.i_m_going_to)

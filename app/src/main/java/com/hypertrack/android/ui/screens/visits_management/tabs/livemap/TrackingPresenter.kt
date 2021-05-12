@@ -85,9 +85,6 @@ internal class TrackingPresenter(
         } else {
             hyperTrackMap!!.moveToTrip(selectedTrip)
         }
-        if (!state.isHomeLatLngAdded) {
-            view.addSearchPlaceFragment(SearchPlaceFragment.Config.HOME_ADDRESS)
-        }
     }
 
     fun pause() {
