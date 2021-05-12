@@ -34,7 +34,6 @@ class SearchPlaceFragment(
     private lateinit var destinationOnMap: View
     private var offlineView: View? = null
     private lateinit var home: View
-    private lateinit var setHome: View
     private lateinit var homeInfo: View
     private lateinit var setOnMap: View
     private lateinit var confirm: View
@@ -85,12 +84,10 @@ class SearchPlaceFragment(
         offlineView = view.findViewById(R.id.offline)
         home = view.findViewById(R.id.home)
         home.visibility = View.GONE
-        setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
             Log.d(TAG, "On Home address clicked")
         }
-        setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
         homeInfo.setOnClickListener { presenter.selectHome() }
         setOnMap = view.findViewById(R.id.set_on_map)
@@ -169,7 +166,6 @@ class SearchPlaceFragment(
             this.home.visibility = View.GONE
         } else {
             this.home.visibility = View.VISIBLE
-            setHome.visibility = View.GONE
             homeInfo.visibility = View.VISIBLE
             (homeInfo.findViewById<View>(R.id.home_text) as TextView).text = home.address
         }
