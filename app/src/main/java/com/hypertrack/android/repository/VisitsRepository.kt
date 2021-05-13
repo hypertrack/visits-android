@@ -63,8 +63,8 @@ class VisitsRepository(
         // Log.v(TAG, "Refreshing visits")
 //        val geofences = apiClient.getGeofences()
         // Log.v(TAG, "Got geofences $geofences")
-//        val trips = apiClient.getTrips()
-        val trips = setOf<Trip>()
+        val trips = apiClient.getTrips()
+//        val trips = setOf<Trip>()
         // Log.v(TAG, "Got trips $trips")
         val prototypes: Set<VisitDataSource> = trips.toSet()/*.union(geofences)*/
         // Log.d(TAG, "Total prototypes $prototypes")
