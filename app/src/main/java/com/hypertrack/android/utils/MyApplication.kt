@@ -29,27 +29,37 @@ class MyApplication : Application() {
             Locale.getDefault()
         );
 
-        buildNotificationChannel()
+        buildNotificationChannels()
     }
 
-    private fun buildNotificationChannel() {
+    private fun buildNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
-            mChannel.description = descriptionText
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(mChannel)
+
+            NotificationChannel(
+                CHANNEL_ID,
+                getString(R.string.channel_name),
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = getString(R.string.channel_description)
+                notificationManager.createNotificationChannel(this)
+            }
+
+            NotificationChannel(
+                IMPORTANT_CHANNEL_ID,
+                getString(R.string.notification_important_channel_name),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = getString(R.string.notification_important_channel_description)
+                notificationManager.createNotificationChannel(this)
+            }
         }
     }
 
     companion object {
         const val TAG = "MyApplication"
         const val CHANNEL_ID = "default_notification_channel"
+        const val IMPORTANT_CHANNEL_ID = "important_notification_channel"
         const val SERVICES_API_KEY = BuildConfig.SERVICES_API_KEY
 
 

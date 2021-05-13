@@ -48,16 +48,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/no_destination"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:layout_gravity="end"
-            android:gravity="center"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="@string/not_decided_yet" />
-
     </LinearLayout>
 
     <ImageView
@@ -100,17 +90,6 @@
                     android:src="@drawable/ic_home"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/set_home"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="46dp"
-                    android:gravity="center_vertical"
-                    android:text="@string/set_home_address"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
+import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.views.HyperTrackViews
 import javax.inject.Inject
@@ -33,14 +34,12 @@ class SearchPlaceFragment(
     private lateinit var destinationOnMap: View
     private var offlineView: View? = null
     private lateinit var home: View
-    private lateinit var setHome: View
     private lateinit var homeInfo: View
     private lateinit var setOnMap: View
     private lateinit var confirm: View
     private var placesAdapter = PlacesAdapter()
     private lateinit var loader: LoaderDecorator
     private val liveMapViewModel: LiveMapViewModel by viewModels({requireParentFragment()})
-    private lateinit var noDestination: View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +55,8 @@ class SearchPlaceFragment(
             backendProvider,
             deviceId,
             viewLifecycleOwner,
-            SearchPlaceState(requireContext(), backendProvider)
+            SearchPlaceState(requireContext(), backendProvider),
+            Injector.getVisitsRepo(requireActivity())
         )
         search = view.findViewById(R.id.search)
         val toolbar: Toolbar = view.findViewById(R.id.toolbar)
@@ -78,23 +78,16 @@ class SearchPlaceFragment(
         search.requestFocus()
         val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(search, InputMethodManager.SHOW_IMPLICIT)
-        noDestination = view.findViewById(R.id.no_destination)
         requireActivity().setTitle(R.string.where_are_you_going)
         search.setHint(R.string.i_m_going_to)
-        noDestination.setOnClickListener {
-            presenter.setMapDestinationModeEnable(false)
-            presenter.providePlace(null)
-        }
         destinationOnMap = view.findViewById(R.id.destination_on_map)
         offlineView = view.findViewById(R.id.offline)
         home = view.findViewById(R.id.home)
         home.visibility = View.GONE
-        setHome = view.findViewById(R.id.set_home)
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
             Log.d(TAG, "On Home address clicked")
         }
-        setHome.setOnClickListener(onHomeAddressClickListener)
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
         homeInfo.setOnClickListener { presenter.selectHome() }
         setOnMap = view.findViewById(R.id.set_on_map)
@@ -173,7 +166,6 @@ class SearchPlaceFragment(
             this.home.visibility = View.GONE
         } else {
             this.home.visibility = View.VISIBLE
-            setHome.visibility = View.GONE
             homeInfo.visibility = View.VISIBLE
             (homeInfo.findViewById<View>(R.id.home_text) as TextView).text = home.address
         }
@@ -272,10 +264,6 @@ class SearchPlaceFragment(
         }
 
         companion object {
-            val HOME_ADDRESS = Config("home")
-                .setTitle(R.string.add_home_address)
-                .setHint(R.string.search_address)
-                .setSkipEnabled(true)
             val SEARCH_PLACE = Config("search")
                 .setTitle(R.string.where_are_you_going)
                 .setHint(R.string.i_m_going_to)

@@ -39,7 +39,7 @@ class PlacesAdapter : RecyclerView.Adapter<PlacesAdapter.MyViewHolder>() {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         val item = dataset[position]
-        holder.icon.setImageResource(if (item.isRecent) R.drawable.history else R.drawable.ic_place)
+        holder.icon.setImageResource(if (item.isRecent) R.drawable.ic_history else R.drawable.ic_places)
         holder.name.text = item.primaryText
         holder.address.text = item.secondaryText
         holder.itemView.setOnClickListener { view ->

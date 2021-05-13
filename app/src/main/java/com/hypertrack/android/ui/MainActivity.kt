@@ -2,6 +2,7 @@ package com.hypertrack.android.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -52,6 +53,16 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         deepLinkProcessor.activityOnStart(this, intent, this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        inForeground = true
+    }
+
+    override fun onPause() {
+        inForeground = false
+        super.onPause()
+    }
+
     override fun onDeeplinkResult(parameters: Map<String, Any>) {
         splashScreenViewModel.handleDeeplink(parameters, this)
     }
@@ -74,5 +85,9 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    companion object {
+        var inForeground: Boolean = false
     }
 }

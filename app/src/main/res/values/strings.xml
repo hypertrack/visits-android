@@ -5,7 +5,7 @@
     <string name="hyperTrackPublishKey">paste your publishable key here</string>
     <string name="channel_name">HyperTrack Notifications</string>
     <string name="channel_id">HyperTrack</string>
-    <string name="channel_description">All HyperTrack Visits app notifications</string>
+    <string name="channel_description">HyperTrack Visits app notifications</string>
     <string name="file_provider_authority" translatable="false">com.hypertrack.logistics.android.github.fileprovider</string>
     <string name="replace_picture">Replace Picture</string>
     <string name="location">Location</string>
@@ -45,7 +45,7 @@
     <string name="item_plural">Items</string>
     <string name="visited">Visited</string>
     <string name="pending">Pending</string>
-    <string name="no_planned_visits">"No planned visits"</string>
+    <string name="no_planned_visits">No trips assigned to you</string>
     <string name="device_deleted">"Device Deleted"</string>
     <string name="generic_tracking_error">"Tracking Failure"</string>
     <string name="splashscreenlogo">splashScreenLogo</string>
@@ -77,8 +77,8 @@
     <string name="duration">%1$d hr, %2$d min</string>
     <string name="duration_minutes">%1$d min</string>
     <string name="steps">%1$d steps</string>
-    <string name="miles">%1$d mil</string>
-    <string name="kms">%1$d km</string>
+    <string name="miles">%s mil</string>
+    <string name="kms">%s km</string>
     <string name="close">Close</string>
     <string name="device_id">Device ID</string>
     <string name="driver_id">Driver ID</string>
@@ -96,6 +96,12 @@
 
     <string name="clocked_in">You are clocked in</string>
     <string name="clocked_out">You are clocked out</string>
+
+    <string name="notification_important_channel_name">HyperTrack Important Notifications</string>
+    <string name="notification_important_channel_description">HyperTrack Visits app notifications</string>
+    <string name="notification_new_trip">A new trip was assigned to you</string>
+
+    <string name="timeline_summary">Tracking summary: %s</string>
 
     <string name="places_no_places">You don\'t have Places yet</string>
     <string name="places_visited">Visited %s</string>
@@ -128,7 +134,6 @@
     <string name="i_m_going_to">I’m going to</string>
     <string name="arrival">Arrival</string>
     <string name="away">Away</string>
-    <string name="end">End</string>
     <string name="share_trip">Share</string>
     <string name="you_have_ongoing_orders">You have %d ongoing %s</string>
     <string name="trip">Trip</string>
@@ -144,9 +149,7 @@
     <string name="miles_mins">%.2f miles • %d mins</string>
     <string name="set_on_map">Set on map</string>
     <string name="confirm">Confirm</string>
-    <string name="not_decided_yet">Not decided yet</string>
     <string name="searching_">Searching…</string>
-    <string name="set_home_address">Set home address</string>
     <string name="home">Home</string>
     <string name="status_stopped">stopped</string>
     <string name="share_trip_via">Share trip via</string>

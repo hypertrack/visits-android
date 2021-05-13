@@ -5,6 +5,7 @@ import android.util.Log
 import com.hypertrack.android.models.*
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
+import com.hypertrack.android.utils.MockData
 import com.hypertrack.logistics.android.github.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -56,6 +57,7 @@ class ApiClient(
         try {
             do {
                 val response = api.getGeofencesWithMarkers(deviceId, paginationToken ?: "null")
+//                val response = Response.success(Injector.getMoshi().adapter(GeofenceResponse::class.java).fromJson(MockData.MOCK_GEOFENCES_JSON))
                 if (response.isSuccessful) {
                     response.body()?.geofences?.let {
                         res.addAll(it)
@@ -233,11 +235,16 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
     }
 }
 
-private fun HistoryMarker.asMarker(): Marker {
+fun HistoryMarker.asMarker(): Marker {
     return when (this) {
         is HistoryStatusMarker -> asStatusMarker()
         is HistoryTripMarker ->
-            GeoTagMarker(MarkerType.GEOTAG, data.recordedAt, data.location?.asLocation(), data.metadata?: emptyMap())
+            GeoTagMarker(
+                MarkerType.GEOTAG,
+                data.recordedAt,
+                data.location?.asLocation(),
+                data.metadata ?: emptyMap()
+            )
         is HistoryGeofenceMarker -> asGeofenceMarker()
         else -> throw IllegalArgumentException("Unknown marker type $type")
     }

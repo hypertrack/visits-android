@@ -8,6 +8,7 @@ import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.HistoryResult
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.MockData
 import com.hypertrack.android.utils.OsUtilsProvider
 
 class HistoryRepository(
@@ -26,6 +27,7 @@ class HistoryRepository(
                 osUtilsProvider.getLocalDate(),
                 osUtilsProvider.getTimeZoneId()
         )
+//        val result = MockData.MOCK_HISTORY
         return when (result) {
             is History -> {
                 _history.postValue(result)
