@@ -21,7 +21,7 @@ android {
         applicationId "com.hypertrack.logistics.android.github"
         minSdkVersion 23
         targetSdkVersion 30
-        versionName "0.8.0-SNAPSHOT"
+        versionName "0.8.0-beta"
         versionCode codeFromVersionString(versionName)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "google_places_api_key", rootProject.properties.placesApiKey
@@ -87,7 +87,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.2'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
@@ -117,7 +117,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     implementation 'com.airbnb.android:lottie:3.1.0'
-    implementation 'com.hypertrack:hypertrack:4.11.1'
+    implementation 'com.hypertrack:hypertrack:4.11.0'
 
     // Branch IO
     implementation 'io.branch.sdk.android:library:5.0.1'
@@ -129,7 +129,7 @@ dependencies {
 
     // Crashlytics
     implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
-    implementation 'com.google.firebase:firebase-analytics:18.0.3'
+    implementation 'com.google.firebase:firebase-analytics:18.0.2'
 
     // Whitelisting on hostile ROMs
     implementation 'com.github.judemanutd:autostarter:1.0.8'
@@ -141,6 +141,7 @@ dependencies {
     //noinspection GradleDependency
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.2.2'
     testImplementation "io.mockk:mockk:1.10.6"
+    testImplementation "androidx.test:core:1.3.0"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.5'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.robolectric:robolectric:4.4'
@@ -153,6 +154,7 @@ def codeFromVersionString(versionString) {
 
     def match = (versionString =~ /(\d+)\.(\d+)\.(\d+)(?:(?<snapshot>-SNAPSHOT)|(?<alpha>-alpha(?<alphaVersion>\d?))|(?<beta>-beta(?<betaVersion>\d?))|(?<rc>-rc(?<rcVersion>\d?)))?/)
     if (match) {
+        println(versionString)
         def versionMajor = match.group(1).toInteger()
         def versionMinor = match.group(2).toInteger()
         def versionPatch = match.group(3).toInteger()
@@ -169,6 +171,7 @@ def codeFromVersionString(versionString) {
         } else if (match.group('snapshot'))
             featureSuffix = 5
         return versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + featureSuffix
-
+    } else {
+        throw new Exception("Wrong version code")
     }
 }

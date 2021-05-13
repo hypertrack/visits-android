@@ -33,6 +33,9 @@
             android:id="@+id/action_visitManagementFragment_to_visitDetailsFragment"
             app:destination="@id/visitDetailsFragment" />
         <action
+            android:id="@+id/action_visitManagementFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+        <action
             android:id="@+id/action_visitManagementFragment_to_placeDetailsFragment"
             app:destination="@id/placeDetailsFragment" />
         <action
@@ -109,6 +112,14 @@
         android:label="PlaceDetailsFragment">
         <argument
             android:name="geofenceId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.hypertrack.android.ui.screens.order_details.OrderDetailsFragment"
+        android:label="OrderDetailsFragment">
+        <argument
+            android:name="orderId"
             app:argType="string" />
     </fragment>
     <fragment

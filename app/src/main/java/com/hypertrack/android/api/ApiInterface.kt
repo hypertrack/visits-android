@@ -22,9 +22,15 @@ interface ApiInterface {
 
     @POST("client/devices/{device_id}/image")
     suspend fun persistImage(
-            @Path("device_id") deviceId: String,
-            @Body encodedImage: EncodedImage,
+        @Path("device_id") deviceId: String,
+        @Body encodedImage: EncodedImage,
     ): Response<ImageResponse>
+
+    @GET("client/devices/{device_id}/image/{image_id}")
+    suspend fun getImage(
+        @Path("device_id") deviceId: String,
+        @Path("image_id") imageId: String,
+    ): Response<EncodedImage>
 
     /** Returns list of device geofences with visit markers inlined */
     @GET("client/geofences?include_archived=false&include_markers=true")
@@ -58,6 +64,25 @@ interface ApiInterface {
     @POST("client/trips/{trip_id}/complete")
     suspend fun completeTrip(@Path("trip_id") tripId: String): Response<Unit>
 
+    @POST("client/trips/{trip_id}/orders/{order_id}/complete")
+    suspend fun completeOrder(
+        @Path("trip_id") tripId: String,
+        @Path("order_id") orderId: String,
+    ): Response<Void>
+
+    @POST("client/trips/{trip_id}/orders/{order_id}/cancel")
+    suspend fun cancelOrder(
+        @Path("trip_id") tripId: String,
+        @Path("order_id") orderId: String,
+    ): Response<Void>
+
+    @PUT("client/trips/{trip_id}/orders/{order_id}")
+    suspend fun updateOrder(
+        @Path("trip_id") tripId: String,
+        @Path("order_id") orderId: String,
+        @Body order: OrderBody
+    ): Response<Trip>
+
     /**
      * client/devices/A24BA1B4-1234-36F7-8DD7-15D97C3FD912/history/2021-02-05?timezone=Europe%2FZaporozhye
      */
@@ -68,6 +93,11 @@ interface ApiInterface {
         @Query("timezone") timezone: String
     ): Response<HistoryResponse>
 }
+
+@JsonClass(generateAdapter = true)
+data class OrderBody(
+    val metadata: Map<String, Any>,
+)
 
 @JsonClass(generateAdapter = true)
 data class GeofenceParams(
@@ -84,7 +114,7 @@ data class GeofenceProperties(
 
 @JsonClass(generateAdapter = true)
 data class EncodedImage(
-    @field:Json(name = "file_name") val filename: String,
+    @field:Json(name = "file_name") val filename: String?,
     @field:Json(name = "data") val data: String
 ) {
     constructor(filename: String, bitmap: Bitmap) : this(
@@ -118,12 +148,14 @@ data class ImageResponse(
 
 @JsonClass(generateAdapter = true)
 data class Trip(
-        @field:Json(name = "views") val views: Views,
-        @field:Json(name = "trip_id") val tripId: String,
-        @field:Json(name = "started_at") override val createdAt: String,
-        @field:Json(name = "metadata") val metadata: Map<String, Any>?,
-        @field:Json(name = "destination") val destination: TripDestination?,
-        @field:Json(name = "estimate") val estimate: Estimate?,
+    @field:Json(name = "views") val views: Views,
+    @field:Json(name = "trip_id") val tripId: String,
+    @field:Json(name = "status") val status: String,
+    @field:Json(name = "started_at") override val createdAt: String,
+    @field:Json(name = "metadata") val metadata: Map<String, Any>?,
+    @field:Json(name = "destination") val destination: TripDestination?,
+    @field:Json(name = "estimate") val estimate: Estimate?,
+    @field:Json(name = "orders") val orders: List<Order>?,
 ) : VisitDataSource {
     override val visitedAt: String
         get() = destination?.arrivedAt ?: ""
@@ -144,12 +176,6 @@ data class Trip(
     override val visitNameSuffix: String
         get() = if (destination?.address == null) " [$longitude, $latitude]" else " ${destination.address}"
 }
-
-@JsonClass(generateAdapter = true)
-data class Estimate(@field:Json(name = "route") val route: Route?)
-
-@JsonClass(generateAdapter = true)
-data class Route(@field:Json(name = "remaining_duration") val remainingDuration: Int?)
 
 @JsonClass(generateAdapter = true)
 data class TripDestination(

@@ -2,6 +2,7 @@ package com.hypertrack.android.ui.screens.visit_details
 
 import android.graphics.Bitmap
 import android.view.View
+import com.hypertrack.android.interactors.PhotoForUpload
 import com.hypertrack.android.models.VisitPhoto
 import com.hypertrack.android.models.VisitPhotoState
 import com.hypertrack.android.ui.base.BaseAdapter

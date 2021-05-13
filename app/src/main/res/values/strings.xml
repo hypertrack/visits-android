@@ -103,6 +103,22 @@
 
     <string name="timeline_summary">Tracking summary: %s</string>
 
+    <string name="orders_list">Orders</string>
+    <string name="orders_list_current_trip">Current trip</string>
+    <string name="orders_list_no_trip">There is no Trip assigned to you</string>
+
+    <string name="order_complete">Complete</string>
+    <string name="order_cancel">Cancel</string>
+    <string name="order_save_note">Save</string>
+    <string name="order_cancel_note">Discard</string>
+    <string name="order_cancel_confirmation">Are you sure you want to CANCEL this order?</string>
+    <string name="order_complete_confirmation">Are you sure you want to COMPLETE this order?</string>
+    <string name="order_note_hint">Enter order notes</string>
+    <string name="order_already_completed">Order is already completed</string>
+    <string name="order_already_canceled">Order is already canceled</string>
+    <string name="order_status">Status</string>
+    <string name="order_picked_up">Picked up</string>
+
     <string name="places_no_places">You don\'t have Places yet</string>
     <string name="places_visited">Visited %s</string>
     <string name="places_last_visit">Last visit: %s</string>

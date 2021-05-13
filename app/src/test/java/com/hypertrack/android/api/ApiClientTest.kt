@@ -7,6 +7,7 @@ import com.hypertrack.android.models.History
 import com.hypertrack.android.models.HistoryError
 import com.hypertrack.android.models.MarkerType
 import com.hypertrack.android.repository.AccessTokenRepository
+import com.hypertrack.android.utils.Injector
 import com.squareup.moshi.JsonDataException
 import io.mockk.every
 import io.mockk.mockk
@@ -45,7 +46,8 @@ class ApiClientTest {
         val accessTokenRepo = mockk<AccessTokenRepository>()
         every { accessTokenRepo.getAccessToken() } returns "fake.jwt.token"
         every { accessTokenRepo.refreshToken() } returns "new.jwt.token"
-        apiClient = ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID)
+        apiClient =
+            ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID, Injector.getMoshi())
     }
 
     @Test

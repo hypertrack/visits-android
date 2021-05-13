@@ -127,7 +127,9 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
         if (isLoading) loader.playAnimation() else loader.cancelAnimation()
     }
 
-    companion object { const val TAG = "MapViewFragment" }
+    companion object {
+        const val TAG = "MapViewFragment"
+    }
 }
 
 private enum class LoadingProgressState {

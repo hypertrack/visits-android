@@ -76,6 +76,12 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         getCurrentFragment().onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        getCurrentFragment().onActivityResult(requestCode, resultCode, data)
+    }
+
+
     override fun onBackPressed() {
         if (getCurrentBaseFragment()?.onBackPressed() == false) {
             super.onBackPressed()

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.interactors.PermissionsInteractor
+import com.hypertrack.android.interactors.TripsInteractor
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.screens.add_place.AddPlaceViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementViewModel
@@ -15,6 +16,7 @@ import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.ui.screens.driver_id_input.DriverLoginViewModel
 import com.hypertrack.android.ui.screens.permission_request.PermissionRequestViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
+import com.hypertrack.android.ui.screens.visits_management.tabs.orders.OrdersListViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesViewModel
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.utils.TimeDistanceFormatter
@@ -23,6 +25,7 @@ import com.hypertrack.android.view_models.HistoryViewModel
 @Suppress("UNCHECKED_CAST")
 class UserScopeViewModelFactory(
     private val visitsRepository: VisitsRepository,
+    private val tripsInteractor: TripsInteractor,
     private val placesRepository: PlacesRepository,
     private val historyRepository: HistoryRepository,
     private val driverRepository: DriverRepository,
@@ -40,6 +43,10 @@ class UserScopeViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
+            OrdersListViewModel::class.java -> OrdersListViewModel(
+                tripsInteractor,
+                osUtilsProvider
+            ) as T
             AddPlaceViewModel::class.java -> AddPlaceViewModel(
                 osUtilsProvider,
                 placesClient,
@@ -73,6 +80,7 @@ class UserScopeViewModelFactory(
             ProfileViewModel::class.java -> ProfileViewModel(
                 driverRepository,
                 hyperTrackService,
+                accountRepository,
                 osUtilsProvider
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")

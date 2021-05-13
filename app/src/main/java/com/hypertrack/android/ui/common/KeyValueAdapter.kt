@@ -12,6 +12,7 @@ class KeyValueAdapter(
 ) :
     BaseAdapter<KeyValueItem, BaseAdapter.BaseVh<KeyValueItem>>() {
 
+    //todo move to constructor
     var onCopyClickListener: ((String) -> Unit)? = null
 
     override fun createViewHolder(

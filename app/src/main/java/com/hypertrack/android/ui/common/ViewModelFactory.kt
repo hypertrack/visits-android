@@ -34,8 +34,12 @@ class ViewModelFactory(
             SignInViewModel::class.java -> SignInViewModel(
                 loginInteractor,
                 permissionsInteractor,
+                osUtilsProvider
             ) as T
-            SignUpViewModel::class.java -> SignUpViewModel(loginInteractor) as T
+            SignUpViewModel::class.java -> SignUpViewModel(
+                loginInteractor,
+                osUtilsProvider,
+            ) as T
             SplashScreenViewModel::class.java -> SplashScreenViewModel(
                 driverRepository,
                 accountRepository,

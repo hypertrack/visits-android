@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.interactors.*
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
-import com.hypertrack.android.ui.common.stringFromResource
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
@@ -67,7 +66,7 @@ class ConfirmEmailViewModel(
                         )
                     }
                     is OtpWrongCode -> {
-                        errorText.postValue(R.string.wrong_code.stringFromResource())
+                        errorText.postValue(osUtilsProvider.stringFromResource(R.string.wrong_code))
                     }
                     is OtpError -> {
                         errorText.postValue(res.exception.message)

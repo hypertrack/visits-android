@@ -1,9 +1,12 @@
 package com.hypertrack.android.utils
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.hypertrack.android.models.Order
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
+import com.hypertrack.android.models.local.LocalOrder
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.TrackingError
 import com.hypertrack.sdk.TrackingStateObserver
@@ -41,6 +44,25 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         sdkInstance.addGeotag(payload, visit.expectedLocation)
     }
 
+    fun sendCompletionEvent(legacyOrder: LocalOrder, canceled: Boolean) {
+        val payload = mapOf(
+            "trip_id" to legacyOrder.id,
+            "type" to if (!canceled) Constants.VISIT_MARKED_COMPLETE else Constants.VISIT_MARKED_CANCELED,
+            LocalOrder.VISIT_NOTE_KEY to legacyOrder.note,
+            LocalOrder.VISIT_PHOTOS_KEY to legacyOrder.photos.map { it.photoId }.toSet()
+        )
+        sdkInstance.addGeotag(payload, with(legacyOrder.destinationLatLng) {
+            latitude.let {
+                longitude.let {
+                    val location = Location("visit")
+                    location.longitude = longitude
+                    location.latitude = latitude
+                    location
+                }
+            }
+        })
+    }
+
     fun createVisitStartEvent(id: String, typeKey: String) {
         sdkInstance.addGeotag(mapOf(typeKey to id, "type" to Constants.VISIT_ADDED))
     }
@@ -50,11 +72,13 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
     }
 
     fun clockOut() {
+        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_OUT))
         sdkInstance.stop()
     }
 
     fun clockIn() {
         sdkInstance.start()
+        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_IN))
     }
 
     fun syncDeviceSettings() {
