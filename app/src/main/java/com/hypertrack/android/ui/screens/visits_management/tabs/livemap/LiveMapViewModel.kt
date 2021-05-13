@@ -36,10 +36,6 @@ class LiveMapViewModel : ViewModel() {
         }
     }
 
-    fun onHomeAddressClicked() {
-        _state.postValue(SetHome(_googleMap!!))
-    }
-
     fun onSearchPlaceSelected() {
         _state.postValue(SearchPlace(_googleMap!!))
     }
@@ -73,4 +69,3 @@ object Loading : LiveMapState()
 object Error : LiveMapState()
 class OnTrip(val map: GoogleMap) : LiveMapState()
 class SearchPlace(val map: GoogleMap) : LiveMapState()
-class SetHome(val map: GoogleMap) : LiveMapState()

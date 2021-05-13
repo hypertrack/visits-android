@@ -86,7 +86,7 @@ class SearchPlaceFragment(
         home.visibility = View.GONE
         homeInfo = view.findViewById(R.id.home_info)
         val onHomeAddressClickListener = View.OnClickListener {
-            liveMapViewModel.onHomeAddressClicked()
+            Log.d(TAG, "On Home address clicked")
         }
         homeInfo.findViewById<View>(R.id.home_edit).setOnClickListener(onHomeAddressClickListener)
         homeInfo.setOnClickListener { presenter.selectHome() }
