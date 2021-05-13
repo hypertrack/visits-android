@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.util.Base64
+import android.util.Patterns
 import android.util.Size
 import android.view.KeyEvent
 import android.view.View
@@ -67,4 +68,9 @@ fun <T, R> Set<T>.toMap(keyFunction: (T) -> R): Map<R, T> {
     return map
 }
 
+fun String?.isEmail(): Boolean {
+    return if (this != null) {
+        return Patterns.EMAIL_ADDRESS.matcher(this).matches()
+    } else false
+}
 

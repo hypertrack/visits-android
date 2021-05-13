@@ -7,6 +7,7 @@ import com.hypertrack.android.models.Order
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatus
 import com.hypertrack.android.models.local.LocalOrder
+import com.hypertrack.android.ui.common.isEmail
 import com.hypertrack.sdk.HyperTrack
 import com.hypertrack.sdk.TrackingError
 import com.hypertrack.sdk.TrackingStateObserver
@@ -25,7 +26,13 @@ class HyperTrackService(private val listener: TrackingState, private val sdkInst
         get() = throw NotImplementedError()
         set(value) {
             sdkInstance.setDeviceMetadata(mapOf("driver_id" to value))
-            sdkInstance.setDeviceName(value)
+            sdkInstance.setDeviceName(
+                if (value.isEmail()) {
+                    value.split("@")[0]
+                } else {
+                    value
+                }
+            )
         }
 
     val deviceId: String

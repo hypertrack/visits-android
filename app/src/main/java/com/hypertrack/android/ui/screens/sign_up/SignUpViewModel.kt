@@ -9,6 +9,7 @@ import com.hypertrack.android.interactors.LoginInteractor
 import com.hypertrack.android.interactors.SignUpError
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.ui.common.isEmail
 import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
@@ -26,7 +27,7 @@ class SignUpViewModel(
                 page.postValue(SignUpFragment.PAGE_USER)
                 errorText.postValue(osUtilsProvider.stringFromResource(R.string.password_too_short))
             }
-            !isEmail(login) -> {
+            !login.isEmail() -> {
                 page.postValue(SignUpFragment.PAGE_USER)
                 errorText.postValue(osUtilsProvider.stringFromResource(R.string.invalid_email))
             }
@@ -72,16 +73,12 @@ class SignUpViewModel(
     }
 
     fun onNextClicked(email: String, password: String) {
-        if (isEmail(email)) {
+        if (email.isEmail()) {
             page.postValue(SignUpFragment.PAGE_INFO)
         } else {
             page.postValue(SignUpFragment.PAGE_USER)
             errorText.postValue(osUtilsProvider.stringFromResource(R.string.invalid_email))
         }
-    }
-
-    private fun isEmail(s: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(s).matches()
     }
 
 }
