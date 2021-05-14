@@ -31,6 +31,14 @@ fun ZonedDateTime.formatDateTime(): String {
             format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
 }
 
+fun ZonedDateTime.formatTime(): String {
+    return format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+}
+
+fun ZonedDateTime.formatDate(): String {
+    return format(createFormatterWithoutYear(FormatStyle.MEDIUM, Locale.getDefault()))
+}
+
 private fun createFormatterWithoutYear(
     style: FormatStyle,
     locale: Locale

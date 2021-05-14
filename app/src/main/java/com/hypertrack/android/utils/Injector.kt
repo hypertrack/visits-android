@@ -311,7 +311,7 @@ object Injector {
     private fun getAccountData(context: Context): AccountData =
         getMyPreferences(context).getAccountData()
 
-    private fun getOsUtilsProvider(context: Context): OsUtilsProvider {
+    fun getOsUtilsProvider(context: Context): OsUtilsProvider {
         return OsUtilsProvider(context, crashReportsProvider)
     }
 
