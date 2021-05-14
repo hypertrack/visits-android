@@ -62,6 +62,11 @@ class MyApplication : Application() {
         const val IMPORTANT_CHANNEL_ID = "important_notification_channel"
         const val SERVICES_API_KEY = BuildConfig.SERVICES_API_KEY
 
+        val MOCK_MODE = if (BuildConfig.DEBUG) {
+            BuildConfig.MOCK_MODE
+        } else {
+            false
+        }
 
         val injector: Injector = Injector
 
