@@ -131,6 +131,7 @@
     <string name="place_route_ro">Traveled %s for %s</string>
     <string name="place_details_visits_history">Visits history</string>
     <string name="place_details_no_visits">No visits</string>
+    <string name="place_visits_count">Visits</string>
 
     <string name="add_place_confirm">Confirm</string>
     <string name="add_place_create">Create geofence</string>

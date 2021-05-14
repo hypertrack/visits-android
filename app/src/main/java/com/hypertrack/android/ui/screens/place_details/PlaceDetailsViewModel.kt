@@ -51,7 +51,10 @@ class PlaceDetailsViewModel(
     val metadata: LiveData<List<KeyValueItem>> = Transformations.map(geofence) { geofence ->
         (geofence.metadata?.filter { it.value is String } ?: mapOf())
             .toMutableMap().apply {
-                put("visits_count", geofence.visitsCount.toString())
+                put(
+                    osUtilsProvider.stringFromResource(R.string.place_visits_count),
+                    geofence.visitsCount.toString()
+                )
 //                put("created_at", geofence.created_at.toString())
             }
             .map { KeyValueItem(it.key, it.value as String) }.toList()
