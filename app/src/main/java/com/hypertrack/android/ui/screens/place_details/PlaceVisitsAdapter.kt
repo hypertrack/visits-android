@@ -4,9 +4,7 @@ import android.view.View
 import com.hypertrack.android.api.GeofenceMarker
 import com.hypertrack.android.ui.base.BaseAdapter
 import com.hypertrack.android.ui.common.*
-import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.utils.OsUtilsProvider
-import com.hypertrack.android.utils.stringFromResource
+import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_place_visit.view.*
 import java.time.ZoneId
@@ -14,6 +12,7 @@ import java.time.ZonedDateTime
 
 class PlaceVisitsAdapter(
     private val osUtilsProvider: OsUtilsProvider,
+    private val timeDistanceFormatter: TimeDistanceFormatter,
     private val onCopyClickListener: ((String) -> Unit)? = null
 ) : BaseAdapter<GeofenceMarker, BaseAdapter.BaseVh<GeofenceMarker>>() {
 
@@ -37,7 +36,7 @@ class PlaceVisitsAdapter(
                     if (it.duration == null) return@let null
                     MyApplication.context.getString(
                         R.string.place_route_ro,
-                        DistanceUtils.metersToDistanceString(it.distance),
+                        timeDistanceFormatter.formatDistance(it.distance),
                         DateTimeUtils.secondsToLocalizedString(it.duration)
                     )
                 }?.toView(containerView.tvRouteTo)

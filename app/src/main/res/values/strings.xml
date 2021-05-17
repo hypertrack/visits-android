@@ -77,7 +77,7 @@
     <string name="duration">%1$d hr, %2$d min</string>
     <string name="duration_minutes">%1$d min</string>
     <string name="steps">%1$d steps</string>
-    <string name="miles">%s mil</string>
+    <string name="miles">%s mi</string>
     <string name="kms">%s km</string>
     <string name="close">Close</string>
     <string name="device_id">Device ID</string>

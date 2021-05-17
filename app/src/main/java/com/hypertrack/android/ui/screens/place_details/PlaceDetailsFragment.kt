@@ -26,7 +26,10 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
 
     private val metadataAdapter = KeyValueAdapter(true)
     private val visitsAdapter =
-        PlaceVisitsAdapter(MyApplication.injector.getOsUtilsProvider(MyApplication.context)) {
+        PlaceVisitsAdapter(
+            MyApplication.injector.getOsUtilsProvider(MyApplication.context),
+            MyApplication.injector.getTimeDistanceFormatter(),
+        ) {
             vm.onCopyVisitIdClick(it)
         }
 

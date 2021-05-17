@@ -3,7 +3,6 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.summary
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import com.hypertrack.android.models.Summary
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
@@ -28,7 +27,7 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
         displayLoadingState(true)
 
         vm.summary.observe(viewLifecycleOwner, { summary ->
-            displaySummary(summary)
+            adapter.updateItems(summary)
             displayLoadingState(false)
         })
 
@@ -43,33 +42,6 @@ class SummaryFragment : ProgressDialogFragment(R.layout.fragment_tab_summary) {
         srlSummary.setOnRefreshListener {
             vm.refreshSummary()
         }
-    }
-
-    private fun displaySummary(summary: Summary) {
-        val items = listOf(
-            SummaryItem(
-                R.drawable.ic_ht_eta,
-                getString(R.string.summary_total_tracking_time),
-                DateTimeUtils.secondsToLocalizedString(summary.totalDuration)
-            ),
-            SummaryItem(
-                R.drawable.ic_ht_drive,
-                getString(R.string.summary_drive),
-                DateTimeUtils.secondsToLocalizedString(summary.totalDriveDuration),
-                DistanceUtils.metersToDistanceString(summary.totalDriveDistance)
-            ),
-            SummaryItem(
-                R.drawable.ic_ht_walk, getString(R.string.summary_walk),
-                DateTimeUtils.secondsToLocalizedString(summary.totalWalkDuration),
-                resources.getString(R.string.steps, summary.stepsCount)
-            ),
-            SummaryItem(
-                R.drawable.ic_ht_stop,
-                getString(R.string.summary_stop),
-                DateTimeUtils.secondsToLocalizedString(summary.totalStopDuration)
-            ),
-        )
-        adapter.updateItems(items)
     }
 
     private fun displayLoadingState(isLoading: Boolean) {

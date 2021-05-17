@@ -32,7 +32,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.recipes.RuntimeJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -207,7 +206,7 @@ object Injector {
                     hyperTrackService,
                     getPermissionInteractor(),
                     accessTokenRepository(MyApplication.context),
-                    getTimeLengthFormatter(),
+                    getTimeDistanceFormatter(),
                     getVisitsApiClient(MyApplication.context),
                     getOsUtilsProvider(MyApplication.context),
                     placesClient,
@@ -359,21 +358,29 @@ object Injector {
     fun getHistoryRendererFactory(): Factory<SupportMapFragment, HistoryMapRenderer> =
         Factory { a -> getHistoryMapRenderer(a) }
 
-    fun getBackendProvider(ctx: Context): Provider<AbstractBackendProvider> = Provider { getVisitsApiClient(ctx) }
-    fun getRealTimeUpdatesService(ctx: Context): Provider<HyperTrackViews> = Provider { HyperTrackViews.getInstance(ctx, getAccountRepo(ctx).publishableKey)}
+    fun getBackendProvider(ctx: Context): Provider<AbstractBackendProvider> =
+        Provider { getVisitsApiClient(ctx) }
+
+    fun getRealTimeUpdatesService(ctx: Context): Provider<HyperTrackViews> =
+        Provider { HyperTrackViews.getInstance(ctx, getAccountRepo(ctx).publishableKey) }
+
     val hyperTrackServiceProvider = Provider { getUserScope().hyperTrackService }
 
-    private fun getTimeLengthFormatter() = SimpleTimeDistanceFormatter()
+    fun getTimeDistanceFormatter() =
+        LocalizedTimeDistanceFormatter(getOsUtilsProvider(MyApplication.context))
+
     fun getCustomFragmentFactory(applicationContext: Context): FragmentFactory {
-        val publishableKeyProvider: Provider<String> = Provider<String> { getAccountRepo(applicationContext).publishableKey }
+        val publishableKeyProvider: Provider<String> =
+            Provider<String> { getAccountRepo(applicationContext).publishableKey }
         val hyperTrackServiceProvider = Provider { getUserScope().hyperTrackService }
-        val apiClientProvider: Provider<AbstractBackendProvider> = Provider { getVisitsApiClient(applicationContext) }
+        val apiClientProvider: Provider<AbstractBackendProvider> =
+            Provider { getVisitsApiClient(applicationContext) }
 
         return CustomFragmentFactory(
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map),
             MapStyleOptions.loadRawResourceStyle(applicationContext, R.raw.style_map_silver),
             hyperTrackServiceProvider,
-            {HyperTrackViews.getInstance(applicationContext, publishableKeyProvider.get())},
+            { HyperTrackViews.getInstance(applicationContext, publishableKeyProvider.get()) },
             apiClientProvider
         )
     }

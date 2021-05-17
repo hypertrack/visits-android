@@ -60,7 +60,11 @@ class UserScopeViewModelFactory(
                 permissionsInteractor,
                 hyperTrackService
             ) as T
-            SummaryViewModel::class.java -> SummaryViewModel(historyRepository) as T
+            SummaryViewModel::class.java -> SummaryViewModel(
+                historyRepository,
+                osUtilsProvider,
+                timeLengthFormatter
+            ) as T
             HistoryViewModel::class.java -> HistoryViewModel(
                 historyRepository,
                 timeLengthFormatter

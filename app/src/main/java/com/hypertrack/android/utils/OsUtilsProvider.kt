@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
+import kotlin.math.round
 
 class OsUtilsProvider(private val context: Context, private val crashReportsProvider: CrashReportsProvider) {
 
@@ -132,6 +133,10 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
 
     fun stringFromResource(@StringRes res: Int): String {
         return MyApplication.context.getString(res)
+    }
+
+    fun stringFromResource(@StringRes res: Int, vararg formatArgs: Any): String {
+        return MyApplication.context.getString(res, *formatArgs)
     }
 
     fun colorFromResource(@ColorRes res: Int): Int {

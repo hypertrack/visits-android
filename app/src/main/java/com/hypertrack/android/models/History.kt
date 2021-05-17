@@ -126,7 +126,7 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
             is StatusMarker -> {
                 val tile = HistoryTile(
                     marker.status,
-                    marker.asDescription(),
+                    marker.asDescription(timeDistanceFormatter),
                     marker.address,
                     marker.timeFrame(timeDistanceFormatter),
                     historyTileType(startMarker, marker.status),
@@ -171,7 +171,7 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
 
     val summaryTile = HistoryTile(
         Status.UNKNOWN,
-        "${formatDuration(summary.totalDuration)} • ${summary.totalDistance / 1000} km",
+        "${formatDuration(summary.totalDuration)} • ${timeDistanceFormatter.formatDistance(summary.totalDistance / 1000)}",
         null, "", HistoryTileType.SUMMARY
     )
 
@@ -213,11 +213,12 @@ private fun GeofenceMarker.asDescription(): String {
         }
 }
 
-private fun StatusMarker.asDescription(): String = when (status) {
-    Status.DRIVE -> formatDriveStats()
-    Status.WALK -> formatWalkStats()
-    else -> formatDuration(duration)
-}
+private fun StatusMarker.asDescription(timeDistanceFormatter: TimeDistanceFormatter): String =
+    when (status) {
+        Status.DRIVE -> formatDriveStats(timeDistanceFormatter)
+        Status.WALK -> formatWalkStats()
+        else -> formatDuration(duration)
+    }
 
 private fun filterMarkerLocations(
     from: String,
@@ -248,8 +249,8 @@ private fun formatDuration(duration: Int) = when {
     else -> "${duration / 3600} hours ${duration % 3600 / 60} min"
 }
 
-private fun StatusMarker.formatDriveStats() =
-    "${formatDuration(duration)} • ${(distance ?: 0) / 1000} km"
+private fun StatusMarker.formatDriveStats(timeDistanceFormatter: TimeDistanceFormatter) =
+    "${formatDuration(duration)} • ${timeDistanceFormatter.formatDistance((distance ?: 0) / 1000)}"
 
 private fun StatusMarker.formatWalkStats() =
     "${formatDuration(duration)}  • ${stepsCount ?: 0} steps"
