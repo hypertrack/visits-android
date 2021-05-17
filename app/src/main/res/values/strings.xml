@@ -102,6 +102,15 @@
     <string name="notification_new_trip">A new trip was assigned to you</string>
 
     <string name="timeline_summary">Tracking summary: %s</string>
+    <string name="timeline_inactive_reason_location_permissions_denied">Location permissions denied</string>
+    <string name="timeline_inactive_reason_location_services_disabled">Location services disabled</string>
+    <string name="timeline_inactive_reason_motion_activity_permissions_denied">Activity permission denied</string>
+    <string name="timeline_inactive_reason_motion_activity_services_disabled">Activity service disabled</string>
+    <string name="timeline_inactive_reason_motion_activity_services_unavailable">Activity service unavailable</string>
+    <string name="timeline_inactive_reason_tracking_stopped">Tracking stopped</string>
+    <string name="timeline_inactive_reason_tracking_service_terminated">Tracking service terminated</string>
+    <string name="timeline_inactive_reason_unexpected">Unknown outage</string>
+
 
     <string name="orders_list">Orders</string>
     <string name="orders_list_current_trip">Current trip</string>

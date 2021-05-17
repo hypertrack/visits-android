@@ -74,6 +74,7 @@ object MockData {
             (1000 + Math.random() * 5000).toInt(),
             514,
             addr[0],
+            "location_services_disabled"
         )
     }
 

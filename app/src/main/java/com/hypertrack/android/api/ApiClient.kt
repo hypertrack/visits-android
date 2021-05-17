@@ -419,7 +419,8 @@ private fun HistoryStatusMarker.asStatusMarker() = StatusMarker(
     data.duration,
     data.distance,
     data.steps,
-    data.address
+    data.address,
+    data.reason
 )
 
 sealed class OrderCompletionResponse
