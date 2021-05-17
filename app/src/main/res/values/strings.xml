@@ -114,7 +114,7 @@
 
     <string name="orders_list">Orders</string>
     <string name="orders_list_current_trip">Current trip</string>
-    <string name="orders_list_no_trip">There is no Trip assigned to you</string>
+    <string name="orders_list_no_trip">You don\'t have orders</string>
 
     <string name="order_complete">Complete</string>
     <string name="order_cancel">Cancel</string>
