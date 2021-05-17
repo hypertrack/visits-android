@@ -53,18 +53,19 @@ class LocalizedTimeDistanceFormatter(
 ) : SimpleTimeDistanceFormatter(zoneId) {
 
     override fun formatDistance(meters: Int): String {
-        val format = if (meters != 0) {
-            "%.1f"
-        } else {
-            "%.0f"
+        val format = when {
+            meters == 0 -> "%.0f"
+            meters < 0.01 * 1609.0 -> "%.3f"
+            else -> "%.1f"
         }
-        return if (shouldUseImperial) {
+        val res = if (shouldUseImperial) {
             val miles = meters / 1609.0
             osUtilsProvider.stringFromResource(R.string.miles, format.format(miles))
         } else {
             val kms = meters / 1000.0
             osUtilsProvider.stringFromResource(R.string.kms, format.format(kms))
         }
+        return res
     }
 
     companion object {

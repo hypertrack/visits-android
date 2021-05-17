@@ -171,7 +171,7 @@ fun History.asTiles(timeDistanceFormatter: TimeDistanceFormatter): List<HistoryT
 
     val summaryTile = HistoryTile(
         Status.UNKNOWN,
-        "${formatDuration(summary.totalDuration)} • ${timeDistanceFormatter.formatDistance(summary.totalDistance / 1000)}",
+        "${formatDuration(summary.totalDuration)} • ${timeDistanceFormatter.formatDistance(summary.totalDistance)}",
         null, "", HistoryTileType.SUMMARY
     )
 
@@ -250,7 +250,7 @@ private fun formatDuration(duration: Int) = when {
 }
 
 private fun StatusMarker.formatDriveStats(timeDistanceFormatter: TimeDistanceFormatter) =
-    "${formatDuration(duration)} • ${timeDistanceFormatter.formatDistance((distance ?: 0) / 1000)}"
+    "${formatDuration(duration)} • ${timeDistanceFormatter.formatDistance(distance ?: 0)}"
 
 private fun StatusMarker.formatWalkStats() =
     "${formatDuration(duration)}  • ${stepsCount ?: 0} steps"
