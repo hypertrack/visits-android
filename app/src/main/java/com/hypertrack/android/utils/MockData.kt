@@ -14,7 +14,15 @@ import java.time.format.DateTimeFormatter
 object MockData {
 
     val addr = listOf(
-        "2875 El Camino Real"
+        "2875 El Camino Real",
+        "567 Melville Ave",
+        "1295 Middlefield Rd",
+        "630 Seale Ave",
+        "1310 Bryant St",
+        "475 Homer Ave",
+        "1102 Ramona St",
+        "117 University Ave",
+        "130 Lytton Ave",
     )
 
     const val MOCK_GEOFENCES_JSON =
@@ -73,7 +81,7 @@ object MockData {
             (5 * 60 + Math.random() * 2000).toInt(),
             (1000 + Math.random() * 5000).toInt(),
             514,
-            addr[0],
+            addr[plus / 10],
             "location_services_disabled"
         )
     }
