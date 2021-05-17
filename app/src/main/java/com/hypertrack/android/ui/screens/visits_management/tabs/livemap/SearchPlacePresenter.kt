@@ -112,7 +112,6 @@ internal class SearchPlacePresenter @SuppressLint("MissingPermission") construct
 
                 // Use the builder to create a FindAutocompletePredictionsRequest.
                 val request = FindAutocompletePredictionsRequest.builder()
-                    .setTypeFilter(TypeFilter.GEOCODE)
                     .setSessionToken(token)
                     .setQuery(query)
                 if (bias != null) {
