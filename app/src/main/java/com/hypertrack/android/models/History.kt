@@ -209,7 +209,7 @@ private fun GeofenceMarker.asDescription(): String {
         ?: metadata["address"]
         ?: metadata
             ).let {
-            "Geofence $it"
+            "$it"
         }
 }
 
