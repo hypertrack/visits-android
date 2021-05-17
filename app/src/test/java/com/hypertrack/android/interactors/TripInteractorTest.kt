@@ -243,10 +243,17 @@ class TripInteractorTest {
                 coEvery { updateOrderMetadata(any(), any(), any()) } answers {
                     trip = trip.copy(orders = trip.orders!!.map {
                         if (it.id == firstArg()) {
-                            it.copy(
-                                _metadata = thirdArg<Metadata>().copy(visitsAppMetadata = thirdArg<Metadata>().visitsAppMetadata.copy())
-                                    .toMap()
-                            )
+                            val paramMd = thirdArg<Metadata>()
+                            try {
+                                val copyMd = it.copy(
+                                    _metadata = paramMd.copy(visitsAppMetadata = paramMd.visitsAppMetadata.copy())
+                                        .toMap()
+                                )
+                                return@map copyMd
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                throw e
+                            }
                         } else {
                             it
                         }

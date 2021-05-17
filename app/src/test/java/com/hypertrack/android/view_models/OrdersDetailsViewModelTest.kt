@@ -65,7 +65,7 @@ class OrdersDetailsViewModelTest {
                 )
                 assertTrue(it.isNoteEditable.observeAndGetValue())
                 assertTrue(it.showCompleteButtons.observeAndGetValue())
-                assertTrue(it.showPickUpButton.observeAndGetValue())
+                assertFalse(it.showPickUpButton.observeAndGetValue())
                 assertEquals(
                     "false",
                     getFromMetadata(
@@ -489,8 +489,8 @@ class OrdersDetailsViewModelTest {
 
                 val list = mutableListOf<Metadata>()
                 coVerify { apiClient.updateOrderMetadata(any(), any(), capture(list)) }
-                assertEquals(1, list[0].visitsAppMetadata.photos.size)
-                assertEquals(2, list[1].visitsAppMetadata.photos.size)
+                assertEquals(1, list[0].visitsAppMetadata.photos!!.size)
+                assertEquals(2, list[1].visitsAppMetadata.photos!!.size)
             }
         }
     }
@@ -530,7 +530,7 @@ class OrdersDetailsViewModelTest {
                         null,
                         Metadata.empty().apply {
                             visitsAppMetadata.apply {
-                                _photos = "1,2,3"
+                                photos = listOf("1", "2", "3")
                             }
                         },
                         false,

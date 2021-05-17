@@ -112,7 +112,7 @@ class OrderDetailsViewModel(
         it.status == OrderStatus.ONGOING
     }
     val showPickUpButton = Transformations.map(order) {
-        !it.isPickedUp && it.status == OrderStatus.ONGOING && accountRepository.isPickUpAllowed
+        it.legacy && !it.isPickedUp && it.status == OrderStatus.ONGOING && accountRepository.isPickUpAllowed
     }
 
     init {

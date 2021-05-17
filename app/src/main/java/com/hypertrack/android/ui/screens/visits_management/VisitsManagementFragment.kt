@@ -44,8 +44,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context)
             .instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
         Tab.HISTORY to MapViewFragment(),
-//        Tab.ORDERS to OrdersFragment.newInstance(),
-        Tab.VISITS to VisitsListFragment.newInstance(),
+        Tab.ORDERS to OrdersFragment.newInstance(),
+//        Tab.VISITS to VisitsListFragment.newInstance(),
         Tab.PLACES to PlacesFragment.getInstance(),
         Tab.SUMMARY to SummaryFragment.newInstance(),
         Tab.PROFILE to ProfileFragment()

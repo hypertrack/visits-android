@@ -211,34 +211,36 @@ class TripsInteractorImpl(
         updateOrderPickedUpState(orderId, true)
     }
 
-    override suspend fun addPhotoToOrder(orderId: String, imagePath: String) {
+    override suspend fun addPhotoToOrder(orderId: String, path: String) {
         try {
             val generatedImageId = UUID.randomUUID().toString()
 
             val previewMaxSideLength: Int = (200 * osUtilsProvider.screenDensity).toInt()
             withContext(ioDispatcher) {
-                val bitmap = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
+                val bitmap = imageDecoder.readBitmap(path, previewMaxSideLength)
                 val photo = PhotoForUpload(
                     photoId = generatedImageId,
-                    filePath = imagePath,
+                    filePath = path,
                     base64thumbnail = osUtilsProvider.bitmapToBase64(bitmap),
                     state = PhotoUploadingState.NOT_UPLOADED
                 )
                 val order = getOrder(orderId)!!
                 if (!order.legacy) {
+                    val newMd = (order._metadata ?: Metadata.empty()).apply {
+                        visitsAppMetadata.addPhoto(photo.photoId)
+                    }
                     val res = apiClient.updateOrderMetadata(
                         orderId,
                         getOrderTripId(order),
-                        (order._metadata ?: Metadata.empty()).apply {
-                            visitsAppMetadata.addPhoto(photo.photoId)
-                        }
+                        newMd
                     )
                     if (res.isSuccessful) {
                         val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
-                        updateOrder(orderId, orderFactory.create(remoteOrder, order.apply {
+                        val newOrder = orderFactory.create(remoteOrder, order.apply {
                             photos.add(photo)
 //                            it.photos.add(photo.photoId)
-                        }))
+                        })
+                        updateOrder(orderId, newOrder)
                         photoUploadInteractor.addToQueue(photo)
                     } else {
                         errorFlow.emit(Consumable(HttpException(res)))
@@ -428,9 +430,9 @@ class TripsInteractorImpl(
     inner class OrderFactory : LocalOrderFactory {
         @Suppress("RedundantIf")
         override suspend fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
-            val remoteMetadata = Metadata.deserealize(order.metadata)
+            val remoteMetadata = Metadata.deserialize(order.metadata)
             val localPhotos = localOrder?.photos?.toMap { it.photoId } ?: mapOf()
-            val resPhotos = remoteMetadata.visitsAppMetadata.photos
+            val resPhotos = (remoteMetadata.visitsAppMetadata.photos ?: listOf())
                 .map {
                     if (localPhotos.keys.contains(it)) {
                         localPhotos.getValue(it)
@@ -474,7 +476,7 @@ class TripsInteractorImpl(
                 note = localOrder?.note,
                 legacy = true,
                 photos = localOrder?.photos ?: mutableSetOf(),
-                metadata = Metadata.deserealize(order.metadata)
+                metadata = Metadata.deserialize(order.metadata)
             )
             return res
         }
