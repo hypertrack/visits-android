@@ -3,6 +3,7 @@ package com.hypertrack.android.gui
 import com.hypertrack.android.ui.common.formatDate
 import com.hypertrack.android.ui.common.formatDateTime
 import com.hypertrack.android.ui.screens.place_details.PlaceVisitsAdapter
+import com.hypertrack.android.utils.SimpleTimeDistanceFormatter
 import com.hypertrack.logistics.android.github.R
 import io.mockk.every
 import io.mockk.mockk
@@ -19,7 +20,7 @@ class GeofenceDateFormattingTest {
         val adapter = PlaceVisitsAdapter(mockk() {
             every { stringFromResource(R.string.place_today) } returns "Today"
             every { stringFromResource(R.string.place_yesterday) } returns "Yesterday"
-        })
+        }, SimpleTimeDistanceFormatter())
         val today = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC"))
             .withHour(13).withMinute(1)
         val yesterday = today.minusDays(1)

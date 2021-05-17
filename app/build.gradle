@@ -19,7 +19,9 @@ android {
     buildToolsVersion "30.0.2"
     defaultConfig {
         Properties properties = new Properties()
-        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        try {
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        } catch (Exception ignored) {}
         def mockMode = properties.getProperty('mock_mode', 'false') == "true"
 
         applicationId "com.hypertrack.logistics.android.github"
@@ -36,7 +38,6 @@ android {
         if(rootProject.properties.servicesApiKey == null) throw new Exception("SERVICES_API_KEY = null")
         buildConfigField("String", "SERVICES_API_KEY", "\"${rootProject.properties.servicesApiKey}\"")
         buildConfigField("Boolean", "MOCK_MODE", mockMode.toString())
-
     }
     signingConfigs {
         release {

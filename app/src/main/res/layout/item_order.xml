@@ -14,6 +14,8 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/tertiary_2_xdark"
         app:layout_constraintEnd_toStartOf="@+id/tvStatus"
         app:layout_constraintStart_toStartOf="parent"
