@@ -172,19 +172,29 @@ class ApiClient(
     }
 
     suspend fun getHistory(day: LocalDate, timezone: ZoneId): HistoryResult {
-        try {
-            with(api.getHistory(deviceId, day.format(DateTimeFormatter.ISO_LOCAL_DATE), timezone.id)) {
-                if (isSuccessful) {
-                    return body().asHistory()
-                } else {
-                    return HistoryError(HttpException(this))
+        return if (MyApplication.MOCK_MODE.not()) {
+            try {
+                with(
+                    api.getHistory(
+                        deviceId,
+                        day.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        timezone.id
+                    )
+                ) {
+                    if (isSuccessful) {
+                        return body().asHistory()
+                    } else {
+                        return HistoryError(HttpException(this))
+                    }
                 }
+            } catch (e: Throwable) {
+                Log.w(TAG, "Got exception $e fetching device history")
+                return HistoryError(e)
             }
-        } catch (e: Throwable) {
-            Log.w(TAG, "Got exception $e fetching device history")
-            return HistoryError(e)
+        } else {
+            //todo inject mock api client
+            MockData.MOCK_HISTORY
         }
-
     }
 
     override suspend fun createTrip(tripParams: TripParams): ShareableTripResult {
