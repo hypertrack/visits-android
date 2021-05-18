@@ -1,6 +1,8 @@
 package com.hypertrack.android.ui.screens.place_details
 
 import android.content.Intent
+import android.graphics.Color
+import android.hardware.camera2.params.ColorSpaceTransform
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +10,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.api.GeofenceMarker
@@ -17,6 +20,7 @@ import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.ui.common.KeyValueItem
 import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
 class PlaceDetailsViewModel(
@@ -47,7 +51,10 @@ class PlaceDetailsViewModel(
     val metadata: LiveData<List<KeyValueItem>> = Transformations.map(geofence) { geofence ->
         (geofence.metadata?.filter { it.value is String } ?: mapOf())
             .toMutableMap().apply {
-                put("visits_count", geofence.visitsCount.toString())
+                put(
+                    osUtilsProvider.stringFromResource(R.string.place_visits_count),
+                    geofence.visitsCount.toString()
+                )
 //                put("created_at", geofence.created_at.toString())
             }
             .map { KeyValueItem(it.key, it.value as String) }.toList()
@@ -77,11 +84,27 @@ class PlaceDetailsViewModel(
         map.postValue(googleMap)
     }
 
-    fun displayGeofenceLocation(geofence: Geofence, googleMap: GoogleMap) {
-        googleMap.addMarker(
-            MarkerOptions().position(geofence.latLng).title(geofence.name)
+    private fun displayGeofenceLocation(geofence: Geofence, googleMap: GoogleMap) {
+        geofence.radius?.let { radius ->
+            googleMap.addCircle(
+                CircleOptions()
+                    .center(geofence.latLng)
+                    .fillColor(osUtilsProvider.colorFromResource(R.color.colorGeofenceFill))
+                    .strokeColor(osUtilsProvider.colorFromResource(R.color.colorGeofence))
+                    .strokeWidth(3f)
+                    .radius(radius.toDouble())
+                    .visible(true)
+            )
+        }
+        googleMap.addCircle(
+            CircleOptions()
+                .center(geofence.latLng)
+                .fillColor(osUtilsProvider.colorFromResource(R.color.colorGeofence))
+                .strokeColor(Color.TRANSPARENT)
+                .radius(30.0)
+                .visible(true)
         )
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(geofence.latLng, 13.0f))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(geofence.latLng, 15.0f))
     }
 
     fun onDirectionsClick() {

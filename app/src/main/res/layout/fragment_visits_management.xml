@@ -12,7 +12,7 @@
         android:id="@+id/tvTrackerStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorListStatus"
+        android:background="@color/colorWhite"
         android:fontFamily="@font/regular"
         android:gravity="center"
         android:padding="10dp"

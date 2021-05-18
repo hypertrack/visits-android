@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.hypertrack.android.ui.base.NavActivity
+import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.DeeplinkResultListener
@@ -14,6 +15,7 @@ import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.NavGraphDirections
 import com.hypertrack.logistics.android.github.R
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : NavActivity(), DeeplinkResultListener {
 
@@ -32,6 +34,7 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = customFragmentFactory
         super.onCreate(savedInstanceState)
+        tvMockMode.setGoneState(MyApplication.MOCK_MODE.not())
     }
 
     override fun onNewIntent(intent: Intent?) {

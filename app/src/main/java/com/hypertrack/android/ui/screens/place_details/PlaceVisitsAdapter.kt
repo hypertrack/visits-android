@@ -1,17 +1,19 @@
 package com.hypertrack.android.ui.screens.place_details
 
 import android.view.View
-import com.google.android.libraries.places.api.model.Place
-import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.api.GeofenceMarker
 import com.hypertrack.android.ui.base.BaseAdapter
 import com.hypertrack.android.ui.common.*
-import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesViewModel
-import com.hypertrack.android.utils.MyApplication
+import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_place_visit.view.*
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class PlaceVisitsAdapter(
+    private val osUtilsProvider: OsUtilsProvider,
+    private val timeDistanceFormatter: TimeDistanceFormatter,
     private val onCopyClickListener: ((String) -> Unit)? = null
 ) : BaseAdapter<GeofenceMarker, BaseAdapter.BaseVh<GeofenceMarker>>() {
 
@@ -23,10 +25,10 @@ class PlaceVisitsAdapter(
     ): BaseVh<GeofenceMarker> {
         return object : BaseContainerVh<GeofenceMarker>(view, baseClickListener) {
             override fun bind(item: GeofenceMarker) {
-                val enter = item.arrival?.recordedAt?.formatDateTime()
-                val exit = item.exit?.recordedAt?.formatDateTime()
-                    ?: MyApplication.context.getString(R.string.now)
-                "$enter - $exit".toView(containerView.tvTitle)
+                formatDate(
+                    item.arrival!!.recordedAt,
+                    item.exit?.recordedAt
+                ).toView(containerView.tvTitle)
                 item.duration?.let { DateTimeUtils.secondsToLocalizedString(it) }
                     ?.toView(containerView.tvDescription)
                 item.markerId.toView(containerView.tvVisitId)
@@ -35,7 +37,7 @@ class PlaceVisitsAdapter(
                     if (it.duration == null) return@let null
                     MyApplication.context.getString(
                         R.string.place_route_ro,
-                        DistanceUtils.metersToDistanceString(it.distance),
+                        timeDistanceFormatter.formatDistance(it.distance),
                         DateTimeUtils.secondsToLocalizedString(it.duration)
                     )
                 }?.toView(containerView.tvRouteTo)
@@ -50,5 +52,52 @@ class PlaceVisitsAdapter(
                 }
             }
         }
+    }
+
+    //todo test
+    fun formatDate(enter: String?, exit: String?): String {
+        val enterDt = ZonedDateTime.parse(enter)
+        val exitDt = exit?.let { ZonedDateTime.parse(it) }
+        val equalDay = enterDt.dayOfMonth == exitDt?.dayOfMonth
+
+
+        //todo now
+        return if (equalDay) {
+            "${getDateString(enterDt)}, ${getTimeString(enterDt)} — ${getTimeString(exitDt)}"
+        } else {
+            "${getDateString(enterDt)}, ${getTimeString(enterDt)} — ${
+                exitDt?.let {
+                    "${getDateString(exitDt)}, ${getTimeString(exitDt)}"
+                } ?: osUtilsProvider.getString(R.string.now)
+            }"
+        }
+    }
+
+    private fun getDateString(it: ZonedDateTime): String {
+        val now = ZonedDateTime.now()
+        val yesterday = ZonedDateTime.now().minusDays(1)
+        return when {
+            isSameDay(it, now) -> {
+                osUtilsProvider.stringFromResource(R.string.place_today)
+            }
+            isSameDay(it, yesterday) -> {
+                osUtilsProvider.stringFromResource(R.string.place_yesterday)
+            }
+            else -> {
+                it.formatDate()
+            }
+        }
+    }
+
+    private fun getTimeString(it: ZonedDateTime?): String {
+        return it?.let {
+            timeDistanceFormatter.formatTime(it.format(DateTimeFormatter.ISO_INSTANT))
+        } ?: osUtilsProvider.getString(R.string.now)
+    }
+
+    private fun isSameDay(date1: ZonedDateTime, date2: ZonedDateTime): Boolean {
+        val d1 = date1.withZoneSameInstant(ZoneId.of("UTC"))
+        val d2 = date2.withZoneSameInstant(ZoneId.of("UTC"))
+        return d1.dayOfMonth == d2.dayOfMonth && d1.year == d2.year
     }
 }

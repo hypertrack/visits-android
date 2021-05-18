@@ -26,6 +26,8 @@
     <color name="colorTrackingActive">#24C963</color>
     <color name="colorTrackingError">@color/colorRed</color>
     <color name="colorTrackingStopped">#A0A0A0</color>
+    <color name="colorGeofence">@color/colorHyperTrackGreen</color>
+    <color name="colorGeofenceFill">#3300ce5b</color>
 
     <!--    History Polyline theme -->
     <color name="colorHistorySelectedSegmentStop">#921828</color>

@@ -7,6 +7,7 @@ import com.hypertrack.android.models.local.OrderStatus
 import com.hypertrack.android.repository.AccessTokenRepository
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MockData
+import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
@@ -35,22 +36,48 @@ class ApiClient(
         HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
     }
 
-    val api: ApiInterface = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .client(OkHttpClient.Builder()
-                    .authenticator(AccessTokenAuthenticator(accessTokenRepository))
-                    .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
-                    .addInterceptor(UserAgentInterceptor())
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .connectTimeout(30, TimeUnit.SECONDS).apply {
-                        if (BuildConfig.DEBUG) {
-                            addInterceptor(loggingInterceptor)
-                        }
-                    }.build())
-            .build()
-            .create(ApiInterface::class.java)
+    private val remoteApi: ApiInterface = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(MoshiConverterFactory.create(Injector.getMoshi()))
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .client(
+            OkHttpClient.Builder()
+                .authenticator(AccessTokenAuthenticator(accessTokenRepository))
+                .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
+                .addInterceptor(UserAgentInterceptor())
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS).apply {
+                    if (BuildConfig.DEBUG) {
+                        addInterceptor(loggingInterceptor)
+                    }
+                }.build()
+        )
+        .build()
+        .create(ApiInterface::class.java)
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private val mockApi = object : ApiInterface by remoteApi {
+
+        override suspend fun getGeofencesWithMarkers(
+            deviceId: String,
+            paginationToken: String?
+        ): Response<GeofenceResponse> {
+            return if (MyApplication.MOCK_MODE.not()) {
+                remoteApi.getGeofencesWithMarkers(deviceId, paginationToken)
+            } else {
+                Response.success(
+                    Injector.getMoshi().adapter(GeofenceResponse::class.java)
+                        .fromJson(MockData.MOCK_GEOFENCES_JSON)
+                )
+            }
+        }
+    }
+
+    val api = if (MyApplication.MOCK_MODE.not()) {
+        remoteApi
+    } else {
+        mockApi
+    }
 
     suspend fun clockIn() = api.clockIn(deviceId)
 
@@ -62,7 +89,6 @@ class ApiClient(
         try {
             do {
                 val response = api.getGeofencesWithMarkers(deviceId, paginationToken ?: "null")
-//                val response = Response.success(Injector.getMoshi().adapter(GeofenceResponse::class.java).fromJson(MockData.MOCK_GEOFENCES_JSON))
                 if (response.isSuccessful) {
                     response.body()?.geofences?.let {
                         res.addAll(it)
@@ -146,19 +172,29 @@ class ApiClient(
     }
 
     suspend fun getHistory(day: LocalDate, timezone: ZoneId): HistoryResult {
-        try {
-            with(api.getHistory(deviceId, day.format(DateTimeFormatter.ISO_LOCAL_DATE), timezone.id)) {
-                if (isSuccessful) {
-                    return body().asHistory()
-                } else {
-                    return HistoryError(HttpException(this))
+        return if (MyApplication.MOCK_MODE.not()) {
+            try {
+                with(
+                    api.getHistory(
+                        deviceId,
+                        day.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        timezone.id
+                    )
+                ) {
+                    if (isSuccessful) {
+                        return body().asHistory()
+                    } else {
+                        return HistoryError(HttpException(this))
+                    }
                 }
+            } catch (e: Throwable) {
+                Log.w(TAG, "Got exception $e fetching device history")
+                return HistoryError(e)
             }
-        } catch (e: Throwable) {
-            Log.w(TAG, "Got exception $e fetching device history")
-            return HistoryError(e)
+        } else {
+            //todo inject mock api client
+            MockData.MOCK_HISTORY
         }
-
     }
 
     override suspend fun createTrip(tripParams: TripParams): ShareableTripResult {
@@ -383,7 +419,8 @@ private fun HistoryStatusMarker.asStatusMarker() = StatusMarker(
     data.duration,
     data.distance,
     data.steps,
-    data.address
+    data.address,
+    data.reason
 )
 
 sealed class OrderCompletionResponse

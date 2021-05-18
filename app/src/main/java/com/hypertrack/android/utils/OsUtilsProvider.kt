@@ -13,7 +13,9 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.hypertrack.android.decodeBase64Bitmap
 import com.hypertrack.android.models.Address
@@ -26,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
+import kotlin.math.round
 
 class OsUtilsProvider(private val context: Context, private val crashReportsProvider: CrashReportsProvider) {
 
@@ -131,6 +134,15 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
     fun stringFromResource(@StringRes res: Int): String {
         return MyApplication.context.getString(res)
     }
+
+    fun stringFromResource(@StringRes res: Int, vararg formatArgs: Any): String {
+        return MyApplication.context.getString(res, *formatArgs)
+    }
+
+    fun colorFromResource(@ColorRes res: Int): Int {
+        return ContextCompat.getColor(context, res)
+    }
+
 
     @Throws(IOException::class)
     fun createTakePictureIntent(context: Context, file: File): Intent {
