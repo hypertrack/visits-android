@@ -5,6 +5,8 @@ import com.hypertrack.android.repository.AuthCallResponse
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
+import dalvik.annotation.TestTarget
+import org.jetbrains.annotations.TestOnly
 
 @JsonClass(generateAdapter = true)
 data class Metadata(
@@ -12,28 +14,28 @@ data class Metadata(
     var visitsAppMetadata: VisitsAppMetadata
 ) {
 
+    @TestOnly
     fun toMap(): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
-            otherMetadata.forEach { k, v -> put(k, v) }
-            put(VISITS_APP_KEY, visitsAppMetadata)
+            otherMetadata.forEach { (k, v) -> put(k, v) }
+            put(VISITS_APP_KEY, visitsAppMetadata.toMap())
         }
-    }
-
-    override fun toString(): String {
-        return "$otherMetadata \n $visitsAppMetadata"
     }
 
     companion object {
         const val VISITS_APP_KEY = "visits_app"
-        const val HT_KEY = "ht_"
+        private const val HT_KEY = "ht_"
 
         fun empty() = Metadata(mapOf(), VisitsAppMetadata())
 
         @Suppress("UNCHECKED_CAST")
-        fun deserealize(map: Map<String, Any>): Metadata {
+        fun deserialize(map: Map<String, Any>): Metadata {
             return Metadata(
-                visitsAppMetadata = (map.get(VISITS_APP_KEY) as VisitsAppMetadata?)
-                    ?: VisitsAppMetadata(),
+                visitsAppMetadata = try {
+                    VisitsAppMetadata.deserialize(map[VISITS_APP_KEY] as Map<String, Any>)
+                } catch (_: Exception) {
+                    VisitsAppMetadata()
+                },
                 otherMetadata = map
                     .filterKeys {
                         it != VISITS_APP_KEY && !it.startsWith(HT_KEY)
@@ -47,55 +49,95 @@ data class Metadata(
 
 @JsonClass(generateAdapter = true)
 data class VisitsAppMetadata(
-    val appended: Map<String, AppendMetadata>?,
-    var note: String?,
-    @Json(name = "photos") var _photos: String?,
-    @Json(name = "user_location") val userLocation: Location?,
+    val appended: Map<String, AppendMetadata>? = null,
+    var note: String? = null,
+    var photos: List<String>? = null,
+    @Json(name = "user_location") val userLocation: Location? = null,
 ) {
 
-    constructor(
-        appended: Map<String, AppendMetadata>? = null,
-        note: String? = null,
-        photos: Set<String>? = null,
-        userLocation: Location? = null
-    ) : this(
-        appended,
-        note,
-        photos?.joinToString(","),
-        userLocation
-    )
-
-    val photos: List<String>
-        get() = (_photos?.split(",") ?: listOf())
-
     fun addPhoto(photoId: String) {
-        _photos = photos.toMutableList().apply {
+        photos = (photos ?: listOf()).toMutableList().apply {
             add(photoId)
-        }.toSet().joinToString(",")
+        }.toSet().toList()
     }
 
-    override fun toString(): String {
-        return "$appended \n $note \n $_photos \n $userLocation"
+    @TestOnly
+    fun toMap(): Map<String, Any> {
+        return mutableMapOf<String, Any>().apply {
+            appended?.forEach { k, v -> put(k, v.toMap()) }
+            note?.let { put(KEY_NOTE, it as Any) }
+            photos?.let { put(KEY_PHOTOS, it as Any) }
+            userLocation?.let { put(KEY_USER_LOCATION, it as Any) }
+        }
+    }
+
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun deserialize(map: Map<String, Any>?): VisitsAppMetadata {
+            if (map == null) return VisitsAppMetadata()
+            return VisitsAppMetadata(
+                note = try {
+                    map["note"] as String
+                } catch (_: Exception) {
+                    null
+                },
+                photos = try {
+                    map["photos"] as List<String>
+                } catch (_: Exception) {
+                    null
+                },
+                appended = try {
+                    (map["appended"] as Map<String, Any>).mapValues {
+                        AppendMetadata.deserialize(it.value as Map<String, Any>)
+                    }
+                } catch (_: Exception) {
+                    null
+                },
+                userLocation = null
+            )
+        }
     }
 }
 
 @JsonClass(generateAdapter = true)
-class AppendMetadata(
-    val note: String?,
-    @Json(name = "photos") val _photos: String?,
-    @Json(name = "user_location") val userLocation: Location?
+data class AppendMetadata(
+    val note: String? = null,
+    val photos: List<String>? = null,
+    @Json(name = "user_location") val userLocation: Location? = null
 ) {
-    constructor(
-        note: String? = null,
-        photos: Set<String>? = null,
-        userLocation: Location? = null
-    ) : this(
-        note,
-        photos?.joinToString(","),
-        userLocation
-    )
 
-    override fun toString(): String {
-        return "$note \n $_photos \n $userLocation"
+    @TestOnly
+    fun toMap(): Map<String, Any> {
+        return mutableMapOf<String, Any>().apply {
+            note?.let { put(KEY_NOTE, it as Any) }
+            photos?.let { put(KEY_PHOTOS, it as Any) }
+            userLocation?.let { put(KEY_USER_LOCATION, it as Any) }
+        }
     }
+
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun deserialize(map: Map<String, Any>?): AppendMetadata {
+            if (map == null) return AppendMetadata()
+            return AppendMetadata(
+                note = try {
+                    map["note"] as String
+                } catch (_: Exception) {
+                    null
+                },
+                photos = try {
+                    map["photos"] as List<String>
+                } catch (_: Exception) {
+                    null
+                },
+                userLocation = null
+            )
+        }
+    }
+
 }
+
+const val KEY_NOTE = "note"
+const val KEY_PHOTOS = "photos"
+const val KEY_USER_LOCATION = "user_location"
+

@@ -159,7 +159,7 @@ class OrdersDetailsViewModelLegacyTest {
             tripsInteractor.refreshTrips()
 
             OrdersDetailsViewModelTest.createVm("1", tripsInteractor).let {
-                it.onSaveNote("New note")
+                it.onExit("New note")
             }
 
             tripsInteractor.refreshTrips()

@@ -7,10 +7,9 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -78,10 +77,6 @@ class OrderDetailsFragment : ProgressDialogFragment(R.layout.fragment_order_deta
             etVisitNote.setText(it)
         })
 
-        vm.showNoteButtons.observe(viewLifecycleOwner, {
-            noteButtonsGroup.setGoneState(!it)
-        })
-
         vm.showCompleteButtons.observe(viewLifecycleOwner, {
             orderCompletionGroup.setGoneState(!it)
         })
@@ -117,12 +112,6 @@ class OrderDetailsFragment : ProgressDialogFragment(R.layout.fragment_order_deta
             displayPhotos(it)
         }
 
-        etVisitNote.addTextChangedListener(object : SimpleTextWatcher() {
-            override fun afterChanged(text: String) {
-                vm.onNoteChanged(text)
-            }
-        })
-
         tvTakePicture.setOnClickListener {
             vm.onAddPhotoClicked(mainActivity(), etVisitNote.textString())
         }
@@ -142,15 +131,6 @@ class OrderDetailsFragment : ProgressDialogFragment(R.layout.fragment_order_deta
         tvPickUp.setOnClickListener {
             vm.onPickUpClicked()
         }
-
-        bSaveNote.setOnClickListener {
-            vm.onSaveNote(etVisitNote.textString())
-        }
-
-        bCancelNote.setOnClickListener {
-            vm.onCancelNote()
-        }
-
 
     }
 
@@ -199,6 +179,11 @@ class OrderDetailsFragment : ProgressDialogFragment(R.layout.fragment_order_deta
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         vm.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onPause() {
+        vm.onExit(etVisitNote.textString())
+        super.onPause()
     }
 
     override fun onBackPressed(): Boolean {

@@ -161,32 +161,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/rvMetadata"
                 app:srcCompat="@drawable/ic_file" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTitleVisitNote"
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/medium"
-                android:text="@string/visit_notes"
-                android:textColor="@color/colorTitle"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tvTitleLocation"
-                app:layout_constraintTop_toTopOf="@id/ivVisitNote" />
-
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etVisitNote"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/edit_bg"
                 android:gravity="top|start"
                 android:hint="@string/order_note_hint"
                 android:lines="5"
                 android:padding="5dp"
-                app:layout_constraintEnd_toStartOf="@+id/bCancelNote"
-                app:layout_constraintStart_toStartOf="@+id/tvTitleVisitNote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ivVisitNote"
                 app:layout_constraintTop_toTopOf="@+id/ivVisitNote" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -317,7 +304,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:constraint_referenced_ids="bSaveNote,bCancelNote"
                 tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.Group
@@ -341,30 +327,6 @@
                 android:visibility="gone"
                 app:constraint_referenced_ids="tvComplete,divider2,tvCancel, tvTitleVisitNote"
                 tools:visibility="visible" />
-
-            <TextView
-                android:id="@+id/bSaveNote"
-                style="@style/ButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@string/order_save_note"
-                android:textSize="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/etVisitNote"
-                app:layout_constraintTop_toTopOf="@+id/etVisitNote" />
-
-            <TextView
-                android:id="@+id/bCancelNote"
-                style="@style/MinorButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="@string/order_cancel_note"
-                android:textSize="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/etVisitNote"
-                app:layout_constraintEnd_toEndOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

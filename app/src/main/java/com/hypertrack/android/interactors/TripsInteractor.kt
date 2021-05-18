@@ -163,32 +163,7 @@ class TripsInteractorImpl(
         try {
             persistOrderNote(orderId, orderNote)
             val order = getOrder(orderId)!!
-            val tripId = getOrderTripId(order)
-            if (!order.legacy) {
-                val res = apiClient.updateOrderMetadata(
-                    orderId = orderId,
-                    tripId = tripId,
-                    metadata = (order._metadata ?: Metadata.empty()).apply {
-                        visitsAppMetadata.note = orderNote
-                    }
-                )
-                if (res.isSuccessful) {
-                    val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
-                    updateOrder(
-                        orderId, orderFactory.create(
-                            remoteOrder/*.copy(
-                                _metadata = remoteOrder._metadata?.toMutableMap()?.apply {
-                                    put(LocalOrder.ORDER_NOTE_KEY, orderNote)
-                                })*/,
-                            order
-                        )
-                    )
-                } else {
-                    errorFlow.emit(Consumable(HttpException(res)))
-                }
-            } else {
-                order.note = orderNote
-            }
+            order.note = orderNote
         } catch (e: Exception) {
             errorFlow.emit(Consumable(e))
         }
@@ -211,45 +186,24 @@ class TripsInteractorImpl(
         updateOrderPickedUpState(orderId, true)
     }
 
-    override suspend fun addPhotoToOrder(orderId: String, imagePath: String) {
+    override suspend fun addPhotoToOrder(orderId: String, path: String) {
         try {
             val generatedImageId = UUID.randomUUID().toString()
 
             val previewMaxSideLength: Int = (200 * osUtilsProvider.screenDensity).toInt()
             withContext(ioDispatcher) {
-                val bitmap = imageDecoder.readBitmap(imagePath, previewMaxSideLength)
+                val bitmap = imageDecoder.readBitmap(path, previewMaxSideLength)
                 val photo = PhotoForUpload(
                     photoId = generatedImageId,
-                    filePath = imagePath,
+                    filePath = path,
                     base64thumbnail = osUtilsProvider.bitmapToBase64(bitmap),
                     state = PhotoUploadingState.NOT_UPLOADED
                 )
-                val order = getOrder(orderId)!!
-                if (!order.legacy) {
-                    val res = apiClient.updateOrderMetadata(
-                        orderId,
-                        getOrderTripId(order),
-                        (order._metadata ?: Metadata.empty()).apply {
-                            visitsAppMetadata.addPhoto(photo.photoId)
-                        }
-                    )
-                    if (res.isSuccessful) {
-                        val remoteOrder = res.body()!!.orders!!.first { it.id == orderId }
-                        updateOrder(orderId, orderFactory.create(remoteOrder, order.apply {
-                            photos.add(photo)
-//                            it.photos.add(photo.photoId)
-                        }))
-                        photoUploadInteractor.addToQueue(photo)
-                    } else {
-                        errorFlow.emit(Consumable(HttpException(res)))
-                    }
-                } else {
-                    updateOrder(orderId) {
+                updateOrder(orderId) {
 //                it.photos.add(photo.photoId)
-                        it.photos.add(photo)
-                    }
-                    photoUploadInteractor.addToQueue(photo)
+                    it.photos.add(photo)
                 }
+                photoUploadInteractor.addToQueue(photo)
             }
         } catch (e: Exception) {
             errorFlow.emit(Consumable(e))
@@ -266,11 +220,11 @@ class TripsInteractorImpl(
     ): OrderCompletionResponse {
         try {
             currentTrip.value!!.let { trip ->
-                trip.getOrder(orderId)!!.let {
-                    if (it.legacy) {
+                trip.getOrder(orderId)!!.let { order ->
+                    if (order.legacy) {
                         //legacy v1 trip, destination is order, order.id is trip.id
-                        hyperTrackService.sendCompletionEvent(it, canceled)
-                        val res = apiClient.completeTrip(it.id)
+                        hyperTrackService.sendCompletionEvent(order, canceled)
+                        val res = apiClient.completeTrip(order.id)
                         when (res) {
                             TripCompletionSuccess -> {
                                 updateCurrentTripOrderStatus(
@@ -287,6 +241,18 @@ class TripsInteractorImpl(
                             }
                         }
                     } else {
+                        val mdRes = apiClient.updateOrderMetadata(
+                            orderId = orderId,
+                            tripId = trip.id,
+                            metadata = (order._metadata ?: Metadata.empty()).apply {
+                                visitsAppMetadata.note = order.note
+                                visitsAppMetadata.photos = order.photos.map { it.photoId }
+                            }
+                        )
+                        if (!mdRes.isSuccessful) {
+                            throw HttpException(mdRes)
+                        }
+
                         val res = if (!canceled) {
                             apiClient.completeOrder(orderId = orderId, tripId = trip.id)
                         } else {
@@ -428,13 +394,12 @@ class TripsInteractorImpl(
     inner class OrderFactory : LocalOrderFactory {
         @Suppress("RedundantIf")
         override suspend fun create(order: Order, localOrder: LocalOrder?): LocalOrder {
-            val remoteMetadata = Metadata.deserealize(order.metadata)
-            val localPhotos = localOrder?.photos?.toMap { it.photoId } ?: mapOf()
-            val resPhotos = remoteMetadata.visitsAppMetadata.photos
-                .map {
-                    if (localPhotos.keys.contains(it)) {
-                        localPhotos.getValue(it)
-                    } else {
+            val remoteMetadata = Metadata.deserialize(order.metadata)
+            val localPhotosMap = localOrder?.photos?.toMap { it.photoId } ?: mapOf()
+            val resPhotos = mutableSetOf<PhotoForUpload>().apply {
+                addAll(localOrder?.photos ?: listOf())
+                (remoteMetadata.visitsAppMetadata.photos ?: listOf()).forEach {
+                    if (!localPhotosMap.containsKey(it)) {
                         val loadedImage = apiClient.getImageBase64(it)
 
                         //todo cache
@@ -445,7 +410,8 @@ class TripsInteractorImpl(
                             state = PhotoUploadingState.UPLOADED
                         )
                     }
-                }.toMutableSet() ?: mutableSetOf()
+                }
+            }
 
             return LocalOrder(
                 order,
@@ -474,7 +440,7 @@ class TripsInteractorImpl(
                 note = localOrder?.note,
                 legacy = true,
                 photos = localOrder?.photos ?: mutableSetOf(),
-                metadata = Metadata.deserealize(order.metadata)
+                metadata = Metadata.deserialize(order.metadata)
             )
             return res
         }
