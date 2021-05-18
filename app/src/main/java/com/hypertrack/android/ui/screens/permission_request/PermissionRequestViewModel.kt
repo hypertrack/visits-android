@@ -43,9 +43,9 @@ class PermissionRequestViewModel(
                 }
             }
 
-            showPermissionsButton.postValue(!permissionsInteractor.isBasePermissionsGranted())
             showWhitelistingButton.postValue(!permissionsInteractor.isWhitelistingGranted())
-            showSkipButton.postValue(it.foregroundLocationGranted)
+            showPermissionsButton.postValue(!permissionsInteractor.isBasePermissionsGranted())
+            showSkipButton.postValue(permissionsInteractor.isBasePermissionsGranted())
         }
     }
 
