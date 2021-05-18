@@ -1,6 +1,7 @@
 package com.hypertrack.android.interactors
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.asLiveData
 import com.hypertrack.android.api.*
 import com.hypertrack.android.createBaseOrder
 import com.hypertrack.android.createBaseTrip
@@ -20,6 +21,8 @@ import io.mockk.*
 import io.mockk.coVerify
 import junit.framework.Assert.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
@@ -88,7 +91,6 @@ class TripInteractorTest {
             assertEquals(4, slot.captured.size)
         }
     }
-
 
     @Test
     fun `it should get orders list for current trip (first with ongoing status)`() {
@@ -317,6 +319,108 @@ class TripInteractorTest {
                         assertEquals(true, it.isPickedUp)
                     }
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `it should complete order on order complete`() {
+        val trip = createBaseTrip().copy(
+            tripId = "3", status = TripStatus.ACTIVE.value, orders = listOf(
+                createBaseOrder().copy(id = "1"),
+                createBaseOrder().copy(id = "2"),
+            )
+        )
+        val backendTrips = listOf(
+            trip,
+        )
+        val apiClient: ApiClient = mockk(relaxed = true) {
+            coEvery { getTrips() } returns backendTrips
+            coEvery { completeTrip(any()) } returns TripCompletionSuccess
+            coEvery { updateOrderMetadata(any(), any(), any()) } returns Response.success(trip)
+        }
+        val tripsInteractorImpl = createTripInteractorImpl(
+            backendTrips = backendTrips,
+            accountRepository = mockk() { coEvery { isPickUpAllowed } returns false },
+            apiClient = apiClient
+        )
+        runBlocking {
+            tripsInteractorImpl.refreshTrips()
+            tripsInteractorImpl.completeOrder("1")
+            coVerifyAll {
+                apiClient.getTrips()
+                apiClient.updateOrderMetadata("1", "3", any())
+                apiClient.completeOrder("1", "3")
+            }
+        }
+    }
+
+    @Test
+    fun `it should cancel order on order cancel`() {
+        val trip = createBaseTrip().copy(
+            tripId = "3", status = TripStatus.ACTIVE.value, orders = listOf(
+                createBaseOrder().copy(id = "1"),
+                createBaseOrder().copy(id = "2"),
+            )
+        )
+        val backendTrips = listOf(
+            trip,
+        )
+        val apiClient: ApiClient = mockk(relaxed = true) {
+            coEvery { getTrips() } returns backendTrips
+            coEvery { completeTrip(any()) } returns TripCompletionSuccess
+            coEvery { updateOrderMetadata(any(), any(), any()) } returns Response.success(trip)
+        }
+        val tripsInteractorImpl = createTripInteractorImpl(
+            backendTrips = backendTrips,
+            accountRepository = mockk() { coEvery { isPickUpAllowed } returns false },
+            apiClient = apiClient
+        )
+        runBlocking {
+            tripsInteractorImpl.refreshTrips()
+            tripsInteractorImpl.cancelOrder("1")
+            coVerify {
+                apiClient.getTrips()
+                apiClient.cancelOrder("1", "3")
+            }
+        }
+    }
+
+    @Test
+    fun `it should update metadata before order completion or cancellation`() {
+        val backendTrips = listOf(
+            createBaseTrip().copy(
+                tripId = "3", status = TripStatus.ACTIVE.value, orders = listOf(
+                    createBaseOrder().copy(id = "1"),
+                    createBaseOrder().copy(id = "2"),
+                )
+            ),
+        )
+        val apiClient: ApiClient = mockk {
+            coEvery { getTrips() } returns backendTrips
+            coEvery { completeTrip(any()) } returns TripCompletionSuccess
+        }
+        val tripsInteractorImpl = createTripInteractorImpl(
+            backendTrips = backendTrips,
+            accountRepository = mockk() { coEvery { isPickUpAllowed } returns false },
+            apiClient = apiClient
+        )
+        runBlocking {
+            tripsInteractorImpl.refreshTrips()
+            tripsInteractorImpl.addPhotoToOrder("1", "")
+            tripsInteractorImpl.addPhotoToOrder("1", "")
+            tripsInteractorImpl.updateOrderNote("1", "Note")
+            tripsInteractorImpl.completeOrder("1")
+            tripsInteractorImpl.cancelOrder("2")
+
+            val list = mutableListOf<Metadata>()
+            coVerify {
+                apiClient.updateOrderMetadata("1", "3", capture(list))
+                apiClient.updateOrderMetadata("2", "3", capture(list))
+            }
+            list[0].let {
+                assertEquals("Note", it.visitsAppMetadata.note)
+                assertEquals(2, it.visitsAppMetadata.photos!!.size)
             }
         }
     }

@@ -96,38 +96,6 @@ class OrdersDetailsViewModelTest {
     }
 
     @Test
-    fun `it should update order state on pick up button click`() {
-        val backendOrders = listOf<Order>(
-            createBaseOrder().copy(
-                id = "ONGOING",
-                _status = OrderStatus.ONGOING.value
-            ),
-        )
-
-        val pickUpAllowed = true
-        val tripsInteractor: TripsInteractor = TripInteractorTest.createTripInteractorImpl(
-            backendTrips = listOf(createBaseTrip().copy(orders = backendOrders)),
-            accountRepository = mockk() { coEvery { isPickUpAllowed } returns pickUpAllowed }
-        )
-        runBlocking {
-            tripsInteractor.refreshTrips()
-
-            createVm("ONGOING", tripsInteractor, pickUpAllowed).let {
-                it.onPickUpClicked()
-
-                assertFalse(it.showPickUpButton.observeAndGetValue())
-                assertEquals(
-                    "true",
-                    getFromMetadata(
-                        "order_picked_up",
-                        it.metadata.observeAndGetValue()
-                    )?.toLowerCase()
-                )
-            }
-        }
-    }
-
-    @Test
     fun `it should update order state on complete button click`() {
         val backendOrders = listOf<Order>(
             createBaseOrder().copy(
@@ -303,7 +271,7 @@ class OrdersDetailsViewModelTest {
     }
 
     @Test
-    fun `it should show local note and save button if it differs from remote one`() {
+    fun `it should show local note`() {
         val pickUpAllowed = true
         val order = createBaseOrder().copy(
             id = "1",
@@ -342,18 +310,13 @@ class OrdersDetailsViewModelTest {
 
             vm.let {
                 assertEquals("Note_local", vm.note.observeAndGetValue())
-                assertTrue(vm.showNoteButtons.observeAndGetValue())
-                it.onSaveNote(vm.note.observeAndGetValue()!!)
-                val slot = slot<Metadata>()
-                coVerify { apiClient.updateOrderMetadata("1", "1", capture(slot)) }
-                assertEquals("Note_local", slot.captured.visitsAppMetadata.note)
             }
 
         }
     }
 
     @Test
-    fun `it should set local note to remote on discard clicked`() {
+    fun `it should set local note to remote if local is null`() {
         val pickUpAllowed = true
         val order = createBaseOrder().copy(
             id = "1",
@@ -375,10 +338,8 @@ class OrdersDetailsViewModelTest {
                         "1", TripStatus.ACTIVE, mapOf(), mutableListOf(
                             LocalOrder(
                                 order,
-                                note = "Note_local",
-                                metadata = Metadata.empty().apply {
-                                    visitsAppMetadata.note = "Note"
-                                },
+                                metadata = null,
+                                note = null
                             )
                         )
                     )
@@ -393,9 +354,6 @@ class OrdersDetailsViewModelTest {
             tripsInteractor.refreshTrips()
 
             vm.let {
-                assertEquals("Note_local", vm.note.observeAndGetValue())
-                assertTrue(vm.showNoteButtons.observeAndGetValue())
-                it.onCancelNote()
                 assertEquals("Note", vm.note.observeAndGetValue())
             }
 
@@ -486,11 +444,6 @@ class OrdersDetailsViewModelTest {
                 it.photos.observeAndGetValue().let {
                     assertEquals(PhotoUploadingState.UPLOADED, it[0].state)
                 }
-
-                val list = mutableListOf<Metadata>()
-                coVerify { apiClient.updateOrderMetadata(any(), any(), capture(list)) }
-                assertEquals(1, list[0].visitsAppMetadata.photos!!.size)
-                assertEquals(2, list[1].visitsAppMetadata.photos!!.size)
             }
         }
     }

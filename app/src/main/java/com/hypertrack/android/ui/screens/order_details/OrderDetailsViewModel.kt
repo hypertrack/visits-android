@@ -98,7 +98,6 @@ class OrderDetailsViewModel(
                 KeyValueItem(it.key, it.value)
             }
     }
-    val showNoteButtons = MutableLiveData(false)
     val showPhotosGroup = Transformations.map(order) {
         it.legacy
     }
@@ -113,18 +112,6 @@ class OrderDetailsViewModel(
     }
     val showPickUpButton = Transformations.map(order) {
         it.legacy && !it.isPickedUp && it.status == OrderStatus.ONGOING && accountRepository.isPickUpAllowed
-    }
-
-    init {
-        Transformations.map(order) {
-            if (!it.legacy) {
-                if (it.note != null && it.note != it.metadataNote.orEmpty()) {
-                    showNoteButtons.postValue(true)
-                } else {
-                    showNoteButtons.postValue(false)
-                }
-            }
-        }.toHotTransformation()
     }
 
     init {
@@ -163,42 +150,10 @@ class OrderDetailsViewModel(
         onOrderCompleteAction(false, note)
     }
 
-    fun onNoteChanged(note: String) {
-        if (!order.value!!.legacy) {
-            if (note != order.value!!.metadataNote.orEmpty()) {
-                showNoteButtons.postValue(true)
-            }
-        }
-    }
-
-    fun onSaveNote(orderNote: String) {
-        if (orderNote != order.value!!.metadataNote.orEmpty()) {
-            viewModelScope.launch {
-                showNoteButtons.postValue(false)
-                loadingStateBase.postValue(true)
-                tripsInteractor.updateOrderNote(orderId, orderNote)
-                loadingStateBase.postValue(false)
-            }
-        } else {
-            showNoteButtons.postValue(false)
-        }
-    }
-
-    //todo test
     fun onExit(orderNote: String) {
         globalScope.launch {
             tripsInteractor.persistOrderNote(orderId, orderNote)
         }
-    }
-
-    fun onCancelNote() {
-        order.value!!.metadataNote.let {
-            note.postValue(it)
-            globalScope.launch {
-                tripsInteractor.persistOrderNote(orderId, it)
-            }
-        }
-        showNoteButtons.postValue(false)
     }
 
     fun onCopyClick(it: String) {
@@ -287,35 +242,30 @@ class OrderDetailsViewModel(
             order.photos
                 .map { photo ->
                     val photoId = photo.photoId
-                    //todo test
-                    if (order.metadataPhotoIds.contains(photoId) || order.legacy) {
-                        return@map uploadQueue.get(photoId).let { photoFromQueue ->
-                            if (photoFromQueue != null) {
-                                PhotoItem(
-                                    photoId = photoId,
-                                    photoFromQueue.base64thumbnail?.let {
-                                        osUtilsProvider.decodeBase64Bitmap(
-                                            it
-                                        )
-                                    },
-                                    photoFromQueue.state
-                                )
-                            } else {
-                                PhotoItem(
-                                    photoId = photoId,
-                                    photo.base64thumbnail?.let {
-                                        osUtilsProvider.decodeBase64Bitmap(
-                                            it
-                                        )
-                                    },
-                                    PhotoUploadingState.UPLOADED
-                                )
-                            }
+                    return@map uploadQueue.get(photoId).let { photoFromQueue ->
+                        if (photoFromQueue != null) {
+                            PhotoItem(
+                                photoId = photoId,
+                                photoFromQueue.base64thumbnail?.let {
+                                    osUtilsProvider.decodeBase64Bitmap(
+                                        it
+                                    )
+                                },
+                                photoFromQueue.state
+                            )
+                        } else {
+                            PhotoItem(
+                                photoId = photoId,
+                                photo.base64thumbnail?.let {
+                                    osUtilsProvider.decodeBase64Bitmap(
+                                        it
+                                    )
+                                },
+                                PhotoUploadingState.UPLOADED
+                            )
                         }
-                    } else {
-                        return@map null
                     }
-                }.filterNotNull()
+                }
         )
     }
 
