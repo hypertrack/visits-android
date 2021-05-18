@@ -51,18 +51,23 @@ class GoogleMapHistoryRenderer(
     override suspend fun showHistory(history: History): Boolean = suspendCoroutine { continuation ->
         if (map == null) {
             mapFragment.getMapAsync { googleMap ->
-                googleMap.isMyLocationEnabled = true
+                try {
+                    googleMap.isMyLocationEnabled = true
+                } catch (_: Exception) {
+                }
                 googleMap.uiSettings.isZoomControlsEnabled = true
-                googleMap.setPadding(0, 0, 0, style.summaryPeekHeight )
+                googleMap.setPadding(0, 0, 0, style.summaryPeekHeight)
                 map = googleMap
 
                 if (history.locationTimePoints.isEmpty()) {
                     locationProvider.getCurrentLocation { lastLocation ->
                         lastLocation?.let {
-                            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                LatLng(lastLocation.latitude, lastLocation.longitude),
-                                CITY_LEVEL_ZOOM
-                            ))
+                            map?.animateCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(lastLocation.latitude, lastLocation.longitude),
+                                    CITY_LEVEL_ZOOM
+                                )
+                            )
                         }
                     }
                 } else {

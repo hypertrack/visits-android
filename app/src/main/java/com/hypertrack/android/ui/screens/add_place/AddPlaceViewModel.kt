@@ -87,8 +87,7 @@ class AddPlaceViewModel(
         map.postValue(googleMap)
         try {
             googleMap.isMyLocationEnabled = true
-        } catch (e: Exception) {
-            //todo
+        } catch (_: Exception) {
         }
         googleMap.setOnCameraIdleListener {
             if (!firstLaunch && !programmaticCameraMove) {
