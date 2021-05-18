@@ -9,6 +9,7 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_place_visit.view.*
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class PlaceVisitsAdapter(
     private val osUtilsProvider: OsUtilsProvider,
@@ -89,7 +90,9 @@ class PlaceVisitsAdapter(
     }
 
     private fun getTimeString(it: ZonedDateTime?): String {
-        return it?.formatTime() ?: osUtilsProvider.getString(R.string.now)
+        return it?.let {
+            timeDistanceFormatter.formatTime(it.format(DateTimeFormatter.ISO_INSTANT))
+        } ?: osUtilsProvider.getString(R.string.now)
     }
 
     private fun isSameDay(date1: ZonedDateTime, date2: ZonedDateTime): Boolean {

@@ -31,10 +31,7 @@ fun ZonedDateTime.formatDateTime(): String {
             format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
 }
 
-fun ZonedDateTime.formatTime(): String {
-    return format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
-}
-
+//todo to time distance formatter
 fun ZonedDateTime.formatDate(): String {
     return format(createFormatterWithoutYear(FormatStyle.MEDIUM, Locale.getDefault()))
 }
