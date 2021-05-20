@@ -116,7 +116,7 @@ object Injector {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return AddPlaceInfoViewModel(
                     latLng,
-                    _address = address,
+                    initialAddress = address,
                     _name = name,
                     getUserScope().placesRepository,
                     getUserScope().integrationsRepository,

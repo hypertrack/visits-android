@@ -30,11 +30,6 @@ class AwsLoginProviderTest {
             val pk = tokenForPublishableKeyExchangeService.getPublishableKey(tokenRes.token)
                 .body()!!.publishableKey!!
             assertEquals(expected, pk)
-//            val sdk = ServiceLocator.getHyperTrackService(pk)
-//            val accessTokenRepository = ServiceLocator.getAccessTokenRepository(sdk.deviceId, pk)
-//            val state = accessTokenRepository.refreshTokenAsync() as Active
-//            val token = state.token
-//            Log.v("live-app-backend-token", token)
         }
     }
 

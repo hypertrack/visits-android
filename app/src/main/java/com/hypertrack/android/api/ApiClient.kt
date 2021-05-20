@@ -58,20 +58,27 @@ class ApiClient(
 
     @Suppress("BlockingMethodInNonBlockingContext")
     private val mockApi = object : ApiInterface by remoteApi {
-
-        override suspend fun getGeofencesWithMarkers(
+        override suspend fun createGeofences(
             deviceId: String,
-            paginationToken: String?
-        ): Response<GeofenceResponse> {
-            return if (MyApplication.MOCK_MODE.not()) {
-                remoteApi.getGeofencesWithMarkers(deviceId, paginationToken)
-            } else {
-                Response.success(
-                    Injector.getMoshi().adapter(GeofenceResponse::class.java)
-                        .fromJson(MockData.MOCK_GEOFENCES_JSON)
-                )
-            }
+            params: GeofenceParams
+        ): Response<List<Geofence>> {
+            Log.v("cutag", params.geofences.first().metadata.toString())
+            return remoteApi.createGeofences(deviceId, params)
         }
+
+        //        override suspend fun getGeofencesWithMarkers(
+//            deviceId: String,
+//            paginationToken: String?
+//        ): Response<GeofenceResponse> {
+//            return if (MyApplication.MOCK_MODE.not()) {
+//                remoteApi.getGeofencesWithMarkers(deviceId, paginationToken)
+//            } else {
+//                Response.success(
+//                    Injector.getMoshi().adapter(GeofenceResponse::class.java)
+//                        .fromJson(MockData.MOCK_GEOFENCES_JSON)
+//                )
+//            }
+//        }
 
         override suspend fun getIntegrations(
             query: String?,
@@ -80,7 +87,6 @@ class ApiClient(
             return if (MyApplication.MOCK_MODE.not()) {
                 remoteApi.getIntegrations(query, limit)
             } else {
-                delay(1000)
                 Response.success(
                     Injector.getMoshi().adapter(IntegrationsResponse::class.java)
                         .fromJson(MockData.MOCK_INTEGRATIONS_RESPONSE)!!.let {
@@ -131,7 +137,7 @@ class ApiClient(
     suspend fun createGeofence(
         latitude: Double,
         longitude: Double,
-        metadata: Map<String, String>
+        metadata: GeofenceMetadata
     ): Response<List<Geofence>> {
         return api.createGeofences(
             deviceId,
@@ -139,7 +145,7 @@ class ApiClient(
                 setOf(
                     GeofenceProperties(
                         Point(listOf(longitude, latitude)),
-                        metadata, 100
+                        metadata.toMap(moshi), 100
                     )
                 ), deviceId
             )

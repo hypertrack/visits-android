@@ -6,13 +6,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.SupportMapFragment
+import com.hypertrack.android.models.Integration
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.common.SnackbarUtil
-import com.hypertrack.android.ui.common.setGoneState
-import com.hypertrack.android.ui.common.textString
+import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
-import kotlinx.android.synthetic.main.fragment_add_place.*
 import kotlinx.android.synthetic.main.fragment_add_place_info.*
 import kotlinx.android.synthetic.main.fragment_add_place_info.confirm
 import kotlinx.android.synthetic.main.fragment_add_place_info.toolbar
@@ -31,6 +29,14 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Integration>(KEY_INTEGRATION)
+            ?.observe(viewLifecycleOwner) { result ->
+                result?.let {
+                    vm.onIntegrationAdded(it)
+                }
+            }
+
         toolbar.title = getString(R.string.add_place)
         mainActivity().setSupportActionBar(toolbar)
         mainActivity().supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -40,12 +46,28 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
             vm.onMapReady(it)
         }
 
+        val listener = object : SimpleTextWatcher() {
+            override fun afterChanged(text: String) {
+                vm.onAddressChanged(text)
+            }
+        }
+        etAddress.addTextChangedListener(listener)
+
         vm.address.observe(viewLifecycleOwner, {
-            etAddress.setText(it)
+            etAddress.silentUpdate(listener, it)
         })
 
         vm.name.observe(viewLifecycleOwner, {
             etGeofenceName.setText(it)
+        })
+
+        vm.integration.observe(viewLifecycleOwner, {
+            lIntegration.setGoneState(it == null)
+            it?.let {
+                it.id.toView(tvIntegrationId)
+                it.name?.toView(tvIntegrationName)
+                it.type.toView(tvIntegrationType)
+            }
         })
 
         vm.error.observe(viewLifecycleOwner, {
@@ -64,6 +86,10 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
             bAddIntegration.setGoneState(!it)
         })
 
+        vm.showGeofenceNameField.observe(viewLifecycleOwner, { show ->
+            listOf(etGeofenceName, tvGeofenceName).forEach { it.setGoneState(!show) }
+        })
+
         bAddIntegration.setOnClickListener {
             vm.onAddIntegration()
         }
@@ -71,8 +97,17 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
         confirm.setOnClickListener {
             vm.onConfirmClicked(
                 name = etGeofenceName.textString(),
-                address = etAddress.textString()
+                address = etAddress.textString(),
+                description = etGeofenceDescription.textString()
             )
         }
+
+        bDeleteIntegration.setOnClickListener {
+            vm.onDeleteIntegrationClicked()
+        }
+    }
+
+    companion object {
+        const val KEY_INTEGRATION = "integration"
     }
 }

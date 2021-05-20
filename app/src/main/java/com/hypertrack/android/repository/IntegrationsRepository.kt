@@ -33,7 +33,6 @@ class IntegrationsRepositoryImpl(
         try {
             //todo task pagination
             firstPage = apiClient.getIntegrations(limit = 10)
-            Log.e("cutag", firstPage.toString())
             return firstPage!!.isNotEmpty()
         } catch (e: Exception) {
             errorFlow.emit(Consumable(e))

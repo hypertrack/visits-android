@@ -1,12 +1,14 @@
 package com.hypertrack.android.ui.screens.add_place_info
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.hypertrack.android.models.Integration
 import com.hypertrack.android.repository.CreateGeofenceError
 import com.hypertrack.android.repository.CreateGeofenceSuccess
 import com.hypertrack.android.repository.IntegrationsRepository
@@ -22,22 +24,24 @@ import kotlinx.coroutines.launch
 
 class AddPlaceInfoViewModel(
     private val latLng: LatLng,
-    private val _address: String?,
+    private val initialAddress: String?,
     private val _name: String?,
     private val placesRepository: PlacesRepository,
     private val integrationsRepository: IntegrationsRepository,
     private val osUtilsProvider: OsUtilsProvider,
 ) : BaseViewModel() {
 
-    private var hasIntegrations: Boolean = false
+    private var hasIntegrations = MutableLiveData<Boolean>(false)
 
     val loadingState = MutableLiveData<Boolean>(true)
 
     //todo to baseVM
     val error = SingleLiveEvent<String>()
+
+    //todo persist state in create geofence scope
     val address = MutableLiveData<String?>().apply {
-        if (_address != null) {
-            postValue(_address)
+        if (initialAddress != null) {
+            postValue(initialAddress)
         } else {
             osUtilsProvider.getPlaceFromCoordinates(latLng.latitude, latLng.longitude)?.let {
                 postValue(it.toAddressString())
@@ -49,20 +53,35 @@ class AddPlaceInfoViewModel(
             postValue(_name)
         }
     }
+    val integration = MutableLiveData<Integration?>(null)
 
-    //todo test
-    val showAddIntegrationButton = MutableLiveData<Boolean>(true)
+    val showAddIntegrationButton = MediatorLiveData<Boolean>().apply {
+        addSource(hasIntegrations) {
+            postValue((hasIntegrations.value ?: false) && integration.value == null)
+        }
+        addSource(integration) {
+            postValue((hasIntegrations.value ?: false) && integration.value == null)
+        }
+    }
+    val showGeofenceNameField = MediatorLiveData<Boolean>().apply {
+        addSource(hasIntegrations) {
+            postValue((hasIntegrations.value ?: false) && integration.value == null)
+        }
+        addSource(integration) {
+            postValue((hasIntegrations.value ?: false) && integration.value == null)
+        }
+    }
 
     init {
         viewModelScope.launch {
             loadingState.postValue(true)
             val res = integrationsRepository.hasIntegrations()
             if (res != null) {
-                hasIntegrations = res
+                hasIntegrations.postValue(res)
                 loadingState.postValue(false)
             } else {
                 //todo task
-                hasIntegrations = false
+                hasIntegrations.postValue(false)
             }
         }
     }
@@ -73,7 +92,7 @@ class AddPlaceInfoViewModel(
         googleMap.addMarker(MarkerOptions().position(latLng))
     }
 
-    fun onConfirmClicked(name: String, address: String) {
+    fun onConfirmClicked(name: String, address: String, description: String) {
         viewModelScope.launch {
             loadingState.postValue(true)
 
@@ -81,7 +100,9 @@ class AddPlaceInfoViewModel(
                 latLng.latitude,
                 latLng.longitude,
                 name = name,
-                address = address
+                address = address,
+                description = description,
+                integration = integration.value
             )
             loadingState.postValue(false)
             when (res) {
@@ -100,11 +121,28 @@ class AddPlaceInfoViewModel(
     }
 
     fun onAddIntegration() {
-        if (hasIntegrations) {
+        if (hasIntegrations.value == true) {
             destination.postValue(
                 AddPlaceInfoFragmentDirections.actionAddPlaceInfoFragmentToAddIntegrationFragment()
             )
         }
     }
 
+    fun onIntegrationAdded(integration: Integration) {
+        this.integration.postValue(integration)
+    }
+
+    fun onDeleteIntegrationClicked() {
+        integration.postValue(null)
+    }
+
+    fun onAddressChanged(address: String) {
+        if (this.address.value != address) {
+            this.address.postValue(address)
+        }
+    }
+
+    companion object {
+        const val KEY_ADDRESS = "address"
+    }
 }

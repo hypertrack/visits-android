@@ -95,7 +95,7 @@ interface ApiInterface {
 
     @GET("client/get_entity_data")
     suspend fun getIntegrations(
-        @Query("search") query: String? = null,
+        @Query("search_string") query: String? = null,
         @Query("limit") limit: Int? = null
     ): Response<IntegrationsResponse>
 }

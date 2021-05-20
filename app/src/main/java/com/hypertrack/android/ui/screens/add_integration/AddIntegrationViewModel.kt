@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hypertrack.android.models.Integration
 import com.hypertrack.android.repository.IntegrationsRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.base.Consumable
 import com.hypertrack.android.utils.MyApplication
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,6 +26,8 @@ class AddIntegrationViewModel(
     val error = integrationsRepository.errorFlow.asLiveData()
 
     val integrations = MutableLiveData<List<Integration>>()
+
+    val integrationSelectedEvent = MutableLiveData<Consumable<Integration>>()
 
     init {
         loadingStateBase.postValue(true)
@@ -52,6 +55,10 @@ class AddIntegrationViewModel(
         val integrationsRes = integrationsRepository.getIntegrations(query)
         integrations.postValue(integrationsRes)
         loadingStateBase.postValue(false)
+    }
+
+    fun onIntegrationClicked(integration: Integration) {
+        integrationSelectedEvent.postValue(Consumable(integration))
     }
 
 }

@@ -2,19 +2,17 @@ package com.hypertrack.android.ui.screens.add_integration
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.widget.ViewUtils
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.hypertrack.android.models.Integration
 import com.hypertrack.android.ui.MainActivity
 import com.hypertrack.android.ui.base.BaseAdapter
 import com.hypertrack.android.ui.base.BaseFragment
-import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.*
-import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LoaderDecorator
+import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoFragment
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_add_integration.*
-import kotlinx.android.synthetic.main.fragment_add_place_info.*
 import kotlinx.android.synthetic.main.fragment_add_place_info.toolbar
 import kotlinx.android.synthetic.main.item_integration.view.*
 import kotlinx.android.synthetic.main.progress_bar.*
@@ -34,6 +32,10 @@ class AddIntegrationFragment : BaseFragment<MainActivity>(R.layout.fragment_add_
                     item.type.toView(containerView.tvDescription)
                 }
             }
+        }
+    }.apply {
+        onItemClickListener = {
+            vm.onIntegrationClicked(it)
         }
     }
 
@@ -71,6 +73,17 @@ class AddIntegrationFragment : BaseFragment<MainActivity>(R.layout.fragment_add_
         vm.error.observe(viewLifecycleOwner, {
             it.consume { e ->
                 SnackbarUtil.showErrorSnackbar(view, e.message)
+            }
+        })
+
+        vm.integrationSelectedEvent.observe(viewLifecycleOwner, {
+            it.consume { integration ->
+                findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                    AddPlaceInfoFragment.KEY_INTEGRATION,
+                    integration
+                )
+                findNavController().popBackStack()
+                Utils.hideKeyboard(requireActivity())
             }
         })
 
