@@ -119,6 +119,7 @@ object Injector {
                     _address = address,
                     _name = name,
                     getUserScope().placesRepository,
+                    getUserScope().integrationsRepository,
                     getOsUtilsProvider(MyApplication.context),
                 ) as T
             }
@@ -148,6 +149,7 @@ object Injector {
             )
             val scope = CoroutineScope(Dispatchers.IO)
             val placesRepository = getPlacesRepository()
+            val integrationsRepository = getIntegrationsRepository()
             val hyperTrackService = getHyperTrackService(context)
             val photoUploadInteractor = PhotoUploadInteractorImpl(
                 getVisitsRepo(context),
@@ -195,10 +197,12 @@ object Injector {
                 historyRepository,
                 tripsInteractor,
                 placesRepository,
+                integrationsRepository,
                 UserScopeViewModelFactory(
                     getVisitsRepo(context),
                     tripsInteractor,
                     placesRepository,
+                    integrationsRepository,
                     historyRepository,
                     getDriverRepo(context),
                     getAccountRepo(context),
@@ -230,6 +234,10 @@ object Injector {
 
     private fun getPlacesRepository(): PlacesRepository {
         return PlacesRepository(getVisitsApiClient(MyApplication.context))
+    }
+
+    private fun getIntegrationsRepository(): IntegrationsRepository {
+        return IntegrationsRepositoryImpl(getVisitsApiClient(MyApplication.context))
     }
 
     private fun getPermissionInteractor(): PermissionsInteractor {
@@ -391,6 +399,7 @@ private class UserScope(
     val historyRepository: HistoryRepository,
     val tripsInteractor: TripsInteractor,
     val placesRepository: PlacesRepository,
+    val integrationsRepository: IntegrationsRepository,
     val userScopeViewModelFactory: UserScopeViewModelFactory,
     val photoUploadInteractor: PhotoUploadInteractor,
     val hyperTrackService: HyperTrackService,

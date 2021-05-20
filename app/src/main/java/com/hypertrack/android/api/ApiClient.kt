@@ -11,6 +11,7 @@ import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -68,6 +69,27 @@ class ApiClient(
                 Response.success(
                     Injector.getMoshi().adapter(GeofenceResponse::class.java)
                         .fromJson(MockData.MOCK_GEOFENCES_JSON)
+                )
+            }
+        }
+
+        override suspend fun getIntegrations(
+            query: String?,
+            limit: Int?
+        ): Response<IntegrationsResponse> {
+            return if (MyApplication.MOCK_MODE.not()) {
+                remoteApi.getIntegrations(query, limit)
+            } else {
+                delay(1000)
+                Response.success(
+                    Injector.getMoshi().adapter(IntegrationsResponse::class.java)
+                        .fromJson(MockData.MOCK_INTEGRATIONS_RESPONSE)!!.let {
+                            if (query != null) {
+                                it.copy(data = it.data.filter { it.name?.contains(query.toString()) == true })
+                            } else {
+                                it
+                            }
+                        }
                 )
             }
         }
@@ -271,6 +293,15 @@ class ApiClient(
             }
         } catch (e: Exception) {
             return OrderCompletionFailure(e)
+        }
+    }
+
+    suspend fun getIntegrations(query: String? = null, limit: Int? = null): List<Integration> {
+        val res = api.getIntegrations(query, limit)
+        if (res.isSuccessful) {
+            return res.body()!!.data
+        } else {
+            throw HttpException(res)
         }
     }
 

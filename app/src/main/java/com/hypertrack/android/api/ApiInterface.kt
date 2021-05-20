@@ -92,7 +92,18 @@ interface ApiInterface {
         @Path("day") day: String,
         @Query("timezone") timezone: String
     ): Response<HistoryResponse>
+
+    @GET("client/get_entity_data")
+    suspend fun getIntegrations(
+        @Query("search") query: String? = null,
+        @Query("limit") limit: Int? = null
+    ): Response<IntegrationsResponse>
 }
+
+@JsonClass(generateAdapter = true)
+data class IntegrationsResponse(
+    val data: List<Integration>,
+)
 
 @JsonClass(generateAdapter = true)
 data class OrderBody(

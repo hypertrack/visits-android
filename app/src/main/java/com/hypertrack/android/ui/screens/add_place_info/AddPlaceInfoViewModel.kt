@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.repository.CreateGeofenceError
 import com.hypertrack.android.repository.CreateGeofenceSuccess
+import com.hypertrack.android.repository.IntegrationsRepository
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
@@ -24,10 +25,13 @@ class AddPlaceInfoViewModel(
     private val _address: String?,
     private val _name: String?,
     private val placesRepository: PlacesRepository,
+    private val integrationsRepository: IntegrationsRepository,
     private val osUtilsProvider: OsUtilsProvider,
 ) : BaseViewModel() {
 
-    val loadingState = MutableLiveData<Boolean>(false)
+    private var hasIntegrations: Boolean = false
+
+    val loadingState = MutableLiveData<Boolean>(true)
 
     //todo to baseVM
     val error = SingleLiveEvent<String>()
@@ -43,6 +47,23 @@ class AddPlaceInfoViewModel(
     val name = MutableLiveData<String>().apply {
         _name?.let {
             postValue(_name)
+        }
+    }
+
+    //todo test
+    val showAddIntegrationButton = MutableLiveData<Boolean>(true)
+
+    init {
+        viewModelScope.launch {
+            loadingState.postValue(true)
+            val res = integrationsRepository.hasIntegrations()
+            if (res != null) {
+                hasIntegrations = res
+                loadingState.postValue(false)
+            } else {
+                //todo task
+                hasIntegrations = false
+            }
         }
     }
 
@@ -75,6 +96,14 @@ class AddPlaceInfoViewModel(
                     error.postValue(res.e.message)
                 }
             }
+        }
+    }
+
+    fun onAddIntegration() {
+        if (hasIntegrations) {
+            destination.postValue(
+                AddPlaceInfoFragmentDirections.actionAddPlaceInfoFragmentToAddIntegrationFragment()
+            )
         }
     }
 

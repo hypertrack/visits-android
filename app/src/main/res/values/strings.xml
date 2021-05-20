@@ -111,7 +111,6 @@
     <string name="timeline_inactive_reason_tracking_service_terminated">Tracking service terminated</string>
     <string name="timeline_inactive_reason_unexpected">Unknown outage</string>
 
-
     <string name="orders_list">Orders</string>
     <string name="orders_list_current_trip">Current trip</string>
     <string name="orders_list_no_trip">You don\'t have orders</string>
@@ -141,6 +140,8 @@
     <string name="place_details_visits_history">Visits history</string>
     <string name="place_details_no_visits">No visits</string>
     <string name="place_visits_count">Visits</string>
+    <string name="place_today">Today</string>
+    <string name="place_yesterday">Yesterday</string>
 
     <string name="add_place_confirm">Confirm</string>
     <string name="add_place_create">Create geofence</string>
@@ -148,6 +149,12 @@
     <string name="add_place">Add place</string>
     <string name="add_place_address">Address</string>
     <string name="add_place_geofence_name">Geofence name</string>
+
+    <string name="place_info_add_integration">Add Hubspot company</string>
+
+    <string name="place_integration_search_hint">Enter Hubspot company name</string>
+    <string name="place_integration_empty_placeholder">No entities found</string>
+    <string name="place_integration_submit_button">Add integration</string>
 
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="active">Active</string>
@@ -185,8 +192,6 @@
 
     <string name="tap_to_turn_location_settings">Tap to turn on location in settings</string>
     <string name="app_settings">App settings</string>
-    <string name="place_today">Today</string>
-    <string name="place_yesterday">Yesterday</string>
 
     <plurals name="time">
         <item quantity="one">time</item>

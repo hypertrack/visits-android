@@ -8,6 +8,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.SnackbarUtil
+import com.hypertrack.android.ui.common.setGoneState
 import com.hypertrack.android.ui.common.textString
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
@@ -58,6 +59,14 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
         vm.destination.observe(viewLifecycleOwner, {
             findNavController().navigate(it)
         })
+
+        vm.showAddIntegrationButton.observe(viewLifecycleOwner, {
+            bAddIntegration.setGoneState(!it)
+        })
+
+        bAddIntegration.setOnClickListener {
+            vm.onAddIntegration()
+        }
 
         confirm.setOnClickListener {
             vm.onConfirmClicked(
