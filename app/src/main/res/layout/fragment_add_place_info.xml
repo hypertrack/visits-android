@@ -86,68 +86,13 @@
                     app:layout_constraintStart_toStartOf="@+id/tvGeofenceName"
                     app:layout_constraintTop_toBottomOf="@+id/tvGeofenceName" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <include
+                    layout="@layout/inflate_integration"
                     android:id="@+id/lIntegration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_minor_button">
-
-                    <ImageView
-                        android:id="@+id/bDeleteIntegration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:srcCompat="@drawable/ic_cross" />
-
-                    <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="@string/place_integration_integration_type"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvIntegrationId" />
-
-                    <TextView
-                        android:id="@+id/tvIntegrationType"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView7"
-                        app:layout_constraintEnd_toStartOf="@+id/bDeleteIntegration"
-                        app:layout_constraintStart_toEndOf="@+id/textView7"
-                        app:layout_constraintTop_toTopOf="@+id/textView7"
-                        tools:text="TextView" />
-
-                    <TextView
-                        android:id="@+id/tvIntegrationName"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="@+id/tvIntegrationType"
-                        app:layout_constraintStart_toStartOf="@+id/textView7"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="TextView" />
-
-                    <TextView
-                        android:id="@+id/tvIntegrationId"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="TextView"
-                        app:layout_constraintEnd_toEndOf="@+id/tvIntegrationName"
-                        app:layout_constraintStart_toStartOf="@+id/tvIntegrationName"
-                        app:layout_constraintTop_toBottomOf="@+id/tvIntegrationName" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginBottom="16dp" />
 
                 <TextView
                     android:id="@+id/textView11"

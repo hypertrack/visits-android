@@ -38,7 +38,7 @@
         android:layout_weight="1"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        app:tint="#44000000"
+        app:tint="@color/minor_tint"
         android:visibility="gone"
         tools:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -14,6 +14,7 @@ import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_add_place_info.*
 import kotlinx.android.synthetic.main.fragment_add_place_info.confirm
 import kotlinx.android.synthetic.main.fragment_add_place_info.toolbar
+import kotlinx.android.synthetic.main.inflate_integration.*
 
 class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_info) {
 

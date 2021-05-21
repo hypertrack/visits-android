@@ -137,6 +137,18 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+                <include
+                    android:id="@+id/lIntegration"
+                    layout="@layout/inflate_integration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMetadata"
                     android:layout_width="match_parent"

@@ -7,12 +7,14 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.common.KeyValueAdapter
-import com.hypertrack.android.ui.common.setGoneState
-import com.hypertrack.android.ui.common.setLinearLayoutManager
+import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
+import kotlinx.android.synthetic.main.fragment_add_place_info.*
 import kotlinx.android.synthetic.main.fragment_place_details.*
+import kotlinx.android.synthetic.main.fragment_place_details.lIntegration
+import kotlinx.android.synthetic.main.inflate_integration.*
+import kotlinx.android.synthetic.main.inflate_integration.view.*
 
 class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_details) {
 
@@ -49,6 +51,9 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
         rvVisits.setLinearLayoutManager(requireContext())
         rvVisits.adapter = visitsAdapter
 
+        lIntegration.bDeleteIntegration.hide()
+        lIntegration.bCopy.show()
+
         vm.loadingState.observe(viewLifecycleOwner, {
             srlPlaces.isRefreshing = it
         })
@@ -59,6 +64,15 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
 
         vm.metadata.observe(viewLifecycleOwner, {
             metadataAdapter.updateItems(it)
+        })
+
+        vm.integration.observe(viewLifecycleOwner, {
+            lIntegration.setGoneState(it == null)
+            it?.let {
+                it.id.toView(tvIntegrationId)
+                it.name?.toView(tvIntegrationName)
+                it.type.toView(tvIntegrationType)
+            }
         })
 
         vm.visits.observe(viewLifecycleOwner, {
@@ -84,6 +98,10 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
 
         lAddress.setOnClickListener {
             vm.onAddressClick()
+        }
+
+        lIntegration.bCopy.setOnClickListener {
+            vm.onIntegrationCopy()
         }
     }
 

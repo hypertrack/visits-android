@@ -9,6 +9,7 @@ import com.hypertrack.android.toNote
 import com.hypertrack.logistics.android.github.R
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Moshi
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -263,6 +264,21 @@ data class Geofence(
         marker?.markers?.sortedByDescending {
             it.arrival?.recordedAt
         }?.firstOrNull()?.arrival?.recordedAt
+    }
+
+    //todo move deserialization somewhere else
+    private fun getGeofenceMetadata(moshi: Moshi): GeofenceMetadata? {
+        return try {
+            moshi.adapter(GeofenceMetadata::class.java)
+                .fromJsonValue(metadata)
+        } catch (_: Exception) {
+            //todo
+            null
+        }
+    }
+
+    fun getIntegration(moshi: Moshi): Integration? {
+        return getGeofenceMetadata(moshi)?.integration
     }
 }
 
