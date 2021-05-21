@@ -3,6 +3,7 @@ package com.hypertrack.android.view_models
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import com.hypertrack.android.api.MainCoroutineScopeRule
+import com.hypertrack.android.observeAndAssertNull
 import com.hypertrack.android.observeAndGetValue
 import com.hypertrack.android.repository.IntegrationsRepository
 import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoFragment
@@ -72,10 +73,7 @@ class AddPlaceInfoViewModelTest {
                 it.onAddIntegration()
 
                 runBlocking {
-                    assertEquals(
-                        AddPlaceInfoFragmentDirections.actionAddPlaceInfoFragmentToAddIntegrationFragment(),
-                        it.destination.observeAndGetValue()
-                    )
+                    it.destination.observeAndAssertNull()
                     coVerify {
                         integrationsRepository.hasIntegrations()
                     }
