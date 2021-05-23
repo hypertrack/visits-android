@@ -7,6 +7,7 @@ import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.interactors.TripsInteractor
 import com.hypertrack.android.repository.*
+import com.hypertrack.android.ui.screens.add_integration.AddIntegrationViewModel
 import com.hypertrack.android.ui.screens.add_place.AddPlaceViewModel
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileViewModel
@@ -27,6 +28,7 @@ class UserScopeViewModelFactory(
     private val visitsRepository: VisitsRepository,
     private val tripsInteractor: TripsInteractor,
     private val placesRepository: PlacesRepository,
+    private val integrationsRepository: IntegrationsRepository,
     private val historyRepository: HistoryRepository,
     private val driverRepository: DriverRepository,
     private val accountRepository: AccountRepository,
@@ -46,6 +48,9 @@ class UserScopeViewModelFactory(
             OrdersListViewModel::class.java -> OrdersListViewModel(
                 tripsInteractor,
                 osUtilsProvider
+            ) as T
+            AddIntegrationViewModel::class.java -> AddIntegrationViewModel(
+                integrationsRepository
             ) as T
             AddPlaceViewModel::class.java -> AddPlaceViewModel(
                 osUtilsProvider,

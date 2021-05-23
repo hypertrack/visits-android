@@ -29,6 +29,7 @@ import com.hypertrack.logistics.android.github.R
 import com.hypertrack.sdk.HyperTrack
 import io.mockk.*
 import junit.framework.Assert.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -163,6 +164,8 @@ class OrdersDetailsViewModelLegacyTest {
             }
 
             tripsInteractor.refreshTrips()
+
+            delay(100)
 
             OrdersDetailsViewModelTest.createVm("1", tripsInteractor).let {
                 assertEquals("New note", it.note.observeAndGetValue())

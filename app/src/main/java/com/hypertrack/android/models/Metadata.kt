@@ -5,6 +5,7 @@ import com.hypertrack.android.repository.AuthCallResponse
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import dalvik.annotation.TestTarget
 import org.jetbrains.annotations.TestOnly
 
@@ -135,6 +136,19 @@ data class AppendMetadata(
         }
     }
 
+}
+
+@JsonClass(generateAdapter = true)
+class GeofenceMetadata(
+    val integration: Integration? = null,
+    val address: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+) {
+    fun toMap(moshi: Moshi): Map<String, Any> {
+        return moshi.adapter(GeofenceMetadata::class.java)
+            .toJsonValue(this) as Map<String, Any>
+    }
 }
 
 const val KEY_NOTE = "note"

@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.api.GeofenceMarker
+import com.hypertrack.android.models.Integration
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.ZipLiveData
@@ -21,12 +22,14 @@ import com.hypertrack.android.ui.common.KeyValueItem
 import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.launch
 
 class PlaceDetailsViewModel(
-    val geofenceId: String,
-    val placesRepository: PlacesRepository,
-    val osUtilsProvider: OsUtilsProvider
+    private val geofenceId: String,
+    private val placesRepository: PlacesRepository,
+    private val osUtilsProvider: OsUtilsProvider,
+    private val moshi: Moshi
 ) : BaseViewModel() {
 
     private val map = MutableLiveData<GoogleMap>()
@@ -58,6 +61,10 @@ class PlaceDetailsViewModel(
 //                put("created_at", geofence.created_at.toString())
             }
             .map { KeyValueItem(it.key, it.value as String) }.toList()
+    }
+
+    val integration: LiveData<Integration?> = Transformations.map(geofence) {
+        it.getIntegration(moshi)
     }
 
     val visits: LiveData<List<GeofenceMarker>> = Transformations.map(geofence) { geofence ->
@@ -141,5 +148,11 @@ class PlaceDetailsViewModel(
 
     fun onCopyVisitIdClick(str: String) {
         osUtilsProvider.copyToClipboard(str)
+    }
+
+    fun onIntegrationCopy() {
+        integration.value?.let {
+            osUtilsProvider.copyToClipboard(it.id)
+        }
     }
 }

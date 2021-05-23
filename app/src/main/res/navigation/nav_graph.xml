@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/splashScreenFragment">
 
@@ -147,5 +148,13 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_addPlaceInfoFragment_to_addIntegrationFragment"
+            app:destination="@id/addIntegrationFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/addIntegrationFragment"
+        android:name="com.hypertrack.android.ui.screens.add_integration.AddIntegrationFragment"
+        android:label="add_integration_fragment"
+        tools:layout="@layout/fragment_add_integration" />
 </navigation>
