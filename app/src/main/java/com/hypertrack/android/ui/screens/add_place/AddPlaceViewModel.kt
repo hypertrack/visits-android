@@ -90,7 +90,7 @@ class AddPlaceViewModel(
         } catch (_: Exception) {
         }
         googleMap.setOnCameraIdleListener {
-            if (!firstLaunch && !programmaticCameraMove) {
+            if (/*!firstLaunch &&*/ !programmaticCameraMove) {
                 map.value?.cameraPosition?.target?.let {
                     currentPlace = null
                     searchText.postValue(

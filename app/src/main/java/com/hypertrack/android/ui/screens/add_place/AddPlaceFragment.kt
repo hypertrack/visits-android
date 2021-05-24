@@ -57,6 +57,7 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         vm.searchText.observe(viewLifecycleOwner, {
             watcher.disabled = true
             search.setText(it)
+            search.setSelection(search.textString().length)
             watcher.disabled = false
             Utils.hideKeyboard(mainActivity())
         })
@@ -78,6 +79,7 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         }
     }
 
+    //todo change to custom edittext and silent update
     abstract class DisablableTextWatcher : SimpleTextWatcher() {
         var disabled = false
 
