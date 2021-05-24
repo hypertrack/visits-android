@@ -42,6 +42,9 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             }
         }
         search.addTextChangedListener(watcher)
+        search.setOnClickListener {
+            vm.onSearchQueryChanged(search.textString())
+        }
 
         vm.places.observe(viewLifecycleOwner, {
             adapter.clear()
@@ -57,6 +60,7 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         vm.searchText.observe(viewLifecycleOwner, {
             watcher.disabled = true
             search.setText(it)
+            search.setSelection(search.textString().length)
             watcher.disabled = false
             Utils.hideKeyboard(mainActivity())
         })
@@ -69,6 +73,10 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             findNavController().navigate(it)
         })
 
+        vm.closeKeyboard.observe(viewLifecycleOwner, {
+            Utils.hideKeyboard(requireActivity())
+        })
+
         set_on_map.hide()
         destination_on_map.show()
         confirm.show()
@@ -78,6 +86,7 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         }
     }
 
+    //todo change to custom edittext and silent update
     abstract class DisablableTextWatcher : SimpleTextWatcher() {
         var disabled = false
 

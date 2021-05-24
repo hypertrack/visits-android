@@ -1,6 +1,8 @@
 package com.hypertrack.android.ui.screens.add_place_info
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -11,6 +13,7 @@ import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.*
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
+import kotlinx.android.synthetic.main.fragment_add_integration.*
 import kotlinx.android.synthetic.main.fragment_add_place_info.*
 import kotlinx.android.synthetic.main.fragment_add_place_info.confirm
 import kotlinx.android.synthetic.main.fragment_add_place_info.toolbar
@@ -27,6 +30,7 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -35,6 +39,8 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
             ?.observe(viewLifecycleOwner) { result ->
                 result?.let {
                     vm.onIntegrationAdded(it)
+                    findNavController().currentBackStackEntry?.savedStateHandle
+                        ?.set(KEY_INTEGRATION, null)
                 }
             }
 
@@ -83,13 +89,25 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
             findNavController().navigate(it)
         })
 
-        vm.showAddIntegrationButton.observe(viewLifecycleOwner, {
-            bAddIntegration.setGoneState(!it)
-        })
+//        vm.showAddIntegrationButton.observe(viewLifecycleOwner, {
+//            bAddIntegration.setGoneState(!it)
+//        })
 
         vm.showGeofenceNameField.observe(viewLifecycleOwner, { show ->
             listOf(etGeofenceName, tvGeofenceName).forEach { it.setGoneState(!show) }
         })
+
+        vm.enableConfirmButton.observe(viewLifecycleOwner, { it ->
+            confirm.isSelected = it
+        })
+
+        etGeofenceName.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                vm.onAddIntegration()
+            } else {
+                false
+            }
+        }
 
         bAddIntegration.setOnClickListener {
             vm.onAddIntegration()

@@ -179,6 +179,12 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
         return base64thumbnail.decodeBase64Bitmap()
     }
 
+    fun getErrorMessage(e: Exception): String {
+        return when (e) {
+            else -> e.message ?: R.string.unknown_error.stringFromResource()
+        }
+    }
+
     companion object {
         const val TAG = "OsUtilsProvider"
     }

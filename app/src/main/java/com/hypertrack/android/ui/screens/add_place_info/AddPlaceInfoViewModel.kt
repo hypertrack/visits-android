@@ -19,6 +19,7 @@ import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.screens.add_place.AddPlaceFragmentDirections
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.logistics.android.github.R
 import kotlinx.coroutines.launch
 
 
@@ -54,15 +55,23 @@ class AddPlaceInfoViewModel(
         }
     }
     val integration = MutableLiveData<Integration?>(null)
-
-    val showAddIntegrationButton = MediatorLiveData<Boolean>().apply {
+    val enableConfirmButton = MediatorLiveData<Boolean>().apply {
         addSource(hasIntegrations) {
-            postValue((hasIntegrations.value ?: false) && integration.value == null)
+            postValue(shouldEnableConfirmButton())
         }
         addSource(integration) {
-            postValue((hasIntegrations.value ?: false) && integration.value == null)
+            postValue(shouldEnableConfirmButton())
         }
     }
+
+    //    val showAddIntegrationButton = MediatorLiveData<Boolean>().apply {
+//        addSource(hasIntegrations) {
+//            postValue((hasIntegrations.value ?: false) && integration.value == null)
+//        }
+//        addSource(integration) {
+//            postValue((hasIntegrations.value ?: false) && integration.value == null)
+//        }
+//    }
     val showGeofenceNameField = MediatorLiveData<Boolean>().apply {
         addSource(hasIntegrations) {
             postValue((hasIntegrations.value ?: false) && integration.value == null)
@@ -93,38 +102,46 @@ class AddPlaceInfoViewModel(
     }
 
     fun onConfirmClicked(name: String, address: String, description: String) {
-        viewModelScope.launch {
-            loadingState.postValue(true)
+        if (enableConfirmButton.value!!) {
+            viewModelScope.launch {
+                loadingState.postValue(true)
 
-            val res = placesRepository.createGeofence(
-                latLng.latitude,
-                latLng.longitude,
-                name = name,
-                address = address,
-                description = description,
-                integration = integration.value
-            )
-            loadingState.postValue(false)
-            when (res) {
-                CreateGeofenceSuccess -> {
-                    destination.postValue(
-                        AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
-                            VisitsManagementFragment.Tab.PLACES.ordinal
+                val res = placesRepository.createGeofence(
+                    latLng.latitude,
+                    latLng.longitude,
+                    name = name,
+                    address = address,
+                    description = description,
+                    integration = integration.value
+                )
+                loadingState.postValue(false)
+                when (res) {
+                    CreateGeofenceSuccess -> {
+                        destination.postValue(
+                            AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
+                                VisitsManagementFragment.Tab.PLACES
+                            )
                         )
-                    )
-                }
-                is CreateGeofenceError -> {
-                    error.postValue(res.e.message)
+                    }
+                    is CreateGeofenceError -> {
+                        error.postValue(res.e.message)
+                    }
                 }
             }
+        } else {
+            error.postValue(osUtilsProvider.getString(R.string.place_info_confirm_disabled))
         }
     }
 
-    fun onAddIntegration() {
-        if (hasIntegrations.value == true) {
+    //todo test
+    fun onAddIntegration(): Boolean {
+        return if (hasIntegrations.value == true) {
             destination.postValue(
                 AddPlaceInfoFragmentDirections.actionAddPlaceInfoFragmentToAddIntegrationFragment()
             )
+            true
+        } else {
+            false
         }
     }
 
@@ -139,6 +156,14 @@ class AddPlaceInfoViewModel(
     fun onAddressChanged(address: String) {
         if (this.address.value != address) {
             this.address.postValue(address)
+        }
+    }
+
+    private fun shouldEnableConfirmButton(): Boolean {
+        return if (hasIntegrations.value == true) {
+            integration.value != null
+        } else {
+            true
         }
     }
 

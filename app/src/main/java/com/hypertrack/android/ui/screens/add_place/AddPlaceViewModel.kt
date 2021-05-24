@@ -40,6 +40,7 @@ class AddPlaceViewModel(
     val map = MutableLiveData<GoogleMap>()
     val searchText = MutableLiveData<String>()
     val error = SingleLiveEvent<String>()
+    val closeKeyboard = SingleLiveEvent<Boolean>()
 
     private var currentPlace: Place? = null
 
@@ -90,7 +91,7 @@ class AddPlaceViewModel(
         } catch (_: Exception) {
         }
         googleMap.setOnCameraIdleListener {
-            if (!firstLaunch && !programmaticCameraMove) {
+            if (/*!firstLaunch &&*/ !programmaticCameraMove) {
                 map.value?.cameraPosition?.target?.let {
                     currentPlace = null
                     searchText.postValue(
@@ -108,10 +109,13 @@ class AddPlaceViewModel(
             isMyLocationButtonEnabled = true
             isZoomControlsEnabled = true
         }
+        googleMap.setOnMapClickListener {
+            places.postValue(listOf())
+            closeKeyboard.postValue(true)
+        }
     }
 
     fun onSearchQueryChanged(query: String) {
-
         currentPlace = null
         // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
         // and once again when the user makes a selection (for example when calling selectPlace()).

@@ -56,81 +56,26 @@ class ApiClient(
         .build()
         .create(ApiInterface::class.java)
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private val mockApi = object : ApiInterface by remoteApi {
-        override suspend fun createGeofences(
-            deviceId: String,
-            params: GeofenceParams
-        ): Response<List<Geofence>> {
-            Log.v("cutag", params.geofences.first().metadata.toString())
-            return remoteApi.createGeofences(deviceId, params)
-        }
-
-        //        override suspend fun getGeofencesWithMarkers(
-//            deviceId: String,
-//            paginationToken: String?
-//        ): Response<GeofenceResponse> {
-//            return if (MyApplication.MOCK_MODE.not()) {
-//                remoteApi.getGeofencesWithMarkers(deviceId, paginationToken)
-//            } else {
-//                Response.success(
-//                    Injector.getMoshi().adapter(GeofenceResponse::class.java)
-//                        .fromJson(MockData.MOCK_GEOFENCES_JSON)
-//                )
-//            }
-//        }
-
-        override suspend fun getIntegrations(
-            query: String?,
-            limit: Int?
-        ): Response<IntegrationsResponse> {
-            return if (MyApplication.MOCK_MODE.not()) {
-                remoteApi.getIntegrations(query, limit)
-            } else {
-                Response.success(
-                    Injector.getMoshi().adapter(IntegrationsResponse::class.java)
-                        .fromJson(MockData.MOCK_INTEGRATIONS_RESPONSE)!!.let {
-                            if (query != null) {
-                                it.copy(data = it.data.filter { it.name?.contains(query.toString()) == true })
-                            } else {
-                                it
-                            }
-                        }
-                )
-            }
-        }
-    }
-
     val api = if (MyApplication.MOCK_MODE.not()) {
         remoteApi
     } else {
-        mockApi
+        MockApi(remoteApi)
     }
 
     suspend fun clockIn() = api.clockIn(deviceId)
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getGeofences(): List<Geofence> {
-        val res = mutableListOf<Geofence>()
-        var paginationToken: String? = null
+    suspend fun getGeofences(paginationToken: String?): GeofenceResponse {
         try {
-            do {
-                val response = api.getGeofencesWithMarkers(deviceId, paginationToken ?: "null")
-                if (response.isSuccessful) {
-                    response.body()?.geofences?.let {
-                        res.addAll(it)
-                    }
-                    paginationToken = response.body()?.paginationToken
-                } else {
-                    return emptyList()
-                }
-                //todo handle error
-            } while (paginationToken != null)
-            return res
+            val response = api.getGeofencesWithMarkers(paginationToken = paginationToken ?: "null")
+            if (response.isSuccessful) {
+                return response.body()!!
+            } else {
+                throw HttpException(response)
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Got exception while fetching geofences $e")
-            return listOf()
+            throw e
         }
     }
 
@@ -230,12 +175,16 @@ class ApiClient(
             with(api.createTrip(tripParams)) {
                 if (isSuccessful) {
                     val trip = body()!!
-                    ShareableTripSuccess(trip.views.shareUrl, trip.views.embedUrl, trip.tripId, trip.estimate?.route?.remainingDuration )
-                }
-                else CreateTripError(HttpException(this))
+                    ShareableTripSuccess(
+                        trip.views.shareUrl,
+                        trip.views.embedUrl,
+                        trip.tripId,
+                        trip.estimate?.route?.remainingDuration
+                    )
+                } else CreateTripError(HttpException(this))
             }
         } catch (t: Throwable) {
-             CreateTripError(t)
+            CreateTripError(t)
         }
     }
 
@@ -321,7 +270,7 @@ class ApiClient(
                         ?.let { homeLocation ->
                             return GeofenceLocation(homeLocation.latitude, homeLocation.longitude)
                         }
-                    ?: NoHomeLocation
+                        ?: NoHomeLocation
                 } else HomeLocationResultError(HttpException(this))
             }
         } catch (t: Throwable) {
@@ -331,7 +280,7 @@ class ApiClient(
 
     override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {
         return try {
-            with (api.getDeviceGeofences(deviceId)) {
+            with(api.getDeviceGeofences(deviceId)) {
                 if (isSuccessful) {
                     body()?.filter { it.metadata?.get("name") == "Home" && it.archived != true }
                         ?.forEach { api.deleteGeofence(it.geofence_id) }
@@ -385,17 +334,17 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
         HistoryError(null)
     } else {
         History(
-                Summary(
-                        distance,
-                        duration,
-                        distance,
-                        driveDuration ?: 0,
-                        stepsCount ?: 0,
-                        walkDuration,
-                        stopDuration,
-                ),
-                locations.coordinates.map { Location(it.longitude, it.latitude) to it.timestamp },
-                markers.map { it.asMarker() }
+            Summary(
+                distance,
+                duration,
+                distance,
+                driveDuration ?: 0,
+                stepsCount ?: 0,
+                walkDuration,
+                stopDuration,
+            ),
+            locations.coordinates.map { Location(it.longitude, it.latitude) to it.timestamp },
+            markers.map { it.asMarker() }
         )
     }
 }
@@ -420,7 +369,7 @@ private fun HistoryGeofenceMarker.asGeofenceMarker(): Marker {
         MarkerType.GEOFENCE_ENTRY,
         data.arrival.location.recordedAt,
         data.arrival.location.geometry?.asLocation(),
-        data.geofence.metadata?: emptyMap(),
+        data.geofence.metadata ?: emptyMap(),
         data.arrival.location.geometry?.asLocation(),
         data.exit?.location?.geometry?.asLocation(),
         data.arrival.location.recordedAt,

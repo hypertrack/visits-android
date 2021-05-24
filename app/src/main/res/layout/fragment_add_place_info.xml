@@ -122,7 +122,8 @@
                     android:layout_gravity="right"
                     android:layout_marginTop="8dp"
                     android:padding="16dp"
-                    android:text="@string/place_info_add_integration" />
+                    android:text="@string/place_info_add_integration"
+                    android:visibility="gone" />
 
                 <Space
                     android:layout_width="match_parent"
@@ -135,7 +136,7 @@
 
     <Button
         android:id="@+id/confirm"
-        style="@style/ActionButtonStyle"
+        style="@style/DisablableActionButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

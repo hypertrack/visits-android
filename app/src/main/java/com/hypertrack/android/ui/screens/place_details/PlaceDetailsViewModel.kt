@@ -138,14 +138,6 @@ class PlaceDetailsViewModel(
         }
     }
 
-    fun onRefresh() {
-        viewModelScope.launch {
-            loadingState.postValue(true)
-            placesRepository.refreshGeofences()
-            loadingState.postValue(false)
-        }
-    }
-
     fun onCopyVisitIdClick(str: String) {
         osUtilsProvider.copyToClipboard(str)
     }

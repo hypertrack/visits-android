@@ -1,12 +1,14 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.places
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.hypertrack.android.ui.base.Consumable
 import com.hypertrack.android.ui.base.ProgressDialogFragment
-import com.hypertrack.android.ui.common.setGoneState
-import com.hypertrack.android.ui.common.setLinearLayoutManager
+import com.hypertrack.android.ui.common.*
+import com.hypertrack.android.ui.common.show
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_places.*
@@ -26,11 +28,27 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         adapter.onItemClickListener = {
             vm.onPlaceClick(it)
         }
+        rvPlaces.addOnScrollListener(object : EndlessScrollListener(object : OnLoadMoreListener {
+            override fun onLoadMore(page: Int, totalItemsCount: Int) {
+                Log.v("cutag", "EndlessScrollListener $page $totalItemsCount")
+                vm.onLoadMore()
+            }
+        }) {
+            override val visibleThreshold = 1
+        })
 
-        vm.places.observe(viewLifecycleOwner, {
-            lPlacesPlaceholder.setGoneState(it.isNotEmpty())
-            rvPlaces.setGoneState(it.isEmpty())
-            adapter.updateItems(it)
+        vm.placesPage.observe(viewLifecycleOwner, {
+            if (it != null) {
+                it.consume {
+                    adapter.addItemsAndUpdate(it)
+                    lPlacesPlaceholder.setGoneState(adapter.itemCount != 0)
+                    rvPlaces.setGoneState(adapter.itemCount == 0)
+                }
+            } else {
+                adapter.updateItems(listOf())
+                lPlacesPlaceholder.hide()
+                rvPlaces.show()
+            }
         })
 
         vm.loadingState.observe(viewLifecycleOwner, {
@@ -41,6 +59,12 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
             findNavController().navigate(it)
         })
 
+        vm.errorBase.observe(viewLifecycleOwner, {
+            it.consume {
+                SnackbarUtil.showErrorSnackbar(view, it)
+            }
+        })
+
         srlPlaces.setOnRefreshListener {
             vm.refresh()
         }
@@ -48,6 +72,8 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         fbAddPlace.setOnClickListener {
             vm.onAddPlaceClicked()
         }
+
+        vm.refresh()
     }
 
     companion object {

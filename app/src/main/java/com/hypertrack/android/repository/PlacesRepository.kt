@@ -4,8 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.api.GeofenceProperties
+import com.hypertrack.android.api.GeofenceResponse
 import com.hypertrack.android.models.GeofenceMetadata
 import com.hypertrack.android.models.Integration
+import com.hypertrack.android.ui.base.Consumable
 import com.hypertrack.android.ui.common.nullIfEmpty
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,17 +17,16 @@ class PlacesRepository(
     private val apiClient: ApiClient
 ) {
 
-    val geofences = MutableLiveData<List<Geofence>>()
+    private val geofencesCache = mutableMapOf<String, Geofence>()
 
-    suspend fun refreshGeofences() {
-        //todo handle error
-        val res = apiClient.getGeofences()
-        geofences.postValue(res)
+    suspend fun loadPage(pageToken: String?): GeofenceResponse {
+        val res = apiClient.getGeofences(pageToken)
+        res.geofences.forEach { geofencesCache.put(it.geofence_id, it) }
+        return res
     }
 
     fun getGeofence(geofenceId: String): Geofence {
-        //todo handle null
-        return geofences.value?.filter { it._id == geofenceId }?.firstOrNull()!!
+        return geofencesCache.getValue(geofenceId)
     }
 
     suspend fun createGeofence(
@@ -36,21 +37,22 @@ class PlacesRepository(
         description: String? = null,
         integration: Integration? = null
     ): CreateGeofenceResult {
-        //todo handle error
-        val res = apiClient.createGeofence(
-            latitude, longitude, GeofenceMetadata(
-                name = name.nullIfEmpty() ?: integration?.name,
-                integration = integration,
-                description = description.nullIfEmpty(),
-                address = address.nullIfEmpty()
+        try {
+            val res = apiClient.createGeofence(
+                latitude, longitude, GeofenceMetadata(
+                    name = name.nullIfEmpty() ?: integration?.name,
+                    integration = integration,
+                    description = description.nullIfEmpty(),
+                    address = address.nullIfEmpty()
+                )
             )
-        )
-        if (res.isSuccessful) {
-            geofences.postValue(
-                geofences.value!!.toMutableList().apply { add(res.body()!!.first()) })
-            return CreateGeofenceSuccess
-        } else {
-            return CreateGeofenceError(HttpException(res))
+            if (res.isSuccessful) {
+                return CreateGeofenceSuccess
+            } else {
+                return CreateGeofenceError(HttpException(res))
+            }
+        } catch (e: Exception) {
+            return CreateGeofenceError(e)
         }
     }
 }

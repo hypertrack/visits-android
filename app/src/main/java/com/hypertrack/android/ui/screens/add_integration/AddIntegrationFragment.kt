@@ -1,6 +1,7 @@
 package com.hypertrack.android.ui.screens.add_integration
 
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController

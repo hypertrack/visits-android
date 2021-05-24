@@ -1,11 +1,10 @@
 package com.hypertrack.android.ui.screens.visits_management
 
 import android.os.Bundle
-import android.util.Log
+import android.os.Parcelable
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.DrawableRes
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -20,7 +19,6 @@ import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.orders.OrdersFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
@@ -30,6 +28,7 @@ import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
 class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
@@ -39,17 +38,6 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
     }
-
-    private val tabs: Map<Tab, Fragment> = mapOf(
-        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context)
-            .instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
-        Tab.HISTORY to MapViewFragment(),
-//        Tab.ORDERS to OrdersFragment.newInstance(),
-        Tab.VISITS to VisitsListFragment.newInstance(),
-        Tab.PLACES to PlacesFragment.getInstance(),
-        Tab.SUMMARY to SummaryFragment.newInstance(),
-        Tab.PROFILE to ProfileFragment()
-    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -86,10 +74,10 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         viewpager.adapter = object :
             FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-            override fun getCount(): Int = tabs.size
+            override fun getCount(): Int = TABS.size
 
             override fun getItem(position: Int): Fragment {
-                val fragment = tabs.getValue(tabs.keys.toList()[position])
+                val fragment = TABS.getValue(TABS.keys.toList()[position])
                 if (fragment is MapViewFragmentOld) {
                     fragment.arguments = Bundle().apply {
                         putString(
@@ -107,7 +95,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             sliding_tabs.getTabAt(i)?.icon =
                 ResourcesCompat.getDrawable(
                     resources,
-                    tabs.keys.toList()[i].iconRes,
+                    TABS.keys.toList()[i].iconRes,
                     requireContext().theme
                 )
         }
@@ -179,8 +167,8 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
         visitsManagementViewModel.refreshHistory()
 
-        if (args.tab != -1 && args.tab < viewpager.adapter!!.count) {
-            viewpager.currentItem = args.tab
+        args.tab?.let { tab ->
+            viewpager.currentItem = TABS.keys.indexOf(args.tab)
         }
     }
 
@@ -217,9 +205,21 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
     companion object {
         const val TAG = "VisitsManagementAct"
+
+        val TABS: Map<Tab, Fragment> = mapOf(
+            Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context)
+                .instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
+            Tab.HISTORY to MapViewFragment(),
+//        Tab.ORDERS to OrdersFragment.newInstance(),
+            Tab.VISITS to VisitsListFragment.newInstance(),
+            Tab.PLACES to PlacesFragment.getInstance(),
+            Tab.SUMMARY to SummaryFragment.newInstance(),
+            Tab.PROFILE to ProfileFragment()
+        )
     }
 
-    enum class Tab(@DrawableRes val iconRes: Int) {
+    @Parcelize
+    enum class Tab(@DrawableRes val iconRes: Int) : Parcelable {
         MAP(R.drawable.ic_map_tab),
         HISTORY(R.drawable.ic_history),
         ORDERS(R.drawable.ic_visits_list_tab),

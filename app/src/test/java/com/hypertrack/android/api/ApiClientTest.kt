@@ -82,44 +82,6 @@ class ApiClientTest {
     }
 
     @Test
-    fun `it should send get request to get list of geofences`() = runBlockingTest {
-        val pageTokens = listOf("token1", "token2", null)
-//        val pageTokens = listOf(null)
-        val responseBodies = pageTokens.map { it?.let { "\"$it\"" } ?: "null" }.map {
-            GEOFENCE_RESPONSE.replace("##pagination_token##", it)
-        }
-
-        responseBodies.forEach { responseBody ->
-            mockWebServer.enqueue(
-                MockResponse()
-                    .addHeader("Content-Type", "application/json; charset=utf-8")
-                    .setBody(responseBody)
-            )
-        }
-        val geofences = runBlocking { apiClient.getGeofences() }
-
-        pageTokens.forEach { token ->
-            val request = mockWebServer.takeRequest()
-            val path = request.path
-            assertEquals(
-                "/client/geofences?include_archived=false&include_markers=true&"
-                        + "device_id=$DEVICE_ID&pagination_token=${
-                    pageTokens.getOrNull(
-                        pageTokens.indexOf(
-                            token
-                        ) - 1
-                    )
-                }",
-                path
-            )
-            assertEquals("GET", request.method)
-        }
-
-        assertEquals(pageTokens.size * 4, geofences.size)
-        assertTrue(geofences.any { it.marker?.markers?.first()?.arrival?.recordedAt != null })
-    }
-
-    @Test
     fun `it should send get request to get list of trips`() = runBlockingTest {
         val responseBody = TestMockData.MOCK_TRIPS_JSON
         mockWebServer.enqueue(MockResponse().setBody(responseBody))

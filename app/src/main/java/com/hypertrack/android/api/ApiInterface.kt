@@ -36,8 +36,8 @@ interface ApiInterface {
     /** Returns list of device geofences with visit markers inlined */
     @GET("client/geofences?include_archived=false&include_markers=true")
     suspend fun getGeofencesWithMarkers(
-        @Query("device_id") deviceId: String,
-        @Query("pagination_token") paginationToken: String?
+        @Query("pagination_token") paginationToken: String?,
+        @Query("device_id") filterByDeviceId: String? = null
     ): Response<GeofenceResponse>
 
     /** Returns list of device geofences without visit markers */
