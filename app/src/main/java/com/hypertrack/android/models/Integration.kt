@@ -9,6 +9,6 @@ import kotlinx.android.parcel.Parcelize
 class Integration(
     val id: String,
     val name: String?,
-    val type: String = "Hubspot company",
+    val type: String = "Company",
 ) : Parcelable {
 }

@@ -151,9 +151,9 @@
     <string name="add_place_geofence_name">Geofence name</string>
     <string name="add_place_geofence_description">Description</string>
 
-    <string name="place_info_add_integration">Add Hubspot company</string>
+    <string name="place_info_add_integration">Add integration</string>
 
-    <string name="place_integration_search_hint">Enter Hubspot company name</string>
+    <string name="place_integration_search_hint">Enter integration name</string>
     <string name="place_integration_empty_placeholder">No entities found</string>
     <string name="place_integration_submit_button">Add integration</string>
     <string name="place_integration_integration_type">Integration type</string>
