@@ -42,6 +42,9 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
             }
         }
         search.addTextChangedListener(watcher)
+        search.setOnClickListener {
+            vm.onSearchQueryChanged(search.textString())
+        }
 
         vm.places.observe(viewLifecycleOwner, {
             adapter.clear()
@@ -68,6 +71,10 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
 
         vm.destination.observe(viewLifecycleOwner, {
             findNavController().navigate(it)
+        })
+
+        vm.closeKeyboard.observe(viewLifecycleOwner, {
+            Utils.hideKeyboard(requireActivity())
         })
 
         set_on_map.hide()
