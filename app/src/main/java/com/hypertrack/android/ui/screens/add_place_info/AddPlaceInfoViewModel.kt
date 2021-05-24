@@ -109,7 +109,7 @@ class AddPlaceInfoViewModel(
                 CreateGeofenceSuccess -> {
                     destination.postValue(
                         AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
-                            VisitsManagementFragment.Tab.PLACES.ordinal
+                            VisitsManagementFragment.Tab.PLACES
                         )
                     )
                 }
