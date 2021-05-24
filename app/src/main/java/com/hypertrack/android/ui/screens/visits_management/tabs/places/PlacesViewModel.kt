@@ -1,5 +1,6 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.places
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -9,6 +10,9 @@ import com.hypertrack.android.api.Geofence
 import com.hypertrack.android.api.GeofenceMarker
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.base.Consumable
+import com.hypertrack.android.ui.base.SingleLiveEvent
+import com.hypertrack.android.ui.base.toConsumable
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragmentDirections
 import com.hypertrack.android.utils.OsUtilsProvider
 import kotlinx.coroutines.launch
@@ -18,32 +22,17 @@ class PlacesViewModel(
     private val osUtilsProvider: OsUtilsProvider
 ) : BaseViewModel() {
 
+    private var nextPageToken: String? = null
+
     val loadingState = MutableLiveData<Boolean>()
 
-    val places: LiveData<List<PlaceItem>> =
-        Transformations.map(placesRepository.geofences) { fences ->
-            fences.sortedWith { o1, o2 ->
-                -(when {
-                    o1.lastVisit != null && o2.lastVisit != null -> {
-                        o1.lastVisit!!.compareTo(o2.lastVisit!!)
-                    }
-                    o1.lastVisit != null -> 1
-                    o2.lastVisit != null -> -1
-                    else -> o1.created_at.compareTo(o2.created_at)
-                })
-            }.map { PlaceItem(it) }
-        }
-
-    init {
-        refresh()
-    }
+    val placesPage = SingleLiveEvent<Consumable<List<PlaceItem>>?>()
 
     fun refresh() {
-        viewModelScope.launch {
-            loadingState.postValue(true)
-            placesRepository.refreshGeofences()
-            loadingState.postValue(false)
-        }
+        placesPage.value = null
+        placesPage.postValue(null)
+        nextPageToken = null
+        onLoadMore()
     }
 
     fun createPlacesAdapter(): PlacesAdapter {
@@ -60,6 +49,25 @@ class PlacesViewModel(
 
     fun onAddPlaceClicked() {
         destination.postValue(VisitsManagementFragmentDirections.actionVisitManagementFragmentToAddPlaceFragment())
+    }
+
+    //todo test
+    fun onLoadMore() {
+        viewModelScope.launch {
+            try {
+                if (nextPageToken != null || placesPage.value == null) {
+                    Log.v("cutag", "loading $nextPageToken")
+                    loadingState.postValue(true)
+                    val res = placesRepository.loadPage(nextPageToken)
+                    nextPageToken = res.paginationToken
+                    placesPage.postValue(Consumable(res.geofences.map { PlaceItem(it) }))
+                    loadingState.postValue(false)
+                }
+            } catch (e: Exception) {
+                errorBase.postValue(osUtilsProvider.getErrorMessage(e).toConsumable())
+                loadingState.postValue(false)
+            }
+        }
     }
 
 }

@@ -15,3 +15,11 @@ class Consumable<T>(
         return Consumable(mapper.invoke(payload), consumed)
     }
 }
+
+fun Exception.toConsumable(): Consumable<Exception> {
+    return Consumable(this)
+}
+
+fun String.toConsumable(): Consumable<String> {
+    return Consumable(this)
+}

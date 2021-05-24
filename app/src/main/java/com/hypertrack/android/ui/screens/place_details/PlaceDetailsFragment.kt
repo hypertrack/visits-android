@@ -84,9 +84,10 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
             mainActivity().startActivity(it)
         })
 
-        srlPlaces.setOnRefreshListener {
-            vm.onRefresh()
-        }
+//        srlPlaces.setOnRefreshListener {
+//            vm.onRefresh()
+//        }
+        srlPlaces.isEnabled = false
 
         ivBack.setOnClickListener {
             mainActivity().onBackPressed()
