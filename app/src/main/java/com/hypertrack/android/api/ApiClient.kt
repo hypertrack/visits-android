@@ -5,6 +5,7 @@ import android.util.Log
 import com.hypertrack.android.models.*
 import com.hypertrack.android.models.local.OrderStatus
 import com.hypertrack.android.repository.AccessTokenRepository
+import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.android.utils.MockData
 import com.hypertrack.android.utils.MyApplication
@@ -30,6 +31,7 @@ class ApiClient(
     private val baseUrl: String,
     private val deviceId: String,
     private val moshi: Moshi,
+    private val crashReportsProvider: CrashReportsProvider,
 ) : AbstractBackendProvider {
 
     @Suppress("unused")
@@ -43,6 +45,10 @@ class ApiClient(
         .addConverterFactory(ScalarsConverterFactory.create())
         .client(
             OkHttpClient.Builder()
+                .addInterceptor {
+                    crashReportsProvider.log("${it.request().method} ${it.request().url.encodedPath}")
+                    it.proceed(it.request())
+                }
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
                 .addInterceptor(UserAgentInterceptor())
@@ -56,7 +62,7 @@ class ApiClient(
         .build()
         .create(ApiInterface::class.java)
 
-    val api = if (MyApplication.MOCK_MODE.not()) {
+    private val api = if (MyApplication.MOCK_MODE.not()) {
         remoteApi
     } else {
         MockApi(remoteApi)

@@ -1,6 +1,7 @@
 package com.hypertrack.android.repository
 
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.FirebaseCrashReportsProvider
 import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.ServiceLocator
 import com.squareup.moshi.JsonClass

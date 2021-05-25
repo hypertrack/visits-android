@@ -14,6 +14,7 @@ import com.hypertrack.android.repository.VisitsRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.FirebaseCrashReportsProvider
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.TrackingStateValue
 import com.hypertrack.logistics.android.github.R

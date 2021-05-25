@@ -67,7 +67,7 @@ object Injector {
 
     private var visitsRepository: VisitsRepository? = null
 
-    private val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
+    val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
 
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
 
@@ -142,6 +142,7 @@ object Injector {
 
     private fun getUserScope(): UserScope {
         if (userScope == null) {
+            val accessTokenRepository = accessTokenRepository(MyApplication.context)
             val context = MyApplication.context
             val historyRepository = HistoryRepository(
                 getVisitsApiClient(MyApplication.context),
@@ -210,7 +211,7 @@ object Injector {
                     crashReportsProvider,
                     hyperTrackService,
                     getPermissionInteractor(),
-                    accessTokenRepository(MyApplication.context),
+                    accessTokenRepository,
                     getTimeDistanceFormatter(),
                     getVisitsApiClient(MyApplication.context),
                     getOsUtilsProvider(MyApplication.context),
@@ -220,6 +221,11 @@ object Injector {
                 photoUploadInteractor,
                 hyperTrackService,
                 photoUploadQueueInteractor
+            )
+
+            crashReportsProvider.setCustomKey(
+                FirebaseCrashReportsProvider.KEY_DEVICE_ID,
+                accessTokenRepository.deviceId
             )
         }
         return userScope!!
@@ -295,8 +301,10 @@ object Injector {
         val accessTokenRepository = accessTokenRepository(context)
         return ApiClient(
             accessTokenRepository,
-            BASE_URL, accessTokenRepository.deviceId,
-            getMoshi()
+            BASE_URL,
+            accessTokenRepository.deviceId,
+            getMoshi(),
+            crashReportsProvider
         )
     }
 
