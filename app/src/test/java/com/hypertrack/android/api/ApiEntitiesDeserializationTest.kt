@@ -30,6 +30,7 @@ class ApiEntitiesDeserializationTest {
                         "markers": { 
                            "data": [{
                                 "marker_id": "42",
+                                "device_id": "42",
                                 "geofence_id": "42-42",
                                 "arrival": { "recorded_at": "2020-02-02T20:02:02.000Z" }
                            }],
@@ -73,6 +74,7 @@ class ApiEntitiesDeserializationTest {
                                 "markers": { 
                                    "data": [{
                                         "marker_id": "42",
+                                        "device_id": "42",
                                         "geofence_id": "42-42",
                                         "arrival": { "recorded_at": "2020-02-02T20:02:02.000Z" }
                                    }],
@@ -97,7 +99,7 @@ class ApiEntitiesDeserializationTest {
     @Test
     fun `it should deserialize markers correctly`() {
         val serializedMarker = """ 
-            { "marker_id": "42", "geofence_id": "42-42", "arrival": { "recorded_at": "2020-02-02T20:02:02.000Z" } }
+            { "marker_id": "42", "device_id": "42", "geofence_id": "42-42", "arrival": { "recorded_at": "2020-02-02T20:02:02.000Z" } }
         """.trimIndent()
 
         val marker = moshi.adapter(GeofenceMarker::class.java).fromJson(serializedMarker)

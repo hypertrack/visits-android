@@ -71,7 +71,10 @@ class PlaceDetailsFragment : ProgressDialogFragment(R.layout.fragment_place_deta
             it?.let {
                 it.id.toView(tvIntegrationId)
                 it.name?.toView(tvIntegrationName)
-                it.type.toView(tvIntegrationType)
+//                it.type.toView(tvIntegrationType)
+                listOf(tvIntegrationType, tvIntegrationTypeHint).forEach {
+                    it.hide()
+                }
             }
         })
 
