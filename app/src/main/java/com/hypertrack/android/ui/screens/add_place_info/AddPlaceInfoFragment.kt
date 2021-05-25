@@ -70,10 +70,13 @@ class AddPlaceInfoFragment : ProgressDialogFragment(R.layout.fragment_add_place_
 
         vm.integration.observe(viewLifecycleOwner, {
             lIntegration.setGoneState(it == null)
-            it?.let {
-                it.id.toView(tvIntegrationId)
-                it.name?.toView(tvIntegrationName)
-                it.type.toView(tvIntegrationType)
+            it?.let { integration ->
+                integration.name?.toView(tvIntegrationName)
+//                it.id.toView(tvIntegrationId)
+//                it.type.toView(tvIntegrationType)
+                listOf(tvIntegrationId, tvIntegrationType, tvIntegrationTypeHint).forEach {
+                    it.hide()
+                }
             }
         })
 

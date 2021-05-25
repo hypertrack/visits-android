@@ -30,24 +30,27 @@ class IntegrationsRepositoryImpl(
 
     //todo handle null
     override suspend fun hasIntegrations(): Boolean? {
-        try {
-            //todo task pagination
-            firstPage = apiClient.getIntegrations(limit = 10)
+        if (firstPage == null) {
+            try {
+                //todo task pagination
+                firstPage = apiClient.getIntegrations(limit = 100)
+                return firstPage!!.isNotEmpty()
+            } catch (e: Exception) {
+                errorFlow.emit(Consumable(e))
+                return null
+            }
+        } else {
             return firstPage!!.isNotEmpty()
-        } catch (e: Exception) {
-            errorFlow.emit(Consumable(e))
-            return null
         }
     }
 
     override suspend fun getFirstIntegrationsPage(): List<Integration> {
-        Log.e("cutag", firstPage.toString())
         return firstPage ?: listOf()
     }
 
     override suspend fun getIntegrations(query: String): List<Integration> {
         try {
-            return apiClient.getIntegrations(query)
+            return apiClient.getIntegrations(query, limit = 100)
         } catch (e: Exception) {
             errorFlow.emit(Consumable(e))
             return listOf()
