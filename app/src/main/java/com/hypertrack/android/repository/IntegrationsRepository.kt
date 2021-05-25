@@ -33,7 +33,7 @@ class IntegrationsRepositoryImpl(
         if (firstPage == null) {
             try {
                 //todo task pagination
-                firstPage = apiClient.getIntegrations(limit = 10)
+                firstPage = apiClient.getIntegrations(limit = 100)
                 return firstPage!!.isNotEmpty()
             } catch (e: Exception) {
                 errorFlow.emit(Consumable(e))
@@ -45,13 +45,12 @@ class IntegrationsRepositoryImpl(
     }
 
     override suspend fun getFirstIntegrationsPage(): List<Integration> {
-        Log.e("hypertrack-verbose", firstPage.toString())
         return firstPage ?: listOf()
     }
 
     override suspend fun getIntegrations(query: String): List<Integration> {
         try {
-            return apiClient.getIntegrations(query)
+            return apiClient.getIntegrations(query, limit = 100)
         } catch (e: Exception) {
             errorFlow.emit(Consumable(e))
             return listOf()
