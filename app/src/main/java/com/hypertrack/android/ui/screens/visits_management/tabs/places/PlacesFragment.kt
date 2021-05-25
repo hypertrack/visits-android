@@ -30,7 +30,7 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         }
         rvPlaces.addOnScrollListener(object : EndlessScrollListener(object : OnLoadMoreListener {
             override fun onLoadMore(page: Int, totalItemsCount: Int) {
-                Log.v("cutag", "EndlessScrollListener $page $totalItemsCount")
+                Log.v("hypertrack-verbose", "EndlessScrollListener $page $totalItemsCount")
                 vm.onLoadMore()
             }
         }) {
@@ -51,7 +51,7 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
             }
         })
 
-        vm.loadingState.observe(viewLifecycleOwner, {
+        vm.loadingStateBase.observe(viewLifecycleOwner, {
             srlPlaces.isRefreshing = it
         })
 

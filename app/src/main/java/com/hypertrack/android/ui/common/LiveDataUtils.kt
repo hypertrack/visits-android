@@ -2,6 +2,7 @@ package com.hypertrack.android.ui.common
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
 fun <T> LiveData<T>.toHotTransformation(): HotLiveDataTransformation<T> {

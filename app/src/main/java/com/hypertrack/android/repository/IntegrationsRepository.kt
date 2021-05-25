@@ -41,7 +41,7 @@ class IntegrationsRepositoryImpl(
     }
 
     override suspend fun getFirstIntegrationsPage(): List<Integration> {
-        Log.e("cutag", firstPage.toString())
+        Log.e("hypertrack-verbose", firstPage.toString())
         return firstPage ?: listOf()
     }
 

@@ -24,8 +24,6 @@ class PlacesViewModel(
 
     private var nextPageToken: String? = null
 
-    val loadingState = MutableLiveData<Boolean>()
-
     val placesPage = SingleLiveEvent<Consumable<List<PlaceItem>>?>()
 
     fun refresh() {
@@ -53,19 +51,22 @@ class PlacesViewModel(
 
     //todo test
     fun onLoadMore() {
-        viewModelScope.launch {
-            try {
-                if (nextPageToken != null || placesPage.value == null) {
-                    Log.v("cutag", "loading $nextPageToken")
-                    loadingState.postValue(true)
-                    val res = placesRepository.loadPage(nextPageToken)
-                    nextPageToken = res.paginationToken
-                    placesPage.postValue(Consumable(res.geofences.map { PlaceItem(it) }))
-                    loadingState.postValue(false)
+        if ((loadingStateBase.value ?: false) == false) {
+            viewModelScope.launch {
+                try {
+                    if (nextPageToken != null || placesPage.value == null) {
+                        Log.v("hypertrack-verbose", "loading ${nextPageToken.hashCode()}")
+                        loadingStateBase.postValue(true)
+                        val res = placesRepository.loadPage(nextPageToken)
+                        nextPageToken = res.paginationToken
+                        Log.v("hypertrack-verbose", "nextPageToken = ${nextPageToken.hashCode()}")
+                        placesPage.postValue(Consumable(res.geofences.map { PlaceItem(it) }))
+                        loadingStateBase.postValue(false)
+                    }
+                } catch (e: Exception) {
+                    errorBase.postValue(osUtilsProvider.getErrorMessage(e).toConsumable())
+                    loadingStateBase.postValue(false)
                 }
-            } catch (e: Exception) {
-                errorBase.postValue(osUtilsProvider.getErrorMessage(e).toConsumable())
-                loadingState.postValue(false)
             }
         }
     }

@@ -30,7 +30,7 @@ class MockApi(val remoteApi: ApiInterface) : ApiInterface by remoteApi {
         } catch (_: Exception) {
             0
         }
-        Log.v("cutag", page.toString())
+        Log.v("hypertrack-verbose", page.toString())
         return Response.success(
             GeofenceResponse(
                 (0..10).map {
