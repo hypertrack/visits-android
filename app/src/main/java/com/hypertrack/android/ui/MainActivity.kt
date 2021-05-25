@@ -24,6 +24,7 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
     }
 
     private val deepLinkProcessor = MyApplication.injector.deeplinkProcessor
+    private val crashReportsProvider = MyApplication.injector.crashReportsProvider
 
     override val layoutRes: Int = R.layout.activity_main
 
@@ -70,6 +71,10 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         splashScreenViewModel.handleDeeplink(parameters, this)
     }
 
+    override fun onDestinationChanged(destination: NavDestination) {
+        crashReportsProvider.log("Destination changed: ${destination.label.toString()}")
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -83,7 +88,6 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         super.onActivityResult(requestCode, resultCode, data)
         getCurrentFragment().onActivityResult(requestCode, resultCode, data)
     }
-
 
     override fun onBackPressed() {
         if (getCurrentBaseFragment()?.onBackPressed() == false) {

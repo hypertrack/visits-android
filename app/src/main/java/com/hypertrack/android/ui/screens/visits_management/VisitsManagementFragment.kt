@@ -11,10 +11,12 @@ import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager.widget.ViewPager
 import com.hypertrack.android.models.Visit
 import com.hypertrack.android.models.VisitStatusGroup
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.NotificationUtils
+import com.hypertrack.android.ui.common.SimplePageChangedListener
 import com.hypertrack.android.ui.common.SnackbarUtil
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
@@ -29,6 +31,7 @@ import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.fragment_signup.*
 import kotlinx.android.synthetic.main.fragment_visits_management.*
 
 class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
@@ -89,6 +92,13 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
                 return fragment
             }
         }
+        viewpager.addOnPageChangeListener(object : SimplePageChangedListener() {
+            override fun onPageSelected(position: Int) {
+                MyApplication.injector.crashReportsProvider.log(
+                    "Tab selected ${TABS.keys.toList()[position].name}"
+                )
+            }
+        })
 
         sliding_tabs.setupWithViewPager(viewpager)
         for (i in 0 until sliding_tabs.tabCount) {

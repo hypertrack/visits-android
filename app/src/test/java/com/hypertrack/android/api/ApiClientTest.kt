@@ -49,7 +49,13 @@ class ApiClientTest {
         every { accessTokenRepo.getAccessToken() } returns "fake.jwt.token"
         every { accessTokenRepo.refreshToken() } returns "new.jwt.token"
         apiClient =
-            ApiClient(accessTokenRepo, mockWebServer.baseUrl(), DEVICE_ID, Injector.getMoshi())
+            ApiClient(
+                accessTokenRepo,
+                mockWebServer.baseUrl(),
+                DEVICE_ID,
+                Injector.getMoshi(),
+                mockk(relaxed = true)
+            )
     }
 
     @Test

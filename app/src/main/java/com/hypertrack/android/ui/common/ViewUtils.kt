@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 
 abstract class SimpleTextWatcher : TextWatcher {
     open fun afterChanged(text: String) {}
@@ -21,6 +22,15 @@ abstract class SimpleTextWatcher : TextWatcher {
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+}
+
+
+abstract class SimplePageChangedListener : ViewPager.OnPageChangeListener {
+    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+    override fun onPageSelected(position: Int) {}
+
+    override fun onPageScrollStateChanged(state: Int) {}
 }
 
 
