@@ -15,6 +15,7 @@ import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.toConsumable
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragmentDirections
 import com.hypertrack.android.utils.OsUtilsProvider
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class PlacesViewModel(
@@ -52,7 +53,10 @@ class PlacesViewModel(
     //todo test
     fun onLoadMore() {
         if ((loadingStateBase.value ?: false) == false) {
-            viewModelScope.launch {
+            Log.v("hypertrack-verbose", "1")
+            //todo change to viewModelScope (cause bug when launch is not called after geofence creation)
+            GlobalScope.launch {
+                Log.v("hypertrack-verbose", "2")
                 try {
                     if (nextPageToken != null || placesPage.value == null) {
                         Log.v("hypertrack-verbose", "loading ${nextPageToken.hashCode()}")
