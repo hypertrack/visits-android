@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.SupportMapFragment
 import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.*
+import com.hypertrack.android.ui.common.Utils.isDoneAction
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.fragment_add_place.*
@@ -44,6 +45,12 @@ class AddPlaceFragment : ProgressDialogFragment(R.layout.fragment_add_place) {
         search.addTextChangedListener(watcher)
         search.setOnClickListener {
             vm.onSearchQueryChanged(search.textString())
+        }
+        search.setOnEditorActionListener { v, actionId, event ->
+            if (isDoneAction(actionId, event)) {
+                Utils.hideKeyboard(requireActivity())
+                true
+            } else false
         }
 
         vm.places.observe(viewLifecycleOwner, {
