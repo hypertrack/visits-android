@@ -9,6 +9,9 @@ import kotlinx.android.parcel.Parcelize
 class Integration(
     val id: String,
     val name: String?,
-    val type: String = "Company",
 ) : Parcelable {
+
+    val type: String
+        get() = "Company"
+
 }
