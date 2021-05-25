@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 class ApiClient(
-    accessTokenRepository: AccessTokenRepository,
+    private val accessTokenRepository: AccessTokenRepository,
     private val baseUrl: String,
     private val deviceId: String,
     private val moshi: Moshi,
@@ -76,7 +76,23 @@ class ApiClient(
         try {
             val response = api.getGeofencesWithMarkers(paginationToken = paginationToken ?: "null")
             if (response.isSuccessful) {
-                return response.body()!!
+                return response.body()!!.let { geofenceResponse ->
+                    geofenceResponse.copy(geofences = geofenceResponse.geofences.mapNotNull { geofence ->
+                        when (geofence.deviceId) {
+                            "00000000-0000-0000-0000-000000000000", deviceId -> {
+                                geofence.let {
+                                    it.copy(marker = it.marker.let { marker ->
+                                        marker?.copy(markers = marker.markers.filter { m ->
+                                            m.deviceId == "00000000-0000-0000-0000-000000000000"
+                                                    || m.deviceId == deviceId
+                                        })
+                                    })
+                                }
+                            }
+                            else -> null
+                        }
+                    })
+                }
             } else {
                 throw HttpException(response)
             }

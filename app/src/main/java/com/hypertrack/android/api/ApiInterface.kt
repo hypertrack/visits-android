@@ -204,13 +204,14 @@ data class Views(
 
 @JsonClass(generateAdapter = true)
 data class Geofence(
-        @field:Json(name = "geofence_id") val geofence_id: String,
-        @field:Json(name = "created_at") val created_at: String,
-        @field:Json(name = "metadata") val metadata: Map<String, Any>?,
-        @field:Json(name = "geometry") val geometry: Geometry,
-        @field:Json(name = "markers") val marker: GeofenceMarkersResponse?,
-        @field:Json(name = "radius") val radius: Int?,
-        @field:Json(name = "archived") val archived : Boolean?,
+    @field:Json(name = "geofence_id") val geofence_id: String,
+    @field:Json(name = "device_id") val deviceId: String,
+    @field:Json(name = "created_at") val created_at: String,
+    @field:Json(name = "metadata") val metadata: Map<String, Any>?,
+    @field:Json(name = "geometry") val geometry: Geometry,
+    @field:Json(name = "markers") val marker: GeofenceMarkersResponse?,
+    @field:Json(name = "radius") val radius: Int?,
+    @field:Json(name = "archived") val archived: Boolean?,
 ) : VisitDataSource {
     override val latitude: Double
         get() = geometry.latitude
@@ -317,6 +318,7 @@ abstract class Geometry {
 data class GeofenceMarker(
     @field:Json(name = "geofence_id") val geofenceId: String,
     @field:Json(name = "marker_id") val markerId: String,
+    @field:Json(name = "device_id") val deviceId: String,
     @field:Json(name = "arrival") val arrival: Arrival?,
     @field:Json(name = "exit") val exit: Exit?,
     @field:Json(name = "route_to") val routeTo: RouteTo?,

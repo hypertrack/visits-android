@@ -20,6 +20,7 @@ class MockApi(val remoteApi: ApiInterface) : ApiInterface by remoteApi {
         fences.add(
             Geofence(
                 "",
+                "00000000-0000-0000-0000-000000000000",
                 "",
                 params.geofences.first().metadata,
                 params.geofences.first().geometry,
