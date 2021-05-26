@@ -12,7 +12,6 @@ import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -72,11 +71,16 @@ class ApiClient(
 
     suspend fun clockOut() = api.clockOut(deviceId)
 
-    suspend fun getGeofences(paginationToken: String?): GeofenceResponse {
+    suspend fun getGeofences(
+        paginationToken: String?,
+        previousIterationSize: Int = 0
+    ): GeofenceResponse {
+        val MINIMAL_PAGE_SIZE = 1
         try {
-            val response = api.getGeofencesWithMarkers(paginationToken = paginationToken ?: "null")
+            Log.v("hypertrack-verbose", "getGeofences ${paginationToken.hashCode()}")
+            val response = api.getGeofencesWithMarkers(paginationToken = paginationToken)
             if (response.isSuccessful) {
-                return response.body()!!.let { geofenceResponse ->
+                val result = response.body()!!.let { geofenceResponse ->
                     geofenceResponse.copy(geofences = geofenceResponse.geofences.mapNotNull { geofence ->
                         when (geofence.deviceId) {
                             "00000000-0000-0000-0000-000000000000", deviceId -> {
@@ -92,6 +96,22 @@ class ApiClient(
                             else -> null
                         }
                     })
+                }
+                val resSize = result.geofences.size + previousIterationSize
+                Log.v("hypertrack-verbose", resSize.toString())
+                if (resSize < MINIMAL_PAGE_SIZE
+                    && result.paginationToken != null
+                ) {
+                    val next = getGeofences(result.paginationToken, resSize)
+                    return GeofenceResponse(
+                        mutableListOf<Geofence>().apply {
+                            addAll(result.geofences)
+                            addAll(next.geofences)
+                        },
+                        next.paginationToken
+                    )
+                } else {
+                    return result
                 }
             } else {
                 throw HttpException(response)

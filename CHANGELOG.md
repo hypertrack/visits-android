@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1] - 2021-05-27
+### Fixed
+- Geofence list pagination
+
+## [0.8.0] - 2021-05-26
+### Added
+- Hubspot integration
+
 ## [0.7.2] - 2021-05-06
 ### Added
 - New launcher and notification icons
