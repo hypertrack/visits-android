@@ -53,13 +53,11 @@ class PlacesViewModel(
     //todo test
     fun onLoadMore() {
         if ((loadingStateBase.value ?: false) == false) {
-            Log.v("hypertrack-verbose", "1")
             //todo change to viewModelScope (cause bug when launch is not called after geofence creation)
             GlobalScope.launch {
-                Log.v("hypertrack-verbose", "2")
                 try {
                     if (nextPageToken != null || placesPage.value == null) {
-                        Log.v("hypertrack-verbose", "loading ${nextPageToken.hashCode()}")
+                        Log.v("hypertrack-verbose", "** loading ${nextPageToken.hashCode()}")
                         loadingStateBase.postValue(true)
                         val res = placesRepository.loadPage(nextPageToken)
                         nextPageToken = res.paginationToken

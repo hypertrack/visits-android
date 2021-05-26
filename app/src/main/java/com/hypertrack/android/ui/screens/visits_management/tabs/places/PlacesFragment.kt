@@ -30,16 +30,18 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         }
         rvPlaces.addOnScrollListener(object : EndlessScrollListener(object : OnLoadMoreListener {
             override fun onLoadMore(page: Int, totalItemsCount: Int) {
-                Log.v("hypertrack-verbose", "EndlessScrollListener $page $totalItemsCount")
+//                Log.v("hypertrack-verbose", "EndlessScrollListener $page $totalItemsCount")
                 vm.onLoadMore()
             }
         }) {
-            override val visibleThreshold = 1
+            override val visibleThreshold = 10
         })
 
         vm.placesPage.observe(viewLifecycleOwner, {
             if (it != null) {
                 it.consume {
+                    Log.v("hypertrack-verbose", "page ${it.map { it.geofence.name }}")
+                    Log.v("hypertrack-verbose", "--Got ${it.firstOrNull()?.geofence?.name}")
                     adapter.addItemsAndUpdate(it)
                     lPlacesPlaceholder.setGoneState(adapter.itemCount != 0)
                     rvPlaces.setGoneState(adapter.itemCount == 0)
