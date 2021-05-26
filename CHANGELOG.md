@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.2] - 2021-05-27
+### Fixed
+- Geofence list pagination
+
 ## [0.8.1] - 2021-05-27
 ### Fixed
 - Geofence list pagination
