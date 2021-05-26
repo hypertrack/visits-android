@@ -34,14 +34,13 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
                 vm.onLoadMore()
             }
         }) {
-            override val visibleThreshold = 10
+            override val visibleThreshold = 1
         })
 
         vm.placesPage.observe(viewLifecycleOwner, {
             if (it != null) {
                 it.consume {
-                    Log.v("hypertrack-verbose", "page ${it.map { it.geofence.name }}")
-                    Log.v("hypertrack-verbose", "--Got ${it.firstOrNull()?.geofence?.name}")
+//                    Log.v("hypertrack-verbose", "-- page ${it.map { it.geofence.name }}")
                     adapter.addItemsAndUpdate(it)
                     lPlacesPlaceholder.setGoneState(adapter.itemCount != 0)
                     rvPlaces.setGoneState(adapter.itemCount == 0)
@@ -54,7 +53,8 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         })
 
         vm.loadingStateBase.observe(viewLifecycleOwner, {
-            srlPlaces.isRefreshing = it
+            srlPlaces.isRefreshing = it && adapter.itemCount == 0
+            paginationProgressbar.setGoneState(!it || adapter.itemCount == 0)
         })
 
         vm.destination.observe(viewLifecycleOwner, {

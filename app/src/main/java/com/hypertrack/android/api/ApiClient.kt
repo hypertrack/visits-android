@@ -77,7 +77,7 @@ class ApiClient(
     ): GeofenceResponse {
         val MINIMAL_PAGE_SIZE = 1
         try {
-            Log.v("hypertrack-verbose", "getGeofences ${paginationToken.hashCode()}")
+//            Log.v("hypertrack-verbose", "getGeofences ${paginationToken.hashCode()}")
             val response = api.getGeofencesWithMarkers(paginationToken = paginationToken)
             if (response.isSuccessful) {
                 val result = response.body()!!.let { geofenceResponse ->
@@ -98,7 +98,7 @@ class ApiClient(
                     })
                 }
                 val resSize = result.geofences.size + previousIterationSize
-                Log.v("hypertrack-verbose", resSize.toString())
+//                Log.v("hypertrack-verbose", resSize.toString())
                 if (resSize < MINIMAL_PAGE_SIZE
                     && result.paginationToken != null
                 ) {
