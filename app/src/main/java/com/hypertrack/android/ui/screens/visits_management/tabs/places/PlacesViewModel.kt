@@ -15,7 +15,9 @@ import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.ui.base.toConsumable
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragmentDirections
 import com.hypertrack.android.utils.OsUtilsProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class PlacesViewModel(
@@ -24,6 +26,7 @@ class PlacesViewModel(
 ) : BaseViewModel() {
 
     private var nextPageToken: String? = null
+    private var updateJob: Job? = null
 
     val placesPage = SingleLiveEvent<Consumable<List<PlaceItem>>?>()
 
@@ -31,6 +34,9 @@ class PlacesViewModel(
         placesPage.value = null
         placesPage.postValue(null)
         nextPageToken = null
+        updateJob?.cancel()
+        loadingStateBase.value = false
+        loadingStateBase.postValue(false)
         onLoadMore()
     }
 
@@ -54,20 +60,22 @@ class PlacesViewModel(
     fun onLoadMore() {
         if ((loadingStateBase.value ?: false) == false) {
             //todo change to viewModelScope (cause bug when launch is not called after geofence creation)
-            GlobalScope.launch {
+            updateJob = GlobalScope.launch {
                 try {
                     if (nextPageToken != null || placesPage.value == null) {
-                        Log.v("hypertrack-verbose", "** loading ${nextPageToken.hashCode()}")
+//                        Log.v("hypertrack-verbose", "** loading ${nextPageToken.hashCode()}")
                         loadingStateBase.postValue(true)
                         val res = placesRepository.loadPage(nextPageToken)
                         nextPageToken = res.paginationToken
-                        Log.v("hypertrack-verbose", "nextPageToken = ${nextPageToken.hashCode()}")
+//                        Log.v("hypertrack-verbose", "nextPageToken = ${nextPageToken.hashCode()}")
                         placesPage.postValue(Consumable(res.geofences.map { PlaceItem(it) }))
                         loadingStateBase.postValue(false)
                     }
                 } catch (e: Exception) {
-                    errorBase.postValue(osUtilsProvider.getErrorMessage(e).toConsumable())
-                    loadingStateBase.postValue(false)
+                    if (e !is CancellationException) {
+                        errorBase.postValue(osUtilsProvider.getErrorMessage(e).toConsumable())
+                        loadingStateBase.postValue(false)
+                    }
                 }
             }
         }
