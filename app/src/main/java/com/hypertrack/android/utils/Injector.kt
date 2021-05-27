@@ -1,6 +1,7 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,13 +16,16 @@ import com.hypertrack.android.interactors.*
 import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.ParamViewModelFactory
+import com.hypertrack.android.ui.common.Tab
 import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoViewModel
-import com.hypertrack.android.ui.screens.visits_management.tabs.history.BaseHistoryStyle
-import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
-import com.hypertrack.android.ui.screens.visits_management.tabs.history.GoogleMapHistoryRenderer
-import com.hypertrack.android.ui.screens.visits_management.tabs.history.HistoryMapRenderer
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.*
+import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
@@ -140,6 +144,33 @@ object Injector {
             getVisitsInteractor(),
             visitId,
             getOsUtilsProvider(MyApplication.context)
+        )
+    }
+
+    private fun isTwmoEnabled(): Boolean {
+        return MyApplication.TWMO_ENABLED
+    }
+
+    fun provideTabs(): List<Tab> = mutableListOf<Tab>().apply {
+        addAll(
+            listOf(
+                Tab.MAP,
+                Tab.HISTORY,
+            )
+        )
+        add(
+            if (isTwmoEnabled()) {
+                Tab.ORDERS
+            } else {
+                Tab.VISITS
+            }
+        )
+        addAll(
+            listOf(
+                Tab.PLACES,
+                Tab.SUMMARY,
+                Tab.PROFILE,
+            )
         )
     }
 

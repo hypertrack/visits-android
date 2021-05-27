@@ -15,6 +15,7 @@ import com.hypertrack.android.repository.IntegrationsRepository
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
+import com.hypertrack.android.ui.common.Tab
 import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.screens.add_place.AddPlaceFragmentDirections
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
@@ -119,7 +120,7 @@ class AddPlaceInfoViewModel(
                     CreateGeofenceSuccess -> {
                         destination.postValue(
                             AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
-                                VisitsManagementFragment.Tab.PLACES
+                                Tab.PLACES
                             )
                         )
                     }

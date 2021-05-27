@@ -44,7 +44,7 @@
             app:destination="@id/addPlaceFragment" />
         <argument
             android:name="tab"
-            app:argType="com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment$Tab"
+            app:argType="com.hypertrack.android.ui.common.Tab"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
