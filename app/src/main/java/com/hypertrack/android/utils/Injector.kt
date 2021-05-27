@@ -196,6 +196,11 @@ object Injector {
                 getOsUtilsProvider(MyApplication.context),
                 Dispatchers.IO
             )
+
+            val driverRepository = getDriverRepo(context)
+
+            val accountRepository = getAccountRepo(context)
+
             userScope = UserScope(
                 historyRepository,
                 tripsInteractor,
@@ -207,8 +212,8 @@ object Injector {
                     placesRepository,
                     integrationsRepository,
                     historyRepository,
-                    getDriverRepo(context),
-                    getAccountRepo(context),
+                    driverRepository,
+                    accountRepository,
                     crashReportsProvider,
                     hyperTrackService,
                     getPermissionInteractor(),
@@ -224,9 +229,14 @@ object Injector {
                 photoUploadQueueInteractor
             )
 
-            crashReportsProvider.setCustomKey(
-                FirebaseCrashReportsProvider.KEY_DEVICE_ID,
-                accessTokenRepository.deviceId
+            crashReportsProvider.setUserIdentifier(
+                getMoshi().adapter(UserIdentifier::class.java).toJson(
+                    UserIdentifier(
+                        deviceId = accessTokenRepository.deviceId,
+                        driverId = driverRepository.driverId,
+                        pubKey = accountRepository.publishableKey,
+                    )
+                )
             )
         }
         return userScope!!

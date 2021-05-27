@@ -91,7 +91,6 @@ class SplashScreenViewModel(
     }
 
     private fun proceedToVisitsManagement(activity: Activity) {
-        crashReportsProvider.setUserIdentifier(driverRepository.driverId)
         when (permissionsInteractor.checkPermissionsState(activity)
             .getNextPermissionRequest()) {
             PermissionDestination.PASS -> {
