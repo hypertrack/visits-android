@@ -104,7 +104,8 @@ object Injector {
             getAccountRepo(MyApplication.context),
             getUserScope().photoUploadQueueInteractor,
             getVisitsApiClient(MyApplication.context),
-            getMoshi()
+            getMoshi(),
+            crashReportsProvider,
         )
     }
 

@@ -42,3 +42,5 @@ class FirebaseCrashReportsProvider : CrashReportsProvider {
         const val KEY_DEVICE_ID = "device_id"
     }
 }
+
+object ManuallyTriggeredException : Exception()

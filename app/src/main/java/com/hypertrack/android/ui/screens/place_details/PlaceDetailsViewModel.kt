@@ -20,6 +20,7 @@ import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.ZipLiveData
 import com.hypertrack.android.ui.common.KeyValueItem
 import com.hypertrack.android.ui.common.toAddressString
+import com.hypertrack.android.utils.CrashReportsProvider
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.logistics.android.github.R
 import com.squareup.moshi.Moshi
@@ -29,6 +30,7 @@ class PlaceDetailsViewModel(
     private val geofenceId: String,
     private val placesRepository: PlacesRepository,
     private val osUtilsProvider: OsUtilsProvider,
+    private val crashReportsProvider: CrashReportsProvider,
     private val moshi: Moshi
 ) : BaseViewModel() {
 
@@ -115,15 +117,19 @@ class PlaceDetailsViewModel(
     }
 
     fun onDirectionsClick() {
+        try {
 //        val gmmIntentUri = Uri.parse("google.navigation:q=${geofence.value!!.latitude},${geofence.value!!.longitude}")
 
-        val googleMapsUrl = "https://www.google.com/maps/dir/?api=1&" +
-                "destination=${geofence.value!!.latitude},${geofence.value!!.longitude}"
+            val googleMapsUrl = "https://www.google.com/maps/dir/?api=1&" +
+                    "destination=${geofence.value!!.latitude},${geofence.value!!.longitude}"
 
-        val gmmIntentUri = Uri.parse(googleMapsUrl)
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-        externalMapsIntent.postValue(mapIntent)
+            val gmmIntentUri = Uri.parse(googleMapsUrl)
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            externalMapsIntent.postValue(mapIntent)
 //        mapIntent.setPackage("com.google.android.apps.maps")
+        } catch (e: Exception) {
+            crashReportsProvider.logException(e)
+        }
     }
 
     fun onAddressClick() {

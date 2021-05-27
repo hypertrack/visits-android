@@ -12,6 +12,7 @@ import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.screens.place_details.PlaceDetailsViewModel
 import com.hypertrack.android.utils.OsUtilsProvider
 import com.hypertrack.android.ui.screens.order_details.OrderDetailsViewModel
+import com.hypertrack.android.utils.CrashReportsProvider
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.GlobalScope
 
@@ -25,7 +26,8 @@ class ParamViewModelFactory<T>(
     private val accountRepository: AccountRepository,
     private val photoUploadQueueInteractor: PhotoUploadQueueInteractor,
     private val apiClient: ApiClient,
-    private val moshi: Moshi
+    private val moshi: Moshi,
+    private val crashReportsProvider: CrashReportsProvider
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -34,6 +36,7 @@ class ParamViewModelFactory<T>(
                 geofenceId = param as String,
                 placesRepository,
                 osUtilsProvider,
+                crashReportsProvider,
                 moshi
             ) as T
             OrderDetailsViewModel::class.java -> OrderDetailsViewModel(

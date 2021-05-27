@@ -31,6 +31,10 @@ class ProfileFragment : BaseFragment<MainActivity>(R.layout.fragment_profile) {
         vm.profile.observe(viewLifecycleOwner, {
             adapter.updateItems(it)
         })
+
+        bReportAnIssue.setOnClickListener {
+            vm.onReportAnIssueClick()
+        }
     }
 
 }
