@@ -159,6 +159,9 @@
     <string name="place_integration_submit_button">Add company</string>
     <string name="place_integration_integration_type">Integration type</string>
 
+    <string name="profile_report_an_issue">Report an issue</string>
+    <string name="profile_report_sent">App state is successfully reported</string>
+
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>

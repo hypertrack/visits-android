@@ -91,7 +91,8 @@ class UserScopeViewModelFactory(
                 driverRepository,
                 hyperTrackService,
                 accountRepository,
-                osUtilsProvider
+                osUtilsProvider,
+                crashReportsProvider,
             ) as T
             else -> throw IllegalArgumentException("Can't instantiate class $modelClass")
         }

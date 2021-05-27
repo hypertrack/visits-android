@@ -4,8 +4,11 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import com.google.android.libraries.places.api.Places
+import com.hypertrack.android.receivers.BatteryStateReceiver
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 import java.util.*
@@ -30,6 +33,8 @@ class MyApplication : Application() {
         );
 
         buildNotificationChannels()
+
+        registerReceiver(BatteryStateReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
     private fun buildNotificationChannels() {

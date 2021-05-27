@@ -22,7 +22,6 @@ class DriverRepository(
                 it.driverId = value
             }
             accountDataStorage.saveDriver(_driver)
-            crashReportsProvider.setUserIdentifier(value)
         }
 
     val hasDriverId: Boolean

@@ -100,6 +100,14 @@ class OsUtilsProvider(private val context: Context, private val crashReportsProv
         }
     }
 
+    fun makeToast(@StringRes txtRes: Int) {
+        makeToast(txtRes.stringFromResource())
+    }
+
+    fun makeToast(txt: String) {
+        Toast.makeText(context, txt, Toast.LENGTH_LONG).show()
+    }
+
     fun getLocalDate(): LocalDate = LocalDate.now()
 
     fun getTimeZoneId(): ZoneId = ZoneId.systemDefault()

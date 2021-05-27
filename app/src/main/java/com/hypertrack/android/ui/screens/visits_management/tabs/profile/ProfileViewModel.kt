@@ -6,9 +6,7 @@ import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.common.KeyValueItem
-import com.hypertrack.android.utils.HyperTrackService
-import com.hypertrack.android.utils.MyApplication
-import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.utils.*
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
 
@@ -16,7 +14,8 @@ class ProfileViewModel(
     driverRepository: DriverRepository,
     hyperTrackService: HyperTrackService,
     accountRepository: AccountRepository,
-    private val osUtilsProvider: OsUtilsProvider
+    private val osUtilsProvider: OsUtilsProvider,
+    private val crashReportsProvider: CrashReportsProvider,
 ) : BaseViewModel() {
 
     val profile = MutableLiveData<List<KeyValueItem>>(mutableListOf<KeyValueItem>().apply {
@@ -64,6 +63,11 @@ class ProfileViewModel(
 
     fun onCopyItemClick(txt: String) {
         osUtilsProvider.copyToClipboard(txt)
+    }
+
+    fun onReportAnIssueClick() {
+        crashReportsProvider.logException(ManuallyTriggeredException)
+        osUtilsProvider.makeToast(R.string.profile_report_sent)
     }
 
 }

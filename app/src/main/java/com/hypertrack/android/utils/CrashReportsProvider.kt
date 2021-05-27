@@ -1,6 +1,8 @@
 package com.hypertrack.android.utils
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -40,5 +42,15 @@ class FirebaseCrashReportsProvider : CrashReportsProvider {
 
     companion object {
         const val KEY_DEVICE_ID = "device_id"
+        const val KEY_PUBLISHABLE_KEY = "publishable_key"
     }
 }
+
+@JsonClass(generateAdapter = true)
+class UserIdentifier(
+    val deviceId: String,
+    val driverId: String,
+    val pubKey: String,
+)
+
+object ManuallyTriggeredException : Exception()
