@@ -38,13 +38,13 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Provider
 
 
-object ServiceLocator {
+class ServiceLocator(val crashReportsProvider: CrashReportsProvider) {
 
     fun getAccessTokenRepository(deviceId: String, userName: String) =
         BasicAuthAccessTokenRepository(AUTH_URL, deviceId, userName)
 
     fun getHyperTrackService(publishableKey: String): HyperTrackService {
-        val listener = TrackingState()
+        val listener = TrackingState(crashReportsProvider)
         val sdkInstance = HyperTrack
             .getInstance(publishableKey)
             .addTrackingListener(listener)
@@ -55,7 +55,7 @@ object ServiceLocator {
                     .build()
             )
 
-        return HyperTrackService(listener, sdkInstance)
+        return HyperTrackService(listener, sdkInstance, crashReportsProvider)
     }
 
 }
@@ -70,6 +70,8 @@ object Injector {
     val crashReportsProvider: CrashReportsProvider by lazy { FirebaseCrashReportsProvider() }
 
     val deeplinkProcessor: DeeplinkProcessor = BranchIoDeepLinkProcessor(crashReportsProvider)
+
+    private val serviceLocator = ServiceLocator(crashReportsProvider)
 
     fun getMoshi(): Moshi = Moshi.Builder()
         .add(HistoryCoordinateJsonAdapter())
@@ -299,14 +301,10 @@ object Injector {
     private fun getDriverRepo(context: Context) = DriverRepository(
         getDriver(context),
         getAccountRepo(MyApplication.context),
-        getServiceLocator(),
+        serviceLocator,
         getMyPreferences(context),
         crashReportsProvider,
     )
-
-    private fun getServiceLocator(): ServiceLocator {
-        return ServiceLocator
-    }
 
     private fun getVisitsApiClient(context: Context): ApiClient {
         val accessTokenRepository = accessTokenRepository(context)
@@ -332,7 +330,7 @@ object Injector {
             ?: throw IllegalStateException("No access token repository was saved"))
 
     private fun getAccountRepo(context: Context) =
-        AccountRepository(getServiceLocator(), getAccountData(context), getMyPreferences(context))
+        AccountRepository(serviceLocator, getAccountData(context), getMyPreferences(context))
         { userScope = null }
 
     private fun getAccountData(context: Context): AccountData =
@@ -346,7 +344,7 @@ object Injector {
         val myPreferences = getMyPreferences(context)
         val publishableKey = myPreferences.getAccountData().publishableKey
             ?: throw IllegalStateException("No publishableKey saved")
-        return getServiceLocator().getHyperTrackService(publishableKey)
+        return serviceLocator.getHyperTrackService(publishableKey)
     }
 
     fun getVisitsRepo(context: Context): VisitsRepository {
