@@ -18,15 +18,18 @@ import com.hypertrack.android.ui.base.ProgressDialogFragment
 import com.hypertrack.android.ui.common.NotificationUtils
 import com.hypertrack.android.ui.common.SimplePageChangedListener
 import com.hypertrack.android.ui.common.SnackbarUtil
+import com.hypertrack.android.ui.common.Tab
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.MapViewFragmentOld
 import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
+import com.hypertrack.android.ui.screens.visits_management.tabs.orders.OrdersFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitListAdapter
 import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.Injector
+import com.hypertrack.android.utils.Injector.getCustomFragmentFactory
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.logistics.android.github.BuildConfig
 import com.hypertrack.logistics.android.github.R
@@ -37,6 +40,18 @@ import kotlinx.android.synthetic.main.fragment_visits_management.*
 class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits_management) {
 
     private val args: VisitsManagementFragmentArgs by navArgs()
+
+    private val tabsMap = mapOf(
+        Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context)
+            .instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
+        Tab.HISTORY to MapViewFragment(),
+        Tab.ORDERS to OrdersFragment.newInstance(),
+        Tab.VISITS to VisitsListFragment.newInstance(),
+        Tab.PLACES to PlacesFragment.getInstance(),
+        Tab.SUMMARY to SummaryFragment.newInstance(),
+        Tab.PROFILE to ProfileFragment()
+    )
+    private val tabs = Injector.provideTabs()
 
     val visitsManagementViewModel: VisitsManagementViewModel by viewModels {
         MyApplication.injector.provideUserScopeViewModelFactory()
@@ -77,10 +92,10 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         viewpager.adapter = object :
             FragmentPagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-            override fun getCount(): Int = TABS.size
+            override fun getCount(): Int = tabs.size
 
             override fun getItem(position: Int): Fragment {
-                val fragment = TABS.getValue(TABS.keys.toList()[position])
+                val fragment = tabsMap.getValue(tabs[position])
                 if (fragment is MapViewFragmentOld) {
                     fragment.arguments = Bundle().apply {
                         putString(
@@ -95,7 +110,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         viewpager.addOnPageChangeListener(object : SimplePageChangedListener() {
             override fun onPageSelected(position: Int) {
                 MyApplication.injector.crashReportsProvider.log(
-                    "Tab selected ${TABS.keys.toList()[position].name}"
+                    "Tab selected ${tabs[position].name}"
                 )
             }
         })
@@ -105,7 +120,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
             sliding_tabs.getTabAt(i)?.icon =
                 ResourcesCompat.getDrawable(
                     resources,
-                    TABS.keys.toList()[i].iconRes,
+                    tabs[i].iconRes,
                     requireContext().theme
                 )
         }
@@ -178,7 +193,7 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
         visitsManagementViewModel.refreshHistory()
 
         args.tab?.let { tab ->
-            viewpager.currentItem = TABS.keys.indexOf(args.tab)
+            viewpager.currentItem = tabs.indexOf(args.tab)
         }
     }
 
@@ -215,30 +230,6 @@ class VisitsManagementFragment : ProgressDialogFragment(R.layout.fragment_visits
 
     companion object {
         const val TAG = "VisitsManagementAct"
-
-        val TABS: Map<Tab, Fragment> = mapOf(
-            Tab.MAP to Injector.getCustomFragmentFactory(MyApplication.context)
-                .instantiate(ClassLoader.getSystemClassLoader(), LiveMapFragment::class.java.name),
-            Tab.HISTORY to MapViewFragment(),
-//        Tab.ORDERS to OrdersFragment.newInstance(),
-            Tab.VISITS to VisitsListFragment.newInstance(),
-            Tab.PLACES to PlacesFragment.getInstance(),
-            Tab.SUMMARY to SummaryFragment.newInstance(),
-            Tab.PROFILE to ProfileFragment()
-        )
-    }
-
-    @Parcelize
-    enum class Tab(@DrawableRes val iconRes: Int) : Parcelable {
-        MAP(R.drawable.ic_map_tab),
-        HISTORY(R.drawable.ic_history),
-        ORDERS(R.drawable.ic_visits_list_tab),
-        VISITS(R.drawable.ic_visits_list_tab),
-        PLACES(R.drawable.ic_places),
-
-        //        TIMELINE(R.drawable.,
-        SUMMARY(R.drawable.ic_insights_tab),
-        PROFILE(R.drawable.ic_profile_tab),
     }
 
 }

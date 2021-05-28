@@ -73,6 +73,12 @@ class MyApplication : Application() {
             false
         }
 
+        val TWMO_ENABLED = if (BuildConfig.DEBUG) {
+            BuildConfig.TWMO_ENABLED
+        } else {
+            false
+        }
+
         val injector: Injector = Injector
 
         lateinit var context: Context

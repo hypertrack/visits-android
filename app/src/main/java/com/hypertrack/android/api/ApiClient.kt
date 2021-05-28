@@ -73,46 +73,16 @@ class ApiClient(
 
     suspend fun getGeofences(
         paginationToken: String?,
-        previousIterationSize: Int = 0
     ): GeofenceResponse {
-        val MINIMAL_PAGE_SIZE = 1
         try {
 //            Log.v("hypertrack-verbose", "getGeofences ${paginationToken.hashCode()}")
-            val response = api.getGeofencesWithMarkers(paginationToken = paginationToken)
+            val response = api.getDeviceGeofences(
+                paginationToken = paginationToken,
+                deviceId = deviceId
+            )
             if (response.isSuccessful) {
-                val result = response.body()!!.let { geofenceResponse ->
-                    geofenceResponse.copy(geofences = geofenceResponse.geofences.mapNotNull { geofence ->
-                        when (geofence.deviceId) {
-                            "00000000-0000-0000-0000-000000000000", deviceId -> {
-                                geofence.let {
-                                    it.copy(marker = it.marker.let { marker ->
-                                        marker?.copy(markers = marker.markers.filter { m ->
-                                            m.deviceId == "00000000-0000-0000-0000-000000000000"
-                                                    || m.deviceId == deviceId
-                                        })
-                                    })
-                                }
-                            }
-                            else -> null
-                        }
-                    })
-                }
-                val resSize = result.geofences.size + previousIterationSize
-//                Log.v("hypertrack-verbose", resSize.toString())
-                if (resSize < MINIMAL_PAGE_SIZE
-                    && result.paginationToken != null
-                ) {
-                    val next = getGeofences(result.paginationToken, resSize)
-                    return GeofenceResponse(
-                        mutableListOf<Geofence>().apply {
-                            addAll(result.geofences)
-                            addAll(next.geofences)
-                        },
-                        next.paginationToken
-                    )
-                } else {
-                    return result
-                }
+                //todo task
+                return GeofenceResponse(response.body()!!.toList(), null)
             } else {
                 throw HttpException(response)
             }
@@ -385,7 +355,12 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
                 walkDuration,
                 stopDuration,
             ),
-            locations.coordinates.map { Location(it.longitude, it.latitude) to it.timestamp },
+            locations.coordinates.map {
+                Location(
+                    latitude = it.latitude,
+                    longitude = it.longitude
+                ) to it.timestamp
+            },
             markers.map { it.asMarker() }
         )
     }
@@ -420,8 +395,16 @@ private fun HistoryGeofenceMarker.asGeofenceMarker(): Marker {
 }
 
 
-private fun HistoryTripMarkerLocation.asLocation() = Location(coordinates[0], coordinates[1])
-private fun Geometry.asLocation() = Location(longitude, latitude)
+private fun HistoryTripMarkerLocation.asLocation() = Location(
+    latitude = coordinates[1],
+    longitude = coordinates[0]
+)
+
+private fun Geometry.asLocation() =
+    Location(
+        latitude = latitude,
+        longitude = longitude
+    )
 
 private fun HistoryStatusMarker.asStatusMarker() = StatusMarker(
     MarkerType.STATUS,

@@ -19,7 +19,12 @@ internal class HistoryCoordinateJsonAdapter {
         if (json.size != 4) throw JsonDataException("history coordinate should consist of four elements")
         if (json[0] !is Double || json[1] !is Double) throw JsonDataException("longitude and latitude should be of double type")
         if (json[3] !is String) throw JsonDataException("Timestamp should be String in ISO format")
-        return HistoryCoordinate(json[0] as Double, json[1] as Double, json[2] as Double?, json[3] as String)
+        return HistoryCoordinate(
+            latitude = json[1] as Double,
+            longitude = json[0] as Double,
+            altitude = json[2] as Double?,
+            timestamp = json[3] as String
+        )
     }
 }
 

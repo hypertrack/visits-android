@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.coroutines.coroutineContext
 
-interface IntegrationsRepository {
+interface
+IntegrationsRepository {
     val errorFlow: Flow<Consumable<Exception>>
     suspend fun hasIntegrations(): Boolean?
     suspend fun getFirstIntegrationsPage(): List<Integration>

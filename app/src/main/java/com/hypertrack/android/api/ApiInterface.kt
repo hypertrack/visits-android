@@ -34,15 +34,22 @@ interface ApiInterface {
     ): Response<EncodedImage>
 
     /** Returns list of device geofences with visit markers inlined */
-    @GET("client/geofences?include_archived=false&include_markers=true")
+    @GET("client/geofences?include_markers=true")
     suspend fun getGeofencesWithMarkers(
         @Query("pagination_token") paginationToken: String?,
-        @Query("device_id") filterByDeviceId: String? = null
+        @Query("device_id") deviceId: String,
+        @Query("include_archived") includeArchived: Boolean = false,
+        @Query("sort_nearest") sortNearest: Boolean = true,
     ): Response<GeofenceResponse>
 
     /** Returns list of device geofences without visit markers */
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Response<Set<Geofence>>
+    suspend fun getDeviceGeofences(
+        @Path("device_id") deviceId: String,
+        @Query("pagination_token") paginationToken: String? = null,
+        @Query("include_archived") includeArchived: Boolean = false,
+        @Query("sort_nearest") sortNearest: Boolean = true,
+    ): Response<Set<Geofence>>
 
     @POST("client/devices/{device_id}/geofences")
     suspend fun createGeofences(
@@ -252,6 +259,12 @@ data class Geofence(
     val latLng: LatLng
         get() = LatLng(latitude, longitude)
 
+    val location: Location
+        get() = Location(
+            latitude = latitude,
+            longitude = longitude
+        )
+
     val name: String?
         get() = metadata?.get("name").let {
             if (it is String) it else null
@@ -410,7 +423,10 @@ data class HistoryTripMarkerData(
 )
 
 @JsonClass(generateAdapter = true)
-data class HistoryTripMarkerLocation(val coordinates: List<Double>)
+data class HistoryTripMarkerLocation(
+    //[long, lat]
+    val coordinates: List<Double>
+)
 
 @JsonClass(generateAdapter = true)
 data class HistoryGeofenceMarker(
@@ -467,10 +483,10 @@ data class Locations(
 )
 
 class HistoryCoordinate(
-        val longitude: Double,
-        val latitude: Double,
-        val altitude: Double?,
-        val timestamp: String,
+    val latitude: Double,
+    val longitude: Double,
+    val altitude: Double?,
+    val timestamp: String,
 )
 
 @JsonClass(generateAdapter = true)

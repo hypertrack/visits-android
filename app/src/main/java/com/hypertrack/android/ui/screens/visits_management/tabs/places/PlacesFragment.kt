@@ -40,7 +40,7 @@ class PlacesFragment : ProgressDialogFragment(R.layout.fragment_places) {
         vm.placesPage.observe(viewLifecycleOwner, {
             if (it != null) {
                 it.consume {
-//                    Log.v("hypertrack-verbose", "-- page ${it.map { it.geofence.name }}")
+                    Log.v("hypertrack-verbose", "-- page ${it.map { it.geofence.name }}")
                     adapter.addItemsAndUpdate(it)
                     lPlacesPlaceholder.setGoneState(adapter.itemCount != 0)
                     rvPlaces.setGoneState(adapter.itemCount == 0)

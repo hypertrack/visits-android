@@ -15,6 +15,7 @@ import com.hypertrack.android.repository.IntegrationsRepository
 import com.hypertrack.android.repository.PlacesRepository
 import com.hypertrack.android.ui.base.BaseViewModel
 import com.hypertrack.android.ui.base.SingleLiveEvent
+import com.hypertrack.android.ui.common.Tab
 import com.hypertrack.android.ui.common.toAddressString
 import com.hypertrack.android.ui.screens.add_place.AddPlaceFragmentDirections
 import com.hypertrack.android.ui.screens.visits_management.VisitsManagementFragment
@@ -64,20 +65,12 @@ class AddPlaceInfoViewModel(
         }
     }
 
-    //    val showAddIntegrationButton = MediatorLiveData<Boolean>().apply {
-//        addSource(hasIntegrations) {
-//            postValue((hasIntegrations.value ?: false) && integration.value == null)
-//        }
-//        addSource(integration) {
-//            postValue((hasIntegrations.value ?: false) && integration.value == null)
-//        }
-//    }
     val showGeofenceNameField = MediatorLiveData<Boolean>().apply {
         addSource(hasIntegrations) {
-            postValue((hasIntegrations.value ?: false) && integration.value == null)
+            postValue(shouldShowGeofenceName())
         }
         addSource(integration) {
-            postValue((hasIntegrations.value ?: false) && integration.value == null)
+            postValue(shouldShowGeofenceName())
         }
     }
 
@@ -107,8 +100,8 @@ class AddPlaceInfoViewModel(
                 loadingState.postValue(true)
 
                 val res = placesRepository.createGeofence(
-                    latLng.latitude,
-                    latLng.longitude,
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
                     name = name,
                     address = address,
                     description = description,
@@ -119,7 +112,7 @@ class AddPlaceInfoViewModel(
                     CreateGeofenceSuccess -> {
                         destination.postValue(
                             AddPlaceFragmentDirections.actionGlobalVisitManagementFragment(
-                                VisitsManagementFragment.Tab.PLACES
+                                Tab.PLACES
                             )
                         )
                     }
@@ -162,6 +155,14 @@ class AddPlaceInfoViewModel(
     private fun shouldEnableConfirmButton(): Boolean {
         return if (hasIntegrations.value == true) {
             integration.value != null
+        } else {
+            true
+        }
+    }
+
+    private fun shouldShowGeofenceName(): Boolean {
+        return if (hasIntegrations.value == true) {
+            integration.value == null
         } else {
             true
         }

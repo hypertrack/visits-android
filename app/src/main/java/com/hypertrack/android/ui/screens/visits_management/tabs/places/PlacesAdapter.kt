@@ -3,24 +3,35 @@ package com.hypertrack.android.ui.screens.visits_management.tabs.places
 import android.location.Address
 import android.view.View
 import com.hypertrack.android.api.Geofence
+import com.hypertrack.android.models.Location
 import com.hypertrack.android.ui.base.BaseAdapter
 import com.hypertrack.android.ui.common.*
+import com.hypertrack.android.ui.screens.visits_management.tabs.history.DeviceLocationProvider
 import com.hypertrack.android.utils.MyApplication
 import com.hypertrack.android.utils.OsUtilsProvider
+import com.hypertrack.android.utils.TimeDistanceFormatter
 import com.hypertrack.logistics.android.github.R
 import kotlinx.android.synthetic.main.item_place.view.*
-import kotlinx.android.synthetic.main.item_spinner.view.*
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 
-class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
+class PlacesAdapter(
+    private val osUtilsProvider: OsUtilsProvider,
+    private val locationProvider: DeviceLocationProvider,
+    private val timeDistanceFormatter: TimeDistanceFormatter
+) :
     BaseAdapter<PlaceItem, BaseAdapter.BaseVh<PlaceItem>>() {
 
     override val itemLayoutResource: Int = R.layout.item_place
+
+    private var location: Location? = null
+
+    init {
+        locationProvider.getCurrentLocation {
+            location = it
+            notifyDataSetChanged()
+        }
+    }
 
     override fun createViewHolder(
         view: View,
@@ -96,6 +107,14 @@ class PlacesAdapter(val osUtilsProvider: OsUtilsProvider) :
                         }
                         ?: "${item.geofence.geometry.latitude} ${item.geofence.geometry.longitude}"
                 address.toView(containerView.tvAddress)
+
+                containerView.tvDistance.setGoneState(location == null)
+                timeDistanceFormatter.formatDistance(
+                    LocationUtils.distanceMeters(
+                        location,
+                        item.geofence.location
+                    ) ?: -1
+                ).toView(containerView.tvDistance)
             }
         }
     }
