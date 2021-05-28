@@ -65,20 +65,12 @@ class AddPlaceInfoViewModel(
         }
     }
 
-    //    val showAddIntegrationButton = MediatorLiveData<Boolean>().apply {
-//        addSource(hasIntegrations) {
-//            postValue((hasIntegrations.value ?: false) && integration.value == null)
-//        }
-//        addSource(integration) {
-//            postValue((hasIntegrations.value ?: false) && integration.value == null)
-//        }
-//    }
     val showGeofenceNameField = MediatorLiveData<Boolean>().apply {
         addSource(hasIntegrations) {
-            postValue((hasIntegrations.value ?: false) && integration.value == null)
+            postValue(shouldShowGeofenceName())
         }
         addSource(integration) {
-            postValue((hasIntegrations.value ?: false) && integration.value == null)
+            postValue(shouldShowGeofenceName())
         }
     }
 
@@ -108,8 +100,8 @@ class AddPlaceInfoViewModel(
                 loadingState.postValue(true)
 
                 val res = placesRepository.createGeofence(
-                    latLng.latitude,
-                    latLng.longitude,
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
                     name = name,
                     address = address,
                     description = description,
@@ -163,6 +155,14 @@ class AddPlaceInfoViewModel(
     private fun shouldEnableConfirmButton(): Boolean {
         return if (hasIntegrations.value == true) {
             integration.value != null
+        } else {
+            true
+        }
+    }
+
+    private fun shouldShowGeofenceName(): Boolean {
+        return if (hasIntegrations.value == true) {
+            integration.value == null
         } else {
             true
         }
