@@ -389,7 +389,12 @@ private fun HistoryResponse?.asHistory(): HistoryResult {
                 walkDuration,
                 stopDuration,
             ),
-            locations.coordinates.map { Location(it.longitude, it.latitude) to it.timestamp },
+            locations.coordinates.map {
+                Location(
+                    latitude = it.latitude,
+                    longitude = it.longitude
+                ) to it.timestamp
+            },
             markers.map { it.asMarker() }
         )
     }
@@ -424,8 +429,16 @@ private fun HistoryGeofenceMarker.asGeofenceMarker(): Marker {
 }
 
 
-private fun HistoryTripMarkerLocation.asLocation() = Location(coordinates[0], coordinates[1])
-private fun Geometry.asLocation() = Location(longitude, latitude)
+private fun HistoryTripMarkerLocation.asLocation() = Location(
+    latitude = coordinates[1],
+    longitude = coordinates[0]
+)
+
+private fun Geometry.asLocation() =
+    Location(
+        latitude = latitude,
+        longitude = longitude
+    )
 
 private fun HistoryStatusMarker.asStatusMarker() = StatusMarker(
     MarkerType.STATUS,

@@ -29,8 +29,8 @@ data class Summary(
 
 @JsonClass(generateAdapter = true)
 data class Location(
-    val longitude: Double,
-    val latitude: Double
+    val latitude: Double,
+    val longitude: Double
 )
 
 interface Marker {

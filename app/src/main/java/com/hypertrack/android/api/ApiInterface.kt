@@ -256,7 +256,10 @@ data class Geofence(
         get() = LatLng(latitude, longitude)
 
     val location: Location
-        get() = Location(latitude, longitude)
+        get() = Location(
+            latitude = latitude,
+            longitude = longitude
+        )
 
     val name: String?
         get() = metadata?.get("name").let {
@@ -416,7 +419,10 @@ data class HistoryTripMarkerData(
 )
 
 @JsonClass(generateAdapter = true)
-data class HistoryTripMarkerLocation(val coordinates: List<Double>)
+data class HistoryTripMarkerLocation(
+    //[long, lat]
+    val coordinates: List<Double>
+)
 
 @JsonClass(generateAdapter = true)
 data class HistoryGeofenceMarker(
@@ -473,10 +479,10 @@ data class Locations(
 )
 
 class HistoryCoordinate(
-        val longitude: Double,
-        val latitude: Double,
-        val altitude: Double?,
-        val timestamp: String,
+    val latitude: Double,
+    val longitude: Double,
+    val altitude: Double?,
+    val timestamp: String,
 )
 
 @JsonClass(generateAdapter = true)

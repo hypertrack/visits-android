@@ -13,7 +13,12 @@ class FusedDeviceLocationProvider(private val context: Context) : DeviceLocation
         LocationServices.getFusedLocationProviderClient(context).lastLocation
             .addOnCompleteListener {
                 if (it.isSuccessful && it.result != null)
-                    block(Location(it.result.longitude, it.result.latitude))
+                    block(
+                        Location(
+                            latitude = it.result.latitude,
+                            longitude = it.result.longitude
+                        )
+                    )
                 else
                     block(null)
             }
