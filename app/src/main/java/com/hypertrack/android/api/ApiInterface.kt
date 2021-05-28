@@ -34,17 +34,21 @@ interface ApiInterface {
     ): Response<EncodedImage>
 
     /** Returns list of device geofences with visit markers inlined */
-    @GET("client/geofences?include_archived=false&include_markers=true")
+    @GET("client/geofences?include_markers=true")
     suspend fun getGeofencesWithMarkers(
         @Query("pagination_token") paginationToken: String?,
         @Query("device_id") deviceId: String,
+        @Query("include_archived") includeArchived: Boolean = false,
         @Query("sort_nearest") sortNearest: Boolean = true,
     ): Response<GeofenceResponse>
 
     /** Returns list of device geofences without visit markers */
     @GET("client/devices/{device_id}/geofences")
     suspend fun getDeviceGeofences(
-        @Path("device_id") deviceId: String
+        @Path("device_id") deviceId: String,
+        @Query("pagination_token") paginationToken: String? = null,
+        @Query("include_archived") includeArchived: Boolean = false,
+        @Query("sort_nearest") sortNearest: Boolean = true,
     ): Response<Set<Geofence>>
 
     @POST("client/devices/{device_id}/geofences")
