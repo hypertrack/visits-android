@@ -37,12 +37,15 @@ interface ApiInterface {
     @GET("client/geofences?include_archived=false&include_markers=true")
     suspend fun getGeofencesWithMarkers(
         @Query("pagination_token") paginationToken: String?,
-        @Query("device_id") filterByDeviceId: String? = null
+        @Query("device_id") deviceId: String,
+        @Query("sort_nearest") sortNearest: Boolean = true,
     ): Response<GeofenceResponse>
 
     /** Returns list of device geofences without visit markers */
     @GET("client/devices/{device_id}/geofences")
-    suspend fun getDeviceGeofences(@Path("device_id") deviceId: String): Response<Set<Geofence>>
+    suspend fun getDeviceGeofences(
+        @Path("device_id") deviceId: String
+    ): Response<Set<Geofence>>
 
     @POST("client/devices/{device_id}/geofences")
     suspend fun createGeofences(
@@ -251,6 +254,9 @@ data class Geofence(
 
     val latLng: LatLng
         get() = LatLng(latitude, longitude)
+
+    val location: Location
+        get() = Location(latitude, longitude)
 
     val name: String?
         get() = metadata?.get("name").let {

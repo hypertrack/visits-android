@@ -59,7 +59,9 @@ class UserScopeViewModelFactory(
             ) as T
             PlacesViewModel::class.java -> PlacesViewModel(
                 placesRepository,
-                osUtilsProvider
+                osUtilsProvider,
+                deviceLocationProvider,
+                timeLengthFormatter
             ) as T
             PermissionRequestViewModel::class.java -> PermissionRequestViewModel(
                 permissionsInteractor,

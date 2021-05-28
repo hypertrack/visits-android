@@ -34,7 +34,8 @@ class MockApi(val remoteApi: ApiInterface) : ApiInterface by remoteApi {
 
     override suspend fun getGeofencesWithMarkers(
         paginationToken: String?,
-        filterByDeviceId: String?
+        deviceId: String,
+        sortNearest: Boolean
     ): Response<GeofenceResponse> {
         return Response.success(GeofenceResponse(fences, null))
 
