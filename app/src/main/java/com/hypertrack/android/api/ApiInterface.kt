@@ -49,7 +49,7 @@ interface ApiInterface {
         @Query("pagination_token") paginationToken: String? = null,
         @Query("include_archived") includeArchived: Boolean = false,
         @Query("sort_nearest") sortNearest: Boolean = true,
-    ): Response<Set<Geofence>>
+    ): Response<GeofenceResponse>
 
     @POST("client/devices/{device_id}/geofences")
     suspend fun createGeofences(

@@ -17,7 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.hypertrack.android.models.AbstractBackendProvider
+import com.hypertrack.android.models.*
 import com.hypertrack.android.ui.screens.sign_up.HTTextWatcher
 import com.hypertrack.android.utils.Injector
 import com.hypertrack.logistics.android.github.R
@@ -55,7 +55,15 @@ class SearchPlaceFragment(
             backendProvider,
             deviceId,
             viewLifecycleOwner,
-            SearchPlaceState(requireContext(), backendProvider),
+            SearchPlaceState(requireContext(), object : HomeManagementApi {
+                override suspend fun getHomeLocation(): HomeLocationResult {
+                    return NoHomeLocation
+                }
+
+                override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {
+                    return HomeUpdateResultSuccess
+                }
+            }),
             Injector.getVisitsRepo(requireActivity())
         )
         search = view.findViewById(R.id.search)
