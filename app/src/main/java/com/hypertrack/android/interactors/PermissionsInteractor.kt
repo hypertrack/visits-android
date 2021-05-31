@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.utils.MyApplication
-import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 interface PermissionsInteractor {
     fun checkPermissionsState(activity: Activity): PermissionsState
@@ -23,7 +22,6 @@ class PermissionsInteractorImpl(
     private val accountRepository: AccountRepository
 ) : PermissionsInteractor {
 
-    private val autostarter = AutoStartPermissionHelper.getInstance()
 
     override fun checkPermissionsState(activity: Activity): PermissionsState {
         return PermissionsState(
@@ -33,10 +31,7 @@ class PermissionsInteractorImpl(
         )
     }
 
-    override fun isWhitelistingGranted(): Boolean {
-        val applicable = autostarter.isAutoStartPermissionAvailable(MyApplication.context)
-        return !applicable || (applicable && accountRepository.wasWhitelisted)
-    }
+    override fun isWhitelistingGranted() = true
 
     override fun isBasePermissionsGranted(): Boolean {
         return isActivityGranted() && hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -51,20 +46,17 @@ class PermissionsInteractorImpl(
     }
 
     override fun isBackgroundLocationGranted(): Boolean {
-        //todo remove before review
-        return true
-        //we don't need ACCESS_BACKGROUND_LOCATION for Q
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-//        } else {
-//            true
-//        }
+        // we don't need ACCESS_BACKGROUND_LOCATION before R see
+        // https://hypertrack.com/docs/install-sdk-android/#what-permissions-are-required-for-the-sdk-to-work
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        } else {
+            true
+        }
     }
 
     override fun requestWhitelisting(activity: Activity) {
-        val granted = AutoStartPermissionHelper.getInstance().getAutoStartPermission(activity)
-//        Log.d(PermissionRequestViewModel.TAG, "AutoStart granted value is $granted")
-        accountRepository.wasWhitelisted = granted
+        accountRepository.wasWhitelisted = true
     }
 
     override fun requestRequiredPermissions(activity: Activity) {

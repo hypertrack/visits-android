@@ -24,7 +24,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -34,7 +34,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
@@ -49,7 +49,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -59,7 +59,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
@@ -74,7 +74,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -84,7 +84,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
@@ -99,7 +99,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val visitNote = "valuable customer Note"
         val visit = Visit(
                 _id = "42",
@@ -109,7 +109,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
@@ -124,7 +124,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val visitPictures = setOf(
             VisitPhoto("1", "", "", VisitPhotoState.UPLOADED),
             VisitPhoto("2", "", "", VisitPhotoState.NOT_UPLOADED),
@@ -138,13 +138,13 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
         assertTrue(payload.isNotEmpty())
         assertTrue(payload.containsKey("_visit_photos"))
-        assertTrue((payload["_visit_photos"] as Set<String>).containsAll(visitPictures.map {it.imageId}))
+        assertTrue((payload["_visit_photos"] as Set<*>).containsAll(visitPictures.map {it.imageId}))
     }
 
     @Test
@@ -152,7 +152,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val expectedLat = 42.0
         val expectedLong = 3.14
         val visit = Visit(
@@ -164,7 +164,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Location>()
-        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        every { sdk.addGeotag(any(), capture(slot)) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val expectedLocation = slot.captured
@@ -177,7 +177,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -189,7 +189,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Location>()
-        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        every { sdk.addGeotag(any(), capture(slot)) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val expectedLocation = slot.captured
@@ -202,7 +202,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -214,7 +214,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
@@ -226,7 +226,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val expectedLat = 42.0
         val expectedLong = 3.14
         val visit = Visit(
@@ -238,7 +238,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Location>()
-        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        every { sdk.addGeotag(any(), capture(slot)) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val expectedLocation = slot.captured
@@ -251,7 +251,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -263,7 +263,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Location>()
-        every { sdk.addGeotag(any(), capture(slot)) } returns sdk
+        every { sdk.addGeotag(any(), capture(slot)) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val expectedLocation = slot.captured
@@ -276,7 +276,7 @@ class HyperTrackServiceTest {
         val sdk = mockk<HyperTrack>(relaxed = true)
         val listener = TrackingState()
 
-        val hyperTrackService = HyperTrackService(listener, sdk,)
+        val hyperTrackService = HyperTrackService(listener, sdk)
         val expectedLat = 2.1828
         val expectedLong = 3.1415
         val visit = Visit(
@@ -288,7 +288,7 @@ class HyperTrackServiceTest {
         )
 
         val slot = slot<Map<String, Any>>()
-        every { sdk.addGeotag(capture(slot), null) } returns sdk
+        every { sdk.addGeotag(capture(slot), null) } returns mockk()
         hyperTrackService.sendCompletionEvent(visit)
 
         val payload = slot.captured
