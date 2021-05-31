@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.0] - 2021-05-31
+### Added
+- Background location permission to use scheduled tracking hours
+### Fixed
+- Geofences related changes
+
 ## [0.8.2] - 2021-05-27
 ### Fixed
 - Geofence list pagination
