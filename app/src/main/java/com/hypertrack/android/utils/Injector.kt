@@ -1,7 +1,6 @@
 package com.hypertrack.android.utils
 
 import android.content.Context
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,11 +20,6 @@ import com.hypertrack.android.ui.common.UserScopeViewModelFactory
 import com.hypertrack.android.ui.common.ViewModelFactory
 import com.hypertrack.android.ui.screens.add_place_info.AddPlaceInfoViewModel
 import com.hypertrack.android.ui.screens.visits_management.tabs.history.*
-import com.hypertrack.android.ui.screens.visits_management.tabs.livemap.LiveMapFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.places.PlacesFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.profile.ProfileFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.summary.SummaryFragment
-import com.hypertrack.android.ui.screens.visits_management.tabs.visits.VisitsListFragment
 import com.hypertrack.android.utils.injection.CustomFragmentFactory
 import com.hypertrack.android.view_models.VisitDetailsViewModel
 import com.hypertrack.logistics.android.github.R
@@ -291,11 +285,7 @@ object Injector {
         return IntegrationsRepositoryImpl(getVisitsApiClient(MyApplication.context))
     }
 
-    private fun getPermissionInteractor(): PermissionsInteractor {
-        return PermissionsInteractorImpl(
-            getAccountRepo(MyApplication.context)
-        )
-    }
+    private fun getPermissionInteractor() = PermissionsInteractorImpl { getUserScope().hyperTrackService }
 
     private val tokenForPublishableKeyExchangeService by lazy {
         val retrofit = Retrofit.Builder()

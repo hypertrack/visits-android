@@ -100,6 +100,10 @@ class HyperTrackService(
         sdkInstance.syncDeviceSettings()
     }
 
+    fun showPermissionsPrompt() {
+        sdkInstance.backgroundTrackingRequirement(false).requestPermissionsIfNecessary()
+    }
+
 }
 
 
