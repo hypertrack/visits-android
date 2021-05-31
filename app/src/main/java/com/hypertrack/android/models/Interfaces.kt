@@ -3,7 +3,7 @@ package com.hypertrack.android.models
 import com.hypertrack.android.api.TripParams
 
 
-interface AbstractBackendProvider : HomeManagementApi, TripManagementApi
+interface AbstractBackendProvider : TripManagementApi
 
 interface TripManagementApi {
     suspend fun createTrip(tripParams: TripParams) : ShareableTripResult

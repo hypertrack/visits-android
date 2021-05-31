@@ -82,7 +82,7 @@ class ApiClient(
             )
             if (response.isSuccessful) {
                 //todo task
-                return GeofenceResponse(response.body()!!.toList(), null)
+                return response.body()!!
             } else {
                 throw HttpException(response)
             }
@@ -269,55 +269,6 @@ class ApiClient(
             return res.body()!!.data
         } else {
             throw HttpException(res)
-        }
-    }
-
-    override suspend fun getHomeLocation(): HomeLocationResult {
-        return try {
-            with(api.getDeviceGeofences(deviceId)) {
-                return if (isSuccessful) {
-                    return body()?.firstOrNull {
-                        it.archived != true && it.metadata?.get("name") == "Home"
-                    }
-                        ?.let { homeLocation ->
-                            return GeofenceLocation(homeLocation.latitude, homeLocation.longitude)
-                        }
-                        ?: NoHomeLocation
-                } else HomeLocationResultError(HttpException(this))
-            }
-        } catch (t: Throwable) {
-            HomeLocationResultError(t)
-        }
-    }
-
-    override suspend fun updateHomeLocation(homeLocation: GeofenceLocation): HomeUpdateResult {
-        return try {
-            with(api.getDeviceGeofences(deviceId)) {
-                if (isSuccessful) {
-                    body()?.filter { it.metadata?.get("name") == "Home" && it.archived != true }
-                        ?.forEach { api.deleteGeofence(it.geofence_id) }
-                    val result = api.createGeofences(
-                        deviceId, GeofenceParams(
-                            setOf(
-                                GeofenceProperties(
-                                    Point(listOf(homeLocation.longitude, homeLocation.latitude)),
-                                    mapOf("name" to "Home"),
-                                    100
-                                )
-                            ), deviceId
-                        )
-                    )
-                    if (result.isSuccessful) {
-                        return@with HomeUpdateResultSuccess
-                    } else {
-                        return@with HomeUpdateResultError(HttpException(result))
-                    }
-                } else {
-                    return HomeUpdateResultError(HttpException(this))
-                }
-            }
-        } catch (t: Throwable) {
-            return HomeUpdateResultError(t)
         }
     }
 

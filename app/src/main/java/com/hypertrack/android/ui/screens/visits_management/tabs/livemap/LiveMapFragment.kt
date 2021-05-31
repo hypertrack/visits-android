@@ -117,7 +117,6 @@ class LiveMapFragment(
 
         }
         sharedHelper = SharedHelper.getInstance(requireContext())
-        if (!sharedHelper.isHomePlaceSet) fetchHomeFromBackend()
     }
 
     override fun onPause() {
@@ -179,23 +178,6 @@ class LiveMapFragment(
         progress.setGoneState(!isLoading)
         progress.background = null
         if (isLoading) loader.playAnimation() else loader.cancelAnimation()
-    }
-
-    private fun fetchHomeFromBackend() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            when(val homeLocation = backendProvider.getHomeLocation()) {
-                is GeofenceLocation -> {
-                    sharedHelper.homePlace = PlaceModel().apply {
-                        latLng = LatLng(homeLocation.latitude, homeLocation.longitude)
-                        populateAddressFromGeocoder(requireContext())
-                    }
-                }
-                is NoHomeLocation -> sharedHelper.homePlace = null
-                is HomeLocationResultError -> {
-                    Log.w(TAG, "Can't get home location.", homeLocation.error)
-                }
-            }
-        }
     }
 
     companion object {
