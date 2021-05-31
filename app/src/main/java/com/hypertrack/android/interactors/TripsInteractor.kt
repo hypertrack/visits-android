@@ -224,22 +224,31 @@ class TripsInteractorImpl(
                     if (order.legacy) {
                         //legacy v1 trip, destination is order, order.id is trip.id
                         hyperTrackService.sendCompletionEvent(order, canceled)
-                        val res = apiClient.completeTrip(order.id)
-                        when (res) {
-                            TripCompletionSuccess -> {
-                                updateCurrentTripOrderStatus(
-                                    orderId, if (!canceled) {
-                                        OrderStatus.COMPLETED
-                                    } else {
-                                        OrderStatus.CANCELED
-                                    }
-                                )
-                                return OrderCompletionSuccess
+                        //todo completion is disabled regarding to Indiabulls use-case
+                        updateCurrentTripOrderStatus(
+                            orderId, if (!canceled) {
+                                OrderStatus.COMPLETED
+                            } else {
+                                OrderStatus.CANCELED
                             }
-                            is TripCompletionError -> {
-                                return OrderCompletionFailure(res.error as Exception)
-                            }
-                        }
+                        )
+                        return OrderCompletionSuccess
+//                        val res = apiClient.completeTrip(order.id)
+//                        when (res) {
+//                            TripCompletionSuccess -> {
+//                                updateCurrentTripOrderStatus(
+//                                    orderId, if (!canceled) {
+//                                        OrderStatus.COMPLETED
+//                                    } else {
+//                                        OrderStatus.CANCELED
+//                                    }
+//                                )
+//                                return OrderCompletionSuccess
+//                            }
+//                            is TripCompletionError -> {
+//                                return OrderCompletionFailure(res.error as Exception)
+//                            }
+//                        }
                     } else {
                         val mdRes = apiClient.updateOrderMetadata(
                             orderId = orderId,
@@ -440,7 +449,10 @@ class TripsInteractorImpl(
                 note = localOrder?.note,
                 legacy = true,
                 photos = localOrder?.photos ?: mutableSetOf(),
-                metadata = Metadata.deserialize(order.metadata)
+                metadata = Metadata.deserialize(order.metadata),
+                status = if (localOrder?.status == OrderStatus.COMPLETED) {
+                    OrderStatus.COMPLETED
+                } else null
             )
             return res
         }

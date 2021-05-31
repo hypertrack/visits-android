@@ -39,11 +39,12 @@ data class LocalOrder(
         note: String? = null,
         metadata: Metadata?,
         legacy: Boolean = false,
-        photos: MutableSet<PhotoForUpload> = mutableSetOf()
+        photos: MutableSet<PhotoForUpload> = mutableSetOf(),
+        status: OrderStatus? = null
     ) : this(
         id = order.id,
         destination = order.destination,
-        status = OrderStatus.fromString(order._status),
+        status = status ?: OrderStatus.fromString(order._status),
         scheduledAt = order.scheduledAt,
         estimate = order.estimate,
         _metadata = metadata,
