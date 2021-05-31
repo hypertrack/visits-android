@@ -6,10 +6,6 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-<!--    todo remove before review -->
-    <uses-permission
-        android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
-        tools:node="remove" />
     <application
         android:name="com.hypertrack.android.utils.MyApplication"
         android:icon="@mipmap/ic_launcher"

@@ -27,24 +27,14 @@ class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permi
             btnSkip.setGoneState(!visible)
         }
 
-
-        vm.showWhitelistingButton.observe(viewLifecycleOwner) { visible ->
-            listOf<View>(btnWhitelisting, whitelistingMessage)
-                .forEach { it.setGoneState(!visible) }
-        }
-
         vm.showPermissionsButton.observe(viewLifecycleOwner) { show ->
             listOf<View>(btnAllow, permissionRationalMessage)
                 .forEach { it.setGoneState(!show) }
         }
 
         btnSkip.setOnClickListener { vm.onSkipClicked() }
-
         btnAllow.setOnClickListener { vm.requestPermissions(mainActivity()) }
 
-        btnWhitelisting.setOnClickListener {
-            vm.requestWhitelisting(mainActivity())
-        }
     }
 
     override fun onResume() {

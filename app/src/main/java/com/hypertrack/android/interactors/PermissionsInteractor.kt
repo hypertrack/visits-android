@@ -5,21 +5,20 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.hypertrack.android.repository.AccountRepository
+import com.hypertrack.android.utils.HyperTrackService
 import com.hypertrack.android.utils.MyApplication
+import javax.inject.Provider
 
 interface PermissionsInteractor {
     fun checkPermissionsState(activity: Activity): PermissionsState
-    fun requestWhitelisting(activity: Activity)
     fun requestRequiredPermissions(activity: Activity)
     fun requestBackgroundLocationPermission(activity: Activity)
-    fun isWhitelistingGranted(): Boolean
     fun isBackgroundLocationGranted(): Boolean
     fun isBasePermissionsGranted(): Boolean
 }
 
 class PermissionsInteractorImpl(
-    private val accountRepository: AccountRepository
+    private val hyperTrackProvider: Provider<HyperTrackService>
 ) : PermissionsInteractor {
 
 
@@ -30,8 +29,6 @@ class PermissionsInteractorImpl(
             backgroundLocationGranted = isBackgroundLocationGranted(),
         )
     }
-
-    override fun isWhitelistingGranted() = true
 
     override fun isBasePermissionsGranted(): Boolean {
         return isActivityGranted() && hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -55,24 +52,8 @@ class PermissionsInteractorImpl(
         }
     }
 
-    override fun requestWhitelisting(activity: Activity) {
-        accountRepository.wasWhitelisted = true
-    }
-
     override fun requestRequiredPermissions(activity: Activity) {
-        val requiredPermissions: Array<String> =
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            }
-            else {
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACTIVITY_RECOGNITION
-                )
-            }
-        activity.requestPermissions(requiredPermissions, 42)
+        hyperTrackProvider.get().showPermissionsPrompt()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

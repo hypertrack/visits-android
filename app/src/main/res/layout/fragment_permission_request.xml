@@ -98,24 +98,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lPermissions">
 
-        <TextView
-            android:id="@+id/whitelistingMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:text="@string/whitelisting_rational"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:visibility="visible"
-            tools:ignore="RtlCompat" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/btnWhitelisting"
-            style="@style/ButtonStyle"
-            android:layout_marginTop="16dp"
-            android:padding="10dp"
-            android:text="@string/whitelisting_btn_text"
-            android:textAlignment="center" />
     </LinearLayout>
 
     <TextView
