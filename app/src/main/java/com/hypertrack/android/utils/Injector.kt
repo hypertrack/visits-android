@@ -278,7 +278,10 @@ object Injector {
     }
 
     private fun getPlacesRepository(): PlacesRepository {
-        return PlacesRepository(getVisitsApiClient(MyApplication.context))
+        return PlacesRepository(
+            getVisitsApiClient(MyApplication.context),
+            getIntegrationsRepository()
+        )
     }
 
     private fun getIntegrationsRepository(): IntegrationsRepository {

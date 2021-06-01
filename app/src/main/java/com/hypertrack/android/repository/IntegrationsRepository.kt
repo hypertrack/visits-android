@@ -1,6 +1,8 @@
 package com.hypertrack.android.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.hypertrack.android.api.ApiClient
 import com.hypertrack.android.models.Integration
 import com.hypertrack.android.ui.base.Consumable
@@ -10,12 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.coroutines.coroutineContext
 
-interface
-IntegrationsRepository {
+interface IntegrationsRepository {
     val errorFlow: Flow<Consumable<Exception>>
     suspend fun hasIntegrations(): Boolean?
-    suspend fun getFirstIntegrationsPage(): List<Integration>
     suspend fun getIntegrations(query: String): List<Integration>
+    fun invalidateCache()
 }
 
 class IntegrationsRepositoryImpl(
@@ -45,16 +46,21 @@ class IntegrationsRepositoryImpl(
         }
     }
 
-    override suspend fun getFirstIntegrationsPage(): List<Integration> {
-        return firstPage ?: listOf()
-    }
-
     override suspend fun getIntegrations(query: String): List<Integration> {
+        //todo pagination
+        if (query.isBlank() && firstPage != null) {
+            return firstPage!!
+        }
+
         try {
             return apiClient.getIntegrations(query, limit = 100)
         } catch (e: Exception) {
             errorFlow.emit(Consumable(e))
             return listOf()
         }
+    }
+
+    override fun invalidateCache() {
+        firstPage = null
     }
 }
