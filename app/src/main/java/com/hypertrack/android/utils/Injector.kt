@@ -395,7 +395,8 @@ object Injector {
         GoogleMapHistoryRenderer(
             supportMapFragment,
             BaseHistoryStyle(MyApplication.context),
-            getDeviceLocationProvider()
+            getDeviceLocationProvider(),
+            crashReportsProvider
         )
 
     private fun getDeviceLocationProvider(): DeviceLocationProvider {

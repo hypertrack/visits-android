@@ -45,8 +45,9 @@ class ApiClient(
         .client(
             OkHttpClient.Builder()
                 .addInterceptor {
-                    crashReportsProvider.log("${it.request().method} ${it.request().url.encodedPath}")
-                    it.proceed(it.request())
+                    val response = it.proceed(it.request())
+                    crashReportsProvider.log("${it.request().method} ${it.request().url.encodedPath} ${response.code}")
+                    response
                 }
                 .authenticator(AccessTokenAuthenticator(accessTokenRepository))
                 .addInterceptor(AccessTokenInterceptor(accessTokenRepository))
