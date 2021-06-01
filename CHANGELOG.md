@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.1] - 2021-06-1
+### Fixed
+- Hubspot integration issues
+
 ## [0.9.0] - 2021-05-31
 ### Added
 - Background location permission to use scheduled tracking hours
