@@ -14,10 +14,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import retrofit2.HttpException
 
 class PlacesRepository(
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    private val integrationsRepository: IntegrationsRepository
 ) {
 
     private val geofencesCache = mutableMapOf<String, Geofence>()
+
+    fun refresh() {
+        integrationsRepository.invalidateCache()
+    }
 
     suspend fun loadPage(pageToken: String?): GeofenceResponse {
         val res = apiClient.getGeofences(pageToken)

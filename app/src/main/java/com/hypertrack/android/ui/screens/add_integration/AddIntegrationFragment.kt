@@ -61,14 +61,16 @@ class AddIntegrationFragment : BaseFragment<MainActivity>(R.layout.fragment_add_
         })
 
         vm.loadingStateBase.observe(viewLifecycleOwner, {
-            progress.setGoneState(!it)
+            srlIntegrations.isRefreshing = it
             rvIntegrations.setGoneState(it)
             if (it) lIntegrationsPlaceholder.hide()
-            if (it) {
-                loader.playAnimation()
-            } else {
-                loader.cancelAnimation()
-            }
+
+//            progress.setGoneState(!it)
+//            if (it) {
+//                loader.playAnimation()
+//            } else {
+//                loader.cancelAnimation()
+//            }
         })
 
         vm.error.observe(viewLifecycleOwner, {
@@ -87,6 +89,10 @@ class AddIntegrationFragment : BaseFragment<MainActivity>(R.layout.fragment_add_
                 Utils.hideKeyboard(requireActivity())
             }
         })
+
+        srlIntegrations.setOnRefreshListener {
+            vm.onRefresh(etSearch.textString())
+        }
 
         etSearch.addTextChangedListener(object : SimpleTextWatcher() {
             override fun afterChanged(text: String) {

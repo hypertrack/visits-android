@@ -122,9 +122,9 @@ class MapViewFragment : Fragment(R.layout.fragment_tab_map_webview) {
     }
 
     private fun displayLoadingState(isLoading: Boolean) {
-        progress.setGoneState(!isLoading)
-        progress.background = null
-        if (isLoading) loader.playAnimation() else loader.cancelAnimation()
+        progress?.setGoneState(!isLoading)
+        progress?.background = null
+        if (isLoading) loader?.playAnimation() else loader?.cancelAnimation()
     }
 
     companion object {

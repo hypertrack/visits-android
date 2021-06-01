@@ -1,10 +1,7 @@
 package com.hypertrack.android.ui.screens.add_integration
 
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.hypertrack.android.models.Integration
 import com.hypertrack.android.repository.IntegrationsRepository
 import com.hypertrack.android.ui.base.BaseViewModel
@@ -22,6 +19,7 @@ class AddIntegrationViewModel(
 ) : BaseViewModel() {
 
     private val searchFlow = MutableSharedFlow<String>()
+    private var searchJob: Job? = null
 
     val error = integrationsRepository.errorFlow.asLiveData()
 
@@ -33,8 +31,7 @@ class AddIntegrationViewModel(
         loadingStateBase.postValue(true)
 
         viewModelScope.launch {
-            integrations.postValue(integrationsRepository.getFirstIntegrationsPage())
-            loadingStateBase.postValue(false)
+            search("")
         }
 
         viewModelScope.launch {
@@ -45,7 +42,8 @@ class AddIntegrationViewModel(
     }
 
     fun onQueryChanged(query: String) {
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             searchFlow.emit(query)
         }
     }
@@ -59,6 +57,14 @@ class AddIntegrationViewModel(
 
     fun onIntegrationClicked(integration: Integration) {
         integrationSelectedEvent.postValue(Consumable(integration))
+    }
+
+    fun onRefresh(query: String) {
+        searchJob?.cancel()
+        integrationsRepository.invalidateCache()
+        viewModelScope.launch {
+            search(query)
+        }
     }
 
 }

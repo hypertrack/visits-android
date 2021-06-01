@@ -42,6 +42,7 @@ class PlacesViewModel(
         updateJob?.cancel()
         loadingStateBase.value = false
         loadingStateBase.postValue(false)
+        placesRepository.refresh()
         onLoadMore()
     }
 
