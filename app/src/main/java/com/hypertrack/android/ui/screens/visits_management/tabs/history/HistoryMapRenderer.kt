@@ -9,6 +9,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.model.Marker
 import com.hypertrack.android.models.*
+import com.hypertrack.android.utils.CrashReportsProvider
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -38,7 +39,8 @@ class GoogleMapHistoryRenderer(
     private val mapFragment: SupportMapFragment,
     private val style: HistoryStyle,
     private val locationProvider: DeviceLocationProvider,
-    ) : HistoryMapRenderer{
+    private val crashReportsProvider: CrashReportsProvider
+) : HistoryMapRenderer {
 
     private var map: GoogleMap? = null
     private var polyLine: Polyline? = null
@@ -49,50 +51,61 @@ class GoogleMapHistoryRenderer(
 
     @SuppressLint("MissingPermission")
     override suspend fun showHistory(history: History): Boolean = suspendCoroutine { continuation ->
-        if (map == null) {
-            mapFragment.getMapAsync { googleMap ->
-                try {
-                    googleMap.isMyLocationEnabled = true
-                } catch (_: Exception) {
-                }
-                googleMap.uiSettings.isZoomControlsEnabled = true
-                googleMap.setPadding(0, 0, 0, style.summaryPeekHeight)
-                map = googleMap
+        try {
+            if (map == null) {
+                mapFragment.getMapAsync { googleMap ->
+                    try {
+                        googleMap.isMyLocationEnabled = true
+                    } catch (_: Exception) {
+                    }
+                    googleMap.uiSettings.isZoomControlsEnabled = true
+                    googleMap.setPadding(0, 0, 0, style.summaryPeekHeight)
+                    map = googleMap
 
-                if (history.locationTimePoints.isEmpty()) {
-                    locationProvider.getCurrentLocation { lastLocation ->
-                        lastLocation?.let {
-                            map?.animateCamera(
+                    if (history.locationTimePoints.isEmpty()) {
+                        locationProvider.getCurrentLocation { lastLocation ->
+                            lastLocation?.let {
+                                map?.animateCamera(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        LatLng(lastLocation.latitude, lastLocation.longitude),
+                                        CITY_LEVEL_ZOOM
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        polyLine = googleMap?.addPolyline(
+                            history.asPolylineOptions().color(style.activeColor)
+                        )
+                        viewBounds = history.locationTimePoints.map { it.first }.boundRect()
+                        map?.animateCamera(
+                            CameraUpdateFactory.newLatLngBounds(
+                                viewBounds,
+                                style.mapPadding
+                            )
+                        )
+
+                    }
+                    continuation.resume(true)
+                }
+            } else {
+                polyLine?.remove()
+                polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
+                map?.let { map ->
+                    history.locationTimePoints.maxByOrNull { it.second }
+                        ?.let { point ->
+                            map.animateCamera(
                                 CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(lastLocation.latitude, lastLocation.longitude),
+                                    point.first.asLatLng(),
                                     CITY_LEVEL_ZOOM
                                 )
                             )
                         }
-                    }
-                } else {
-                    polyLine = googleMap?.addPolyline(history.asPolylineOptions().color(style.activeColor))
-                    viewBounds = history.locationTimePoints.map { it.first }.boundRect()
-                    map?.animateCamera(CameraUpdateFactory.newLatLngBounds(viewBounds, style.mapPadding))
-
                 }
                 continuation.resume(true)
             }
-        } else {
-            polyLine?.remove()
-            polyLine = map?.addPolyline(history.asPolylineOptions().color(style.activeColor))
-            map?.let { map ->
-                history.locationTimePoints.maxByOrNull { it.second }
-                    ?.let { point ->
-                        map.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                point.first.asLatLng(),
-                                CITY_LEVEL_ZOOM
-                            )
-                        )
-                    }
-            }
-            continuation.resume(true)
+        } catch (e: Exception) {
+            crashReportsProvider.logException(e)
         }
     }
 
