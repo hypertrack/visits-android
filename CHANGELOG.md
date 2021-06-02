@@ -1,6 +1,15 @@
 # Changelog
 
-## [0.9.0] - 2021-05-31
+## [0.9.2] - 2021-06-02
+### Changed
+- Background permission rational style changed.
+
+## [0.9.1] - 2021-06-01
+### Fixed
+- Driver ID input screen on older Androids UI fix
+- Hubspot integration company name
+
+## [0.9.0] - 2021-05-31 (UNRELEASED)
 ### Added
 - Background location permission to use scheduled tracking hours
 ### Fixed
