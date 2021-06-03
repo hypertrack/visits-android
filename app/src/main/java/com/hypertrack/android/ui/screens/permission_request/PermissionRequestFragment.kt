@@ -28,8 +28,7 @@ class PermissionRequestFragment : ProgressDialogFragment(R.layout.fragment_permi
         }
 
         vm.showPermissionsButton.observe(viewLifecycleOwner) { show ->
-            listOf<View>(btnAllow, permissionRationalMessage)
-                .forEach { it.setGoneState(!show) }
+            btnAllow.setGoneState(!show)
         }
 
         btnSkip.setOnClickListener { vm.onSkipClicked() }
