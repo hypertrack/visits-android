@@ -1,10 +1,14 @@
 # Changelog
 
-## [0.9.2] - 2021-06-02
+## [0.9.3] - 2021-06-03
 ### Changed
-- Background permission rational style changed.
+- Background permission rationale changed.
 
-## [0.9.1] - 2021-06-01
+## [0.9.2] - 2021-06-02 (UNRELEASED)
+### Changed
+- Background permission rationale style changed.
+
+## [0.9.1] - 2021-06-01 (UNRELEASED)
 ### Fixed
 - Driver ID input screen on older Androids UI fix
 - Hubspot integration company name
