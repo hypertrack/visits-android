@@ -85,14 +85,12 @@ class HyperTrackService(
 
     fun clockOut() {
         crashReportsProvider?.log("clockOut")
-        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_OUT))
         sdkInstance.stop()
     }
 
     fun clockIn() {
         crashReportsProvider?.log("clockIn")
         sdkInstance.start()
-        sdkInstance.addGeotag(mapOf("type" to Constants.CLOCK_IN))
     }
 
     fun syncDeviceSettings() {
