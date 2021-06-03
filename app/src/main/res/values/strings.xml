@@ -99,9 +99,16 @@
     <string name="notification_important_channel_description">HyperTrack Visits app notifications</string>
     <string name="notification_new_trip">A new trip was assigned to you</string>
 
-    <string name="permissions_allow_location_access">Please allow use of Location data</string>
-    <string name="permission_rationale_1">We need your permission to access location and activity data</string>
-    <string name="permission_rationale_2">This data is used to show your movement history, optimize routes and make expense claims easier</string>
+    <string name="permissions_allow_location_access">Please allow Location permissions</string>
+    <string name="permission_rationale_1">This app collects activity and location data \n to  manage your work on the move \n even when the app is closed or not in use</string>
+    <string name="permission_rationale_2">We use this data to:\n
+        - Show your movement history\n
+        - Optimize routes\n
+        - Mark places you visit\n
+        - Make expense claims easier\n
+        - Compute daily stats \n\t\t(like total driven distance)
+    </string>
+    <string name="permission_rationale_3">We also need to access accelerometer to detect when you drive or walk</string>
 
     <string name="timeline_summary">Tracking summary: %s</string>
     <string name="timeline_inactive_reason_location_permissions_denied">Location permissions denied</string>
