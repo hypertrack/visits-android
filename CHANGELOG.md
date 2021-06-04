@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.4] - 2021-06-04
+### Changed
+- Clock In geotags removed
+
 ## [0.9.3] - 2021-06-03
 ### Changed
 - Background permission rationale changed.
