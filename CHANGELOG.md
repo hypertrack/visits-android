@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.5] - 2021-06-08
+### Changed
+- HyperTrack SDK updated to v5.2.0
+
 ## [0.9.4] - 2021-06-04
 ### Changed
 - Clock In geotags removed
