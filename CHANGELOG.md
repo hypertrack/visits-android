@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.9.2] - 2021-06-02
+## [0.9.5] - 2021-06-08
+### Changed
+- HyperTrack SDK updated to v5.2.0
+
+## [0.9.2] - 2021-06-02  (UNRELEASED)
 ### Changed
 - Background permission rational style changed.
 

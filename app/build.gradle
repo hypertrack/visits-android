@@ -125,7 +125,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     implementation 'com.airbnb.android:lottie:3.1.0'
-    implementation 'com.hypertrack:hypertrack:5.1.0'
+    implementation 'com.hypertrack:hypertrack:5.2.0'
 
     // Branch IO
     implementation 'io.branch.sdk.android:library:5.0.1'
