@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.6] - 2021-06-10
+### Fixed
+- Tracking service is automatically restarts on reboot now
+### Changed
+- HyperTrack SDK updated to v5.2.1
+
 ## [0.9.5] - 2021-06-08
 ### Changed
 - HyperTrack SDK updated to v5.2.0
