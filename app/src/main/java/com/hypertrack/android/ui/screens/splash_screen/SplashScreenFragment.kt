@@ -15,10 +15,6 @@ class SplashScreenFragment : ProgressDialogFragment(R.layout.fragment_splash_scr
         super.onViewCreated(view, savedInstanceState)
         splashScreenViewModel = mainActivity().splashScreenViewModel
 
-        splashScreenViewModel.destination.observe(viewLifecycleOwner, { destination ->
-            findNavController().navigate(destination)
-        })
-
         splashScreenViewModel.loadingState.observe(viewLifecycleOwner, {
             if(it) showProgress() else dismissProgress()
         })

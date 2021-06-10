@@ -11,7 +11,9 @@ import com.hypertrack.android.interactors.PermissionsInteractor
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseViewModel
+import com.hypertrack.android.ui.base.SingleLiveEvent
 import com.hypertrack.android.utils.CrashReportsProvider
+import com.hypertrack.android.utils.Destination
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(
@@ -21,6 +23,7 @@ class SplashScreenViewModel(
     private val permissionsInteractor: PermissionsInteractor
 ) : BaseViewModel() {
 
+    val activityDestination = SingleLiveEvent<NavDirections>()
     val loadingState = MutableLiveData<Boolean>()
 
     private fun proceedToLogin(activity: Activity) = when {
@@ -30,18 +33,18 @@ class SplashScreenViewModel(
         }
         accountRepository.isVerifiedAccount -> {
             // publishable key already verified
-            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
+            activityDestination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
         }
         else -> {
             // Log.d(TAG, "No publishable key found")
-            destination.postValue(
+            activityDestination.postValue(
                 SplashScreenFragmentDirections.actionSplashScreenFragmentToSignUpFragment()
             )
         }
     }
 
     fun handleDeeplink(parameters: Map<String, Any>, activity: Activity) {
-        // Log.d(TAG, "Got deeplink result $parameters")
+//         Log.d(TAG, "Got deeplink result $parameters")
 
         // Here we can inject obligatory input (publishable key and driver id)
         // as well as configuration parameters:
@@ -66,14 +69,13 @@ class SplashScreenViewModel(
                     )
                     // Log.d(TAG, "onKeyReceived finished")
                     if (correctKey) {
-                        // Log.d(TAG, "Key validated successfully")
+//                        Log.d(TAG, "Key validated successfully")
                         driverId?.let { driverRepository.driverId = it }
                         email?.let { driverRepository.driverId = it }
-                        if(driverRepository.hasDriverId) {
+                        if (driverRepository.hasDriverId) {
                             proceedToVisitsManagement(activity)
-                        }
-                        else {
-                            destination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
+                        } else {
+                            activityDestination.postValue(SplashScreenFragmentDirections.actionSplashScreenFragmentToDriverIdInputFragment())
                         }
                     } else {
                         proceedToLogin(activity)
@@ -94,13 +96,13 @@ class SplashScreenViewModel(
         when (permissionsInteractor.checkPermissionsState(activity)
             .getNextPermissionRequest()) {
             PermissionDestination.PASS -> {
-                destination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
+                activityDestination.postValue(SplashScreenFragmentDirections.actionGlobalVisitManagementFragment())
             }
             PermissionDestination.FOREGROUND_AND_TRACKING -> {
-                destination.postValue(SplashScreenFragmentDirections.actionGlobalPermissionRequestFragment())
+                activityDestination.postValue(SplashScreenFragmentDirections.actionGlobalPermissionRequestFragment())
             }
             PermissionDestination.BACKGROUND -> {
-                destination.postValue(SplashScreenFragmentDirections.actionGlobalBackgroundPermissionsFragment())
+                activityDestination.postValue(SplashScreenFragmentDirections.actionGlobalBackgroundPermissionsFragment())
             }
         }
     }
