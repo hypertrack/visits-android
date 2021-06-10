@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.7] - 2021-06-10
+### Fixed
+- Fixed crash on login
+
 ## [0.9.6] - 2021-06-10
 ### Fixed
 - Tracking service is automatically restarts on reboot now
