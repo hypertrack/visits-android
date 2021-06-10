@@ -36,10 +36,6 @@ class MainActivity : NavActivity(), DeeplinkResultListener {
         supportFragmentManager.fragmentFactory = customFragmentFactory
         super.onCreate(savedInstanceState)
         tvMockMode.setGoneState(MyApplication.MOCK_MODE.not())
-
-        splashScreenViewModel.activityDestination.observe(this, {
-            findNavController(R.id.navHost).navigate(it)
-        })
     }
 
     override fun onNewIntent(intent: Intent?) {
