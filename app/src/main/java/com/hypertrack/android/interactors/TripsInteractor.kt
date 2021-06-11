@@ -31,6 +31,7 @@ interface TripsInteractor {
     val completedTrips: LiveData<List<LocalTrip>>
     fun getOrderLiveData(orderId: String): LiveData<LocalOrder>
     suspend fun refreshTrips()
+    fun refreshTripsInBackground()
     suspend fun cancelOrder(orderId: String): OrderCompletionResponse
     suspend fun completeOrder(orderId: String): OrderCompletionResponse
     fun getOrder(orderId: String): LocalOrder?
@@ -144,6 +145,12 @@ class TripsInteractorImpl(
             }
         } catch (e: Exception) {
             errorFlow.emit(Consumable((e)))
+        }
+    }
+
+    override fun refreshTripsInBackground() {
+        coroutineScope.launch {
+            refreshTrips()
         }
     }
 

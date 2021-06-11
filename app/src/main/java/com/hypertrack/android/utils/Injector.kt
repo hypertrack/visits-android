@@ -12,6 +12,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.hypertrack.android.RetryParams
 import com.hypertrack.android.api.*
 import com.hypertrack.android.interactors.*
+import com.hypertrack.android.messaging.PushReceiver
 import com.hypertrack.android.models.AbstractBackendProvider
 import com.hypertrack.android.repository.*
 import com.hypertrack.android.ui.common.ParamViewModelFactory
@@ -89,6 +90,7 @@ object Injector {
             crashReportsProvider,
             getPermissionInteractor(),
             getLoginInteractor(),
+            deeplinkProcessor,
             getOsUtilsProvider(MyApplication.context),
         )
     }
@@ -433,6 +435,14 @@ object Injector {
             hyperTrackServiceProvider,
             { HyperTrackViews.getInstance(applicationContext, publishableKeyProvider.get()) },
             apiClientProvider
+        )
+    }
+
+    fun getPushReceiver(): PushReceiver {
+        return PushReceiver(
+            getAccountRepo(MyApplication.context),
+            { getUserScope().tripsInteractor },
+            getMoshi()
         )
     }
 
