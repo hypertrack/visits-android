@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
 import com.hypertrack.android.ui.MainActivity
 import com.hypertrack.android.ui.base.ProgressDialogFragment
@@ -48,6 +49,7 @@ object NotificationUtils {
             MainActivity::class.java
         )
 
+        notificationIntent.putExtra(MainActivity.KEY_TAB, Tab.MAP as Parcelable)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
 
         val contentIntent = PendingIntent.getActivity(

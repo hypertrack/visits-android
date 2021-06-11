@@ -158,4 +158,9 @@
         android:name="com.hypertrack.android.ui.screens.add_integration.AddIntegrationFragment"
         android:label="add_integration_fragment"
         tools:layout="@layout/fragment_add_integration" />
+    <action
+        android:id="@+id/action_global_splashScreenFragment"
+        app:destination="@id/splashScreenFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/nav_graph" />
 </navigation>
