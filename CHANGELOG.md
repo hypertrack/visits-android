@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.8] - 2021-06-11
+### Changed
+- Updated to use HyperTrack SDK [v5.2.2](https://github.com/hypertrack/sdk-android/blob/master/CHANGELOG.md#522---2021-06-11)
+
 ## [0.9.7] - 2021-06-10
 ### Fixed
 - Fixed crash on login
