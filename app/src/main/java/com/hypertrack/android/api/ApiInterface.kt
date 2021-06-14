@@ -212,7 +212,7 @@ data class Views(
 @JsonClass(generateAdapter = true)
 data class Geofence(
     @field:Json(name = "geofence_id") val geofence_id: String,
-    @field:Json(name = "device_id") val deviceId: String,
+    @field:Json(name = "device_id") val deviceId: String?,
     @field:Json(name = "created_at") val created_at: String,
     @field:Json(name = "metadata") val metadata: Map<String, Any>?,
     @field:Json(name = "geometry") val geometry: Geometry,
