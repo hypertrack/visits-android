@@ -2,6 +2,10 @@
 
 ## [0.9.9] - 2021-06-14
 ### Fixed
+- Fixed geofence device_id error
+
+## [0.9.9] - 2021-06-14
+### Fixed
 - Fixed crash on login
 
 ## [0.9.8] - 2021-06-11
