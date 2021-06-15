@@ -17,7 +17,7 @@ class AccountRepository(
                 ?: throw IllegalStateException("No publishable key")
         }
 
-    val isLoggedIn: Boolean
+    val isVerifiedAccount: Boolean
         get() = accountData.lastToken != null
 
     override var wasWhitelisted: Boolean
