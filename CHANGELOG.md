@@ -1,6 +1,9 @@
 # Changelog
 
-## [0.9.9] - 2021-06-14
+## [0.9.11] - 2021-06-15
+- Bugfixes
+
+## [0.9.10] - 2021-06-14
 ### Fixed
 - Fixed geofence device_id error
 
