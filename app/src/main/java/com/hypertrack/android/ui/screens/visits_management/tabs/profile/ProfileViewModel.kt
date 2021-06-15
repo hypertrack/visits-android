@@ -1,10 +1,7 @@
 package com.hypertrack.android.ui.screens.visits_management.tabs.profile
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.FirebaseMessagingService
 import com.hypertrack.android.repository.AccountRepository
 import com.hypertrack.android.repository.DriverRepository
 import com.hypertrack.android.ui.base.BaseViewModel
@@ -51,23 +48,6 @@ class ProfileViewModel(
             )
         }
     })
-
-    init {
-        if (BuildConfig.DEBUG) {
-            FirebaseMessaging.getInstance().token.addOnSuccessListener {
-                profile.postValue(profile.value!!.toMutableList().apply {
-                    add(
-                        KeyValueItem(
-                            "Firebase token (debug)",
-                            it
-                        )
-                    )
-                })
-            }.addOnFailureListener {
-//                Log.v("hypertrack-verbose", "firebase token retrieval failed ${it}")
-            }
-        }
-    }
 
     private fun getBuildVersion(): String? {
         try {

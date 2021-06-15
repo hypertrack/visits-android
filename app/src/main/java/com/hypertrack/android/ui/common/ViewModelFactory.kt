@@ -10,9 +10,8 @@ import com.hypertrack.android.ui.screens.background_permissions.BackgroundPermis
 import com.hypertrack.android.ui.screens.confirm_email.ConfirmEmailViewModel
 import com.hypertrack.android.ui.screens.sign_in.SignInViewModel
 import com.hypertrack.android.ui.screens.sign_up.SignUpViewModel
-import com.hypertrack.android.ui.screens.splash_screen.MainActivityViewModel
+import com.hypertrack.android.ui.screens.splash_screen.SplashScreenViewModel
 import com.hypertrack.android.utils.CrashReportsProvider
-import com.hypertrack.android.utils.DeeplinkProcessor
 import com.hypertrack.android.utils.OsUtilsProvider
 
 @Suppress("UNCHECKED_CAST")
@@ -22,7 +21,6 @@ class ViewModelFactory(
     private val crashReportsProvider: CrashReportsProvider,
     private val permissionsInteractor: PermissionsInteractor,
     private val loginInteractor: LoginInteractor,
-    private val deeplinkProcessor: DeeplinkProcessor,
     private val osUtilsProvider: OsUtilsProvider,
 ) : ViewModelProvider.Factory {
 
@@ -42,12 +40,11 @@ class ViewModelFactory(
                 loginInteractor,
                 osUtilsProvider,
             ) as T
-            MainActivityViewModel::class.java -> MainActivityViewModel(
+            SplashScreenViewModel::class.java -> SplashScreenViewModel(
                 driverRepository,
                 accountRepository,
-                permissionsInteractor,
-                deeplinkProcessor,
-                crashReportsProvider
+                crashReportsProvider,
+                permissionsInteractor
             ) as T
             BackgroundPermissionsViewModel::class.java -> BackgroundPermissionsViewModel(
                 permissionsInteractor
