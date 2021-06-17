@@ -1,4 +1,9 @@
 # Changelog
+
+## [0.9.13] - 2021-06-17
+### Changed
+- Updated to use HyperTrack SDK [v5.2.4](https://github.com/hypertrack/sdk-android/blob/master/CHANGELOG.md#524---2021-06-17)
+
 ## [0.9.12] - 2021-06-15
 ### Changed
 - Updated to use HyperTrack SDK [v5.2.3](https://github.com/hypertrack/sdk-android/blob/master/CHANGELOG.md#523---2021-06-15)
